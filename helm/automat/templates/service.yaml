@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "automat.fullname" . }}
+  labels:
+    {{- include "automat.labels" . | nindent 4 }}
+spec:
+  {{- include "automat.serviceDefinition" . | nindent 2}}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port}}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "automat.name" . }}

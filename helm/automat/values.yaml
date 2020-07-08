@@ -1,0 +1,18 @@
+# Default values for automat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: renciorg/automat
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: LoadBalancer
+  loadBalancerIP: 10.10.10.10
+  port: 80
+
+app:
+  port: 8080
