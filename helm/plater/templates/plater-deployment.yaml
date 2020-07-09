@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plater.fullname" . }}-plate
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "plater.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "plater.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ include "plater.fullname" . }}-web-container
+          image: "{{ .Values.image.plater.repository }}:{{ .Values.image.plater.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          env:
+            - name: WEB_HOST
+              value: "0.0.0.0"
+            - name: WEB_PORT
+              value: "{{ .Values.app.port }}"
+            - name: NEO4J_HOST
+              value: "{{ include "plater.fullname" . }}"
+            - name: NEO4J_PASSWORD
+              value: "{{ .Values.app.neo4j.password }}"
+            - name: NEO4J_HTTP_PORT
+              value: "{{ .Values.app.neo4j.httpPort }}"
+            - name: NEO4J_USERNAME
+              value: "{{ .Values.app.neo4j.username }}"
+            - name: PLATER_SERVICE_ADDRESS
+              value: {{ include "plater.fullname" . | quote }}
+          args:
+            - -a
+            - {{ .Values.app.automatAddress }}
+            - {{ include "plater.fullname" . }}
+

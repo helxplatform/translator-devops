@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plater.fullname" . }}-neo4j
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "plater.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "plater.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
+          name: {{ include "plater.fullname" . }}-neo4j-container
+          env:
+          - name: JAVA_HOME
+            value: /usr/lib/jvm/java-11-openjdk/jre
+          - name: NEO4J_AUTH
+            value: {{ .Values.app.neo4j.username }}/{{ .Values.app.neo4j.password }}
+          - name: NEO4J_dbms_connectors_default__listen__address
+            value: "0.0.0.0"
+          - name: NEO4J_dbms_memory_heap_initial__size
+            value: "{{ .Values.app.neo4j.heapSize }}"
+          - name: NEO4J_dbms_memory_heap_max__size
+            value: "{{ .Values.app.neo4j.heapSize }}"
+          - name: NEO4J_dbms_memory_pagecache_size
+            value: "{{ .Values.app.neo4j.pageCacheSize }}"
+          - name: NEO4J_dbms_read__only
+            value: {{ .Values.app.neo4j.readOnly }}
+          - name: NEO4J_dbms_security_procedures_unrestricted
+            value: "apoc.*"
+          - name: NEO4J_dbms_jvm_additional
+            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+          ports:
+            - name: neo4j-http
+              containerPort: 7474
+              protocol: TCP
+            - name: neo4j-https
+              containerPort: 7473
+              protocol: TCP
+            - name: neo4j-bolt
+              containerPort: 7687
+              protocol: TCP
+          resources:
+            requests:
+              memory: {{ .Values.app.neo4j.totalMemory }}
+          volumeMounts:
+          - mountPath: /data
+            name: {{ include "plater.fullname" . }}-neo4j-data-volume
+            subPath: neo4j_data
+          - mountPath: /logs
+            name: {{ include "plater.fullname" . }}-neo4j-data-volume
+            subPath: neo4j_logs
+
+      restartPolicy: Always
+      volumes:
+        - name: {{ include "plater.fullname" . }}-neo4j-data-volume
+          persistentVolumeClaim:
+            claimName: {{ include "plater.fullname" . }}-neo4jkp-pvc
