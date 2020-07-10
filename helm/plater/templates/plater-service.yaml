@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "plater.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.app.service.type }}
+  type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.app.port }}
       targetPort: {{ .Values.app.port }}
