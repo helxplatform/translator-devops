@@ -1,0 +1,10 @@
+apiVersion: v2
+name: ontology-tools
+description: A Helm chart for Ontology tools
+
+
+type: application
+
+version: 0.1.0
+
+appVersion: 1.0.0

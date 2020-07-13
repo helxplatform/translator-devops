@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ontology-tools.fullname" . }}
+  labels:
+    {{- include "ontology-tools.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "ontology-tools.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "ontology-tools.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-container
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: APP_PORT
+              value: "5001"
+            - name: NUM_WORKERS
+              value: "4"
+          ports:
+            - name: http
+              containerPort: 5001
+              protocol: TCP

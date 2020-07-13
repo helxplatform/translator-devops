@@ -6,7 +6,7 @@ Smartbag is a tool to expose tablular data in restful api. More information can 
 
 #### Installing on kubernetes
 
-Following instuctions on the repo's [readme](https://github.com/ncats-tangerine/smartBag) we generate a folder with the output set of files. 
+Following instructions on the repo's [readme](https://github.com/ncats-tangerine/smartBag) we generate a folder with the output set of files. 
 
 Then we mount this to a volume by adjusting `storage.path` in `values.yaml`.
 
