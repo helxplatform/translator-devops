@@ -41,3 +41,4 @@ app:
       path:  #'/var/neo4j'
     service:
       type: ClusterIP
+createPV: true

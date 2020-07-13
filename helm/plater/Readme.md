@@ -17,8 +17,12 @@ To adjust this set values in the `values.yaml` file.
 
 Volume for neo4j is of type `Host` but can it supports `nfs` by setting the value in `values.yaml`.
 
+It is also possible to avoid creation of PV by setting `createPV` in `Values.yaml` to `false`. But the volume claims 
+would expect the persistent volume to be created before with the chart name.
+
 To run chart use :
 
 ```shell script
 $ helm -n <namespace> install plater ./
 ```
+
