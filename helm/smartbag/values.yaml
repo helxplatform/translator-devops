@@ -1,0 +1,32 @@
+# Default values for smartbag.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: renciorg/smartbag_bicluster
+  # other image variants are available
+  # renciorg/smartbag_bicluster_maseqdb,
+  # renciorg/smartbag_ctd
+  # renciorg/smartbag_gtex
+  # renciorg/smartbag_gtex
+  # renciorg/smartbag_foodb
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: NodePort
+  port: 80
+  loadbalancerIP: nnn.nnn.nnn.nnn
+
+storage:
+  size: 1Gi
+  # Uncomment the following to use nfs.
+#      nfs:
+#        server: # Put server address here
+  path: '/var/foodb'
+
+createPV: true

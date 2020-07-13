@@ -1,0 +1,35 @@
+apiVersion: v1
+items:
+  {{ if .Values.createPV }}
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: {{ include "smartbag.fullname" . }}-pv-volume
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    capacity:
+      storage: {{ .Values.storage.size }}
+    {{ if .Values.storage.nfs -}}
+    nfs:
+      path: {{ .Values.storage.path }}
+      server: {{ .Values.storage.nfs.server }}
+    {{ else }}
+    hostPath:
+      path:  {{ .Values.storage.path }}
+    {{ end }}
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: {{ include "smartbag.fullname" . }}-pv
+  {{ end }}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: {{ include "smartbag.fullname" . }}-pvc
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ .Values.storage.size }}
+    storageClassName: {{ include "smartbag.fullname" . }}-pv
+kind: List

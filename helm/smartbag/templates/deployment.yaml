@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "smartbag.fullname" . }}
+  labels:
+    {{- include "smartbag.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "smartbag.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "smartbag.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /smartBag
+              name: {{ include "smartbag.fullname" . }}-data-volume
+              subPath: bin
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - "./smartbag run smartapi --port 5000"
+
+      volumes:
+        - name: {{ include "smartbag.fullname" . }}-data-volume
+          persistentVolumeClaim:
+            claimName: {{ include "smartbag.fullname" . }}-pvc
+
+
