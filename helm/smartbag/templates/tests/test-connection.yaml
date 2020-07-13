@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "smartbag.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "smartbag.fullname" . }}:{{ .Values.service.port }}/apidocs/']
   restartPolicy: Never
