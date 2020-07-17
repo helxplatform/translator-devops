@@ -1,4 +1,4 @@
-Reasoner (ontology) tools Helm Chart
+Biolink Lookup Helm Chart
 ---
 > [Source code for Biolink lookup](https://github.com/TranslatorIIPrototypes/bl_lookup)
 >
@@ -10,7 +10,7 @@ two apps in that this deployment is capable deploying.
 
 To deploy Bionames : 
 ```shell script
-$ helm -n <your-namespace> install bl_lookup 
+$ helm -n <your-namespace> install bl-lookup . 
 ```
 
 Service type and port can be configure through `values.yaml` or `--set` parameters.

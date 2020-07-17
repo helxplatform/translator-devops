@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "edge-normalization.fullname" . }}
+  labels:
+    {{- include "edge-normalization.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8145
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "edge-normalization.selectorLabels" . | nindent 4 }}
