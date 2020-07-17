@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "plater.fullname" . }}-configmap
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+data:
+  check_neo.sh: |-
+    #!/bin/sh
+    response=$(wget --server-response --spider --quiet "http://{{ include "plater.fullname" . }}:{{ .Values.app.neo4j.httpPort }}" 2>&1 | awk 'NR==1{print $2}')
+    until [ "$response" = "200" ]; do
+        response=$(wget --server-response --spider --quiet "http://{{ include "plater.fullname" . }}:{{ .Values.app.neo4j.httpPort }}" 2>&1 | awk 'NR==1{print $2}') >&2
+        echo "  -- Neo4j  is unavailable - sleeping"
+        sleep 3
+    done

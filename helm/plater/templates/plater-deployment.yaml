@@ -14,6 +14,20 @@ spec:
       labels:
         {{- include "plater.selectorLabels" . | nindent 8 }}
     spec:
+      initContainers:
+        - name: {{ include "plater.fullname" . }}-init-container
+          image: busybox
+          command:
+            - './check_neo.sh'
+#          args:
+##            - '/'
+###            - -c
+#            - /check_neo.sh
+
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-init-container-volume
+              mountPath: /check_neo.sh
+              subPath: check_neo.sh
       containers:
         - name: {{ include "plater.fullname" . }}-web-container
           image: "{{ .Values.image.plater.repository }}:{{ .Values.image.plater.tag }}"
@@ -40,4 +54,9 @@ spec:
             - -a
             - {{ .Values.app.automatAddress }}
             - {{ include "plater.fullname" . }}
+      volumes:
+        - name: {{ include "plater.fullname" . }}-init-container-volume
+          configMap:
+            name: {{ include "plater.fullname" . }}-configmap
+            defaultMode: 0777
 
