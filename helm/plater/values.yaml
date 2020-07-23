@@ -34,6 +34,7 @@ app:
     totalMemory: 1.4Gi
     storage:
       size: 20Mi
+      pvName:
       # Uncomment the following to use nfs.
 #      nfs:
 #        server: # Put server address here
