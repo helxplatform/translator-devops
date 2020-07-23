@@ -4,7 +4,7 @@ items:
 - apiVersion: v1
   kind: PersistentVolume
   metadata:
-    name: {{ include "plater.fullname" . }}-neo4jkp-pv
+    name: {{ .Values.app.neo4j.storage.pvName}}
   spec:
     accessModes:
       - ReadWriteOnce
@@ -19,7 +19,7 @@ items:
       path:  {{ .Values.app.neo4j.storage.path }}
     {{ end }}
     persistentVolumeReclaimPolicy: Retain
-    storageClassName: {{ include "plater.fullname" . }}-neo4jkp-pv
+    storageClassName: {{ .Values.app.neo4j.storage.pvName }}
   {{ end }}
 - apiVersion: v1
   kind: PersistentVolumeClaim
@@ -31,6 +31,6 @@ items:
     resources:
       requests:
         storage: {{ .Values.app.neo4j.storage.size }}
-    storageClassName: {{ include "plater.fullname" . }}-neo4jkp-pv
+    storageClassName: {{ .Values.app.neo4j.storage.pvName }}
 
 kind: List
