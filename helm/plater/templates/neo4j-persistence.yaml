@@ -4,7 +4,7 @@ items:
 - apiVersion: v1
   kind: PersistentVolume
   metadata:
-    name: {{ include "plater.fullname" . }}-pv-volume
+    name: {{ include "plater.fullname" . }}-neo4jkp-pv
   spec:
     accessModes:
       - ReadWriteOnce
