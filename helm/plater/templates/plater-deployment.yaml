@@ -21,11 +21,6 @@ spec:
           image: busybox
           command:
             - './check_neo.sh'
-#          args:
-##            - '/'
-###            - -c
-#            - /check_neo.sh
-
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-init-container-volume
               mountPath: /check_neo.sh
@@ -43,7 +38,7 @@ spec:
             - name: WEB_PORT
               value: "{{ .Values.app.port }}"
             - name: NEO4J_HOST
-              value: "{{ include "plater.fullname" . }}"
+              value: {{ include "plater.fullname" . }}-neo4j-service
             - name: NEO4J_PASSWORD
               value: "{{ .Values.app.neo4j.password }}"
             - name: NEO4J_HTTP_PORT
