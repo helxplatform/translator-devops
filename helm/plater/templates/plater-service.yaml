@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "plater.fullname" . }}
+  name: {{ include "plater.fullname" . }}-plater-service
   labels:
     {{- include "plater.labels" . | nindent 4 }}
 spec:
@@ -11,6 +11,19 @@ spec:
       targetPort: {{ .Values.app.port }}
       protocol: TCP
       name: http
+  selector:
+    {{- include "plater.selectorLabels" . | nindent 4 }}
+    service-type: web-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plater.fullname" . }}-neo4j-service
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
     - port: {{ .Values.app.neo4j.httpPort }}
       targetPort: {{ .Values.app.neo4j.httpPort }}
       protocol: TCP
@@ -21,3 +34,4 @@ spec:
       name: neo4j-bolt
   selector:
     {{- include "plater.selectorLabels" . | nindent 4 }}
+    service-type: database

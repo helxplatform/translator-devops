@@ -8,10 +8,12 @@ spec:
   selector:
     matchLabels:
       {{- include "plater.selectorLabels" . | nindent 6 }}
+      service-type: database
   template:
     metadata:
       labels:
         {{- include "plater.selectorLabels" . | nindent 8 }}
+        service-type: database
     spec:
       containers:
         - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
