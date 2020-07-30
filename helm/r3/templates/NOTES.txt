@@ -10,7 +10,12 @@
   export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "r3.fullname" . }}-web-service --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
   echo http://$SERVICE_IP:{{ .Values.web.service.port }}
 {{- else if contains "ClusterIP" .Values.web.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "r3.name" . }}-web-server,app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "r3.fullname" . }}-web-server,app.kubernetes.io/instance={{ .Release.Name }},service-type=webserver" -o jsonpath="{.items[0].metadata.name}")
   echo "Visit http://127.0.0.1:8080 to use your application"
   kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:80
+{{- end }}
+{{- if .Values.redis.seedDB }}
+2. SeedDb is true, to add data to the pod please use the following commands
+    export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "r3.name" . }},app.kubernetes.io/instance={{ .Release.Name }},service-type=database" -o jsonpath="{.items[0].metadata.name}")
+    kubectl --namespace {{ .Release.Namespace }} cp <path-to-dump.rdb> $PODNAME:/data/
 {{- end }}

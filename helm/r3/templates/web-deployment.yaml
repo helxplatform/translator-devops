@@ -4,6 +4,7 @@ metadata:
   name: {{ include "r3.fullname" . }}-web-server
   labels:
     {{- include "r3.labels" . | nindent 4 }}
+    service-type: webserver
 spec:
   replicas: {{ .Values.web.replicaCount }}
   selector:

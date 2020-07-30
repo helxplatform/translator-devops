@@ -4,6 +4,7 @@ metadata:
   name: {{ include "r3.fullname" . }}-redis-server
   labels:
     {{- include "r3.labels" . | nindent 4 }}
+    service-type: database
 spec:
   selector:
     matchLabels:
@@ -24,7 +25,6 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: {{ include "r3.fullname" . }}-redis-data-volume
-              subPath: neo4j_data
             - name: {{ include "r3.fullname" . }}-seed-script
               mountPath: /seed_db.sh
               subPath: seed_db.sh
@@ -44,4 +44,7 @@ spec:
         configMap:
           name: {{ include "r3.fullname" . }}-configmap
           defaultMode: 0777
-      {{- end }}
+      - name: {{ include "r3.fullname" . }}-redis-data-volume
+        persistentVolumeClaim:
+          claimName: {{ include "r3.fullname" . }}-redis-pvc
+    {{- end }}

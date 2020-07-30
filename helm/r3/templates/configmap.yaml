@@ -8,7 +8,7 @@ data:
   seed_db.sh: |-
     #!/bin/bash
     set -x
-    FILE=/data/db.dump
+    FILE=/data/dump.rdb
     until [ -f "$FILE" ]; do
         echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
         echo "sleeping..."
