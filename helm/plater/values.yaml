@@ -39,7 +39,8 @@ app:
 #      nfs:
 #        server: # Put server address here
       # Put dir of path containing neo4j_data/  prepopulated with contents of a neo4j instance data/ dir
-      path:  '/var/neo4j'
+      path:
     service:
       type: ClusterIP
+    seedDB: true
 createPV: true

@@ -1,0 +1,5 @@
+{{- if .Values.app.neo4j.seedDB }}
+   To load database please execute the following commands:
+   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "plater.name" . }},app.kubernetes.io/instance={{ .Release.Name }},service-type=database" -o jsonpath="{.items[0].metadata.name}")
+   kubectl -n {{ .Release.Namespace }} cp <local_path_to_dump_file>/<neo4j_dump_file> $POD_NAME:/data/db.dump -c {{ include "plater.fullname" . }}-neo4j-seed-container
+{{- end }}
