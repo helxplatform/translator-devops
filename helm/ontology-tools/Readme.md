@@ -12,7 +12,7 @@ two apps in that this deployment is capable deploying.
 
 To deploy Bionames : 
 ```shell script
-$ helm -n <your-namespace> install onto-lookup --set image.repository=renciorg/green-bionames .
+$ helm -n <your-namespace> install onto-bio-names --set image.repository=renciorg/green-bionames .
 ```
 
 To deploy Onto: 
