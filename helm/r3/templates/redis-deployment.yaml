@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "r3.fullname" . }}-redis-server
+  labels:
+    {{- include "r3.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "r3.selectorLabels" . | nindent 6 }}
+      service-type: database
+  template:
+    metadata:
+      labels:
+        {{- include "r3.selectorLabels" . | nindent 8 }}
+        service-type: database
+    spec:
+    {{- if .Values.redis.seedDB }}
+      initContainers:
+        - name: {{ include "r3.fullname" . }}-redis-seed-container
+          image: {{ .Values.redisImage.repository }}:{{ .Values.redisImage.tag }}
+          command:
+            - '/seed_db.sh'
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "r3.fullname" . }}-redis-data-volume
+              subPath: neo4j_data
+            - name: {{ include "r3.fullname" . }}-seed-script
+              mountPath: /seed_db.sh
+              subPath: seed_db.sh
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-redis-container
+          image: "{{ .Values.redisImage.repository }}:{{ .Values.redisImage.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.redis.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+      {{- if .Values.redis.seedDB }}
+      volumes:
+      - name: {{ include "r3.fullname" . }}-seed-script
+        configMap:
+          name: {{ include "r3.fullname" . }}-configmap
+          defaultMode: 0777
+      {{- end }}

@@ -1,0 +1,33 @@
+
+redisImage:
+  repository: redis
+  tag: latest
+
+webserverImage:
+  repository:
+  tag: latest
+    # options are renciorg/r3_nodenorm or renciorg/r3_chemnorm
+
+redis:
+  service:
+    type: ClusterIP
+  port: 6379
+  resources:
+    limits:
+      memory: 100Mi
+    requests:
+      memory: 100Mi
+  seedDB: false
+  storage:
+    size: 20Mi
+    pvName:
+    path:
+web:
+  replicaCount: 1
+  service:
+    type: NodePort
+  port: 6380
+createPV: true
+
+
+

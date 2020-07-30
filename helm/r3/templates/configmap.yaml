@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "r3.fullname" . }}-configmap
+  labels:
+    {{- include "r3.labels" . | nindent 4 }}
+data:
+  seed_db.sh: |-
+    #!/bin/bash
+    set -x
+    FILE=/data/db.dump
+    until [ -f "$FILE" ]; do
+        echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
+        echo "sleeping..."
+        sleep 3
+    done
+    echo "$FILE found exiting .... "
+  ping_redis.sh: |-
+    #!/bin/bash
+    set -x
+    resp=$(redis-cli -h $REDIS_HOST -p $REDIS_PORT PING)
+    until [ "$resp" = "PONG" ]; do
+      resp=$(redis-cli -h $REDIS_HOST -p $REDIS_PORT PING)
+      echo "No valid resp from redis sleeping... "
+      sleep 2
+    done
+    echo "redis is live."
