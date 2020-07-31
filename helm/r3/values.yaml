@@ -14,18 +14,20 @@ redis:
   port: 6379
   resources:
     limits:
-      memory: 100Mi
+      memory:
     requests:
-      memory: 100Mi
+      memory:
   seedDB: true
   storage:
-    size: 20Mi
+    size: # enter storage size here
+  storageclass: translator-node-normalization-sc
+  pvcName: translator-node-normalization-pvc
 web:
   replicaCount: 1
   service:
     type: NodePort
   port: 6380
-
-
+createPVC: false
+createPV: false
 
 
