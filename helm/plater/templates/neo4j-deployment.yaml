@@ -76,7 +76,7 @@ spec:
       volumes:
         - name: {{ include "plater.fullname" . }}-neo4j-data-volume
           persistentVolumeClaim:
-            claimName: {{ include "plater.fullname" . }}-neo4jkp-pvc
+            claimName: {{ .Values.app.neo4j.storage.pvcName }}
         {{- if .Values.app.neo4j.seedDB }}
         - name: {{ include "plater.fullname" . }}-seed-script
           configMap:

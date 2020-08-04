@@ -26,15 +26,16 @@ app:
     password: neo4jkp
     username: neo4j
     # These are jvm based values hence suffix with one of the following G, M etc...
-    heapsize: 1G
-    pageCacheSize: 200M
-    # this is kubernetes value, valid suffixes are Gi, Mi etc...
+    heapSize:
+    pageCacheSize:
     # It's used to request the cluster for memory capable of running neo4j per the heap and PageCache values above
-    # Compute this value by summing up heapSize + pageCacheSize + (200Mi for os of the image)
-    totalMemory: 1.4Gi
+    # Compute this value by summing up heapSize + pageCacheSize + (1G for os)
+    # https://neo4j.com/docs/operations-manual/current/performance/memory-configuration/
+    totalMemory:
     storage:
       size: 20Mi
-      pvName:
+      pvcName:
+      storageClassName:
       # Uncomment the following to use nfs.
 #      nfs:
 #        server: # Put server address here
@@ -42,5 +43,6 @@ app:
       path:
     service:
       type: ClusterIP
-    seedDB: true
-createPV:
+    seedDB: false
+createPV: false
+createPVC: false

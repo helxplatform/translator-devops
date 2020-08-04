@@ -1,10 +1,11 @@
+{{- if .Values.createPVC}}
 apiVersion: v1
 items:
   {{ if .Values.createPV }}
 - apiVersion: v1
   kind: PersistentVolume
   metadata:
-    name: {{ .Values.app.neo4j.storage.pvName}}
+    name: {{ include "plater.fullname" . }}-neo4jkp-pv
   spec:
     accessModes:
       - ReadWriteOnce
@@ -19,18 +20,18 @@ items:
       path:  {{ .Values.app.neo4j.storage.path }}
     {{ end }}
     persistentVolumeReclaimPolicy: Retain
-    storageClassName: {{ .Values.app.neo4j.storage.pvName }}
+    storageClassName: {{ .Values.app.neo4j.storage.storageClassName }}
   {{ end }}
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: {{ include "plater.fullname" . }}-neo4jkp-pvc
+    name: {{ .Values.app.neo4j.storage.pvcName }}
   spec:
     accessModes:
       - ReadWriteOnce
     resources:
       requests:
         storage: {{ .Values.app.neo4j.storage.size }}
-    storageClassName: {{ .Values.app.neo4j.storage.pvName }}
-
+    storageClassName: {{ .Values.app.neo4j.storage.storageClassName }}
 kind: List
+{{- end}}

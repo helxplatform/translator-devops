@@ -51,11 +51,11 @@ spec:
             - name: NEO4J_USERNAME
               value: "{{ .Values.app.neo4j.username }}"
             - name: PLATER_SERVICE_ADDRESS
-              value: {{ include "plater.fullname" . | quote }}
+              value: "{{ include "plater.fullname" . }}-plater-service"
           args:
             - -a
             - {{ .Values.app.automatAddress }}
-            - {{ include "plater.fullname" . }}
+            - {{ .Release.Name }}
       volumes:
         - name: {{ include "plater.fullname" . }}-init-container-volume
           configMap:
