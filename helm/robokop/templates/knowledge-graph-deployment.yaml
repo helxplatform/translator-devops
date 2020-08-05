@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-knowledge-graph-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: knowledge-graph
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: knowledge-graph
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: knowledge-graph
+    spec:
+      {{- if .Values.knowledgeGraph.seedDB }}
+      initContainers:
+        - name: {{ include "robokop.fullname" . }}-knowledge-graph-seed-container
+          image: {{ .Values.knowledgeGraph.image.repository }}:{{ .Values.knowledgeGraph.image.tag }}
+          command:
+            - '/seed_db.sh'
+          volumeMounts:
+            - mountPath: /data
+              name: neo4j-data-volume
+              subPath: neo4j_data
+            - name: seeddb-script-volume
+              mountPath: /seed_db.sh
+              subPath: seed_db_neo4j.sh
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-knowledge-graph-container
+          image: "{{ .Values.knowledgeGraph.image.repository }}:{{ .Values.knowledgeGraph.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          env:
+          - name: JAVA_HOME
+            value: /usr/lib/jvm/java-11-openjdk/jre
+          - name: NEO4J_AUTH
+            value: neo4j/$(NEO4J_PASSWORD)
+          - name: NEO4J_dbms_connectors_default__listen__address
+            value: 0.0.0.0
+          - name: NEO4J_dbms_security_procedures_unrestricted
+            value: apoc.*  # un-sandbox apoc procedures: http://blog.armbruster-it.de/2017/05/running-neo4j-3-2-apoc-docker/
+          - name: NEO4J_dbms_memory_heap_max__size
+            value: $(NEO4J_HEAP_MEMORY)
+          - name: NEO4J_dbms_memory_heap_initial__size
+            value: $(NEO4J_HEAP_MEMORY_INIT)
+          - name: NEO4J_dbms_memory_pagecache_size
+            value: $(NEO4J_CACHE_MEMORY)
+          - name: NEO4J_dbms_jvm_additional
+            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+          ports:
+          - name: http
+            containerPort: {{ .Values.knowledgeGraph.port }}
+            protocol: TCP
+          - name: bolt
+            containerPort: {{ .Values.knowledgeGraph.boltPort }}
+            protocol: TCP
+          volumeMounts:
+            - mountPath: /logs
+              name: neo4j-logs-volume
+              subPath: neo4j-logs
+          {{- with .Values.knowledgeGraph.resources }}
+          resources:
+            {{- toYaml  . | nindent 12 }}
+          {{- end }}
+      restartPolicy: Always
+      volumes:
+        - name: neo4j-logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logs.pvcName }}
+        - name: neo4j-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.knowledgeGraph.pvcName }}
+        {{- if .Values.knowledgeGraph.seedDB }}
+        - name: seeddb-script-volume
+          configMap:
+            name: {{ include "robokop.fullname" . }}-db-scripts-configmap
+            defaultMode: 0777
+        {{- end }}

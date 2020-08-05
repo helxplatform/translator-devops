@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-messenger-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: messenger
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: messenger
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: messenger
+    spec:
+      initContainers:
+        - name: {{ .Chart.Name }}-messenger-init-container
+          image: "{{ .Values.messenger.image.repository }}:{{ .Values.messenger.image.tag }}"
+          command:
+            - "git"
+          args:
+            - "clone"
+            - "https://github.com/NCATS-Gamma/robokop-messenger.git"
+          volumeMounts:
+            - mountPath: /home/murphy/
+              name: code-dir
+      containers:
+        - name: {{ .Chart.Name }}-messenger-container
+          image: "{{ .Values.messenger.image.repository }}:{{ .Values.messenger.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          env:
+            - name: PYTHONPATH
+              value: "/home/murphy/robokop-messenger"
+          command:
+            - "gunicorn"
+          args:
+            - "--bind"
+            - "0.0.0.0:{{ .Values.messenger.port }}"
+            - "-w"
+            - "4"
+            - "-k"
+            - "uvicorn.workers.UvicornWorker"
+            - "-t"
+            - "600"
+            - "messenger.server:APP"
+          ports:
+          - name: messenger-http
+            containerPort: {{ .Values.messenger.port }}
+            protocol: TCP
+          volumeMounts:
+            - mountPath: /home/murphy/logs
+              name: messenger-logs-volume
+              subPath: messenger-logs
+            - mountPath: /home/murphy
+              name: code-dir
+        - name: {{ .Chart.Name }}-messenger-neo4j-container
+          image: neo4j:3.5.4
+          env:
+            - name: NEO4J_AUTH
+              value: "neo4j/pword"
+      restartPolicy: Always
+      volumes:
+        - name: messenger-logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logs.pvcName }}
+        - name: code-dir
+          emptyDir: {}

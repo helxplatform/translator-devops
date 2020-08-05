@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "robokop.fullname" . }}-db-scripts-configmap
+data:
+  seed_db_neo4j.sh: |-
+    #!/bin/bash
+    set -x
+    FILE=/data/db.dump
+    DONE=/data/done
+    rm -f $DONE
+    DATADIR=/data/databases
+    until [ -f "$DONE" ]; do
+        echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
+        echo "sleeping..."
+        sleep 3
+    done
+    rm -f $DONE
+    echo "$FILE found"
+    echo "clearing previous database file if any..."
+    rm -rf $DATADIR
+    mkdir -p /data/databases
+    # load dump file
+    neo4j-admin load --from $FILE
+  seed_db_redis.sh: |-
+    #!/bin/bash
+    set -x
+    FILE=/data/dump.rdb
+    DONE=/data/done
+    rm -f /data/done
+    until [ -f "$DONE" ]; do
+        echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
+        echo "sleeping..."
+        sleep 3
+    done
+    rm -f /data/done
+    echo "$FILE found exiting .... "

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "robokop.fullname" . }}-test-omnicorp-connection"
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+spec:
+  containers:
+    - name:  {{ .Chart.Name }}-omnicorp-postgres-test-container
+      image: "{{ .Values.omnicorpPostgres.image.repository }}:{{ .Values.omnicorpPostgres.image.tag }}"
+      command: ['pg_isready']
+      args: [
+        '-d',
+        '{{ .Values.omnicorpPostgres.dbName }}',
+        '-h',
+        '{{ include "robokop.fullname" . }}-omnicorp-postgres-svc',
+        '-p',
+        '{{ .Values.omnicorpPostgres.port }}',
+        '-U',
+        '{{ .Values.omnicorpPostgres.dbUser }}'
+      ]
+  restartPolicy: Never

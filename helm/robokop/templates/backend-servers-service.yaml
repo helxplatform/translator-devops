@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokop.fullname" . }}-backend-servers-service
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.backendServices.serviceType }}
+  ports:
+    - port: {{ .Values.backendServices.broker.webPort }}
+      targetPort: {{ .Values.backendServices.broker.webPort }}
+      protocol: TCP
+      name: brkr-http-prt
+    - port: {{ .Values.backendServices.broker.amqpPort }}
+      targetPort: {{ .Values.backendServices.broker.amqpPort }}
+      protocol: TCP
+      name: amqp-prt
+    - port: {{ .Values.backendServices.celeryRedis.port }}
+      targetPort: {{ .Values.backendServices.celeryRedis.port }}
+      protocol: TCP
+      name: redis-prt
+    - port: {{ .Values.backendServices.nlp.port }}
+      targetPort: {{ .Values.backendServices.nlp.port }}
+      protocol: TCP
+      name: nlp
+  selector:
+    {{- include "robokop.selectorLabels" . | nindent 4 }}
+    app-name: backend

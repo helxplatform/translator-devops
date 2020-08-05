@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokop.fullname" . }}-ranker-service
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.ranker.serviceType }}
+  ports:
+    - port: {{ .Values.ranker.port }}
+      targetPort: {{ .Values.ranker.port }}
+      protocol: TCP
+      name: http
+    - port: {{ .Values.ranker.supervisorPort }}
+      targetPort: {{ .Values.ranker.supervisorPort }}
+      protocol: TCP
+      name: supervisor-port
+  selector:
+    {{- include "robokop.selectorLabels" . | nindent 4 }}
+    app-name: ranker

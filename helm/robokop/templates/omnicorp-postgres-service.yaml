@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokop.fullname" . }}-omnicorp-postgres-svc
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.omnicorpPostgres.serviceType }}
+  ports:
+    - port: {{ .Values.omnicorpPostgres.port }}
+      targetPort: {{ .Values.omnicorpPostgres.port }}
+      protocol: TCP
+      name: omnicorp-postgres-port
+  selector:
+    {{- include "robokop.selectorLabels" . | nindent 4 }}
+    app-name: omnicorp-postgres

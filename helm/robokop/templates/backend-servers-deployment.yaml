@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-backend-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: backend
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: backend
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: backend
+    spec:
+      containers:
+      # Celery results container
+      - name: {{ include "robokop.fullname" . }}-backend-celery-results-container
+        image: {{ .Values.backendServices.celeryRedis.image }}
+        args:
+        # These values are configured in the configmap from Values.yaml. Ultimately Values.yaml is the source of truth.
+          - "--port"
+          - "$(RESULTS_PORT)"
+          - "--requirepass"
+          - "$(RESULTS_PASSWORD)"
+        envFrom:
+          - configMapRef:
+              name: {{ include "robokop.fullname" . }}-configmap
+        {{- with .Values.backendServices.celeryRedis.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
+
+        ports:
+        - name: celery-redis
+          containerPort: {{ .Values.backendServices.celeryRedis.port }}
+          protocol: TCP
+      # Broker container
+      - name: {{ include "robokop.fullname" . }}-broker-container
+        image: {{ .Values.backendServices.broker.image }}
+        command:
+          - "/init.sh"
+        args:
+          - "manager"
+          - "builder"
+          - "ranker"
+        envFrom:
+          - configMapRef:
+              name: {{ include "robokop.fullname" . }}-configmap
+        ports:
+        - name: web-port
+          protocol: TCP
+          containerPort: {{ .Values.backendServices.broker.webPort }}
+        - name: amqp-port
+          protocol: TCP
+          containerPort: {{ .Values.backendServices.broker.amqpPort }}
+      # nlp container
+      - name: {{ include "robokop.fullname" . }}-nlp-container
+        image: {{ .Values.backendServices.nlp.image }}
+        ports:
+        - name: web-port
+          protocol: TCP
+          containerPort: {{ .Values.backendServices.nlp.port }}

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-ranker-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: ranker
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: ranker
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: ranker
+    spec:
+      initContainers:
+        - name: {{ .Chart.Name }}-ranker-init-container
+          image: "{{ .Values.ranker.image.repository }}:{{ .Values.ranker.image.tag }}"
+          command:
+            - "git"
+          args:
+            - "clone"
+            - "https://github.com/NCATS-Gamma/robokop-rank.git"
+          volumeMounts:
+            - mountPath: /home/murphy/
+              name: code-dir
+      containers:
+        - name: {{ .Chart.Name }}-ranker-container
+          image: "{{ .Values.ranker.image.repository }}:{{ .Values.ranker.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          ports:
+          - name: rank-http
+            containerPort: {{ .Values.ranker.port }}
+            protocol: TCP
+          - name: rank-superv
+            containerPort: {{ .Values.ranker.supervisorPort }}
+            protocol: TCP
+          volumeMounts:
+            - mountPath: /home/murphy/logs
+              name: ranker-logs-volume
+              subPath: ranker-logs
+            - mountPath: /home/murphy
+              name: code-dir
+      restartPolicy: Always
+      volumes:
+        - name: ranker-logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logs.pvcName }}
+        - name: code-dir
+          emptyDir: {}

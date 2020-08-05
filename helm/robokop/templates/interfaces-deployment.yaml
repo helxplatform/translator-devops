@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-interfaces-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: interfaces
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: interfaces
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: interfaces
+    spec:
+      initContainers:
+        - name: {{ .Chart.Name }}-interfaces-init-container
+          image: "{{ .Values.interfaces.image.repository }}:{{ .Values.interfaces.image.tag }}"
+          command:
+            - "git"
+          args:
+            - "clone"
+            - "https://github.com/NCATS-Gamma/robokop-interfaces.git"
+          volumeMounts:
+            - mountPath: /home/murphy/
+              name: code-dir
+      containers:
+        - name: {{ .Chart.Name }}-interfaces-container
+          image: "{{ .Values.interfaces.image.repository }}:{{ .Values.interfaces.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          ports:
+          - name: http
+            containerPort: {{ .Values.interfaces.port }}
+            protocol: TCP
+          - name: superv
+            containerPort: {{ .Values.interfaces.supervisorPort }}
+            protocol: TCP
+          volumeMounts:
+            - mountPath: /home/murphy/logs
+              name: interfaces-logs-volume
+              subPath: interfaces-logs
+            - mountPath: /home/murphy
+              name: code-dir
+        - name: robokop-build-cache
+          image: {{ .Values.interfaces.buildCacheImage }}
+          envFrom:
+           - configMapRef:
+               name: {{ include "robokop.fullname" . }}-configmap
+          command:
+           - "redis-server"
+          args:
+           - "--port"
+           - "$(BUILD_CACHE_PORT)"
+      restartPolicy: Always
+      volumes:
+        - name: interfaces-logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logs.pvcName }}
+        - name: code-dir
+          emptyDir: {}

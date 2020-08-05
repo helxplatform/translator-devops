@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "robokop.fullname" . }}-manager-scripts-configmap
+data:
+  npm-installer.sh: |-
+    #!/bin/bash
+    set -x
+    # dump all env-vars in /home/murphy/shared/robokop.env, some installation in manager requires robokop.env file
+    mkdir -p /home/murphy/shared
+    env > /home/murphy/shared/robokop.env
+    CODE_DIR=/home/murphy/robokop
+    cd $CODE_DIR
+    npm install
+    npm run webpackProd

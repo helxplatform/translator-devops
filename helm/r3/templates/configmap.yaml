@@ -9,11 +9,13 @@ data:
     #!/bin/bash
     set -x
     FILE=/data/dump.rdb
-    until [ -f "$FILE" ]; do
+    DONE=/data/done
+    until [ -f "$DONE" ]; do
         echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
         echo "sleeping..."
         sleep 3
     done
+    rm -f $DONE
     echo "$FILE found exiting .... "
   ping_redis.sh: |-
     #!/bin/bash

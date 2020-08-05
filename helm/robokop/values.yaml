@@ -1,0 +1,166 @@
+# Default values for robokop.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+adminEmail: kebedey@renci.org
+
+omnicorpPostgres:
+  image:
+    repository: postgres
+    tag: latest
+  port: 5433
+  serviceType: ClusterIP
+  dbName: robokop
+  dbUser: murphy
+  dbPassword: ###########
+  pvcName: omnicorp-postgres-pvc
+  createPVC: true
+  createPV: false
+  storageSize: 10Mi
+
+ranker:
+  image:
+    repository: renciorg/robokop_ranker
+    tag: "2.0"
+  serviceType: NodePort
+  port: 6011
+  supervisorPort: 9003
+
+manager:
+  image:
+    repository: renciorg/robokop_manager
+    tag: latest
+  serviceType: NodePort
+  webPort: 8080
+  supervisorPort: 9001
+  graphQLPort: 6498
+  pubmedCache:
+    image: redis:latest
+    port: 6382
+    resources:
+      requests:
+        memory: 200Mi
+      limits:
+        memory: 200Mi
+  postgres:
+    image: postgres:latest
+    port: 5432
+    pvcName: postgres-pvc
+    createPV: false
+    createPVC: true
+    storageSize: 10Mi
+
+messenger:
+  image:
+    repository: renciorg/robokop_messenger
+    tag: "2.0"
+  serviceType: NodePort
+  port: 4868
+
+backendServices:
+  serviceType: NodePort
+  celeryRedis:
+    image: redis:latest
+    port: 6381
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        memory: 1Gi
+  broker:
+    image: patrickkwang/robokop-rabbitmq
+    webPort: 15672
+    amqpPort: 5672
+    user: murphy
+  nlp:
+    image: patrickkwang/robokop-nlp
+    port: 9475
+
+interfaces:
+  image:
+    repository: renciorg/robokop_interfaces
+    tag: latest
+  port: 6011
+  supervisorPort: 9002
+  buildCacheImage: redis:latest
+  buildCachePort: 6380
+  serviceType: NodePort
+
+knowledgeGraph:
+  image:
+    repository: renciorg/neo4jkp
+    tag: latest
+  port: 7474
+  boltPort: 7687
+  pageCacheMemorySize: 256M
+  heapMemorySize: 1G
+  resources:
+    limits:
+      memory: 2.3G # pagecache + heap + 1G os
+    requests:
+      memory: 2.3G
+  serviceType: NodePort
+  createPV: false
+  createPVC: true
+  pvcName: knowledge-graph-pvc
+  storageSize: 3Gi
+  seedDB: true
+
+requestsCache:
+  image:
+    repository: redis
+    tag: latest
+  port: 6380
+  serviceType: NodePort
+  pvcName: request-cache-pvc
+  seedDB: false
+  createPV: false
+  createPVC: true
+  storageSize: 3Gi
+
+logs:
+  pvcName: robokop-logs-pvc
+  storageSize: 10Mi
+  createPVC: true
+  createPV: false
+
+mail:
+  server: smtp.mailgun.org
+  userName: postmaster@mailer.robokop.org
+  robokopEmailAddr: no-reply@mailer.robokop.org
+
+
+service:
+  type: ClusterIP
+
+
+secrets:
+  adminPassword: ######
+  celeryRedisPassword: ############
+  brokerPassword: ###########
+  omnicorpPassword: ###########
+  postgresPassword: ###########
+  pubmedCachePassword: ###########
+  supervisorPassword: ###########
+  neo4jPassword: #############
+  mailServerPassword: #################
+  appSecretKey: ################
+  appSecretSalt: ####################
+nameOverride: ""
+fullnameOverride: ""
+
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+

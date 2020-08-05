@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokop.fullname" . }}-interfaces-service
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.interfaces.serviceType }}
+  ports:
+    - port: {{ .Values.interfaces.port }}
+      targetPort: {{ .Values.interfaces.port }}
+      protocol: TCP
+      name: http
+    - port: {{ .Values.interfaces.supervisorPort }}
+      targetPort: {{ .Values.interfaces.supervisorPort }}
+      protocol: TCP
+      name: supervisor-port
+    - port: {{ .Values.interfaces.buildCachePort }}
+      targetPort: {{ .Values.interfaces.buildCachePort }}
+      protocol: TCP
+      name: cache-port
+  selector:
+    {{- include "robokop.selectorLabels" . | nindent 4 }}
+    app-name: interfaces

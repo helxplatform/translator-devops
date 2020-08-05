@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-omicorp-postgres-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: omnicorp-postgres
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: omnicorp-postgres
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: omnicorp-postgres
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-omnicorp-postgres-container
+          image: "{{ .Values.omnicorpPostgres.image.repository }}:{{ .Values.omnicorpPostgres.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          env:
+            - name: POSTGRES_USER
+              value: "$(OMNICORP_USER)"
+            - name: POSTGRES_PASSWORD
+              value: "$(OMNICORP_PASSWORD)"
+            - name: POSTGRES_DB
+              value: "$(OMNICORP_DB)"
+          ports:
+            - name: postgres
+              containerPort: {{ .Values.omnicorpPostgres.port}}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /dev/shm
+              name: dshm
+            - mountPath: /var/lib/postgresql/data
+              name: omnicorp-postgres-data-volume
+      restartPolicy: Always
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 400Mi
+        - name: omnicorp-postgres-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.omnicorpPostgres.pvcName }}

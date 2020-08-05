@@ -1,0 +1,31 @@
+{{- if .Values.omnicorpPostgres.createPVC}}
+apiVersion: v1
+items:
+  {{- if .Values.omnicorpPostgres.createPV }}
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: {{ include "robokop.fullname" . }}-omnicorp-postgres-pv
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    capacity:
+      storage: {{ .Values.omnicorpPostgres.storageSize }}
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: {{ include "robokop.fullname" . }}-onmicorp-postgres-pv-sc
+  {{- end }}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: {{ .Values.omnicorpPostgres.pvcName }}
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ .Values.omnicorpPostgres.storageSize }}
+    {{- if .Values.omnicorpPostgres.createPV }}
+    storageClassName: {{ include "robokop.fullname" . }}-onmicorp-postgres-pv-sc
+    {{- end }}
+kind: List
+{{- end}}

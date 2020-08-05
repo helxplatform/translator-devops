@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokop.fullname" . }}-messenger-service
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.messenger.serviceType }}
+  ports:
+    - port: {{ .Values.messenger.port }}
+      targetPort: {{ .Values.messenger.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "robokop.selectorLabels" . | nindent 4 }}
+    app-name: messenger

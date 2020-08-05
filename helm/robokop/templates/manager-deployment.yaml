@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-manager-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: manager
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: manager
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: manager
+    spec:
+      initContainers:
+        - name: {{ .Chart.Name }}-manager-clone-container
+          image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
+          command:
+            - "git"
+          args:
+            - "clone"
+            - "https://github.com/NCATS-Gamma/robokop.git"
+          volumeMounts:
+            - mountPath: /home/murphy/
+              name: code-dir
+        - name: {{ .Chart.Name }}-manager-npm-install-container
+          image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
+          command:
+            - /npm-installer.sh
+          securityContext:
+            runAsUser: 0
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          volumeMounts:
+            - mountPath: /home/murphy/
+              name: code-dir
+            - mountPath: /npm-installer.sh
+              name: installer
+              subPath: npm-installer.sh
+      containers:
+        # Manager container
+        - name: {{ .Chart.Name }}-manager-container
+          image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          env:
+          - name: CELERY_BROKER_URL
+            value: amqp://$(BROKER_USER):$(ADMIN_PASSWORD)@$(BROKER_HOST):$(BROKER_PORT)/manager
+          - name: CELERY_RESULT_BACKEND
+            value: redis://:$(RESULTS_PASSWORD)@$(RESULTS_HOST):$(RESULTS_PORT)/$(MANAGER_RESULTS_DB)
+          - name: SUPERVISOR_PORT
+            value: $(MANAGER_SUPERVISOR_PORT)
+          - name: PYTHONPATH
+            value: $(ROBOKOP_HOME)/robokop
+          - name: POSTGRES_HOST
+            value: localhost
+          ports:
+          - name: web-port
+            containerPort: {{ .Values.manager.webPort }}
+            protocol: TCP
+          - name: superv-port
+            containerPort: {{ .Values.manager.supervisorPort }}
+            protocol: TCP
+          - name: graphql-port
+            containerPort: {{ .Values.manager.graphQLPort }}
+            protocol: TCP
+          volumeMounts:
+            - mountPath: /home/murphy/logs
+              name: manager-logs-volume
+              subPath: manager-logs
+            - mountPath: /home/murphy
+              name: code-dir
+        # Pubmed Cache Container
+        - name: {{ .Chart.Name }}-pubmed-cache-container
+          image: {{ .Values.manager.pubmedCache.image }}
+          ports:
+          - name: pubmed-port
+            protocol: TCP
+            containerPort: {{ .Values.manager.pubmedCache.port }}
+          {{- with .Values.manager.pubmedCache.resources }}
+          resources:
+            {{- toYaml  . | nindent 12 }}
+          {{- end }}
+        # Postgres container
+        - name: {{ .Chart.Name }}-postgres-container
+          image: {{ .Values.manager.postgres.image }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "robokop.fullname" . }}-configmap
+          ports:
+          - name: postgres-port
+            protocol: TCP
+            containerPort: {{ .Values.manager.postgres.port }}
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres-data
+      restartPolicy: Always
+      volumes:
+        - name: manager-logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logs.pvcName }}
+        - name: code-dir
+          emptyDir: {}
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.manager.postgres.pvcName }}
+        - name: installer
+          configMap:
+            name: {{ include "robokop.fullname" . }}-manager-scripts-configmap
+            defaultMode: 0777
