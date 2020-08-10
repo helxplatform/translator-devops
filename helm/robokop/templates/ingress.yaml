@@ -1,0 +1,23 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "robokop.fullname" . }}-ingress
+  annotations:
+    nginx.org/proxy-connect-timeout: "86400s"
+    nginx.org/proxy-read-timeout: "86400s"
+    nginx.org/client-max-body-size: "250m"
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+      - {{ .Values.ingress.host | quote }}
+{{- end }}
+  rules:
+  - host: {{ .Values.ingress.host | quote }}
+    http:
+      paths:
+      - backend:
+         serviceName: {{ include "robokop.fullname" . }}-nginx-proxy-service
+         servicePort: {{ .Values.nginxProxy.port }}
+{{- end }}

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-nginx-proxy-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: nginx-proxy
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: nginx-proxy
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: nginx-proxy
+    spec:
+     containers:
+       - name: {{ include "robokop.fullname" . }}-nginx-proxy-container
+         image: {{ .Values.nginxProxy.image.repository }}:{{ .Values.nginxProxy.image.tag }}
+         ports:
+         - containerPort: {{ .Values.nginxProxy.port }}
+         volumeMounts:
+         - mountPath: /var/log/nginx/
+           name: logs-volume
+           subPath: nginx
+         - mountPath: /etc/nginx/conf.d/default.conf
+           name: nginx-config
+           subPath: default.conf
+     restartPolicy: Always
+     volumes:
+     - name: logs-volume
+       persistentVolumeClaim:
+         claimName: {{ .Values.logs.pvcName }}
+     - name: nginx-config
+       configMap:
+        name: {{ include "robokop.fullname" . }}-nginx-proxy-configmap
+        defaultMode: 0777
