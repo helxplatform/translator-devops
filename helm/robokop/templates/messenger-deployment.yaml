@@ -36,6 +36,8 @@ spec:
           env:
             - name: PYTHONPATH
               value: "/home/murphy/robokop-messenger"
+            - name: NEO4J_URL
+              value: "http://$(NEO4J_HOST):$(NEO4J_HTTP_PORT)"
           command:
             - "gunicorn"
           args:
@@ -58,11 +60,6 @@ spec:
               subPath: messenger-logs
             - mountPath: /home/murphy
               name: code-dir
-        - name: {{ .Chart.Name }}-messenger-neo4j-container
-          image: neo4j:3.5.4
-          env:
-            - name: NEO4J_AUTH
-              value: "neo4j/pword"
       restartPolicy: Always
       volumes:
         - name: messenger-logs-volume
