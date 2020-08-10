@@ -49,6 +49,7 @@ data:
   NEO4J_USER: neo4j
   NLP_HOST: "{{ include "robokop.fullname" . }}-backend-servers-service"
   NLP_PORT: "{{ .Values.backendServices.nlp.port }}"
+  NODE_OPTIONS: "--max-old-space-size={{ .Values.manager.nodeJS.nodeMemory }}"
   OMNICORP_DB: "{{ .Values.omnicorpPostgres.dbName }}"
   OMNICORP_HOST: "{{ include "robokop.fullname" . }}-omnicorp-postgres-svc"
   OMNICORP_PASSWORD: "{{ .Values.secrets.omnicorpPassword }}"

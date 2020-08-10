@@ -70,6 +70,10 @@ spec:
           - name: graphql-port
             containerPort: {{ .Values.manager.graphQLPort }}
             protocol: TCP
+          {{- with .Values.manager.nodeJS.resources }}
+          resources:
+            {{- toYaml  . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /home/murphy/logs
               name: manager-logs-volume
