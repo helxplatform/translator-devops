@@ -2,27 +2,26 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-adminEmail: kebedey@renci.org
+adminEmail: ##############
 
 omnicorpPostgres:
   image:
     repository: postgres
-    tag: latest
-  port: 5433
+    tag: 11
+  port: 5432
   serviceType: ClusterIP
   dbName: robokop
   dbUser: murphy
-  dbPassword: ###########
-  pvcName: omnicorp-postgres-pvc
-  createPVC: true
+  pvcName: ####REQUIRED####
+  createPVC: false
   createPV: false
-  storageSize: 10Mi
+  storageSize: ####REQUIRED_IF_CREATEPVC_TRUE####
 
 ranker:
   image:
     repository: renciorg/robokop_ranker
     tag: "2.0"
-  serviceType: NodePort
+  serviceType: ClusterIP
   port: 6011
   supervisorPort: 9003
 
@@ -30,7 +29,7 @@ manager:
   image:
     repository: renciorg/robokop_manager
     tag: latest
-  serviceType: NodePort
+  serviceType: ClusterIP
   webPort: 8080
   supervisorPort: 9001
   graphQLPort: 6498
@@ -42,23 +41,34 @@ manager:
         memory: 200Mi
       limits:
         memory: 200Mi
+  # Memory config for postgraphile
+  nodeJS:
+    # Node server accepts size in MB only (https://nodejs.org/api/cli.html#cli_max_old_space_size_size_in_megabytes)
+    nodeMemory: "8192" #####REQUIRED(eg nodeMemory: 8192)####
+    # adjust following values as appropriate give 1G for there process running in
+    # manager container, to avoid swapping
+    resources:
+      requests:
+        memory: "9G" ####REQUIRED####
+      limits:
+        memory: "9G" ####REQUIRED####
   postgres:
-    image: postgres:latest
+    image: postgres:10
     port: 5432
-    pvcName: postgres-pvc
+    pvcName: ##############
     createPV: false
-    createPVC: true
+    createPVC: false
     storageSize: 10Mi
 
 messenger:
   image:
     repository: renciorg/robokop_messenger
     tag: "2.0"
-  serviceType: NodePort
+  serviceType: ClusterIP
   port: 4868
 
 backendServices:
-  serviceType: NodePort
+  serviceType: ClusterIP
   celeryRedis:
     image: redis:latest
     port: 6381
@@ -92,36 +102,48 @@ knowledgeGraph:
     tag: latest
   port: 7474
   boltPort: 7687
-  pageCacheMemorySize: 256M
-  heapMemorySize: 1G
+  pageCacheMemorySize: 17G
+  heapMemorySize: 32G
   resources:
     limits:
-      memory: 2.3G # pagecache + heap + 1G os
+      memory: 50G # pagecache + heap + 1G os
     requests:
-      memory: 2.3G
-  serviceType: NodePort
+      memory: 50G
+  serviceType:  ClusterIP
   createPV: false
-  createPVC: true
-  pvcName: knowledge-graph-pvc
-  storageSize: 3Gi
-  seedDB: true
+  createPVC: false
+  pvcName: ##############
+  storageSize:
+  seedDB: false
 
 requestsCache:
   image:
     repository: redis
     tag: latest
   port: 6380
-  serviceType: NodePort
-  pvcName: request-cache-pvc
+  serviceType: ClusterIP
+  pvcName: ##############
   seedDB: false
   createPV: false
-  createPVC: true
-  storageSize: 3Gi
+  createPVC: false
+  storageSize:
+  resources:
+    limits:
+      memory: 40G
+    requests:
+      memory: 40G
+
+nginxProxy:
+  image:
+    repository: nginx
+    tag: latest
+  port: 80
+  serviceType: ClusterIP
 
 logs:
-  pvcName: robokop-logs-pvc
-  storageSize: 10Mi
-  createPVC: true
+  pvcName: translator-robokop-logs-pvc
+  storageSize:
+  createPVC: false
   createPV: false
 
 mail:
@@ -135,29 +157,29 @@ service:
 
 
 secrets:
-  adminPassword: ######
-  celeryRedisPassword: ############
-  brokerPassword: ###########
-  omnicorpPassword: ###########
-  postgresPassword: ###########
-  pubmedCachePassword: ###########
-  supervisorPassword: ###########
-  neo4jPassword: #############
-  mailServerPassword: #################
-  appSecretKey: ################
-  appSecretSalt: ####################
+  adminPassword: ##############
+  celeryRedisPassword: ##############
+  brokerPassword: ##############
+  omnicorpPassword: ##############
+  postgresPassword: ##############
+  pubmedCachePassword: ##############
+  supervisorPassword: ##############
+  neo4jPassword: ##############
+  mailServerPassword: ##############
+  appSecretKey: ##############
+  appSecretSalt: ##############
+  requestsCachePassword: ##############
+
 nameOverride: ""
 fullnameOverride: ""
 
 
 ingress:
-  enabled: false
+  enabled: true
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths: []
+  host: ##############
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
