@@ -25,7 +25,6 @@ spec:
           volumeMounts:
             - mountPath: /data
               name: neo4j-data-volume
-              subPath: neo4j_data
             - name: seeddb-script-volume
               mountPath: /seed_db.sh
               subPath: seed_db_neo4j.sh
@@ -64,6 +63,8 @@ spec:
             - mountPath: /logs
               name: neo4j-logs-volume
               subPath: neo4j-logs
+            - mountPath: /data
+              name: neo4j-data-volume
           {{- with .Values.knowledgeGraph.resources }}
           resources:
             {{- toYaml  . | nindent 12 }}

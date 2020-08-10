@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokop.fullname" . }}-nginx-proxy-service
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: nginx-proxy
+spec:
+  type: {{ .Values.nginxProxy.serviceType }}
+  ports:
+    - port: {{ .Values.nginxProxy.port }}
+      targetPort: {{ .Values.nginxProxy.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "robokop.selectorLabels" . | nindent 4 }}
+    app-name: nginx-proxy
