@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop.fullname" . }}-logs-dep
+  labels:
+    {{- include "robokop.labels" . | nindent 4 }}
+    app-name: logs
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop.selectorLabels" . | nindent 6 }}
+      app-name: logs
+  template:
+    metadata:
+      labels:
+        {{- include "robokop.selectorLabels" . | nindent 8 }}
+        app-name: logs
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-logs-container
+          image: "debian:bullseye"
+          command:
+          - bash
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /logs
+              name: logs-volume
+      restartPolicy: Always
+      volumes:
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.logs.pvcName }}
