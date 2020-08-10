@@ -19,9 +19,9 @@ data:
   BUILDER_RESULTS_DB: "1"
   BUILDER_SUPERVISOR_PORT: "{{ .Values.interfaces.supervisorPort }}"
   CACHE_DB: "0"
-  CACHE_HOST: robokop-cache
-  CACHE_PASSWORD: stayoutoftrouble
-  CACHE_PORT: "6380"
+  CACHE_HOST: "{{ include "robokop.fullname" . }}-requests-cache-service"
+  CACHE_PASSWORD: "{{ .Values.secrets.requestsCachePassword }}"
+  CACHE_PORT: "{{ .Values.requestsCache.port }}"
   GID: "2000"
   GRAPHQL_HOST: "{{ include "robokop.fullname" . }}-manager-service"
   GRAPHQL_PORT: "{{ .Values.manager.graphQLPort }}"
@@ -30,7 +30,11 @@ data:
   MANAGER_NUM_ANSWER_WORKERS: "4"
   MANAGER_NUM_BUILDER_WORKERS: "4"
   MANAGER_PORT: "{{ .Values.manager.webPort }}"
+  {{ if .Values.ingress.tls }}
   MANAGER_PORT_UI: "443"
+  {{ else }}
+  MANAGER_PORT_UI: "80"
+  {{ end }}
   MANAGER_RESULTS_DB: "0"
   MANAGER_SUPERVISOR_PORT: "{{ .Values.manager.supervisorPort }}"
   MESSENGER_HOST: "{{ include "robokop.fullname" . }}-messenger-service"
@@ -69,11 +73,15 @@ data:
   RESULTS_PORT: "{{ .Values.backendServices.celeryRedis.port }}"
   ROBOKOP_DEFAULT_MAIL_SENDER: "{{ .Values.mail.robokopEmailAddr }}"
   ROBOKOP_HOME: /home/murphy
-  ROBOKOP_HOST: covidkop.renci.org
+  ROBOKOP_HOST: {{ .Values.ingress.host }}
   ROBOKOP_MAIL_PASSWORD: "{{ .Values.secrets.mailServerPassword }}"
   ROBOKOP_MAIL_SERVER: "{{ .Values.mail.server }}"
   ROBOKOP_MAIL_USERNAME: "{{ .Values.mail.userName }}"
+  {{ if .Values.ingress.tls }}
   ROBOKOP_PROTOCOL: https
+  {{ else }}
+  ROBOKOP_PROTOCOL: http
+  {{ end }}
   ROBOKOP_SECRET_KEY: "{{ .Values.secrets.appSecretKey }}"
   ROBOKOP_SECURITY_EMAIL_SENDER: "{{ .Values.mail.robokopEmailAddr }}"
   ROBOKOP_SECURITY_PASSWORD_SALT: "{{ .Values.secrets.appSecretSalt }}"
