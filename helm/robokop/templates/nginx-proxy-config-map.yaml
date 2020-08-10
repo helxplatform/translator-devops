@@ -1,0 +1,180 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "robokop.fullname" . }}-nginx-proxy-configmap
+data:
+  default.conf: |-
+      # _----- Aliases to server port combinations
+      upstream manager_web_server {
+        server {{ include "robokop.fullname" . }}-manager-service:{{ .Values.manager.webPort }};
+      }
+      upstream builder_web_server {
+        server {{ include "robokop.fullname" . }}-interfaces-service:{{ .Values.interfaces.port }};
+      }
+      upstream ranker_web_server {
+      server {{ include "robokop.fullname" . }}-ranker-service:{{ .Values.ranker.port }};
+      }
+        upstream manager_supervisor {
+          server {{ include "robokop.fullname" . }}-manager-service:{{ .Values.manager.supervisorPort }};
+        }
+        upstream builder_supervisor {
+          server {{ include "robokop.fullname" . }}-interfaces-service:{{ .Values.interfaces.supervisorPort }};
+        }
+        upstream ranker_supervisor {
+          server {{ include "robokop.fullname" . }}-ranker-service:{{ .Values.ranker.supervisorPort }};
+        }
+        upstream broker_ui {
+          server {{ include "robokop.fullname" . }}-backend-servers-service:{{ .Values.backendServices.broker.webPort }};
+        }
+        upstream graphql_server {
+          server {{ include "robokop.fullname" . }}-manager-service:{{ .Values.manager.graphQLPort }};
+        }
+        server {
+          server_name {{ .Values.ingress.host }};
+          access_log /var/log/nginx/robokop-access.log;
+          error_log /var/log/nginx/robokop-error.log;
+          listen 0.0.0.0:{{ .Values.nginxProxy.port }};
+          client_max_body_size 250M;
+          # ---------------- WEB SERVICES ---------------------
+          # Manager
+          location / {
+            proxy_pass http://manager_web_server/;
+            proxy_redirect off;
+            proxy_set_header        X-Swagger-Prefix "/manager";
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        Accept-Encoding   "";
+            add_header              Front-End-Https   on;
+            #for queries that take long;
+            proxy_read_timeout 1d;
+            #slash append -----
+            rewrite ^([^.]*[^/])$ $1/ permanent;
+            #location of spec file
+            location /manager/spec/ {
+              proxy_pass http://manager_web_server/manager/spec;
+              proxy_redirect off;
+              proxy_set_header        X-Swagger-Prefix "/manager";
+              proxy_set_header        Host $host;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        Accept-Encoding   "";
+              add_header              Front-End-Https   on;
+            }
+            #supervisord
+            location /manager/supervisord/ {
+              proxy_pass http://manager_supervisor/;
+              proxy_redirect off;
+              proxy_set_header        X-Swagger-Prefix "/manager";
+              proxy_set_header        Host ${host}/manager/supervisord/;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        Accept-Encoding   "";
+              add_header              Front-End-Https   on;
+            }
+          }
+          #ranker
+          location /ranker/ {
+            proxy_pass http://ranker_web_server/;
+            proxy_set_header        X-Swagger-Prefix "/ranker";
+            proxy_redirect off;
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        Accept-Encoding   "";
+            add_header              Front-End-Https   on;
+            #slash append -----
+            rewrite ^([^.]*[^/])$ $1/ permanent;
+            #for queries that take long;
+            proxy_read_timeout 1d;
+            #location of spec file
+            location /ranker/spec/ {
+              proxy_pass http://ranker_web_server/ranker/spec;
+              proxy_redirect off;
+              proxy_set_header        X-Swagger-Prefix "/ranker";
+              proxy_set_header        Host $host;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        Accept-Encoding   "";
+              add_header              Front-End-Https   on;
+            }
+            #supervisord
+            location /ranker/supervisord/ {
+                proxy_pass http://ranker_supervisor/;
+                proxy_redirect off;
+                proxy_set_header        Host ${host}/ranker/supervisord/;
+                proxy_set_header        X-Real-IP $remote_addr;
+                proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header        X-Forwarded-Proto $scheme;
+                proxy_set_header        Accept-Encoding   "";
+                add_header              Front-End-Https   on;
+            }
+          }
+          # Builder
+          location /builder/ {
+            proxy_pass http://builder_web_server/;
+            proxy_set_header        X-Swagger-Prefix "/builder";
+            proxy_redirect off;
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        Accept-Encoding   "";
+            add_header              Front-End-Https   on;
+            #slash append -----
+            rewrite ^([^.]*[^/])$ $1/ permanent;
+            #for queries that take long;
+            proxy_read_timeout 1d;
+            #location of spec file
+            location /builder/spec/ {
+              proxy_pass http://builder_web_server/builder/spec;
+              proxy_set_header        X-Swagger-Prefix "/builder";
+              proxy_redirect off;
+              proxy_set_header        Host $host;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        Accept-Encoding   "";
+              add_header              Front-End-Https   on;
+            }
+            #supervisord
+            location /builder/supervisord/ {
+              proxy_pass http://builder_supervisor/;
+              proxy_redirect off;
+              proxy_set_header        Host ${host}/builder/supervisord/;
+              proxy_set_header        X-Real-IP $remote_addr;
+              proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header        X-Forwarded-Proto $scheme;
+              proxy_set_header        Accept-Encoding   "";
+              add_header              Front-End-Https   on;
+            }
+          }
+          location /broker/ {
+            proxy_pass http://broker_ui/;
+            proxy_redirect off;
+            proxy_set_header        X-Swagger-Prefix "/manager";
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        Accept-Encoding   "";
+            add_header              Front-End-Https   on;
+          }
+          location /graphql {
+            proxy_pass http://graphql_server/graphql;
+            proxy_redirect off;
+            proxy_set_header        X-Swagger-Prefix "/manager";
+            proxy_set_header        Host $host;
+            proxy_set_header        X-Real-IP $remote_addr;
+            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header        X-Forwarded-Proto $scheme;
+            proxy_set_header        Accept-Encoding   "";
+            add_header              Front-End-Https   on;
+            proxy_read_timeout 1d;
+          }
+        }
