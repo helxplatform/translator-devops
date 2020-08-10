@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "automat.fullname" . }}-ingress
+spec:
+  rules:
+  - host: automat-ingress-test.edc.renci.org
+    http:
+      paths:
+      - backend:
+          serviceName:  {{ include "automat.fullname" . }}
+          servicePort: 80
