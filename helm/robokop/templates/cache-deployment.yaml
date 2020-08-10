@@ -49,6 +49,10 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: redis-data-volume
+        {{- with .Values.requestsCache.resources }}
+        resources:
+          {{- toYaml  . | nindent 12 }}
+        {{- end }}
       restartPolicy: Always
       volumes:
       - name: redis-data-volume
