@@ -94,7 +94,7 @@ interfaces:
   supervisorPort: 9002
   buildCacheImage: redis:latest
   buildCachePort: 6380
-  serviceType: NodePort
+  serviceType: ClusterIP
 
 knowledgeGraph:
   image:
@@ -175,6 +175,7 @@ fullnameOverride: ""
 
 
 ingress:
+  class: translator
   enabled: true
   annotations: {}
     # kubernetes.io/ingress.class: nginx

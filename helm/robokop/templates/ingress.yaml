@@ -7,6 +7,7 @@ metadata:
     nginx.org/proxy-connect-timeout: "86400s"
     nginx.org/proxy-read-timeout: "86400s"
     nginx.org/client-max-body-size: "250m"
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
 spec:
 {{- if .Values.ingress.tls }}
   tls:
