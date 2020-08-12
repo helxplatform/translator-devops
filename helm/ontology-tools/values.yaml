@@ -13,5 +13,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 80
+
+ingress:
+  host: ####HOSTNAME####
+  class: ####ingress class name####
