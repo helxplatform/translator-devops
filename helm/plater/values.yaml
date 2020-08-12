@@ -16,7 +16,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: NodePort
+  type: ClusterIP
 app:
   port: 8080
   automatAddress: http://automat
