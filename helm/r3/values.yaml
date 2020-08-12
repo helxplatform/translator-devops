@@ -25,9 +25,11 @@ redis:
 web:
   replicaCount: 1
   service:
-    type: NodePort
+    type: ClusterIP
   port: 6380
 createPVC: false
 createPV: false
 
-
+ingress:
+  host: ####HOST_NAME####
+  class: ####Ingress class name ####
