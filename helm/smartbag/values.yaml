@@ -18,15 +18,15 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: NodePort
+  type: ClusterIP
   port: 80
-  loadbalancerIP: nnn.nnn.nnn.nnn
 
 storage:
   size: 1Gi
-  # Uncomment the following to use nfs.
-#      nfs:
-#        server: # Put server address here
-  path: '/var/foodb'
 
-createPV: true
+
+createPV: false
+createPVC: false
+pvcName:
+ingress:
+  host:

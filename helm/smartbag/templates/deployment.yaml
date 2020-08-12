@@ -35,6 +35,6 @@ spec:
       volumes:
         - name: {{ include "smartbag.fullname" . }}-data-volume
           persistentVolumeClaim:
-            claimName: {{ include "smartbag.fullname" . }}-pvc
+            claimName: {{ .Values.pvcName }}
 
 
