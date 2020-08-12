@@ -30,3 +30,4 @@ createPVC: false
 pvcName:
 ingress:
   host:
+  class
