@@ -10,9 +10,12 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: LoadBalancer
-  loadBalancerIP: 10.10.10.10
+  type: ClusterIP
   port: 80
+
+ingress:
+  host: ########HOSTNAME#######
+  class: ####Ingress class#####
 
 app:
   port: 8080
