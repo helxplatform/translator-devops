@@ -50,7 +50,7 @@ data:
             #for queries that take long;
             proxy_read_timeout 1d;
             #slash append -----
-            rewrite ^([^.]*[^/])$ $1/ permanent;
+            #rewrite ^([^.]*[^/])$ $1/ permanent;
             #location of spec file
             location /manager/spec/ {
               proxy_pass http://manager_web_server/manager/spec;
@@ -88,7 +88,7 @@ data:
             proxy_set_header        Accept-Encoding   "";
             add_header              Front-End-Https   on;
             #slash append -----
-            rewrite ^([^.]*[^/])$ $1/ permanent;
+            #rewrite ^([^.]*[^/])$ $1/ permanent;
             #for queries that take long;
             proxy_read_timeout 1d;
             #location of spec file
@@ -127,7 +127,7 @@ data:
             proxy_set_header        Accept-Encoding   "";
             add_header              Front-End-Https   on;
             #slash append -----
-            rewrite ^([^.]*[^/])$ $1/ permanent;
+            #rewrite ^([^.]*[^/])$ $1/ permanent;
             #for queries that take long;
             proxy_read_timeout 1d;
             #location of spec file

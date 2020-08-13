@@ -25,7 +25,11 @@ data:
   GID: "2000"
   GRAPHQL_HOST: "{{ include "robokop.fullname" . }}-manager-service"
   GRAPHQL_PORT: "{{ .Values.manager.graphQLPort }}"
+  {{ if .Values.ingress.tls }}
+  GRAPHQL_PORT_UI: "443"
+  {{ else }}
   GRAPHQL_PORT_UI: "80"
+  {{ end }}
   MANAGER_HOST: "{{ include "robokop.fullname" . }}-manager-service"
   MANAGER_NUM_ANSWER_WORKERS: "4"
   MANAGER_NUM_BUILDER_WORKERS: "4"
