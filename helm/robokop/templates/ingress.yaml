@@ -4,9 +4,9 @@ kind: Ingress
 metadata:
   name: {{ include "robokop.fullname" . }}-ingress
   annotations:
-    nginx.org/proxy-connect-timeout: "86400s"
-    nginx.org/proxy-read-timeout: "86400s"
-    nginx.org/client-max-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
 spec:
   rules:
