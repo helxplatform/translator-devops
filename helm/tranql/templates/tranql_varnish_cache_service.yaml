@@ -1,0 +1,28 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: {{ .Values.tranql_varnish.frontend.service_name }}
+    spec:
+      type: ClusterIP
+      selector:
+        app: {{ .Values.tranql_varnish.frontend.app_name }}
+      ports:
+        - protocol: TCP
+          # use tranql frontend port if load cache is enable so we don't maintain two ports for loadbalancer
+          port: {{ .Values.tranql_varnish.port }}
+          targetPort: {{ .Values.tranql_varnish.port }}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: {{ .Values.tranql_varnish.backplane.service_name }}
+    spec:
+      type: ClusterIP
+      selector:
+        app: {{ .Values.tranql_varnish.backplane.app_name }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.tranql_varnish.port }}
+          targetPort: {{ .Values.tranql_varnish.port }}
+kind: List

@@ -1,0 +1,31 @@
+{{ if .Values.tranql_logs.createPVC }}
+apiVersion: v1
+items:
+{{ if .Values.tranql_logs.createPV }}
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: {{ .Values.tranql_logs.pv_name }}
+  spec:
+    accessModes:
+    - ReadWriteMany
+    capacity:
+      storage: {{ .Values.tranql_logs.storage_size }}
+    persistentVolumeReclaimPolicy: Retain
+    storageClassName: {{ .Values.tranql_logs.pv_name }}
+{{ end }}
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: {{ .Values.tranql_logs.pvc_name }}
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: {{ .Values.tranql_logs.storage_size }}
+          {{ if .Values.tranql_logs.createPV}}
+    storageClassName: {{ .Values.tranql_logs.pv_name }}
+            {{ end }}
+kind: List
+{{ end }}

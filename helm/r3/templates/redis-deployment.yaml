@@ -43,13 +43,13 @@ spec:
             - mountPath: /data
               name: {{ include "r3.fullname" . }}-redis-data-volume
               subPath: data
-      {{- if .Values.redis.seedDB }}
       volumes:
+      {{- if .Values.redis.seedDB }}
       - name: {{ include "r3.fullname" . }}-seed-script
         configMap:
           name: {{ include "r3.fullname" . }}-configmap
           defaultMode: 0777
+      {{- end }}
       - name: {{ include "r3.fullname" . }}-redis-data-volume
         persistentVolumeClaim:
           claimName: {{ .Values.redis.pvcName }}
-    {{- end }}
