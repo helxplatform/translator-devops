@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "name-lookup.fullname" . }}-test-connection"
+  labels:
+    {{- include "name-lookup.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "name-lookup.fullname" . }}-web-svc:{{ .Values.webServer.service.port }}/apidocs']
+  restartPolicy: Never

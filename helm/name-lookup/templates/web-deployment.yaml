@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "name-lookup.fullname" . }}-web-sever-dep
+  labels:
+    {{- include "name-lookup.labels" . | nindent 4 }}
+    app-name: web-server
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "name-lookup.selectorLabels" . | nindent 6 }}
+      app-name: web-server
+  template:
+    metadata:
+      labels:
+        {{- include "name-lookup.selectorLabels" . | nindent 8 }}
+        app-name: web-server
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.webServer.image.repository }}:{{ .Values.webServer.image.tag }}"
+          env:
+          - name: SOLR_HOST
+            value: {{ include "name-lookup.fullname" . }}-solr-svc
+          - name: SOLR_PORT
+            value: {{ .Values.solr.service.port | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.webServer.port }}
+              protocol: TCP

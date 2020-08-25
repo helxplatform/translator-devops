@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: tranql-ingress
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+spec:
+  rules:
+  # front end
+  - host: {{ .Values.ingress.frontEndHost }}
+    http:
+      paths:
+      - backend:
+              {{ if .Values.enable_cache }}
+          serviceName:  {{ .Values.tranql_varnish.frontend.service_name }}
+          servicePort: {{ .Values.tranql_varnish.port }}
+                {{ else }}
+          serviceName: {{ .Values.tranql_frontend.service_name }}
+          servicePort: {{ .Values.tranql_frontend.web_app_port }}
+                {{ end }}
+  - host: {{ .Values.ingress.backplaneHost }}
+    http:
+      paths:
+        - backend:
+                  {{ if .Values.enable_cache }}
+            serviceName: {{ .Values.tranql_varnish.backplane.service_name }}
+            servicePort: {{ .Values.tranql_varnish.port }}
+                  {{ else }}
+            serviceName: {{ .Values.tranql_backplane.service_name }}
+            servicePort: {{ .Values.tranql_backplane.web_app_port }}
+                  {{ end }}

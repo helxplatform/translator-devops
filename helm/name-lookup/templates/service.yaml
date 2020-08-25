@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "name-lookup.fullname" . }}-web-svc
+  labels:
+    {{- include "name-lookup.labels" . | nindent 4 }}
+    app-name: web-server
+spec:
+  type: {{ .Values.webServer.service.type }}
+  ports:
+    - port: {{ .Values.webServer.service.port }}
+      targetPort: {{ .Values.webServer.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "name-lookup.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "name-lookup.fullname" . }}-solr-svc
+  labels:
+    {{- include "name-lookup.labels" . | nindent 4 }}
+    app-name: solr
+spec:
+  type: {{ .Values.solr.service.type }}
+  ports:
+    - port: {{ .Values.solr.service.port }}
+      targetPort: {{ .Values.solr.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "name-lookup.selectorLabels" . | nindent 4 }}

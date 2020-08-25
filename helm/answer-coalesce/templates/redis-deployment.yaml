@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "answer-coalesce.fullname" . }}-redis-server
+  labels:
+    {{- include "answer-coalesce.labels" . | nindent 4 }}
+    app: redisServer
+spec:
+  selector:
+    matchLabels:
+      {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
+      app: redisServer
+  template:
+    metadata:
+      labels:
+        {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
+        app: redisServer
+    spec:
+    {{- if .Values.redis.seedDB }}
+      initContainers:
+        - name: {{ include "answer-coalesce.fullname" . }}-redis-seed-container
+          image: {{ .Values.redisImage.repository }}:{{ .Values.redisImage.tag }}
+          command:
+            - '/seed_db.sh'
+          volumeMounts:
+{{ if .Values.redis.pvcName }}
+            - mountPath: /data
+              name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
+              subPath: data
+{{ end }}
+            - name: {{ include "answer-coalesce.fullname" . }}-seed-script
+              mountPath: /seed_db.sh
+              subPath: seed_db.sh
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-redis-container
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.redis.containerPort }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+{{ if .Values.redis.pvcName }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
+{{ end }}
+      volumes:
+      {{- if .Values.redis.seedDB }}
+      - name: {{ include "answer-coalesce.fullname" . }}-seed-script
+        configMap:
+          name: {{ include "answer-coalesce.fullname" . }}-configmap
+          defaultMode: 0777
+      {{- end }}
+{{  if .Values.redis.pvcName }}
+      - name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.redis.pvcName }}
+{{ end  }}

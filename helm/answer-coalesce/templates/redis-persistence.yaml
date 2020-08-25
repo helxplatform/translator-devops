@@ -1,0 +1,28 @@
+{{- if .Values.redis.createPVC }}
+apiVersion: v1
+items:
+{{- if .Values.redis.createPV}}
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    name: {{ .Values.redis.storage.pvName}}
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    capacity:
+      storage: {{ .Values.redis.storage.size }}
+{{- end }}
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: {{ include "answer-coalesce.fullname" . }}-redis-pvc
+  spec:
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: {{ .Values.redis.storage.size }}
+    storageClassName: {{ .Values.redis.storage.class }}
+kind: List
+{{- end }}

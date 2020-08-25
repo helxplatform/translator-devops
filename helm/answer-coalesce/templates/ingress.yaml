@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "answer-coalesce.fullname" . -}}
+
+{{- $svcPort := .Values.ac.service.port -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "answer-coalesce.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            backend:
+             serviceName: {{ $fullName }}-web-service
+             servicePort: {{ $svcPort }}
+{{- end }}
