@@ -32,3 +32,5 @@ data:
     mkdir -p /data/databases
     # load dump file
     neo4j-admin load --from $FILE
+  dataset-desc.json: |
+    {{ .Values.datasetDesc | toJson }}

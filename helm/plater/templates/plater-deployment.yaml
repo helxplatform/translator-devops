@@ -56,8 +56,16 @@ spec:
             - -a
             - {{ .Values.app.automatAddress }}
             - {{ .Release.Name }}
+          volumeMounts:
+            - mountPath: /home/plater/KITCHEN/KITCHEN/PLATER/about.json
+              name: {{ include "plater.fullname" . }}-dataset-desc-volume
+              subPath: dataset-desc.json
       volumes:
         - name: {{ include "plater.fullname" . }}-init-container-volume
+          configMap:
+            name: {{ include "plater.fullname" . }}-configmap
+            defaultMode: 0777
+        - name: {{ include "plater.fullname" . }}-dataset-desc-volume
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777
