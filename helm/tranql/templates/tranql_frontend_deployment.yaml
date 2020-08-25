@@ -45,7 +45,7 @@ spec:
             - /bin/sh
             - -c
           args:
-            - "cd /tranql/web && npm install && ln -s /tranql/web/build/static/ /tranql/tranql/static"
+            - "cd /tranql/web && npm install && node --max-old-space-size=4000 ./node_modules/react-scripts/scripts/build.js && ln -s /tranql/web/build/static/ /tranql/tranql/static"
 {{ end }}
       containers:
       - name: tranql-app
