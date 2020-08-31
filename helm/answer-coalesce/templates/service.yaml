@@ -21,13 +21,13 @@ metadata:
   name: {{ include "answer-coalesce.fullname" . }}-redis-service
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
-    app: redisServer
 spec:
   type: {{ .Values.redis.service.type }}
   ports:
     - port: {{ .Values.redis.service.port }}
       targetPort: {{ .Values.redis.containerPort }}
       protocol: TCP
-      name: http
+      name: redis-port
   selector:
     {{- include "answer-coalesce.selectorLabels" . | nindent 4 }}
+    app: redisServer

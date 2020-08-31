@@ -17,8 +17,7 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: /
-            backend:
+          - backend:
              serviceName: {{ $fullName }}-web-service
              servicePort: {{ $svcPort }}
 {{- end }}

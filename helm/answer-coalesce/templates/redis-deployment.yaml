@@ -19,14 +19,13 @@ spec:
     {{- if .Values.redis.seedDB }}
       initContainers:
         - name: {{ include "answer-coalesce.fullname" . }}-redis-seed-container
-          image: {{ .Values.redisImage.repository }}:{{ .Values.redisImage.tag }}
+          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
           command:
             - '/seed_db.sh'
           volumeMounts:
 {{ if .Values.redis.pvcName }}
             - mountPath: /data
               name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
-              subPath: data
 {{ end }}
             - name: {{ include "answer-coalesce.fullname" . }}-seed-script
               mountPath: /seed_db.sh
@@ -50,7 +49,7 @@ spec:
       {{- if .Values.redis.seedDB }}
       - name: {{ include "answer-coalesce.fullname" . }}-seed-script
         configMap:
-          name: {{ include "answer-coalesce.fullname" . }}-configmap
+          name: {{ include "answer-coalesce.fullname" . }}-redis-config
           defaultMode: 0777
       {{- end }}
 {{  if .Values.redis.pvcName }}
