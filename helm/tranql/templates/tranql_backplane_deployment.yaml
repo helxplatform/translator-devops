@@ -40,7 +40,7 @@ spec:
       containers:
       - name: tranql-backplane
         image: {{ .Values.tranql_backplane.image }}:{{ .Values.tranql_backplane.image_tag }}
-        command: [ "/usr/local/bin/gunicorn", "--workers=2", "--timeout=600", "--access-logfile=$(ACCESS_LOG)", "--error-logfile=$(ERROR_LOG)", "--log-level=debug", "tranql.backplane.server:app" ]
+        command: [ "/usr/local/bin/gunicorn", "--workers=2", "--timeout={{ .Values.timeout }}", "--access-logfile=$(ACCESS_LOG)", "--error-logfile=$(ERROR_LOG)", "--log-level=debug", "tranql.backplane.server:app" ]
         ports:
           - containerPort: {{ .Values.tranql_backplane.web_app_port }}
             name: http

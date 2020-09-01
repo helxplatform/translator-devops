@@ -7,6 +7,14 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
 spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls.hosts }}
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
   rules:
   # front end
   - host: {{ .Values.ingress.frontEndHost }}

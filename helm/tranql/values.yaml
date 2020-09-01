@@ -55,7 +55,7 @@ tranql_varnish:
 tranql_artillery:
   image: renciorg/tranql-artillery
   image_tag: latest
-
+timeout: 86400
 # the following values will be used to select the entry point from a loadbalancer
 # if enable cache is true varnish frontend cache will be the entry point
 # else tranql_frontend will be the entrypoint
