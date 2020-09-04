@@ -19,7 +19,7 @@ items:
           .threshold = 3;
             }
         /** Set backend timeouts **/
-        .between_bytes_timeout = {{ .Values.timeout }}}s;
+        .between_bytes_timeout = {{ .Values.timeout }}s;
         .first_byte_timeout = {{ .Values.timeout }}s;
           }
         /* set cache hit and miss indicator header */

@@ -52,6 +52,12 @@ tranql_varnish:
     container_name: tranql-varnish-backplane-container
     cache_ttl: 3h
 
+# These values will be passed to tranql backplane container
+# it can be used to set parameters for quering robokop
+robokopOptions:
+  maxNodeConnections: "6000"
+  maxAnswers: "300"
+
 tranql_artillery:
   image: renciorg/tranql-artillery
   image_tag: latest

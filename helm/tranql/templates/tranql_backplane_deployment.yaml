@@ -55,6 +55,10 @@ spec:
             value: "/var/nfs/tranql-backplane_access_log"
           - name: ERROR_LOG
             value: "/var/nfs/tranql-backplane_error_log"
+          - name: ROBOKOP_MAX_RESULTS
+            value: "{{ .Values.robokopOptions.maxAnswers }}"
+          - name: ROBOKOP_MAX_CONNECTIVITY
+            value: "{{ .Values.robokopOptions.maxNodeConnections }}"
         volumeMounts:
           - name: {{ .Values.tranql_logs.container_volume_name }}
             mountPath: /var/nfs
