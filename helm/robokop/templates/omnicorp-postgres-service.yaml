@@ -6,6 +6,9 @@ metadata:
     {{- include "robokop.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.omnicorpPostgres.serviceType }}
+  {{- if .Values.omnicorpPostgres.loadBalancerIP -}}
+  loadBalancerIP: {{ .Values.omnicorpPostgres.loadBalancerIP }}
+  {{- end }}
   ports:
     - port: {{ .Values.omnicorpPostgres.port }}
       targetPort: {{ .Values.omnicorpPostgres.port }}
