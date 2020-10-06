@@ -54,7 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Service type
 */}}
-{{- define "automat.serviceDefinition" -}}
+{{- define "aragorn-ranker.serviceDefinition" -}}
 type: {{ .Values.service.type }}
 {{- if eq .Values.service.type "LoadBalancer" }}
 {{- if .Values.service.loadBalancerIP }}
