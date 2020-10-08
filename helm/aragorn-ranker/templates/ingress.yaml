@@ -1,14 +1,23 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "aragorn-ranker.fullname" . -}}
+
+{{- $svcPort := .Values.service.port -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "aragorn-ranker.fullname" . }}-ingress
+  name: {{ $fullName }}
+  labels:
+    {{- include "aragorn-ranker.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   rules:
-  - host: {{ .Values.ingress.host }}
-    http:
-      paths:
-      - backend:
-          serviceName:  {{ include "aragorn-ranker.fullname" . }}
-          servicePort: {{ .Values.service.port }}
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - backend:
+             serviceName: {{ $fullName }}-web-service
+             servicePort: {{ $svcPort }}
+{{- end }}
