@@ -57,7 +57,7 @@ spec:
             - {{ .Values.app.automatAddress }}
             - {{ .Release.Name }}
           volumeMounts:
-            - mountPath: /home/plater/KITCHEN/KITCHEN/PLATER/about.json
+            - mountPath: /home/plater/Plater/PLATER/about.json
               name: {{ include "plater.fullname" . }}-dataset-desc-volume
               subPath: dataset-desc.json
       volumes:
