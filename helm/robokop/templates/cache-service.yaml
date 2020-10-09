@@ -6,9 +6,9 @@ metadata:
     {{- include "robokop.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.requestsCache.serviceType }}
-  {{- if .Values.requestsCache.loadBalancerIP -}}
+  {{ if .Values.requestsCache.loadBalancerIP}}
   loadBalancerIP: {{ .Values.requestsCache.loadBalancerIP }}
-  {{- end }}
+  {{ end }}
   ports:
     - port: {{ .Values.requestsCache.port }}
       targetPort: {{ .Values.requestsCache.port }}
