@@ -10,6 +10,7 @@ omnicorpPostgres:
     tag: 11
   port: 5432
   serviceType: ClusterIP
+  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
   dbName: robokop
   dbUser: murphy
   pvcName: ####REQUIRED####
@@ -30,6 +31,7 @@ manager:
     repository: renciorg/robokop_manager
     tag: latest
   serviceType: ClusterIP
+  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
   webPort: 8080
   supervisorPort: 9001
   graphQLPort: 6498
@@ -110,6 +112,7 @@ knowledgeGraph:
     requests:
       memory: 50G
   serviceType:  ClusterIP
+  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
   createPV: false
   createPVC: false
   pvcName: ##############
@@ -122,6 +125,7 @@ requestsCache:
     tag: latest
   port: 6380
   serviceType: ClusterIP
+  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
   pvcName: ##############
   seedDB: false
   createPV: false
