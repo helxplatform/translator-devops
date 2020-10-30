@@ -14,8 +14,22 @@ service:
   port: 80
 
 ingress:
-  host: ########HOSTNAME#######
-  class: ####Ingress class#####
+  host: ingress_HOST
+  class: Ingress_class
 
 app:
   port: 8080
+
+omnicorpCache:
+  port: 6380
+
+omnicorpPostgres:
+  dbName: db_name
+  dbUser: db_user
+  port: 1234
+
+secrets:
+  omnicorpHost: omnicorp_HOST
+  omnicorpPassword: "somePW"
+  omnicorpCacheHost: omnicorpCache_HOST
+  omnicorpCachePassword: "somePW"

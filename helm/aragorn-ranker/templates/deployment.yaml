@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: {{ include "aragorn-ranker.fullname" . }}
   labels:
     app: {{ include "aragorn-ranker.name" . }}
-  name: {{ include "aragorn-ranker.fullname" . }}
 spec:
   selector:
     matchLabels:
@@ -14,16 +14,19 @@ spec:
         app: {{ include "aragorn-ranker.name" . }}
     spec:
       containers:
-      - env:
+        name: {{ .Chart.Name }}-web-container
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "aragorn-ranker.fullname" . }}-configmap
+        env:
         - name: WEB_HOST
           value: 0.0.0.0
         - name: WEB_PORT
           value: {{ .Values.app.port | quote}}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: Always
-        name: {{ .Chart.Name }}-web-container
         ports:
-        - containerPort: {{ .Values.app.port }}
-          name: http
-          protocol: TCP
+          - name: http
+            containerPort: {{ .Values.app.port }}
+            protocol: TCP
+        imagePullPolicy: Always
       restartPolicy: Always
