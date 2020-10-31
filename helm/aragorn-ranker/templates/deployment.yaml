@@ -14,19 +14,19 @@ spec:
         app: {{ include "aragorn-ranker.name" . }}
     spec:
       containers:
-        name: {{ .Chart.Name }}-web-container
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        envFrom:
-          - configMapRef:
-              name: {{ include "aragorn-ranker.fullname" . }}-configmap
-        env:
+      - env:
         - name: WEB_HOST
           value: 0.0.0.0
         - name: WEB_PORT
           value: {{ .Values.app.port | quote}}
-        ports:
-          - name: http
-            containerPort: {{ .Values.app.port }}
-            protocol: TCP
+        envFrom:
+          - configMapRef:
+              name: {{ include "aragorn-ranker.fullname" . }}-configmap
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
+        name: {{ .Chart.Name }}-web-container
+        ports:
+        - containerPort: {{ .Values.app.port }}
+          name: http
+          protocol: TCP
       restartPolicy: Always

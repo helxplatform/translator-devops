@@ -11,17 +11,20 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 80
+  port: 8080
 
 ingress:
   host: ingress_HOST
-  class: Ingress_class
+  class: ingress_CLASS
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "translator"
 
 app:
-  port: 8080
+  port: 4321
 
 omnicorpCache:
-  port: 6380
+  port: 5678
 
 omnicorpPostgres:
   dbName: db_name
