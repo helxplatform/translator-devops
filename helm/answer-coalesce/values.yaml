@@ -17,6 +17,9 @@ redis:
     tag: latest
   service:
     type: ClusterIP
+    # if service type is LoadBalancer,
+    # please set the following value `loadBalancerIP`, if it needs to be static.
+    loadBalancerIP:
     port: 6379
   containerPort: 6379
   resources: {}
