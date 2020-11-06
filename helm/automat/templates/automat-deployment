@@ -19,6 +19,8 @@ spec:
           value: 0.0.0.0
         - name: WEB_PORT
           value: {{ .Values.app.port | quote}}
+        - name: AUTOMAT_SERVER_URL
+          value: {{ .Values.ingress.host }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: {{ .Chart.Name }}-web-container
