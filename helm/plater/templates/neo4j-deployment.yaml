@@ -15,8 +15,27 @@ spec:
         {{- include "plater.selectorLabels" . | nindent 8 }}
         service-type: database
     spec:
+
       {{- if .Values.app.neo4j.seedDB }}
       initContainers:
+        {{- if .Values.devEnv }}
+        - name: {{ include "plater.fullname" . }}-neo4j-download-container
+          image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
+          command:
+            - '/download_data.sh'
+          tty: true
+          stdin: true
+          env:
+            - name: NEO4J_DATA_URL
+              value: {{ .Values.devDataUrl }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "plater.fullname" . }}-neo4j-data-volume
+              subPath: neo4j_data
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /download_data.sh
+              subPath: download_data.sh
+        {{- end }}
         - name: {{ include "plater.fullname" . }}-neo4j-seed-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           command:
@@ -25,7 +44,7 @@ spec:
             - mountPath: /data
               name: {{ include "plater.fullname" . }}-neo4j-data-volume
               subPath: neo4j_data
-            - name: {{ include "plater.fullname" . }}-seed-script
+            - name: {{ include "plater.fullname" . }}-scripts
               mountPath: /seed_db.sh
               subPath: seed_db.sh
       {{- end }}
@@ -78,7 +97,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.app.neo4j.storage.pvcName }}
         {{- if .Values.app.neo4j.seedDB }}
-        - name: {{ include "plater.fullname" . }}-seed-script
+        - name: {{ include "plater.fullname" . }}-scripts
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777

@@ -52,10 +52,10 @@ spec:
               value: "{{ .Values.app.neo4j.username }}"
             - name: PLATER_SERVICE_ADDRESS
               value: "{{ include "plater.fullname" . }}-plater-service"
-          args:
-            - -a
-            - {{ .Values.app.automatAddress }}
-            - {{ .Release.Name }}
+            - name: AUTOMAT_HOST
+              value: {{ .Values.app.automatAddress }}
+            - name: PLATER_TITLE
+              value: {{ .Release.Name }}
           volumeMounts:
             - mountPath: /home/plater/Plater/PLATER/about.json
               name: {{ include "plater.fullname" . }}-dataset-desc-volume

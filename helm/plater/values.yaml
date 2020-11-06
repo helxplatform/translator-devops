@@ -6,8 +6,8 @@ replicaCount: 1
 
 image:
   plater:
-    repository: renciorg/plater
-    tag: latest
+    repository: renciorg/plater-clustered
+    tag: "2.0"
   neo4j:
     repository: renciorg/neo4jkp
     tag: latest
@@ -46,3 +46,10 @@ app:
     seedDB: false
 createPV: false
 createPVC: false
+devEnv: false
+devDataUrl: ""
+datasetDesc:
+  version:
+  description:
+  dataseturl:
+  generatorCode:
