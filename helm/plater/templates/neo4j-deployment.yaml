@@ -93,6 +93,12 @@ spec:
             subPath: neo4j_logs
 
       restartPolicy: Always
+    {{- if .Values.imagePullSecrets}}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . | quote }}
+      {{- end }}
+    {{- end }}
       volumes:
         - name: {{ include "plater.fullname" . }}-neo4j-data-volume
           persistentVolumeClaim:

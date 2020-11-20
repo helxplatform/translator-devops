@@ -6,11 +6,11 @@ replicaCount: 1
 
 image:
   plater:
-    repository: renciorg/plater-clustered
-    tag: "2.0"
+    repository: renciorg/plater
+    tag: "1.9"
   neo4j:
     repository: renciorg/neo4jkp
-    tag: "4.0"
+    tag: "4.1"
 
 nameOverride: ""
 fullnameOverride: ""
@@ -53,3 +53,5 @@ datasetDesc:
   description:
   dataseturl:
   generatorCode:
+imagePullSecrets:
+- itsasecret
