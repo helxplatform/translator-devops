@@ -20,7 +20,7 @@ spec:
       initContainers:
         {{- if .Values.devEnv }}
         - name: {{ include "plater.fullname" . }}-neo4j-download-container
-          image: {{ .Values.image.neo4j.repository }}
+          image: {{ .Values.image.neo4j.repository }}:{{.Values.image.neo4j.tag}}
           command:
             - '/download_data.sh'
           tty: true
@@ -37,7 +37,7 @@ spec:
               subPath: download_data.sh
         {{- end }}
         - name: {{ include "plater.fullname" . }}-neo4j-seed-container
-          image: {{ .Values.image.neo4j.repository }}
+          image: {{ .Values.image.neo4j.repository }}:{{.Values.image.neo4j.tag}}
           command:
             - '/seed_db.sh'
           volumeMounts:
@@ -49,7 +49,7 @@ spec:
               subPath: seed_db.sh
       {{- end }}
       containers:
-        - image: {{ .Values.image.neo4j.repository }}
+        - image: {{ .Values.image.neo4j.repository }}:{{.Values.image.neo4j.tag}}
           name: {{ include "plater.fullname" . }}-neo4j-container
           imagePullPolicy: IfNotPresent
           env:
