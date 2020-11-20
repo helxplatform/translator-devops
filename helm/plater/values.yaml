@@ -10,7 +10,7 @@ image:
     tag: "2.0"
   neo4j:
     repository: renciorg/neo4jkp
-    tag: latest
+    tag: "4.0"
 
 nameOverride: ""
 fullnameOverride: ""
