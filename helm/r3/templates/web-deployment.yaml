@@ -38,6 +38,9 @@ spec:
             - name: http
               containerPort: {{ .Values.web.port }}
               protocol: TCP
+          args:
+            - --host
+            - 0.0.0.0
           env:
             - name: REDIS_HOST
               value: "{{ include "r3.fullname" . }}-redis-service"
@@ -45,11 +48,11 @@ spec:
               value: "{{ .Values.redis.port}}"
           livenessProbe:
             httpGet:
-              path: /apidocs
+              path: /docs
               port: http
           readinessProbe:
             httpGet:
-              path: /apidocs
+              path: /docs
               port: http
       volumes:
         - name: {{ include "r3.fullname" . }}-ping-script
