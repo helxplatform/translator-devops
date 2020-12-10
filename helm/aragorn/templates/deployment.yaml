@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aragorn.fullname" . }}
+  labels:
+    app: {{ include "aragorn.name" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "aragorn.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "aragorn.name" . }}
+    spec:
+      containers:
+      - env:
+        - name: WEB_HOST
+          value: 0.0.0.0
+        - name: WEB_PORT
+          value: {{ .Values.app.port | quote}}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: {{ .Chart.Name }}-web-container
+        ports:
+        - containerPort: {{ .Values.app.port }}
+          name: http
+          protocol: TCP
+      restartPolicy: Always
