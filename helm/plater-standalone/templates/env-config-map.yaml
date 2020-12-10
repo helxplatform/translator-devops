@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "plater.fullname" . }}-env-configmap
+data:
+  WEB_HOST: "0.0.0.0"
+  WEB_PORT: "{{ .Values.app.port }}"
+  DB_HOST: "{{ .Values.app.dbHost }}"
+  DB_PORT: "{{ .Values.app.dbPort }}"
+  DB_USERNAME: "{{ .Values.app.dbUserName }}"
+  DB_PASSWORD: "{{ .Values.app.dbPassword }}"
+  DB_NAME: "{{ .Values.app.dbName }}"
+  DB_TYPE: "{{ .Values.app.dbType }}"
+  PLATER_TITLE: "{{ .Values.app.title }}"
+  PLATER_VERSION: "{{ .Values.app.version }}"

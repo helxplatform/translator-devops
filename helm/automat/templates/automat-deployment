@@ -20,7 +20,7 @@ spec:
         - name: WEB_PORT
           value: {{ .Values.app.port | quote}}
         - name: AUTOMAT_SERVER_URL
-          value: {{ .Values.ingress.host }}
+          value: {{ .Values.fullHostName }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: {{ .Chart.Name }}-web-container

@@ -2,8 +2,10 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ include "automat.fullname" . }}-ingress
+{{- if .Values.ingress.class }}
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+{{- end }}
 spec:
 {{- if .Values.ingress.tls }}
   tls:

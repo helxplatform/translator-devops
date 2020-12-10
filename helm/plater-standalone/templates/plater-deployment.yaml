@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plater.fullname" . }}-plate
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "plater.selectorLabels" . | nindent 6 }}
+      service-type: web-server
+  template:
+    metadata:
+      labels:
+        {{- include "plater.selectorLabels" . | nindent 8 }}
+        service-type: web-server
+    spec:
+    {{- if .Values.imagePullSecrets}}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . | quote }}
+      {{- end }}
+    {{- end }}
+      initContainers:
+      {{- if eq .Values.app.dbType "neo4j" }}
+        - name: {{ include "plater.fullname" . }}-init-container
+          image: busybox
+          command:
+            - './check_neo.sh'
+          envFrom:
+            - configMapRef:
+                name: {{ include "plater.fullname" . }}-env-configmap
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-init-container-volume
+              mountPath: /check_neo4j.sh
+              subPath: check_neo4j.sh
+      {{- end }}
+      {{- if eq .Values.app.dbType "redis" }}
+        - name: {{ include "plater.fullname" . }}-init-container
+          image: redis
+          command:
+            - 'cat'
+          args:
+           - '/check_redis.sh'
+          envFrom:
+            - configMapRef:
+                name: {{ include "plater.fullname" . }}-env-configmap
+
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-init-container-volume
+              mountPath: /check_redis.sh
+              subPath: check_redis.sh
+        {{- end }}
+      containers:
+        - name: {{ include "plater.fullname" . }}-web-container
+          image: "{{ .Values.image.plater.repository }}:{{ .Values.image.plater.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "plater.fullname" . }}-env-configmap
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: true
+          volumeMounts:
+            - mountPath: /home/plater/Plater/PLATER/about.json
+              name: {{ include "plater.fullname" . }}-dataset-desc-volume
+              subPath: dataset-desc.json
+      volumes:
+        - name: {{ include "plater.fullname" . }}-init-container-volume
+          configMap:
+            name: {{ include "plater.fullname" . }}-configmap
+            defaultMode: 0777
+        - name: {{ include "plater.fullname" . }}-dataset-desc-volume
+          configMap:
+            name: {{ include "plater.fullname" . }}-configmap
+            defaultMode: 0777
+
