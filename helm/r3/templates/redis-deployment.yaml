@@ -38,6 +38,12 @@ spec:
             - name: http
               containerPort: {{ .Values.redis.port }}
               protocol: TCP
+        {{- if .Values.redis.args }}
+          args:
+            {{- range .Values.redis.args }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- end }}
           resources:
             {{- toYaml .Values.redis.resources | nindent 12 }}
           volumeMounts:
