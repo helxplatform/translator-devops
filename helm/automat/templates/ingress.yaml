@@ -2,10 +2,11 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ include "automat.fullname" . }}-ingress
-{{- if .Values.ingress.class }}
   annotations:
+  {{- if .Values.ingress.class }}
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-{{- end }}
+  {{- end }}
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
 {{- if .Values.ingress.tls }}
   tls:
