@@ -58,7 +58,7 @@ spec:
             - name: PLATER_TITLE
               value: {{ .Release.Name }}
           volumeMounts:
-            - mountPath: /home/plater/Plater/PLATER/about.json
+            - mountPath: /home/plater/Plater/about.json
               name: {{ include "plater.fullname" . }}-config-files
               subPath: dataset-desc.json
             - mountPath: /home/plater/Plater/PLATER/openapi-config.yaml

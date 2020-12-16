@@ -88,13 +88,11 @@ spec:
             name: {{ include "plater.fullname" . }}-neo4jkp-pvc
             subPath: neo4j_logs
       restartPolicy: Always
-      {{- if .Values.app.neo4j.seedDB }}
       volumes:
         - name: {{ include "plater.fullname" . }}-scripts
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777
-      {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: {{ include "plater.fullname" . }}-neo4jkp-pvc

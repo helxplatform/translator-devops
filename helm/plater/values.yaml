@@ -55,7 +55,7 @@ app:
       - description: Default server
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
-        url: https://automat-dev.edc.renci.org/intact
+        url:
 dataUrl: ""
 datasetDesc:
   version:
