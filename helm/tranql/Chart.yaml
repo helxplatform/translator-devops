@@ -5,4 +5,4 @@ type: application
 # Chart Version
 version: 0.1.0
 # Using same version as the docker images at tranql/docker/bin/.ver
-appVersion: 0.26
+appVersion: 0.33

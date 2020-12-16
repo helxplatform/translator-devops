@@ -13,12 +13,16 @@ spec:
   template:
     metadata:
       labels:
-        app: tranql-backend
+        app: {{ .Values.tranql_backplane.app_name }}
     spec:
       volumes:
         - name: {{ .Values.tranql_logs.container_volume_name }}
           persistentVolumeClaim:
             claimName: {{ .Values.tranql_logs.pvc_name }}
+        - name: config-yaml
+          configMap:
+            name: {{ .Values.appConfigName }}
+            defaultMode: 0777
 {{ if .Values.env.dev }}
         - name: code-dir
           emptyDir: {}
@@ -40,7 +44,7 @@ spec:
       containers:
       - name: tranql-backplane
         image: {{ .Values.tranql_backplane.image }}:{{ .Values.tranql_backplane.image_tag }}
-        command: [ "/usr/local/bin/gunicorn", "--workers=2", "--timeout={{ .Values.timeout }}", "--access-logfile=$(ACCESS_LOG)", "--error-logfile=$(ERROR_LOG)", "--log-level=debug", "tranql.backplane.server:app" ]
+        command: [ "/usr/local/bin/gunicorn", "--workers={{ .Values.tranql_backplane.gunicorn.workers }}", "--timeout={{ .Values.tranql_backplane.gunicorn.timeout }}", "--access-logfile=$(ACCESS_LOG)", "--error-logfile=$(ERROR_LOG)", "--log-level=debug", "tranql.backplane.server:app" ]
         ports:
           - containerPort: {{ .Values.tranql_backplane.web_app_port }}
             name: http
@@ -62,6 +66,9 @@ spec:
         volumeMounts:
           - name: {{ .Values.tranql_logs.container_volume_name }}
             mountPath: /var/nfs
+          - name: config-yaml
+            subPath: conf.yml
+            mountPath: /tranql/tranql/conf.yml
 {{ if .Values.env.dev }}
           - mountPath: /tranql
             name: code-dir
