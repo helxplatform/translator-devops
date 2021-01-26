@@ -26,4 +26,15 @@ spec:
         - containerPort: {{ .Values.app.port }}
           name: http
           protocol: TCP
+        volumeMounts:
+        - name: translator-logs-vol
+          mountPath: /repo/aragorn/logs
       restartPolicy: Always
+    # securityContext:
+    #   fsGroup: 1000
+    #   runAsUser: 1000
+      volumes:
+        - name: translator-logs-vol
+          persistentVolumeClaim:
+            claimName: translator-logs-pvc
+            # readOnly: false
