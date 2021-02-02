@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "plater.fullname" . }}-neo4j
   labels:
     {{- include "plater.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "plater.fullname" . }}-neo4j-service
   selector:
     matchLabels:
       {{- include "plater.selectorLabels" . | nindent 6 }}
@@ -15,23 +16,38 @@ spec:
         {{- include "plater.selectorLabels" . | nindent 8 }}
         service-type: database
     spec:
-      {{- if .Values.app.neo4j.seedDB }}
+      {{- if .Values.dataUrl }}
       initContainers:
+        - name: {{ include "plater.fullname" . }}-neo4j-download-container
+          image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
+          command:
+            - '/download_data.sh'
+          env:
+            - name: NEO4J_DATA_URL
+              value: {{ .Values.dataUrl }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "plater.fullname" . }}-neo4jkp-pvc
+              subPath: neo4j_data
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /download_data.sh
+              subPath: download_data.sh
         - name: {{ include "plater.fullname" . }}-neo4j-seed-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           command:
             - '/seed_db.sh'
           volumeMounts:
             - mountPath: /data
-              name: {{ include "plater.fullname" . }}-neo4j-data-volume
+              name: {{ include "plater.fullname" . }}-neo4jkp-pvc
               subPath: neo4j_data
-            - name: {{ include "plater.fullname" . }}-seed-script
+            - name: {{ include "plater.fullname" . }}-scripts
               mountPath: /seed_db.sh
               subPath: seed_db.sh
       {{- end }}
       containers:
         - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           name: {{ include "plater.fullname" . }}-neo4j-container
+          imagePullPolicy:  {{ .Values.image.neo4j.imagePullPolicy }}
           env:
           - name: JAVA_HOME
             value: /usr/lib/jvm/java-11-openjdk/jre
@@ -66,20 +82,22 @@ spec:
               memory: {{ .Values.app.neo4j.totalMemory }}
           volumeMounts:
           - mountPath: /data
-            name: {{ include "plater.fullname" . }}-neo4j-data-volume
+            name: {{ include "plater.fullname" . }}-neo4jkp-pvc
             subPath: neo4j_data
           - mountPath: /logs
-            name: {{ include "plater.fullname" . }}-neo4j-data-volume
+            name: {{ include "plater.fullname" . }}-neo4jkp-pvc
             subPath: neo4j_logs
-
       restartPolicy: Always
       volumes:
-        - name: {{ include "plater.fullname" . }}-neo4j-data-volume
-          persistentVolumeClaim:
-            claimName: {{ .Values.app.neo4j.storage.pvcName }}
-        {{- if .Values.app.neo4j.seedDB }}
-        - name: {{ include "plater.fullname" . }}-seed-script
+        - name: {{ include "plater.fullname" . }}-scripts
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777
-        {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "plater.fullname" . }}-neo4jkp-pvc
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.app.neo4j.storage.size }}

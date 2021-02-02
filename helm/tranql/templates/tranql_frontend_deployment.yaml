@@ -23,6 +23,10 @@ spec:
         - name: code-dir
           emptyDir: {}
                 {{ end }}
+        - name: config-yaml
+          configMap:
+            name: {{ .Values.appConfigName }}
+            defaultMode: 0777
       terminationGracePeriodSeconds: 10
 {{ if .Values.env.dev }}
       initContainers:
@@ -50,13 +54,13 @@ spec:
       containers:
       - name: tranql-app
         image: {{ .Values.tranql_frontend.image }}:{{ .Values.tranql_frontend.image_tag }}
-        command: [ "/usr/local/bin/gunicorn", "--workers=2", "--bind=0.0.0.0:8001", "--timeout={{ .Values.timeout }}", "--access-logfile=$(ACCESS_LOG)", "--error-logfile=$(ERROR_LOG)", "--log-level=debug", "tranql.api:app" ]
+        command: [ "/usr/local/bin/gunicorn", "--workers={{ .Values.tranql_frontend.gunicorn.workers }}", "--bind=0.0.0.0:8001", "--timeout={{ .Values.tranql_frontend.gunicorn.timeout }}", "--access-logfile=$(ACCESS_LOG)", "--error-logfile=$(ERROR_LOG)", "--log-level=debug", "tranql.api:app" ]
         ports:
           - containerPort: {{ .Values.tranql_frontend.web_app_port }}
             name: http
         env:
           - name: APP_PORT
-            value: {{ .Values.web_app_port | quote }}
+            value: {{ .Values.tranql_frontend.web_app_port | quote }}
           - name: BACKPLANE
             value:
             {{- if eq .Values.enable_cache true}}
@@ -77,8 +81,12 @@ spec:
         volumeMounts:
           - name: {{ .Values.tranql_logs.container_volume_name }}
             mountPath: /var/nfs
+          - name: config-yaml
+            subPath: conf.yml
+            mountPath: /tranql/tranql/conf.yml
 {{ if .Values.env.dev }}
           - mountPath: /tranql
             name: code-dir
 {{ end }}
+
       restartPolicy: {{ .Values.tranql_frontend.restart }}

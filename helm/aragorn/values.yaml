@@ -1,0 +1,25 @@
+# Default values for aragorn.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: renciorg/aragorn
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  host: ingress_HOST
+  class: ingress_CLASS
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "translator"
+
+app:
+  port: 4321
+

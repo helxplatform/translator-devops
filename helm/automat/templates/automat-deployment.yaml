@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ include "automat.name" . }}
+  name: {{ include "automat.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "automat.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "automat.name" . }}
+    spec:
+      containers:
+      - env:
+        - name: WEB_HOST
+          value: 0.0.0.0
+        - name: WEB_PORT
+          value: {{ .Values.app.port | quote}}
+        - name: AUTOMAT_SERVER_URL
+          value: {{ .Values.fullHostName }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        name: {{ .Chart.Name }}-web-container
+        ports:
+        - containerPort: {{ .Values.app.port }}
+          name: http
+          protocol: TCP
+      restartPolicy: Always

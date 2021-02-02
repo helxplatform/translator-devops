@@ -1,3 +1,4 @@
+{{- $open_api_config := toYaml .Values.app.openapi_config -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,13 +14,17 @@ data:
         echo "  -- Neo4j  is unavailable - sleeping"
         sleep 3
     done
+  download_data.sh: |-
+    #!/bin/bash
+    set -x
+    wget -O /data/db.dump ${NEO4J_DATA_URL}
+    touch /data/done
   seed_db.sh: |-
     #!/bin/bash
     set -x
     FILE=/data/db.dump
     DATADIR=/data/databases
     DONE=/data/done
-    rm -f /data/done
     until [ -f "$DONE" ]; do
         echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
         echo "sleeping..."
@@ -34,3 +39,5 @@ data:
     neo4j-admin load --from $FILE
   dataset-desc.json: |
     {{ .Values.datasetDesc | toJson }}
+  openapi-config.yaml: |-
+{{ tpl $open_api_config . | indent 4 }}

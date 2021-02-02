@@ -3,8 +3,19 @@ kind: Ingress
 metadata:
   name: {{ include "automat.fullname" . }}-ingress
   annotations:
+  {{- if .Values.ingress.class }}
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+  {{- end }}
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls.hosts }}
+    - hosts:
+        - {{ .host | quote }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
   rules:
   - host: {{ .Values.ingress.host }}
     http:

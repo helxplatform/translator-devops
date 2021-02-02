@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plater.fullname" . }}-plater-service
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.app.port }}
+      targetPort: {{ .Values.app.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "plater.selectorLabels" . | nindent 4 }}
+    service-type: web-server

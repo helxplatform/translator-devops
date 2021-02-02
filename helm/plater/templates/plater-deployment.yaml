@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "plater.fullname" . }}-plate
+  name: {{ include "plater.fullname" . }}-web
   labels:
     {{- include "plater.labels" . | nindent 4 }}
 spec:
@@ -27,12 +27,13 @@ spec:
             - name: NEO4J_HTTP_PORT
               value: "{{ .Values.app.neo4j.httpPort }}"
           volumeMounts:
-            - name: {{ include "plater.fullname" . }}-init-container-volume
+            - name: {{ include "plater.fullname" . }}-config-files
               mountPath: /check_neo.sh
               subPath: check_neo.sh
       containers:
         - name: {{ include "plater.fullname" . }}-web-container
           image: "{{ .Values.image.plater.repository }}:{{ .Values.image.plater.tag }}"
+          imagePullPolicy: {{ .Values.image.plater.imagePullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.app.port }}
@@ -52,20 +53,19 @@ spec:
               value: "{{ .Values.app.neo4j.username }}"
             - name: PLATER_SERVICE_ADDRESS
               value: "{{ include "plater.fullname" . }}-plater-service"
-          args:
-            - -a
-            - {{ .Values.app.automatAddress }}
-            - {{ .Release.Name }}
+            - name: AUTOMAT_HOST
+              value: {{ .Values.app.automatAddress }}
+            - name: PLATER_TITLE
+              value: {{ .Release.Name }}
           volumeMounts:
-            - mountPath: /home/plater/Plater/PLATER/about.json
-              name: {{ include "plater.fullname" . }}-dataset-desc-volume
+            - mountPath: /home/plater/Plater/about.json
+              name: {{ include "plater.fullname" . }}-config-files
               subPath: dataset-desc.json
+            - mountPath: /home/plater/Plater/PLATER/openapi-config.yaml
+              name: {{ include "plater.fullname" . }}-config-files
+              subPath: openapi-config.yaml
       volumes:
-        - name: {{ include "plater.fullname" . }}-init-container-volume
-          configMap:
-            name: {{ include "plater.fullname" . }}-configmap
-            defaultMode: 0777
-        - name: {{ include "plater.fullname" . }}-dataset-desc-volume
+        - name: {{ include "plater.fullname" . }}-config-files
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777

@@ -23,6 +23,9 @@ metadata:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.redis.service.type }}
+  {{- if .Values.redis.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.redis.service.loadBalancerIP }}
+  {{- end}}
   ports:
     - port: {{ .Values.redis.service.port }}
       targetPort: {{ .Values.redis.containerPort }}

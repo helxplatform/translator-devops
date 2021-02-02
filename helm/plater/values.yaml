@@ -6,11 +6,13 @@ replicaCount: 1
 
 image:
   plater:
-    repository: renciorg/plater
-    tag: latest
+    repository: renciorg/plater-clustered
+    tag: "2.1"
+    imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4jkp
     tag: latest
+    imagePullPolicy: IfNotPresent
 
 nameOverride: ""
 fullnameOverride: ""
@@ -34,15 +36,29 @@ app:
     totalMemory:
     storage:
       size: 20Mi
-      pvcName:
-      storageClassName:
-      # Uncomment the following to use nfs.
-#      nfs:
-#        server: # Put server address here
-      # Put dir of path containing neo4j_data/  prepopulated with contents of a neo4j instance data/ dir
-      path:
     service:
       type: ClusterIP
     seedDB: false
-createPV: false
-createPVC: false
+  openapi_config:
+    # Adds more configs to default open api config
+    x-translator:
+      component: KP
+      teams:
+       - 'Ranker' # add teams
+    contact:
+      email: "default@mail.com" # email
+      name: "name" # name
+      x-id: "link" # link if available
+      x-role: "role" # role
+    termsOfService: "http://linkmissing" # link to terms of service
+    servers:
+      - description: Default server
+        # this value should match chart installation name
+        # https://automat-dev.renci.org/<chart install name>
+        url:
+dataUrl: ""
+datasetDesc:
+  version:
+  description:
+  dataseturl:
+  generatorCode:
