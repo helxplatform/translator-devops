@@ -4,25 +4,92 @@ Plater Helm Chart
 >
 > [Docker Image](https://hub.docker.com/repository/docker/renciorg/plater)
 
-Plater is a tool to interface a [Neo4j](https://neo4j.com) store via REST api.
 
-#### Installing on kubernetes
+### Introduction 
+
+Plater is a tool to interface a [Neo4j](https://neo4j.com) store via [TRAPI 1.0](https://github.com/NCATSTranslator/ReasonerAPI/tree/v1.0.0-beta).
 
 This helm chart comes with a [neo4j](https://hub.docker.com/repository/docker/renciorg/neo4jkp) and [PLATER](https://hub.docker.com/repository/docker/renciorg/plater) images.
 
-By default, the neo4j data store is configured to use `1G` of heap and `200MB` of heap size.
 
-To adjust this set values in the `values.yaml` file.
 
-Volume for neo4j is of type `Host` but can it supports `nfs` by setting the value in `values.yaml`.
+### Installing 
 
-It is also possible to avoid creation of PV by setting `createPV` in `Values.yaml` to `false`, or this can also be done
-by `--set createPV=false` in the helm install command. 
-To run chart use :
-
+Note:  Any of the above parameters can be overridden using set argument. 
 ```shell script
-$ helm -n <namespace> install --set app.neo4j.storage.path=/var/neo4j  --set app.neo4j.storage.pvName=plater-pv --set createPV=true <plater>  ./
+<.../helm/plater>$ helm install  myrelease . 
 ```
 
-By default this chart will expect a `db.dump` present to seed neo4j with some data. To disable this behaviour set `app.neo4j.seedDB` to false.
-This can be helpful to install db file directly. Run the install with `app.neo4j.seedDB` and follow the notes after the helm command executes. 
+### Parameters
+
+Installation can be configured with the following parameters.
+
+#### Basic parameters
+
+| Parameter | Description | Default |
+| --------- | ----        | ----    | 
+| `replicaCount` |  Web server replica count | `1`
+| `image.plater.repository` |  Web server image | `renciorg/plater-clustered`
+| `image.plater.tag` |  Web server image tag | `latest`
+| `image.plater.imagePullPolicy` |  Image pull policy | `Always`
+| `image.neo4j.repository` | Neo4j image repository  | `renciorg/neo4jkp`
+| `image.neo4j.tag` | Neo4j image tag  | `latest`
+| `image.neo4j.imagePullPolicy` | Neoj4j image pull policy  | `IfNotPresent`
+| `nameOverride` | Release name override  | `nil`
+| `fullnameOverride` | Release full name override  | `nil`
+| `service.type` | Kubernetes service type for web server.  | `ClusterIP`
+| `app.port` | Web app port | `8080`
+| `app.automatAddress` | This instance is to be used bind this plater instance to an automat server. | `http://automat`
+| `app.neo4j.httpPort` |  Neo4j server http port | `7474`
+| `app.neo4j.boltPort` | Neo4j server bolt port   | `7687`
+| `app.neo4j.password` | Neo4j Password  | `neo4jkp`
+| `app.neo4j.username` |  Neo4j user name | `neo4j`
+| `app.neo4j.heapSize` |  Neo4j [heap size configuration](https://neo4j.com/developer/guide-performance-tuning/#_heap_sizing) | `nil`
+| `app.neo4j.pageCacheSize` | Neo4j [page cache configuration](https://neo4j.com/developer/guide-performance-tuning/#_page_cache_sizing)  | `nil`
+| `app.neo4j.totalMemory` | This will be used to make requests to k8s, please compute as (app.neo4j.heapSize +  app.neo4j.pageCacheSize + 1G # for os)  | `nil`
+| `app.neo4j.storage.size` | Storage request size  | `20Mi`
+| `app.neo4j.service.type` |  Neo4j server kubernetes of service type | `ClusterIP`
+
+#### Data loading 
+
+| Parameter | Description | Default |
+| --------- | ----        | ----    | 
+| `dataUrl` | Remote location a neo4j dump file to grab and initialize neo4j. If null neo4j will stand empty  | `nil`
+
+#### Open api config for translator 
+
+
+| Parameter | Description | Default |
+| --------- | ----        | ----    | 
+| `app.openapi_config.x-translator.component` | Open api x-translator component type. | `KP`
+| `app.openapi_config.x-translator.team` |  Array of team names  | `nil`
+| `app.openapi_config.contact.email` |  Primary contact email.  | `default@mail.com`
+| `app.openapi_config.contact.name` |  Primary contact name.  | `name`
+| `app.openapi_config.contact.x-id` | Primary contact web handle.  | `link`
+| `app.openapi_config.contact.x-role` |  Primary contact role | `role`
+| `app.openapi_config.termsOfService` |  Terms of service url | `http://linkmissing`
+| `app.openapi_config.servers` | List of server. Use <automat-dns-name>/<release-name>  | `[{'description': 'Default server', 'url': None}]`
+
+#### Meta data configuration
+
+This are not required. But will show up in /about endpoint of the web server.
+You can add or remove any of these.
+
+| Parameter | Description | Default |
+| --------- | ----        | ----    | 
+| `datasetDesc.version` |   | `nil`
+| `datasetDesc.description` |   | `nil`
+| `datasetDesc.dataseturl` |   | `nil`
+| `datasetDesc.generatorCode` |   | `nil`
+ 
+ 
+### Uninstalling
+```shell script
+<.../helm/plater>$ helm uninstall myrelease
+```
+
+### Upgrading
+```shell script
+<.../helm/plater>$ helm upgrade --set service.port=80 myrelease . 
+```
+
