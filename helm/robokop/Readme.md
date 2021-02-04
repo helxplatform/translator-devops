@@ -323,3 +323,14 @@ helm -n <namespace> uninstall <installation-name>
 ```
 
 
+###Other deployment commands
+To render your chart without deploying:
+ 
+```shell script
+$ helm template --debug -f <values_file> myrelease .
+```
+​
+To dry run your chart install: 
+```console
+$ helm install -f <values_file> --dry-run --debug myrelease .
+```

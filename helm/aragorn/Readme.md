@@ -51,3 +51,18 @@ To deploy Aragon :
 ```shell script
 <.../helm/aragorn>$ helm upgrade --set app.port=80 myrelease . 
 ```
+
+###Other deployment commands
+To render your chart without deploying:
+ 
+```shell script
+$ helm template --debug -f <values_file> myrelease .
+```
+​
+To dry run your chart install: 
+```console
+$ helm install -f <values_file> --dry-run --debug myrelease .
+```
+
+
+ 
