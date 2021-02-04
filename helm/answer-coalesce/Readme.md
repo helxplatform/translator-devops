@@ -1,4 +1,4 @@
-ARAGORN helm Chart
+Answer Coalesce helm Chart
 ---
 > [Source code for Answer Coelesce](https://github.com/ranking-agent/AnswerCoalesce)
 >
@@ -27,11 +27,7 @@ Installation can be configured with the following parameters.
 | `ingress.class` |   | `default`
 | `ingress.tls` |   | `nil`
 | `app.port` |   | `8080`
-C:\Users\kebedey\AppData\Local\Continuum\anaconda3\lib\site-packages\ipykernel_launcher.py:4: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
-  after removing the cwd from sys.path.
-ce
-path_gen = lambda x : f"C:/Users/kebedey/TranslatorII/translator-devops/helm/{x}/values.yaml"
-print_values_markdown(path_gen('answer-coalesce'))
+
 
 | Parameter | Description | Default |
 | --------- | ----        | ----    | 
@@ -65,7 +61,7 @@ print_values_markdown(path_gen('answer-coalesce'))
 ### Installing
 
 
-To deploy Aragon : 
+To deploy Answer coalesce : 
 ```shell script
 <.../helm/answer-coalesce>$ helm -n <your-namespace> install my-release .
 ```
