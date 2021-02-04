@@ -40,7 +40,7 @@ Installation can be configured with the following parameters.
 | `fullnameOverride` | Release full name override  | `nil`
 | `ingress.enabled` | Enables Ingress  | `True`
 | `ingress.host` |  Ingress DNS host name  | ``
-| `ingress.annotations` | Dictionary for Ingress annotations  | ``
+| `ingress.class` | Ingress class  | ``
 
 
 ### Installing
