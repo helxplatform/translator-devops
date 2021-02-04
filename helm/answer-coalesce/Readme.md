@@ -16,21 +16,6 @@ Installation can be configured with the following parameters.
 
 | Parameter | Description | Default |
 | --------- | ----        | ----    | 
-| `image.repository` |   | `renciorg/automat`
-| `image.tag` |   | `2.0`
-| `nameOverride` |   | `nil`
-| `fullnameOverride` |   | `nil`
-| `service.type` |   | `ClusterIP`
-| `service.port` |   | `80`
-| `fullHostName` |   | `nil`
-| `ingress.host` |   | `nil`
-| `ingress.class` |   | `default`
-| `ingress.tls` |   | `nil`
-| `app.port` |   | `8080`
-
-
-| Parameter | Description | Default |
-| --------- | ----        | ----    | 
 | `replicaCount` |  Web server replica count | `1` 
 | `ac.image.repository` |  Web server docker image | `renciorg/ac`
 | `ac.image.tag` |  Web server docker tag | `latest`
