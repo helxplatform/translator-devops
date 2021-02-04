@@ -1,0 +1,34 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: robokop-ingress
+{{/*        {{- include "robokop-ui-v2.fullname" . }}-ingress*/}}
+  labels:
+    {{- include "robokop-ui-v2.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+{{/*    nginx.ingress.kubernetes.io/rewrite-target: $2*/}}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ include "robokop-ui-v2.fullname" . }}-proxy
+              servicePort: {{ .Values.proxy.service.port }}
+{{/*          - path: /api/robokache/*/}}
+{{/*            backend:*/}}
+{{/*              serviceName: {{ include "robokop-ui-v2.fullname" . }}-robokache*/}}
+{{/*              servicePort:  {{ .Values.robokache.service.port }}*/}}
+{{/*          - path: /api/queryDispatcher/*/}}
+{{/*            backend:*/}}
+{{/*              serviceName: {{ include "robokop-ui-v2.fullname" . }}-query-dispatcher*/}}
+{{/*              servicePort: {{ .Values.queryDispatcher.service.port }}*/}}
+{{/*          - path: /api/external/nodeNormalization/*/}}
+{{/*            backend:*/}}
+{{/*              serviceName: node-normalization-v3-r3-web-service*/}}
+{{/*              servicePort: 6380*/}}
+{{- end }}

@@ -29,7 +29,7 @@ Eg: To deploy local environment (minikube) , in this directory do
 | `service.port` | Web server kubernetes service port  | `8080`
 | `ingress.host` | Ingress DNS host name  | `ingress_HOST`
 | `ingress.enabled` | Enable / Disable ingress  | `True`
-| `ingress.annotations` | Dictionary of annotations for ingress  | `kubernetes.io/ingress.class`: `translator`
+| `ingress.class` | Ingress class name  | `translator`
 | `app.port` |  Web application port | `4321`
 | `omnicorpCache.port` | Omnicorp remote redis cache server port  | `5678`
 | `omnicorpPostgres.dbName` | Omnicorp postgres database name  | `db_name`
@@ -46,22 +46,22 @@ Eg: To deploy local environment (minikube) , in this directory do
 
 To deploy Aragorn-Ranker : 
 ```shell script
-<.../helm/ontology-tools>$ helm -n <your-namespace> install my-release .
+<.../helm/aragorn-ranker>$ helm -n <your-namespace> install my-release .
 ```
 
 To deploy Onto: 
 ```shell script
-<../helm/ontology-tools>$ helm -n <your-namespace> install myrelease
+<../helm/aragorn-ranker>$ helm -n <your-namespace> install myrelease
 ```
 
 ### Uninstalling
 ```shell script
-<.../helm/ontology-tools>$ helm uninstall myrelease
+<.../helm/aragorn-ranker>$ helm uninstall myrelease
 ```
 
 ### Upgrading
 ```shell script
-<.../helm/ontology-tools>$ helm upgrade --set service.port=80 myrelease . 
+<.../helm/aragorn-ranker>$ helm upgrade --set service.port=80 myrelease . 
 ```
 
 

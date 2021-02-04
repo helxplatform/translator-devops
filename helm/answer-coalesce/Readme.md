@@ -1,4 +1,4 @@
-ARAGORN helm Chart
+Answer Coalesce helm Chart
 ---
 > [Source code for Answer Coelesce](https://github.com/ranking-agent/AnswerCoalesce)
 >
@@ -13,25 +13,6 @@ answers that have been coalesced. A live version of the API can be found [here](
 
 Installation can be configured with the following parameters.
 
-
-| Parameter | Description | Default |
-| --------- | ----        | ----    | 
-| `image.repository` |   | `renciorg/automat`
-| `image.tag` |   | `2.0`
-| `nameOverride` |   | `nil`
-| `fullnameOverride` |   | `nil`
-| `service.type` |   | `ClusterIP`
-| `service.port` |   | `80`
-| `fullHostName` |   | `nil`
-| `ingress.host` |   | `nil`
-| `ingress.class` |   | `default`
-| `ingress.tls` |   | `nil`
-| `app.port` |   | `8080`
-C:\Users\kebedey\AppData\Local\Continuum\anaconda3\lib\site-packages\ipykernel_launcher.py:4: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
-  after removing the cwd from sys.path.
-ce
-path_gen = lambda x : f"C:/Users/kebedey/TranslatorII/translator-devops/helm/{x}/values.yaml"
-print_values_markdown(path_gen('answer-coalesce'))
 
 | Parameter | Description | Default |
 | --------- | ----        | ----    | 
@@ -59,13 +40,13 @@ print_values_markdown(path_gen('answer-coalesce'))
 | `fullnameOverride` | Release full name override  | `nil`
 | `ingress.enabled` | Enables Ingress  | `True`
 | `ingress.host` |  Ingress DNS host name  | ``
-| `ingress.annotations` | Dictionary for Ingress annotations  | ``
+| `ingress.class` | Ingress class  | ``
 
 
 ### Installing
 
 
-To deploy Aragon : 
+To deploy Answer coalesce : 
 ```shell script
 <.../helm/answer-coalesce>$ helm -n <your-namespace> install my-release .
 ```

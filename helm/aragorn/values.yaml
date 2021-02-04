@@ -17,8 +17,6 @@ ingress:
   host: ingress_HOST
   class: ingress_CLASS
   enabled: true
-  annotations:
-    kubernetes.io/ingress.class: "translator"
 
 app:
   port: 4321
