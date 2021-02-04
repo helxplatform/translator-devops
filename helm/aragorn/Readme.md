@@ -9,11 +9,6 @@ This Chart deploys a single instance of ARAGORN.
 
 Chart configured in values.yaml to suite needs.
 
-By default this chart uses `Loadbalancer` service type this can be overridden for other environment by setting values. 
-
-Eg: To deploy local environment (minikube) , in this directory do 
-> $ helm install aragorn-helm --set service.type=NodePort ./ 
- 
  
  ### Parameters
  
@@ -30,7 +25,6 @@ Eg: To deploy local environment (minikube) , in this directory do
 | `ingress.host` |  Ingress DNS host name | `ingress_HOST`
 | `ingress.class` |  Ingress class | `ingress_CLASS`
 | `ingress.enabled` |  Enable / Disable ingress | `True`
-| `ingress.annotations.kubernetes.io/ingress.class` |   | `translator`
 | `app.port` | Web server port  | `4321`
 
 
@@ -63,6 +57,4 @@ To dry run your chart install:
 ```console
 $ helm install -f <values_file> --dry-run --debug myrelease .
 ```
-
-
  
