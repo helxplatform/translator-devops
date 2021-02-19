@@ -2,7 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
 
 
 kpRegistry:
@@ -19,7 +18,6 @@ strider:
     repository: ghcr.io/ranking-agent/strider
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
-    SERVER_URL: http://localhost:8881
   service:
     type: ClusterIP
     port: 5781
@@ -38,8 +36,8 @@ redis:
       memory: 10Gi
 
 ingress:
-  class: translator
+  class: ""
   strider:
-    host: strider.renci.org
+    host: ""
   kpRegistry:
-    host: kp-registry.renci.org
+    host: ""
