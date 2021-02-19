@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "strider.fullname" . }}-kp-service
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: database
+spec:
+  type: {{ .Values.kpRegistry.service.type }}
+  ports:
+    - port: {{ .Values.kpRegistry.service.port }}
+      targetPort: 4983
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "strider.selectorLabels" . | nindent 4 }}
+    service-type: database
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "strider.fullname" . }}-redis-service
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: 6379
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "strider.selectorLabels" . | nindent 4 }}
+    service-type: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "strider.fullname" . }}-strider-service
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  type: {{ .Values.strider.service.type }}
+  ports:
+    - port: {{ .Values.strider.service.port }}
+      targetPort: 5781
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "strider.selectorLabels" . | nindent 4 }}
+    service-type: webserver

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "strider.fullname" . }}-kp-registry
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: database
+spec:
+  serviceName: {{ include "strider.fullname" . }}-kp-registry
+  selector:
+    matchLabels:
+      {{- include "strider.selectorLabels" . | nindent 6 }}
+      service-type: database
+  template:
+    metadata:
+      labels:
+        {{- include "strider.selectorLabels" . | nindent 8 }}
+        service-type: database
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-kp-registry-container
+          image: "{{ .Values.kpRegistry.image.repository }}:{{ .Values.kpRegistry.image.tag }}"
+          ports:
+            - name: http
+              containerPort: 4983
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /home/murphy/data
+              name: {{ include "strider.fullname" . }}-kp-registry-data-volume
+              subPath: data
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "strider.fullname" . }}-kp-registry-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
