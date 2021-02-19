@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "strider.fullname" . }}-web-server
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  selector:
+    matchLabels:
+      {{- include "strider.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+  template:
+    metadata:
+      labels:
+        {{- include "strider.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-webserver
+          image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag }}"
+          env:
+            - name: REDIS_HOST
+              value: "{{ include "strider.fullname" . }}-redis-service"
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port}}"
+            - name: KPREGISTRY_URL
+              value: http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}
+            - name: OMNICORP_URL
+              value: {{ .Values.strider.env.OMNICORP_URL }}
+            - name: REDIS_URL
+              value: redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}
+            - name: SERVER_URL
+              value: https://{{ .Values.ingress.strider.host }}
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: http
+          ports:
+            - name: http
+              containerPort: 5781
+              protocol: TCP
