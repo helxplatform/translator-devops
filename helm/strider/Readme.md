@@ -65,4 +65,3 @@ To dry run your chart install:
 ```console
 $ helm install -f <values_file> --dry-run --debug myrelease .
 ```
-
