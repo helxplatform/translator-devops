@@ -48,5 +48,4 @@ fullnameOverride: ""
 ingress:
   enabled: true
   host: answercoalesce.renci.org
-  annotations:
-    kubernetes.io/ingress.class: "translator"
+  class: ""
