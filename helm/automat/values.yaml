@@ -13,16 +13,17 @@ service:
   type: ClusterIP
   port: 80
 
+fullHostName:
 ingress:
   # Provide host name
-  host: ""
+  host:
   # provide ingress class
-  class: ""
+  class: default
   tls:
     # provide tls secrets
-    hosts:
-    - host: ""
-      secretName: ""
+    #hosts:
+    #- host:
+    #  secretName:
 
 app:
   port: 8080

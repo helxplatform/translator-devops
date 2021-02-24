@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "2.1"
+    tag: "latest"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4jkp
@@ -38,13 +38,12 @@ app:
       size: 20Mi
     service:
       type: ClusterIP
-    seedDB: false
   openapi_config:
     # Adds more configs to default open api config
     x-translator:
       component: KP
-      teams:
-       - 'Ranker' # add teams
+      team:
+        #- Team name
     contact:
       email: "default@mail.com" # email
       name: "name" # name
@@ -56,7 +55,7 @@ app:
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
         url:
-dataUrl: ""
+dataUrl: # Remote location of
 datasetDesc:
   version:
   description:

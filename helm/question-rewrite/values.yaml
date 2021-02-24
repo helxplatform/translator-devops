@@ -20,7 +20,7 @@ service:
 ingress:
   enabled: true
   annotations:
-    kubernetes.io/ingress.class: "translator"
-  host: questionaugmentation.renci.org
+    kubernetes.io/ingress.class: ""
+  host: ""
 resources: {}
 

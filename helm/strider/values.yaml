@@ -1,0 +1,43 @@
+# Default values for strider.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+
+kpRegistry:
+  image:
+    tag: "v0.2.0"
+    repository: ghcr.io/ranking-agent/kp_registry
+  service:
+    type: ClusterIP
+    port: 80
+
+strider:
+  image:
+    tag: v1.0.0
+    repository: ghcr.io/ranking-agent/strider
+  env:
+    OMNICORP_URL: http://robokop.renci.org:3210
+  service:
+    type: ClusterIP
+    port: 5781
+
+redis:
+  image:
+    tag: latest
+    repository: redis
+  service:
+    port: 6379
+    type: ClusterIP
+  resources:
+    limits:
+      memory: 10Gi
+    requests:
+      memory: 10Gi
+
+ingress:
+  class: ""
+  strider:
+    host: ""
+  kpRegistry:
+    host: ""
