@@ -12,7 +12,7 @@ This Chart deploys a single instance of Automat on a [Kubernetes](http://kuberne
 - Helm 3.5.1
 
 ## File descriptions
-- Chart.yaml - Describes the meta data for the deployment
+- Chart.yaml - Describes the metadata for the deployment
 - values.yaml - An example chart values file. Please reference this file for configurable deployment parameters.
 - /templates/automat-deployment.yaml - Chart that deploys the container.
 - /templates/ingress.yaml - Chart template that deploys the application's ingress.
@@ -60,7 +60,7 @@ Note:  Any of the above parameters can be overridden using set argument.
 - **NodePort**: Exposes the service on each Node's IP at a static port (the NodePort). You’ll be able to contact the NodePort service, from outside the cluster, by requesting `NodeIP:NodePort`. Set `service.type=NodePort` to choose this service type.
 - **LoadBalancer**: Exposes the service externally using a cloud provider's load balancer. Set `service.type=LoadBalancer` to choose this service type.
 
-By default this chart uses the `Loadbalancer` service type that can be overridden for other environments (for instance, a local environment like minikube)
+By default, this chart uses the `Loadbalancer` service type that can be overridden for other environments (for instance, a local environment like minikube)
 ```console
 $ helm install automat-helm --set service.type=NodePort ./ 
 ``` 
