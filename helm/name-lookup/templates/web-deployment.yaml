@@ -6,7 +6,7 @@ metadata:
     {{- include "name-lookup.labels" . | nindent 4 }}
     app-name: web-server
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.webServer.replicaCount }}
   selector:
     matchLabels:
       {{- include "name-lookup.selectorLabels" . | nindent 6 }}

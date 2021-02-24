@@ -6,6 +6,8 @@ metadata:
     {{- include "name-lookup.labels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.proxyConnectTimeout }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.proxyReadTimeout }}"
 spec:
   rules:
     - host: {{ .Values.ingress.host | quote }}

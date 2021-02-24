@@ -4,23 +4,39 @@ Plater Helm Chart
 >
 > [Docker Image](https://hub.docker.com/repository/docker/renciorg/plater)
 
-Plater is a tool to interface a [Neo4j](https://neo4j.com) or [redisGraph](https://redislabs.com/modules/redis-graph/) 
-store via REST api.
+This vesion of Plater can interface a [Neo4j](https://neo4j.com) or [redisGraph](https://redislabs.com/modules/redis-graph/) 
+store via TRAPI interface.
 
-#### Installing on kubernetes
+### Parameters
 
-This helm chart comes with a [neo4j](https://hub.docker.com/repository/docker/renciorg/neo4jkp) and [PLATER](https://hub.docker.com/repository/docker/renciorg/plater) images.
+@TODO - add values
 
-By default, the neo4j data store is configured to use `1G` of heap and `200MB` of heap size.
-
-To adjust this set values in the `values.yaml` file.
-
-Volume for neo4j is of type `Host` but can it supports `nfs` by setting the value in `values.yaml`.
-
-It is also possible to avoid creation of PV by setting `createPV` in `Values.yaml` to `false`, or this can also be done
-by `--set createPV=false` in the helm install command. 
-To run chart use :
-
+#### Installing 
 ```shell script
 $ helm -n <namespace> install --set app.neo4j.storage.path=/var/neo4j  --set app.neo4j.storage.pvName=plater-pv --set createPV=true <plater>  ./
 ```
+
+### Uninstalling
+```shell script
+<.../helm/question-rewrite>$ helm uninstall myrelease
+```
+
+### Upgrading
+```shell script
+<.../helm/question-rewrite>$ helm upgrade --set service.port=80 myrelease . 
+```
+
+
+###Other deployment commands
+To render your chart without deploying:
+ 
+```shell script
+$ helm template --debug -f <values_file> myrelease .
+```
+​
+To dry run your chart install: 
+```console
+$ helm install -f <values_file> --dry-run --debug myrelease .
+```
+
+ 

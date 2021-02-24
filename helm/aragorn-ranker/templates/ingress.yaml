@@ -8,10 +8,10 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "aragorn-ranker.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
 spec:
   rules:
     - host: {{ .Values.ingress.host | quote }}
