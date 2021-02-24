@@ -17,5 +17,5 @@
 {{- if .Values.redis.seedDB }}
 2. SeedDb is true, to add data to the pod please use the following commands
     export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "r3.name" . }},app.kubernetes.io/instance={{ .Release.Name }},service-type=database" -o jsonpath="{.items[0].metadata.name}")
-    kubectl --namespace {{ .Release.Namespace }} cp <path-to-dump.rdb> $PODNAME:/data/ -c {{ include "r3.fullname" . }}-redis-seed-container
+    kubectl --namespace {{ .Release.Namespace }} cp <path-to-dump.rdb> $POD_NAME:/data/ -c {{ include "r3.fullname" . }}-redis-seed-container
 {{- end }}
