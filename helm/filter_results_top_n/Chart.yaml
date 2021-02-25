@@ -1,5 +1,5 @@
 apiVersion: v2
-name: filter_results_top_n
+name: filter-results-top-n
 description: A Helm chart for Kubernetes
 
 type: application

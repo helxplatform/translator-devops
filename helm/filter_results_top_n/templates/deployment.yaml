@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "filter_results_top_n.fullname" . }}
+  name: {{ include "filter-results-top-n.fullname" . }}
   labels:
-    app: {{ include "filter_results_top_n.name" . }}
+    app: {{ include "filter-results-top-n.name" . }}
 spec:
   selector:
     matchLabels:
-      app: {{ include "filter_results_top_n.name" . }}
+      app: {{ include "filter-results-top-n.name" . }}
   template:
     metadata:
       labels:
-        app: {{ include "filter_results_top_n.name" . }}
+        app: {{ include "filter-results-top-n.name" . }}
     spec:
       containers:
       - env:
