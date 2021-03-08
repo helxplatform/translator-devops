@@ -57,6 +57,8 @@ spec:
               value: {{ .Values.app.automatAddress }}
             - name: PLATER_TITLE
               value: {{ .Release.Name }}
+            - name: BL_VERSION
+              value: {{ .Values.app.bl_version }}
           volumeMounts:
             - mountPath: /home/plater/Plater/about.json
               name: {{ include "plater.fullname" . }}-config-files

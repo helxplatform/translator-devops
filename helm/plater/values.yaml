@@ -22,11 +22,13 @@ service:
 app:
   port: 8080
   automatAddress: http://automat
+  bl_version: 1.6.0
   neo4j:
     httpPort: 7474
     boltPort: 7687
     password: neo4jkp
     username: neo4j
+
     # These are jvm based values hence suffix with one of the following G, M etc...
     heapSize:
     pageCacheSize:
