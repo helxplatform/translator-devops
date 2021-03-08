@@ -67,7 +67,7 @@ spec:
             value: "apoc.*"
           - name: NEO4J_dbms_jvm_additional
             value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
-          - name: BL_LOOKUP
+          - name: BL_VERSION
             value: {{ .Values.app.bl_version }}
           ports:
             - name: neo4j-http
