@@ -17,7 +17,7 @@ spec:
       - env:
         - name: WEB_HOST
           value: 0.0.0.0
-        - name: WEB_PORT
+        - name: PORT
           value: {{ .Values.app.port | quote}}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
