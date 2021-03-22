@@ -32,14 +32,15 @@ spec:
               value: redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}
             - name: SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
-          livenessProbe:
-            httpGet:
-              path: /docs
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /docs
-              port: http
+          # This is causing restarts on heavy load
+#          livenessProbe:
+#            httpGet:
+#              path: /docs
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /docs
+#              port: http
           ports:
             - name: http
               containerPort: 5781
