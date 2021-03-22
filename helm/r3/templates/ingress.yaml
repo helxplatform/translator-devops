@@ -5,6 +5,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m
 spec:
   rules:
   - host: {{ .Values.ingress.host }}
