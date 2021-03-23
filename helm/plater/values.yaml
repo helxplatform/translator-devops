@@ -20,6 +20,9 @@ fullnameOverride: ""
 service:
   type: ClusterIP
 app:
+  gunicorn:
+    worker_timeout: 600
+    num_workers: 4
   port: 8080
   automatAddress: http://automat
   bl_version: 1.6.0
@@ -41,25 +44,31 @@ app:
     service:
       type: ClusterIP
   openapi_config:
-    # Adds more configs to default open api config
+  # Adds more configs to default open api config
     x-translator:
       component: KP
       team:
-        #- Team name
+      - '' # add teams
     contact:
-      email: "default@mail.com" # email
-      name: "name" # name
-      x-id: "link" # link if available
-      x-role: "role" # role
-    termsOfService: "http://linkmissing" # link to terms of service
+      email: "" # email
+      name: "" # name
+      x-id: "" # link if available
+      x-role: "" # role
+    termsOfService: "" # link to terms of service
+    title: ""
+    description: ""
+    tags:
+     - name: translator
     servers:
       - description: Default server
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
-        url:
-dataUrl: # Remote location of
+        url: ""
+dataUrl: ""
 datasetDesc:
-  version:
-  description:
-  dataseturl:
-  generatorCode:
+  version: ''
+  description: ''
+  dataseturl: ''
+  generatorCode: ''
+  neo4j_dump: ""
+  license: "" # link to terms of service
