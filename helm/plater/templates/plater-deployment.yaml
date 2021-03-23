@@ -59,6 +59,10 @@ spec:
               value: {{ .Release.Name }}
             - name: BL_VERSION
               value: {{ .Values.app.bl_version }}
+            - name: WORKER_TIMEOUT
+              value: "{{ .Values.app.gunicorn.worker_timeout }}"
+            - name: NUM_WORKERS
+              value: "{{ .Values.app.gunicorn.num_workers }}"
           volumeMounts:
             - mountPath: /home/plater/Plater/about.json
               name: {{ include "plater.fullname" . }}-config-files
