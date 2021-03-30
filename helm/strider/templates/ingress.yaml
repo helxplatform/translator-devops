@@ -6,9 +6,9 @@ metadata:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
 
 spec:
   rules:
