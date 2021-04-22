@@ -34,3 +34,7 @@ secrets:
   omnicorpPassword: "somePW"
   omnicorpCacheHost: omnicorpCache_HOST
   omnicorpCachePassword: "somePW"
+
+answercoalesce:
+  fullname: cache-host
+  redisserviceport: 1234
