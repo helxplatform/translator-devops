@@ -1,12 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "name-lookup.fullname" . }}-solr-dep
   labels:
     {{- include "name-lookup.labels" . | nindent 4 }}
     app-name: solr
 spec:
-  replicas: {{ .Values.solr.replicaCount }}
+  serviceName: {{ include "name-lookup.fullname" . }}-solr-svc
   selector:
     matchLabels:
       {{- include "name-lookup.selectorLabels" . | nindent 6 }}
@@ -30,3 +30,15 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.solr.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/solr/data
+              name: {{ include "name-lookup.fullname" . }}-solr-data-vol
+
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "name-lookup.fullname" . }}-solr-data-vol
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Gi

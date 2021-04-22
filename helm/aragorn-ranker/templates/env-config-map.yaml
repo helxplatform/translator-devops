@@ -12,3 +12,5 @@ data:
   OMNICORP_PASSWORD: "{{ .Values.secrets.omnicorpPassword }}"
   OMNICORP_PORT: "{{ .Values.omnicorpPostgres.port }}"
   OMNICORP_USER: "{{ .Values.omnicorpPostgres.dbUser }}"
+  AC_CACHE_HOST: "{{ .Values.answercoalesce.fullServiceName }}"
+  AC_CACHE_PORT: "{{ .Values.answercoalesce.redisServicePort }}"
