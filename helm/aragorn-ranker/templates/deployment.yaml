@@ -30,7 +30,3 @@ spec:
           name: http
           protocol: TCP
       restartPolicy: Always
-      volumes:
-        - name: redis-config
-          configMap:
-            name: {{ .Values.answercoalesce.fullname }}-redis-config
