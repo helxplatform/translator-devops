@@ -36,5 +36,5 @@ secrets:
   omnicorpCachePassword: "somePW"
 
 answercoalesce:
-  fullName: ac_cache-host
+  fullServiceName: ac_cache-host
   redisServicePort: 1234
