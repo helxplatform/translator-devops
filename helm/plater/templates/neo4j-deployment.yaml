@@ -49,8 +49,6 @@ spec:
           name: {{ include "plater.fullname" . }}-neo4j-container
           imagePullPolicy:  {{ .Values.image.neo4j.imagePullPolicy }}
           env:
-          - name: JAVA_HOME
-            value: /usr/lib/jvm/java-11-openjdk/jre
           - name: NEO4J_AUTH
             value: {{ .Values.app.neo4j.username }}/{{ .Values.app.neo4j.password }}
           - name: NEO4J_dbms_connectors_default__listen__address

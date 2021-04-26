@@ -10,7 +10,7 @@ image:
     tag: "latest"
     imagePullPolicy: Always
   neo4j:
-    repository: renciorg/neo4jkp
+    repository: renciorg/neo4j-4.2-apoc-gds
     tag: latest
     imagePullPolicy: IfNotPresent
 
