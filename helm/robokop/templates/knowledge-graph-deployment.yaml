@@ -52,6 +52,8 @@ spec:
             value: $(NEO4J_CACHE_MEMORY)
           - name: NEO4J_dbms_jvm_additional
             value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+          - name: NEO4J_apoc_export_file_enabled
+            value: "true"
           ports:
           - name: http
             containerPort: {{ .Values.knowledgeGraph.port }}
