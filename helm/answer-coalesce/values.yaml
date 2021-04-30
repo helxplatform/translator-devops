@@ -48,4 +48,4 @@ fullnameOverride: ""
 ingress:
   enabled: true
   host: answercoalesce.renci.org
-  class: ""
+  class: "the ingress class"
