@@ -1,20 +1,21 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "answer-coalesce.fullname" . }}-redis-server
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
-    app: redisServer
+    app: database
 spec:
+  serviceName: {{ include "answer-coalesce.fullname" . }}-redis-service
   selector:
     matchLabels:
       {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
-      app: redisServer
+      app: database
   template:
     metadata:
       labels:
         {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
-        app: redisServer
+        app: database
     spec:
     {{- if .Values.redis.seedDB }}
       initContainers:
@@ -23,10 +24,9 @@ spec:
           command:
             - '/seed_db.sh'
           volumeMounts:
-{{ if .Values.redis.pvcName }}
             - mountPath: /data
               name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
-{{ end }}
+              subPath: data
             - name: {{ include "answer-coalesce.fullname" . }}-seed-script
               mountPath: /seed_db.sh
               subPath: seed_db.sh
@@ -40,11 +40,10 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.redis.resources | nindent 12 }}
-{{ if .Values.redis.pvcName }}
           volumeMounts:
             - mountPath: /data
               name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
-{{ end }}
+              subPath: data
       volumes:
       {{- if .Values.redis.seedDB }}
       - name: {{ include "answer-coalesce.fullname" . }}-seed-script
@@ -52,8 +51,11 @@ spec:
           name: {{ include "answer-coalesce.fullname" . }}-redis-config
           defaultMode: 0777
       {{- end }}
-{{  if .Values.redis.pvcName }}
-      - name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
-        persistentVolumeClaim:
-          claimName: {{ .Values.redis.pvcName }}
-{{ end  }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Gi
