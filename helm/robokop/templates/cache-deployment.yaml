@@ -27,7 +27,7 @@ spec:
           name: redis-data-volume
         - name: seeddb-script-volume
           mountPath: /seed_db.sh
-            subPath: seed_db_redis.sh
+          subPath: seed_db_redis.sh
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-requests-cache-container
@@ -58,7 +58,7 @@ spec:
       - name: redis-data-volume
         persistentVolumeClaim:
           claimName: {{ .Values.requestsCache.pvcName }}
-      {{- if .Values.knowledgeGraph.seedDB }}
+      {{- if .Values.requestsCache.seedDB }}
       - name: seeddb-script-volume
         configMap:
           name: {{ include "robokop.fullname" . }}-db-scripts-configmap
