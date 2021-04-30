@@ -16,7 +16,3 @@ spec:
           - backend:
               serviceName: {{ include "name-lookup.fullname" . }}-web-svc
               servicePort: {{ .Values.webServer.service.port }}
-          - path: /solr
-            backend:
-              serviceName: {{ include "name-lookup.fullname" . }}-solr-svc
-              servicePort: {{ .Values.solr.service.port }}
