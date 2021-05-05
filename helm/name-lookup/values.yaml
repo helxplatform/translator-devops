@@ -21,6 +21,7 @@ solr:
     type: ClusterIP
   # container port
   port: 8983
+  heap_mem: "-Xms512m -Xmx512m"
   image:
     repository: solr
     tag: latest
