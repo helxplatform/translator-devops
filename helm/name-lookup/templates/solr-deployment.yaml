@@ -22,6 +22,8 @@ spec:
           image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag }}"
           args: ['-DzkRun', '-q']
           env:
+            - name: SOLR_JAVA_MEM
+              value: "{{ .Values.solr.heap_mem }}"
             - name: SOLR_HOST
               value: {{ include "name-lookup.fullname" . }}-solr-svc
           ports:
