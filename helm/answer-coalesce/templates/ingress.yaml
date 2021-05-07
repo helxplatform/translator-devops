@@ -18,6 +18,11 @@ spec:
       http:
         paths:
           - backend:
-             serviceName: {{ $fullName }}-web-service
+             serviceName: {{ $fullName }}-web-service-trapi-1.0
              servicePort: {{ $svcPort }}
+          - path: "/1.1"
+            pathType: Prefix
+            backend:
+              serviceName: {{ $fullName }}-web-service-trapi-1.1
+              servicePort: {{ $svcPort }}
 {{- end }}

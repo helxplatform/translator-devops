@@ -19,7 +19,47 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag }}"
+          image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag10 }}"
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.ac.containerPort }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.ac.containerPort }}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /repo/AnswerCoalesce/config.json
+              name: redis-config
+              subPath: config.json
+      volumes:
+        - name: redis-config
+          configMap:
+            name: {{ include "answer-coalesce.fullname" . }}-redis-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "answer-coalesce.fullname" . }}
+  labels:
+    {{- include "answer-coalesce.labels" . | nindent 4 }}
+    app: webServer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
+      app: webServer
+  template:
+    metadata:
+      labels:
+        {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
+        app: webServer
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag11 }}"
           args:
             - "--host"
             - "0.0.0.0"
