@@ -33,8 +33,6 @@ spec:
             - '--workers'
             - '1'
             - 'src.server:APP'
-            - '--root-path'
-            - '/1.0'
           ports:
             - name: http
               containerPort: {{ .Values.ac.containerPort }}
