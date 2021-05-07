@@ -1,30 +1,40 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "answer-coalesce.fullname" . }}
+  name: {{ include "answer-coalesce.fullname" . }}-trapi1-0
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
+    trapi: "1.0"
     app: webServer
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
+      trapi: "1.0"
       app: webServer
   template:
     metadata:
       labels:
         {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
+        trapi: "1.0"
         app: webServer
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag10 }}"
+          command:
+            - 'uvicorn'
           args:
             - "--host"
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.ac.containerPort }}"
+            - '--workers'
+            - '1'
+            - 'src.server:APP'
+            - '--root-path'
+            - '/1.0'
           ports:
             - name: http
               containerPort: {{ .Values.ac.containerPort }}
@@ -33,6 +43,7 @@ spec:
             - mountPath: /repo/AnswerCoalesce/config.json
               name: redis-config
               subPath: config.json
+
       volumes:
         - name: redis-config
           configMap:
@@ -41,25 +52,29 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "answer-coalesce.fullname" . }}
+  name: {{ include "answer-coalesce.fullname" . }}-trapi1-1
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
+    trapi: "1.1"
     app: webServer
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
+      trapi: "1.1"
       app: webServer
   template:
     metadata:
       labels:
         {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
+        trapi: "1.1"
         app: webServer
     spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag11 }}"
+          imagePullPolicy: Always
           args:
             - "--host"
             - "0.0.0.0"
