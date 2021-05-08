@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "aragorn-ranker.fullname" . }}-web-service
+  name: {{ include "aragorn-ranker.fullname" . }}-web-trapi-1-0
   labels:
     {{- include "aragorn-ranker.labels" . | nindent 4 }}
 spec:
@@ -13,3 +13,21 @@ spec:
       name: http
   selector:
     app: {{ include "aragorn-ranker.name" . }}
+    trapi: "1.0"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aragorn-ranker.fullname" . }}-web-trapi-1-1
+  labels:
+    {{- include "aragorn-ranker.labels" . | nindent 4 }}
+spec:
+  {{- include "aragorn-ranker.serviceDefinition" . | nindent 2}}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port}}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "aragorn-ranker.name" . }}
+    trapi: "1.1"

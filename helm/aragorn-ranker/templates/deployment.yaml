@@ -1,17 +1,68 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aragorn-ranker.fullname" . }}
+  name: {{ include "aragorn-ranker.fullname" . }}-trapi-1-1
   labels:
     app: {{ include "aragorn-ranker.name" . }}
+    trapi: "1.1"
 spec:
   selector:
     matchLabels:
       app: {{ include "aragorn-ranker.name" . }}
+      trapi: "1.1"
   template:
     metadata:
       labels:
         app: {{ include "aragorn-ranker.name" . }}
+        trapi: "1.1"
+    spec:
+      containers:
+      - env:
+        - name: WEB_HOST
+          value: 0.0.0.0
+        - name: WEB_PORT
+          value: {{ .Values.app.port | quote}}
+        command:
+          - 'uvicorn'
+        args:
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "{{ .Values.app.port}}"
+          - '--workers'
+          - '1'
+          - '--root-path'
+          - '/1.1'
+          - 'ranker.server:APP'
+        envFrom:
+          - configMapRef:
+              name: {{ include "aragorn-ranker.fullname" . }}-configmap
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag11 }}
+        imagePullPolicy: Always
+        name: {{ .Chart.Name }}-web-container
+        ports:
+        - containerPort: {{ .Values.app.port }}
+          name: http
+          protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aragorn-ranker.fullname" . }}-trapi-1-0
+  labels:
+    app: {{ include "aragorn-ranker.name" . }}
+    trapi: "1.0"
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "aragorn-ranker.name" . }}
+      trapi: "1.0"
+  template:
+    metadata:
+      labels:
+        app: {{ include "aragorn-ranker.name" . }}
+        trapi: "1.0"
     spec:
       containers:
       - env:
@@ -22,7 +73,17 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ include "aragorn-ranker.fullname" . }}-configmap
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command:
+          - 'uvicorn'
+        args:
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "{{ .Values.app.port}}"
+          - '--workers'
+          - '1'
+          - 'ranker.server:APP'
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag10 }}
         imagePullPolicy: Always
         name: {{ .Chart.Name }}-web-container
         ports:
