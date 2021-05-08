@@ -37,7 +37,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "strider.fullname" . }}-strider-service
+  name: {{ include "strider.fullname" . }}-strider-service-trapi-1-0
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver
@@ -51,3 +51,23 @@ spec:
   selector:
     {{- include "strider.selectorLabels" . | nindent 4 }}
     service-type: webserver
+    trapi: "1.0"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "strider.fullname" . }}-strider-service-trapi-1-1
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  type: {{ .Values.strider.service.type }}
+  ports:
+    - port: {{ .Values.strider.service.port }}
+      targetPort: 5781
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "strider.selectorLabels" . | nindent 4 }}
+    service-type: webserver
+    trapi: "1.1"

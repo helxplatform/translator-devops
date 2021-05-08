@@ -1,24 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "strider.fullname" . }}-web-server
+  name: {{ include "strider.fullname" . }}-web-server-trapi1-0
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver
+    trapi: "1.0"
 spec:
   selector:
     matchLabels:
       {{- include "strider.selectorLabels" . | nindent 6 }}
       service-type: webserver
+      trapi: "1.0"
   template:
     metadata:
       labels:
         {{- include "strider.selectorLabels" . | nindent 8 }}
         service-type: webserver
+        trapi: "1.0"
     spec:
       containers:
         - name: {{ .Chart.Name }}-webserver
-          image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag }}"
+          image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag10 }}"
           env:
             - name: REDIS_HOST
               value: "{{ include "strider.fullname" . }}-redis-service"
@@ -32,6 +35,64 @@ spec:
               value: redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}
             - name: SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
+          # This is causing restarts on heavy load
+#          livenessProbe:
+#            httpGet:
+#              path: /docs
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /docs
+#              port: http
+          ports:
+            - name: http
+              containerPort: 5781
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "strider.fullname" . }}-web-server-trapi1-1
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+    service-type: webserver
+    trapi: "1.1"
+spec:
+  selector:
+    matchLabels:
+      {{- include "strider.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+      trapi: "1.1"
+  template:
+    metadata:
+      labels:
+        {{- include "strider.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+        trapi: "1.1"
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-webserver
+          image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag11 }}"
+          env:
+            - name: REDIS_HOST
+              value: "{{ include "strider.fullname" . }}-redis-service"
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port}}"
+            - name: KPREGISTRY_URL
+              value: http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}
+            - name: OMNICORP_URL
+              value: {{ .Values.strider.env.OMNICORP_URL }}
+            - name: REDIS_URL
+              value: redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}
+            - name: SERVER_URL
+              value: https://{{ .Values.ingress.strider.host }}
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "5781"
+            - "--root-path"
+            - "/1.1"
           # This is causing restarts on heavy load
 #          livenessProbe:
 #            httpGet:

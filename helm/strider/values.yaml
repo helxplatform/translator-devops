@@ -16,6 +16,8 @@ kpRegistry:
 strider:
   image:
     tag: v1.0.0
+    tag10: trapi1_0
+    tag11: trapi1_1
     repository: ghcr.io/ranking-agent/strider
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
