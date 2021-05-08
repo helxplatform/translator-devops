@@ -5,7 +5,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-trapi-1-0
   labels:
     {{- include "aragorn.labels" . | nindent 4 }}
   annotations:
@@ -18,6 +18,27 @@ spec:
       http:
         paths:
           - backend:
-             serviceName: {{ $fullName }}-web-service
-             servicePort: {{ $svcPort }}
+              serviceName: {{ $fullName }}-web-service
+              servicePort: {{ $svcPort }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-trapi-1-1
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: "/1.1(/|$)(.*)"
+            backend:
+              serviceName: {{ $fullName }}-web-service
+              servicePort: {{ $svcPort }}
 {{- end }}

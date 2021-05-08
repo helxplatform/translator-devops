@@ -2,9 +2,12 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+replicaCount: 1
 image:
   repository: renciorg/aragorn
   tag: latest
+  tag10: trapi1_0
+  tag11: trapi1_1
 
 nameOverride: ""
 fullnameOverride: ""

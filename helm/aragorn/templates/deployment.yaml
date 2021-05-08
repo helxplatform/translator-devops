@@ -1,38 +1,100 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aragorn.fullname" . }}
+  name: {{ include "aragorn.fullname" . }}-trapi1-0
+  labels:
+    app: {{ include "aragorn.fullname" . }}
+    trapi: "1.0"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "aragorn.fullname" . }}
+      trapi: "1.0"
+  template:
+    metadata:
+      labels:
+        app: {{ include "aragorn.fullname" . }}
+        trapi: "1.0"
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-container
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag10 }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.app.port }}"
+            - '--workers'
+            - '1'
+            - 'src.server:APP'
+          env:
+            - name: WEB_HOST
+              value: 0.0.0.0
+            - name: WEB_PORT
+              value: {{ .Values.app.port | quote}}
+          volumeMounts:
+            - name: translator-logs-vol
+              mountPath: /repo/aragorn/logs
+      volumes:
+        - name: translator-logs-vol
+          persistentVolumeClaim:
+            claimName: translator-logs-pvc
+            # readOnly: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aragorn.fullname" . }}-trapi1-1
   labels:
     app: {{ include "aragorn.name" . }}
+    trapi: "1.1"
 spec:
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ include "aragorn.name" . }}
+      trapi: "1.1"
   template:
     metadata:
       labels:
         app: {{ include "aragorn.name" . }}
+        trapi: "1.1"
     spec:
       containers:
-      - env:
-        - name: WEB_HOST
-          value: 0.0.0.0
-        - name: WEB_PORT
-          value: {{ .Values.app.port | quote}}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: Always
-        name: {{ .Chart.Name }}-web-container
-        ports:
-        - containerPort: {{ .Values.app.port }}
-          name: http
-          protocol: TCP
-        volumeMounts:
-        - name: translator-logs-vol
-          mountPath: /repo/aragorn/logs
-      restartPolicy: Always
-    # securityContext:
-    #   fsGroup: 1000
-    #   runAsUser: 1000
+        - name: {{ .Chart.Name }}-web-container
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag11 }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.app.port }}"
+            - "--workers"
+            - "1"
+            - "--root-path"
+            - "/1.1"
+            - "src.server:APP"
+          env:
+            - name: WEB_HOST
+              value: 0.0.0.0
+            - name: WEB_PORT
+              value: {{ .Values.app.port | quote}}
+          volumeMounts:
+            - name: translator-logs-vol
+              mountPath: /repo/aragorn/logs
       volumes:
         - name: translator-logs-vol
           persistentVolumeClaim:
