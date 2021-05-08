@@ -7,6 +7,8 @@ webserverImage:
   repository: renciorg/r3_nodenorm
   tag: latest
     # options are renciorg/r3_nodenorm or renciorg/r3_chemnorm
+  tag10: trapi1-0
+  tag11: trapi1-1
 
 redis:
   service:
@@ -32,5 +34,5 @@ web:
   port: 6380
 
 ingress:
-  host: ####HOST_NAME####
-  class: ####Ingress class name ####
+  host: "HOST_NAME"
+  class: "Ingress class name"
