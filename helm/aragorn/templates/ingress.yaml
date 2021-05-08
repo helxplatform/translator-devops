@@ -18,7 +18,7 @@ spec:
       http:
         paths:
           - backend:
-              serviceName: {{ $fullName }}-web-service
+              serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-0
               servicePort: {{ $svcPort }}
 ---
 apiVersion: extensions/v1beta1
@@ -39,6 +39,6 @@ spec:
         paths:
           - path: "/1.1(/|$)(.*)"
             backend:
-              serviceName: {{ $fullName }}-web-service
+              serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-1
               servicePort: {{ $svcPort }}
 {{- end }}
