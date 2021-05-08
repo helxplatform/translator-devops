@@ -18,7 +18,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "r3.fullname" . }}-web-service
+  name: {{ include "r3.fullname" . }}-web-service-trapi-1-0
   labels:
     {{- include "r3.labels" . | nindent 4 }}
 spec:
@@ -31,3 +31,22 @@ spec:
   selector:
     {{- include "r3.selectorLabels" . | nindent 4 }}
     service-type: webserver
+    trapi: "1.0"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "r3.fullname" . }}-web-service-trapi-1-1
+  labels:
+    {{- include "r3.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.web.service.type }}
+  ports:
+    - port: {{ .Values.web.port }}
+      targetPort: {{ .Values.web.port }}
+      protocol: TCP
+      name: web-port
+  selector:
+    {{- include "r3.selectorLabels" . | nindent 4 }}
+    service-type: webserver
+    trapi: "1.1"
