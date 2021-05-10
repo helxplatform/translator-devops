@@ -30,7 +30,7 @@ spec:
           - "--port"
           - "{{ .Values.app.port}}"
           - '--workers'
-          - '1'
+          - '4'
           - '--root-path'
           - '/1.1'
           - 'ranker.server:APP'
