@@ -71,6 +71,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-web-container
           image: {{ .Values.image.repository }}:{{ .Values.image.tag11 }}
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: {{ .Values.app.port }}
