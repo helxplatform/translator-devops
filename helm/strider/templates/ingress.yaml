@@ -36,7 +36,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
-
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
   - host: {{ .Values.ingress.strider.host }}
@@ -46,9 +46,3 @@ spec:
           backend:
             serviceName:  {{ include "strider.fullname" . }}-strider-service-trapi-1-1
             servicePort: {{ .Values.strider.service.port }}
-  - host: {{ .Values.ingress.kpRegistry.host }}
-    http:
-      paths:
-      - backend:
-          serviceName:  {{ include "strider.fullname" . }}-kp-service
-          servicePort: {{ .Values.kpRegistry.service.port }}
