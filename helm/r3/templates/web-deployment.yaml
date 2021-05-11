@@ -37,6 +37,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-webserver
           image: "{{ .Values.webserverImage.repository }}:{{ .Values.webserverImage.tag10 }}"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: {{ .Values.web.port }}
@@ -111,6 +112,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-webserver
           image: "{{ .Values.webserverImage.repository }}:{{ .Values.webserverImage.tag11 }}"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: {{ .Values.web.port }}
@@ -124,6 +126,8 @@ spec:
             - "{{ .Values.web.port }}"
             - '--workers'
             - '1'
+            - '--root-path'
+            - '/1.1'
             - "--app-dir"
             - "/home/murphy/"
             - 'node_normalizer.server:app'
