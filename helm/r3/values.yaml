@@ -14,11 +14,11 @@ redis:
   service:
     type: ClusterIP
   port: 6379
-  resources:
+    resources:
     limits:
-      memory:
+      memory: 1Gi
     requests:
-      memory:
+      memory: 1Gi
   seedDB: true
   storage:
     size: # enter storage size here

@@ -23,7 +23,11 @@ redis:
     loadBalancerIP:
     port: 6379
   containerPort: 6379
-  resources: {}
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      memory: 1Gi
   pvcName: #### Name pv accordingly
   seedDB: false
   createPV: false
