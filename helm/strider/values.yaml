@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+nameOverride: ""
+fullnameOverride: ""
 
 kpRegistry:
   image:
@@ -15,9 +17,9 @@ kpRegistry:
 
 strider:
   image:
-    tag: v1.0.0
-    tag10: trapi1_0
-    tag11: trapi1_1
+    tag: v1.1.2
+    tag10: v1.1.1
+    tag11: v1.1.2
     repository: ghcr.io/ranking-agent/strider
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
@@ -44,8 +46,8 @@ redis:
     - 'no'
 
 ingress:
-  class: ""
+  class: the_class
   strider:
-    host: ""
+    host: the.strider.host
   kpRegistry:
-    host: ""
+    host: the.registry.host
