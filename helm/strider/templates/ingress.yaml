@@ -6,9 +6,9 @@ metadata:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
 
 spec:
   rules:
@@ -33,9 +33,9 @@ metadata:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:

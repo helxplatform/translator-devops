@@ -46,8 +46,9 @@ redis:
     - 'no'
 
 ingress:
-  class: the_class
+  class: ""
   strider:
-    host: the.strider.host
+    host: ""
   kpRegistry:
-    host: the.registry.host
+    host: ""
+  timeout: 7200 # 1hr
