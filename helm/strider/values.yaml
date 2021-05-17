@@ -49,3 +49,4 @@ ingress:
     host: ""
   kpRegistry:
     host: ""
+  timeout: 7200 # 1hr
