@@ -1,7 +1,9 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "r3.fullname" . }}-ingress
+  name: {{ include "r3.fullname" . }}-web-service-trapi-1-0
+  labels:
+    {{- include "r3.selectorLabels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -12,5 +14,26 @@ spec:
     http:
       paths:
       - backend:
-          serviceName:  {{ include "r3.fullname" . }}-web-service
+          serviceName:  {{ include "r3.fullname" . }}-web-service-trapi-1-0
           servicePort: {{ .Values.web.port }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "r3.fullname" . }}-web-service-trapi-1-1
+  labels:
+    {{- include "r3.selectorLabels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: "/1.1(/|$)(.*)"
+            backend:
+              serviceName: {{ include "r3.fullname" . }}-web-service-trapi-1-1
+              servicePort: {{ .Values.web.port }}
