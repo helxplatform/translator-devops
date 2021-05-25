@@ -1,23 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "aragorn.fullname" . }}-web-service-trapi-1-0
-  labels:
-    {{- include "aragorn.labels" . | nindent 4 }}
-spec:
-  {{- include "aragorn.serviceDefinition" . | nindent 2}}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.app.port}}
-      protocol: TCP
-      name: http
-  selector:
-    app: {{ include "aragorn.fullname" . }}
-    trapi: "1.0"
----
-apiVersion: v1
-kind: Service
-metadata:
   name: {{ include "aragorn.fullname" . }}-web-service-trapi-1-1
   labels:
     {{- include "aragorn.labels" . | nindent 4 }}

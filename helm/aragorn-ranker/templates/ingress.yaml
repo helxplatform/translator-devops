@@ -5,26 +5,6 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-trapi-1.0
-  labels:
-    {{- include "aragorn-ranker.labels" . | nindent 4 }}
-  annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-    nginx.ingress.kubernetes.io/proxy-body-size: 128m
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-spec:
-  rules:
-    - host: {{ .Values.ingress.host | quote }}
-      http:
-        paths:
-          - backend:
-             serviceName: {{ $fullName }}-web-trapi-1-0
-             servicePort: {{ $svcPort }}
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
   name: {{ $fullName }}-trapi-1.1
   labels:
     {{- include "aragorn-ranker.labels" . | nindent 4 }}

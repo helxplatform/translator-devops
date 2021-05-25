@@ -1,33 +1,6 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "strider.fullname" . }}-ingress-trapi-1-0
-  annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
-
-spec:
-  rules:
-  - host: {{ .Values.ingress.strider.host }}
-    http:
-      paths:
-      - backend:
-          serviceName:  {{ include "strider.fullname" . }}-strider-service-trapi-1-0
-          servicePort: {{ .Values.strider.service.port }}
-  - host: {{ .Values.ingress.kpRegistry.host }}
-    http:
-      paths:
-      - backend:
-          serviceName:  {{ include "strider.fullname" . }}-kp-service
-          servicePort: {{ .Values.kpRegistry.service.port }}
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
   name: {{ include "strider.fullname" . }}-ingress-trapi-1-1
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
