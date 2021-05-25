@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "strider.fullname" . }}-web-server-trapi1-1
+  name: {{ include "strider.fullname" . }}-web-server
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver

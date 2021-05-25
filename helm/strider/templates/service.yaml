@@ -37,7 +37,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "strider.fullname" . }}-strider-service-trapi-1-1
+  name: {{ include "strider.fullname" . }}-strider-service
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver
