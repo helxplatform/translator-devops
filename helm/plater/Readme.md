@@ -1,6 +1,6 @@
 Plater Helm Chart
 ---
-> [Source code for plater](https://github.com/TranslatorIIPrototypes/KITCHEN/tree/master/KITCHEN/PLATER)
+> [Source code for plater](https://github.com/TranslatorSRI/Plater)
 >
 > [Docker Image](https://hub.docker.com/repository/docker/renciorg/plater)
 
