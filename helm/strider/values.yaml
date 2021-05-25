@@ -9,7 +9,7 @@ fullnameOverride: ""
 
 kpRegistry:
   image:
-    tag: "v0.2.0"
+    tag: v2.0.0
     repository: ghcr.io/ranking-agent/kp_registry
   service:
     type: ClusterIP
@@ -17,9 +17,7 @@ kpRegistry:
 
 strider:
   image:
-    tag: v1.1.2
-    tag10: v1.1.1
-    tag11: v1.1.2
+    tag: v2.0.0
     repository: ghcr.io/ranking-agent/strider
   env:
     OMNICORP_URL: http://robokop.renci.org:3210

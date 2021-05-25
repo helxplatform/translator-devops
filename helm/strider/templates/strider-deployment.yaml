@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-webserver
-          image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag11 }}"
+          image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag }}"
           imagePullPolicy: "{{ .Values.strider.image.imagePullPolicy }}"
           env:
             - name: REDIS_HOST
