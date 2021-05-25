@@ -19,11 +19,13 @@ strider:
   image:
     tag: v2.0.0
     repository: ghcr.io/ranking-agent/strider
+    imagePullPolicy: Always
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
   service:
     type: ClusterIP
     port: 5781
+
 
 redis:
   image:
@@ -46,7 +48,7 @@ redis:
 ingress:
   class: ""
   strider:
-    host: ""
+    host: "the strider host name"
   kpRegistry:
-    host: ""
+    host: "the kp host name"
   timeout: 7200 # 1hr
