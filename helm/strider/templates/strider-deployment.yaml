@@ -34,7 +34,7 @@ spec:
               value: {{ .Values.strider.env.OMNICORP_URL }}
             - name: REDIS_URL
               value: redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}
-            - name: SERVER_URL
+            - name: OPENAPI_SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
           args:
             - "--host"
