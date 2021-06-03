@@ -12,5 +12,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ include "aragorn.fullname" . }}
+    app: {{ include "aragorn.name" . }}
     trapi: "1.1"
