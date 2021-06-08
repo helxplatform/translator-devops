@@ -6,8 +6,7 @@ replicaCount: 1
 ac:
   image:
     repository: renciorg/ac
-    tag10: trapi1-0
-    tag11: trapi1-1
+    tag: eec
   service:
     type: ClusterIP
     port: 80

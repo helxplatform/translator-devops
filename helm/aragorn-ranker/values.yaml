@@ -5,9 +5,7 @@
 replicaCount: 1
 image:
   repository: renciorg/aragorn-ranker
-  tag: latest
-  tag10: trapi1-0
-  tag11: trapi1-1
+  tag: eec
 nameOverride: ""
 fullnameOverride: ""
 

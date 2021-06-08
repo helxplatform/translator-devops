@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag11 }}"
+          image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag }}"
           imagePullPolicy: Always
           args:
             - "--host"
