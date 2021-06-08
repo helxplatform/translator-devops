@@ -14,14 +14,14 @@ redis:
   service:
     type: ClusterIP
   port: 6379
-    resources:
+  resources:
     limits:
       memory: 1Gi
     requests:
       memory: 1Gi
-  seedDB: true
+  seedDB: false
   storage:
-    size: # enter storage size here
+    size: 1G
   args:
     - --save
     - ''
@@ -34,5 +34,5 @@ web:
   port: 6380
 
 ingress:
-  host: "HOST_NAME"
-  class: "Ingress class name"
+  host: HOST-NAME
+  class: Ingress-class-name
