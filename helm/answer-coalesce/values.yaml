@@ -22,11 +22,16 @@ redis:
     loadBalancerIP:
     port: 6379
   containerPort: 6379
+  args:
+   - --save
+   - ''
+   - --stop-writes-on-bgsave-error
+   - 'no'
   resources:
     limits:
-      memory: 1Gi
+      memory: 20Gi
     requests:
-      memory: 1Gi
+      memory: 20Gi
   pvcName: #### Name pv accordingly
   seedDB: false
   createPV: false
