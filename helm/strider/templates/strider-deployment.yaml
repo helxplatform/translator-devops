@@ -28,13 +28,13 @@ spec:
             - name: REDIS_HOST
               value: "{{ include "strider.fullname" . }}-redis-service"
             - name: REDIS_PORT
-              value: "{{ .Values.redis.port}}"
+              value: "{{ .Values.redis.port }}"
             - name: KPREGISTRY_URL
-              value: http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}
+              value: "http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}"
             - name: OMNICORP_URL
               value: {{ .Values.strider.env.OMNICORP_URL }}
             - name: REDIS_URL
-              value: redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}
+              value: "redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}"
             - name: OPENAPI_SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
           args:
