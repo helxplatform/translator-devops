@@ -40,11 +40,14 @@ pipeline {
         }
         stage('build') {
             when {
-                allOf {
-                    changeset "helm/biolink-lookup/*"
-                    expression {
-                        return !params.BUILD_VERSION
+                anyOf {
+                    allOf {
+                        changeset "helm/biolink-lookup/*"
+                        expression {
+                            return !params.BUILD_VERSION
+                        }
                     }
+                    triggeredBy 'UserIdCause'
                 }
             }
             steps {
