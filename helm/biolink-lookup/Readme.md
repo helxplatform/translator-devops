@@ -1,5 +1,5 @@
 Biolink Lookup Helm Chart
----
+--- 
 > [Source code for Biolink lookup](https://github.com/TranslatorSRI/bl_lookup)
 >
 > [Biolink lookup Docker image](https://hub.docker.com/repository/docker/renciorg/bl_lookup)
