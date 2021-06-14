@@ -19,6 +19,7 @@ pipeline {
         stage('Clean') {
             steps {
                 cleanWs()
+                checkout scm
             }
         }
         stage('Build Version') {
@@ -41,17 +42,11 @@ pipeline {
         stage('build') {
             when {
                 anyOf {
-                    allOf {
-                        changeset "helm/biolink-lookup/*"
-                        expression {
-                            return !params.BUILD_VERSION
-                        }
-                    }
+                    changeset "helm/biolink-lookup/*"
                     triggeredBy 'UserIdCause'
                 }
             }
             steps {
-                checkout scm
                 withEnv([
                     "IMAGE_NAME=translator-bl-lookup",
                     "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
@@ -82,7 +77,6 @@ pipeline {
                 }
             }
             steps {
-                checkout scm
                 sshagent (credentials: ['917d2cc8-84fe-4faf-89e5-25ea6649be83']) {
                     dir("helm/biolink-lookup") {
                         //sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
