@@ -13,7 +13,7 @@ pipeline {
         string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
     }
     triggers {
-        pollSCM('H/5 * * * *')
+        pollSCM('H/2 * * * *')
     }
     stages {
         stage('Clean') {
