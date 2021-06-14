@@ -1,4 +1,4 @@
-Biolink Lookup Helm Chart 
+Biolink Lookup Helm Chart
 ---
 > [Source code for Biolink lookup](https://github.com/TranslatorSRI/bl_lookup)
 >
