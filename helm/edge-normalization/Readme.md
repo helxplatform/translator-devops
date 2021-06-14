@@ -1,4 +1,4 @@
-Edge normalization Helm Chart 
+Edge normalization Helm Chart
 ---
 > [Source code for Edge normalization](https://github.com/TranslatorSRI/EdgeNormalization)
 >
