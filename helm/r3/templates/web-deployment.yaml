@@ -74,3 +74,78 @@ spec:
           configMap:
             name: {{ include "r3.fullname" . }}-configmap
             defaultMode: 0777
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "r3.fullname" . }}-root-webserver
+  labels:
+    {{- include "r3.labels" . | nindent 4 }}
+    main-path: "root"
+    service-type: webserver
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "r3.selectorLabels" . | nindent 6 }}
+      main-path: "root"
+      service-type: webserver
+  template:
+    metadata:
+      labels:
+        {{- include "r3.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+        main-path: "root"
+    spec:
+      initContainers:
+        - name: {{ include "r3.fullname" . }}-web-init-container
+          image:  {{ .Values.redisImage.repository }}:{{ .Values.redisImage.tag }}
+          command:
+            - /ping_redis.sh
+          env:
+            - name: REDIS_HOST
+              value: "{{ include "r3.fullname" . }}-redis-service"
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port}}"
+          volumeMounts:
+            - name: {{ include "r3.fullname" . }}-ping-script
+              mountPath: /ping_redis.sh
+              subPath: ping_redis.sh
+      containers:
+        - name: {{ .Chart.Name }}-webserver
+          image: "{{ .Values.webserverImage.repository }}:{{ .Values.webserverImage.tag11 }}"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.web.port }}
+              protocol: TCP
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.web.port }}"
+            - '--workers'
+            - '1'
+            - "--app-dir"
+            - "/home/murphy/"
+            - 'node_normalizer.server:app'
+          env:
+            - name: REDIS_HOST
+              value: "{{ include "r3.fullname" . }}-redis-service"
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port}}"
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: http
+      volumes:
+        - name: {{ include "r3.fullname" . }}-ping-script
+          configMap:
+            name: {{ include "r3.fullname" . }}-configmap
+            defaultMode: 0777
