@@ -1,0 +1,22 @@
+# Default values for filter-results-top-n
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: ghcr.io/ncatstranslator/workflow-runner:latest
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  host: ingress_HOST
+  class: ingress_CLASS
+  enabled: true
+
+app:
+  port: 4321
