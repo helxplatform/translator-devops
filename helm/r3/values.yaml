@@ -4,7 +4,7 @@ redisImage:
 
 webserverImage:
   repository: renciorg/r3_nodenorm
-  tag: 1.0.7
+  tag: 1.1.0
     # options are renciorg/r3_nodenorm or renciorg/r3_chemnorm
 
 redis:
