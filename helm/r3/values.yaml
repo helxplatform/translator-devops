@@ -1,14 +1,11 @@
-
 redisImage:
   repository: redis
   tag: latest
 
 webserverImage:
   repository: renciorg/r3_nodenorm
-  tag: latest
+  tag: 1.1.0
     # options are renciorg/r3_nodenorm or renciorg/r3_chemnorm
-  tag10: trapi1-0
-  tag11: trapi1-1
 
 redis:
   service:
@@ -16,17 +13,17 @@ redis:
   port: 6379
   resources:
     limits:
-      memory: 1Gi
+      memory: 256Gi
     requests:
-      memory: 1Gi
+      memory: 256Gi
   seedDB: false
   storage:
-    size: 1G
+    size: 100Gi
   args:
-    - --save
-    - ''
-    - --stop-writes-on-bgsave-error
-    - 'no'
+   - --save
+   - ''
+   - --stop-writes-on-bgsave-error
+   - 'no'
 web:
   replicaCount: 1
   service:
