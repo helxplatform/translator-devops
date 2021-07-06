@@ -86,7 +86,7 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['917d2cc8-84fe-4faf-89e5-25ea6649be83']) {
+                sshagent (credentials: ['0360ecc2-120b-49df-ad82-a1c53fa961d0']) {
                     dir("helm/question-rewrite") {
                         sh 'git clone --branch qrw git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
