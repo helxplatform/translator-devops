@@ -8,7 +8,7 @@ spec:
   {{- include "automat.serviceDefinition" . | nindent 2}}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.app.port}}
+      targetPort: {{ .Values.appPort}}
       protocol: TCP
       name: http
   selector:
