@@ -88,7 +88,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['917d2cc8-84fe-4faf-89e5-25ea6649be83']) {
                     dir("helm/automat") {
-                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git && git checkout OM-3805'
+                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git && git checkout automat'
 
                         configFileProvider([
                             configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
