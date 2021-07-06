@@ -86,7 +86,7 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['917d2cc8-84fe-4faf-89e5-25ea6649be83']) {
+                sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
                     dir("helm/automat") {
                         sh 'git clone --branch automat git@github.com:Sphinx-Automation/translator-ops.git'
 
