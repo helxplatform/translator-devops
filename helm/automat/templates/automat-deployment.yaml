@@ -18,7 +18,7 @@ spec:
         - name: WEB_HOST
           value: 0.0.0.0
         - name: WEB_PORT
-          value: {{ .Values.app.port | quote}}
+          value: {{ .Values.appPort | quote}}
         - name: AUTOMAT_SERVER_URL
           value: {{ .Values.fullHostName }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
