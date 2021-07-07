@@ -66,8 +66,8 @@ pipeline {
                         script {
  
                             sh '''
-                            docker pull renciorg/name-lookup:latest
-                            docker tag renciorg/name-lookup:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker pull renciorg/name_lookup:latest
+                            docker tag renciorg/name_lookup:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
