@@ -1,2 +1,2 @@
-1. Get the application URL by running these commands:
+1. Check loader pod logs for status.
 
