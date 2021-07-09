@@ -8,12 +8,33 @@ image:
   pullPolicy: Always
 
 data:
-  storageSize: 10G
+  storageSize: 30G
   sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/biolink-2.1/"
   files:
     - AnatomicalEntity.txt
+    - BiologicalProcess.txt
+    - Cell.txt
     - CellularComponent.txt
+    - ChemicalEntity.txt
+    - ChemicalMixture.txt
     - ComplexMolecularMixture.txt
+    - Disease.txt
+    - GeneFamily.txt
+    - Gene.txt
+    - GrossAnatomicalStructure.txt
+    - MolecularActivity.txt
+    - MolecularMixture.txt
+    - OrganismTaxon.txt
+    - Pathway.txt
+    - PhenotypicFeature.txt
+    - Polypeptide.txt
+    - Protein.txtaa
+    - Protein.txtab
+    - Protein.txtac
+    - Protein.txtad
+    - Protein.txtae
+    - SmallMolecule.txtaa
+    - SmallMolecule.txtab
 
 
 redis_backend_config:
