@@ -88,7 +88,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
                     dir("helm/answer-coalesce") {
-                        sh 'git clone --branch OM-3831 git@github.com:Sphinx-Automation/translator-ops.git'
+                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
                             configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
                         ]){
