@@ -1,0 +1,2 @@
+1. Check loader pod logs for status.
+
