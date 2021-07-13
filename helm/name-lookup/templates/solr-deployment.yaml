@@ -17,6 +17,10 @@ spec:
         {{- include "name-lookup.selectorLabels" . | nindent 8 }}
         app-name: solr
     spec:
+      securityContext:
+        runAsUser: 8983
+        runAsGroup: 8983
+        fsGroup: 8983
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag }}"
