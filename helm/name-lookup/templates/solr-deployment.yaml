@@ -35,6 +35,10 @@ spec:
           volumeMounts:
             - mountPath: /var/solr/data
               name: {{ include "name-lookup.fullname" . }}-solr-data-vol
+          securityContext:
+            runsAsUser: 8983
+            runAsGroup: 8983
+            fsGroup: 8983
 
   volumeClaimTemplates:
     - metadata:
