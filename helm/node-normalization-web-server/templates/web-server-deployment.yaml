@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{- include "node-normalization-webserver.fullname" . }}-trapi-server"
+  labels:
+    app: "{{ include "node-normalization-webserver.name"  . }}"
+    service-type: "webserver"
+    path: "1.1"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ include "node-normalization-webserver.name" . }}"
+      service-type: "webserver"
+      path: "1.1"
+  template:
+    metadata:
+      labels:
+        app: "{{ include "node-normalization-webserver.name" . }}"
+        service-type: "webserver"
+        path: "1.1"
+    spec:
+      containers:
+        - name: webserver-container
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /home/murphy/redis_config.yaml
+              name: "webserver-config"
+              subPath: "redis_config.yaml"
+          env:
+            - name: "SERVER_ROOT"
+              value: "{{ .Values.web.serverHostName }}"
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.web.port }}"
+            - '--workers'
+            - '1'
+            - '--root-path'
+            - '/1.1'
+            - "--app-dir"
+            - "/home/murphy/"
+            - 'node_normalizer.server:app'
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: webserver-config
+          configMap:
+            name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
+            defaultMode: 0777
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{- include "node-normalization-webserver.fullname" . }}-root-server"
+  labels:
+    app: "{{ include "node-normalization-webserver.name"  . }}"
+    service-type: "webserver"
+    path: "root"
+spec:
+  selector:
+    matchLabels:
+      app: "{{ include "node-normalization-webserver.name" . }}"
+      service-type: "webserver"
+      path: "root"
+  template:
+    metadata:
+      labels:
+        app: "{{ include "node-normalization-webserver.name" . }}"
+        service-type: "webserver"
+        path: "root"
+    spec:
+      containers:
+        - name: webserver-container
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /home/murphy/redis_config.yaml
+              name: "webserver-config"
+              subPath: "redis_config.yaml"
+          env:
+            - name: "SERVER_ROOT"
+              value: "{{ .Values.web.serverHostName }}"
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.web.port }}"
+            - '--workers'
+            - '1'
+            - "--app-dir"
+            - "/home/murphy/"
+            - 'node_normalizer.server:app'
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: webserver-config
+          configMap:
+            name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
+            defaultMode: 0777

@@ -1,0 +1,54 @@
+# Default values for node-normalization-loader.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Default values for node-normalization-loader.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: "renciorg/r3_nodenorm"
+  tag: "latest"
+  pullPolicy: Always
+
+
+web:
+  port: 8080
+  service:
+    type: ClusterIP
+  serverHostName: "http(s)://#####"
+
+resources:
+  limits:
+    memory: 5Gi
+  requests:
+    memory: 5Gi
+
+ingress:
+  class:
+ # same as web.serverHostName
+  hostName: #####
+
+
+redis_backend_config:
+  "eq_id_to_id_db" :
+    "is_cluster": true
+    "hosts":
+      - "host_name": "####"
+        "port": "####"
+    "password": "####"
+    "ssl_enabled": true
+  "id_to_data_db":
+    "is_cluster": true
+    "hosts":
+      - "host_name": "####"
+        "port": "###"
+    "password": "######"
+    "ssl_enabled": true
+  "curie_to_bl_type_db":
+    "is_cluster": true
+    "hosts":
+      - "host_name": "####"
+        "port": "####"
+    "password": "#####"
+    "ssl_enabled": true
