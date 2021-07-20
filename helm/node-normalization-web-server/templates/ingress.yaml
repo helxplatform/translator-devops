@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-trapi-1-1
+  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-sub-path
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
   annotations:
@@ -16,13 +16,13 @@ spec:
         paths:
           - path: "/1.1(/|$)(.*)"
             backend:
-              serviceName: {{ include "node-normalization-webserver.fullname" . }}-web-service-trapi-1-1
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-web-service-sub-path
               servicePort: {{ .Values.web.port }}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-trapi-1-1-2
+  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-root
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
   annotations:
