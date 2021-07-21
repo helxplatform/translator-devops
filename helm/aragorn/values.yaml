@@ -19,6 +19,9 @@ ingress:
   class: ingress_CLASS
   enabled: true
 
+logs:
+  storageSize: 3.5G
+
 app:
   port: 4321
 

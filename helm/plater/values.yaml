@@ -17,6 +17,36 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+neo4j:
+  # Readiness probes will send a kill signal to the container if
+  # it fails enough times.  It's therefore very important
+  # that initialDelaySeconds give the cluster time to form, because
+  # if readiness probes start immediately after container start,
+  # they may end up not forming quickly enough and getting killed.
+  readinessProbe:
+    initialDelaySeconds: 30
+    failureThreshold: 3
+    timeoutSeconds: 2
+    periodSeconds: 10
+    tcpSocket:
+      port: 7687
+
+  livenessProbe:
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    failureThreshold: 3
+    timeoutSeconds: 2
+    tcpSocket:
+      port: 7687
+
+  # Startup probes are used to know when a container application has started.
+  # If such a probe is configured, it disables liveness and readiness checks until it succeeds
+  startupProbe:
+    failureThreshold: 2000
+    periodSeconds: 25
+    tcpSocket:
+      port: 7687
+
 service:
   type: ClusterIP
 app:
@@ -25,7 +55,7 @@ app:
     num_workers: 4
   port: 8080
   automatAddress: http://automat
-  bl_version: 1.6.0
+  bl_version: 1.8.2
   neo4j:
     httpPort: 7474
     boltPort: 7687
@@ -71,4 +101,5 @@ datasetDesc:
   dataseturl: ''
   generatorCode: ''
   neo4j_dump: ""
+  provenanceTag: "infores:automat.platersource"
   license: "" # link to terms of service

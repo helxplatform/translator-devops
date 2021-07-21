@@ -43,10 +43,9 @@ spec:
             - name: WEB_PORT
               value: {{ .Values.app.port | quote}}
           volumeMounts:
-            - name: translator-logs-vol
+            - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs
       volumes:
-        - name: translator-logs-vol
+        - name: aragorn-logs-vol
           persistentVolumeClaim:
-            claimName: translator-logs-pvc
-            # readOnly: false
+            claimName: {{ include "aragorn.fullname" . }}-logs-pvc
