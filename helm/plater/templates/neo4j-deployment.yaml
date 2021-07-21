@@ -85,6 +85,12 @@ spec:
           - mountPath: /logs
             name: {{ include "plater.fullname" . }}-neo4jkp-pvc
             subPath: neo4j_logs
+          startupProbe:
+{{ toYaml .Values.neo4j.startupProbe | indent 12 }}
+          readinessProbe:
+{{ toYaml .Values.neo4j.readinessProbe | indent 12 }}
+          livenessProbe:
+{{ toYaml .Values.neo4j.livenessProbe | indent 12 }}
       restartPolicy: Always
       volumes:
         - name: {{ include "plater.fullname" . }}-scripts
