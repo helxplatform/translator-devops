@@ -88,7 +88,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['github-kw']) {
                     dir("helm/node-normalization-web-server") {
-                        sh 'git clone -b node-normalization-web git@github.com:Sphinx-Automation/translator-ops.git'
+                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
                             configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
                         ]){
