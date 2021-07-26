@@ -45,7 +45,7 @@ pipeline {
               }
            }
         }
-        stage('build') {
+        stage('build - strider') {
             when {
                 allOf {
                     expression {
@@ -66,8 +66,41 @@ pipeline {
                         script {
 
                             sh '''
-                            docker pull renciorg/strider:latest
-                            docker tag renciorg/strider:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker pull ghcr.io/ranking-agent/strider:latest
+                            docker tag ghcr.io/ranking-agent/strider:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('build - kpRegistry') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/strider/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=translator-kp-registry",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                ]) {
+                    dir("helm/strider") {
+                        script {
+
+                            sh '''
+                            docker pull ghcr.io/ranking-agent/kp_registry:latest
+                            docker tag 	ghcr.io/ranking-agent/kp_registry:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
@@ -88,7 +121,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
                     dir("helm/strider") {
-                        sh 'git clone --branch OM-3997 git@github.com:Sphinx-striderion/translator-ops.git'
+                        sh 'git clone --branch OM-3997 git@github.com:Sphinx-Automation/translator-ops.git'
 
                         configFileProvider([
                             configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
