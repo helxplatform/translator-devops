@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{- include "node-normalization-loader.fullname" . }}-loader-config"
+data:
+  config.json: |-
+    {
+    "compendium_directory": "/data/",
+    "data_files": "data.txt",
+    "test_mode": 0,
+    "debug_messages": 1
+    }
+  run_loader.sh: |-
+    #!/bin/sh -x
+    export DATA_DIR=/data
+    {{ $baseURL := .Values.data.sourceBaseUrl }}
+    export data_files="{{ range $file := .Values.data.files }}{{ printf "%s%s " $baseURL $file }}{{end}}"
+    for file in $data_files; do
+      echo DOWNLOADING $file
+      wget -nv -O $DATA_DIR/data.txt $file
+      python load.py
+      rm $DATA_DIR/data.txt
+    done
+    echo "FINISHED"
+  redis_config.yaml: |
+    {{ .Values.redis_backend_config | toYaml | nindent 4 }}

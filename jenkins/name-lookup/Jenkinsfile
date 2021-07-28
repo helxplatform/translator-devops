@@ -29,7 +29,7 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "helm/biolink-lookup/*"
+                        changeset "helm/name-lookup/*"
                         triggeredBy 'UserIdCause'
                     }
                 }
@@ -52,22 +52,22 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "helm/biolink-lookup/*"
+                        changeset "helm/name-lookup/*"
                         triggeredBy 'UserIdCause'
                     }
                 }
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-bl-lookup",
+                    "IMAGE_NAME=translator-name-lookup",
                     "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
                 ]) {
-                    dir("helm/biolink-lookup") {
+                    dir("helm/name-lookup") {
                         script {
  
                             sh '''
-                            docker pull renciorg/bl_lookup:latest
-                            docker tag renciorg/bl_lookup:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker pull renciorg/name_lookup:latest
+                            docker tag renciorg/name_lookup:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
@@ -81,13 +81,13 @@ pipeline {
         stage('Deploy') {
             when {
                 anyOf {
-                    changeset "helm/biolink-lookup/*"
+                    changeset "helm/name-lookup/*"
                     triggeredBy 'UserIdCause'
                 }
             }
             steps {
-                sshagent (credentials: ['github-kw']) {
-                    dir("helm/biolink-lookup") {
+                sshagent (credentials: ['0360ecc2-120b-49df-ad82-a1c53fa961d0']) {
+                    dir("helm/name-lookup") {
                         sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
                             configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
@@ -95,7 +95,7 @@ pipeline {
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
                                 aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cp -R translator-ops/ops/sri/biolink-lookup/deploy/* ./
+                                cp -R translator-ops/ops/sri/name-lookup/deploy/* ./
                                 mv values-ci.yaml values.yaml 
                                 /bin/bash deploy.sh
                                 '''

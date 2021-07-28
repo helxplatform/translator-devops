@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-sub-path
+  labels:
+    {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: {{ .Values.ingress.hostName | quote }}
+      http:
+        paths:
+          - path: "/1.1(/|$)(.*)"
+            backend:
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-web-service-sub-path
+              servicePort: {{ .Values.web.port }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-root
+  labels:
+    {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m
+spec:
+  rules:
+    - host: {{ .Values.ingress.hostName | quote }}
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-web-service-root
+              servicePort: {{ .Values.web.port }}
