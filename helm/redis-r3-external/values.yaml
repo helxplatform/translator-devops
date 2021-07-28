@@ -1,0 +1,43 @@
+
+id-id:
+  auth:
+    enabled: true
+  master:
+    resources:
+      requests:
+        memory: #120Gi
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+  cluster:
+    slaveCount: 0
+
+
+id-node:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #200Gi
+  cluster:
+    slaveCount: 0
+
+semantic-count:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #2Gi
+  cluster:
+    slaveCount: 0
