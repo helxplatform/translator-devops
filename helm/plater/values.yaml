@@ -43,7 +43,7 @@ neo4j:
       command:
         - bash
         - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return count(C)"
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return count(c)"
 
   # Startup probes are used to know when a container application has started.
   # If such a probe is configured, it disables liveness and readiness checks until it succeeds
