@@ -32,7 +32,7 @@ neo4j:
       command:
         - bash
         - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return count(c)"
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
   livenessProbe:
     initialDelaySeconds: 60
@@ -43,7 +43,7 @@ neo4j:
       command:
         - bash
         - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return count(c)"
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return (c) limit 1"
 
   # Startup probes are used to know when a container application has started.
   # If such a probe is configured, it disables liveness and readiness checks until it succeeds
@@ -54,7 +54,7 @@ neo4j:
       command:
         - bash
         - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return count(c)"
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
 service:
   type: ClusterIP
