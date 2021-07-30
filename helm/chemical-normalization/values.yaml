@@ -1,0 +1,36 @@
+redisImage:
+  repository: redis
+  tag: latest
+
+webserverImage:
+  repository: renciorg/r3_chemnorm
+  tag: 0.0.1
+
+
+data_url: https://stars.renci.org/var/chemical-normalization/chemnormalization.rdb
+
+redis:
+  service:
+    type: ClusterIP
+  port: 6379
+  resources:
+    limits:
+      memory: 1Gi
+    requests:
+      memory: 1Gi
+  storage:
+    size: 5Gi
+  args:
+   - --save
+   - ''
+   - --stop-writes-on-bgsave-error
+   - 'no'
+web:
+  replicaCount: 1
+  service:
+    type: ClusterIP
+  port: 6380
+
+ingress:
+  host:
+  class: public
