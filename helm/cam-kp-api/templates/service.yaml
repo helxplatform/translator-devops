@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-1
+  labels:
+    app.kubernetes.io/name: cam-kp-api
+spec:
+  {{- include "cam-kp-api.serviceDefinition" . | nindent 2}}
+  selector:
+    app: {{ include "cam-kp-api.name" . }}
+    trapi: "1.1"
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port }}
+      protocol: TCP
+      name: http

@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "aragorn.fullname" . -}}
+
+{{- $svcPort := .Values.service.port -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Chart.name }}-ingress
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: cam-kp-api-dev-tls-secret
+  rules:
+    - host: {{ .Chart.name }}.renci.org
+      http:
+        paths:
+          - path: "/1.1(/|$)(.*)"
+            backend:
+              serviceName: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-1
+              servicePort: {{ $svcPort }}
+  {{- end }}
