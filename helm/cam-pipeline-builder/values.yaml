@@ -1,0 +1,17 @@
+# Default values for node-normalization-loader.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: "renciorg/cam-pipeline"
+  tag: "0.1"
+  pullPolicy: Always
+
+data:
+  storageSize: 50G
+
+resources:
+  limits:
+    memory: 96Gi
+  requests:
+    memory: 96Gi
