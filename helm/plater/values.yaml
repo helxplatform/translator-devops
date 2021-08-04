@@ -28,24 +28,33 @@ neo4j:
     failureThreshold: 3
     timeoutSeconds: 2
     periodSeconds: 10
-    tcpSocket:
-      port: 7687
+    exec:
+      command:
+        - bash
+        - -c
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
   livenessProbe:
     initialDelaySeconds: 60
     periodSeconds: 10
     failureThreshold: 3
     timeoutSeconds: 2
-    tcpSocket:
-      port: 7687
+    exec:
+      command:
+        - bash
+        - -c
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
   # Startup probes are used to know when a container application has started.
   # If such a probe is configured, it disables liveness and readiness checks until it succeeds
   startupProbe:
     failureThreshold: 2000
     periodSeconds: 25
-    tcpSocket:
-      port: 7687
+    exec:
+      command:
+        - bash
+        - -c
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
 service:
   type: ClusterIP

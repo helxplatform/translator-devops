@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "r3.fullname" . }}-redis-server
+  labels:
+    {{- include "r3.labels" . | nindent 4 }}
+    service-type: database
+spec:
+  serviceName: {{ include "r3.fullname" . }}-redis-service
+  selector:
+    matchLabels:
+      {{- include "r3.selectorLabels" . | nindent 6 }}
+      service-type: database
+  template:
+    metadata:
+      labels:
+        {{- include "r3.selectorLabels" . | nindent 8 }}
+        service-type: database
+    spec:
+    {{- if .Values.data_url }}
+      initContainers:
+        - name: {{ include "r3.fullname" . }}-redis-seed-container
+          image: busybox
+          command:
+            - './seed_db.sh'
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "r3.fullname" . }}-redis-data-volume
+              subPath: data
+            - name: {{ include "r3.fullname" . }}-seed-script
+              mountPath: /seed_db.sh
+              subPath: seed_db.sh
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-redis-container
+          image: "{{ .Values.redisImage.repository }}:{{ .Values.redisImage.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.redis.port }}
+              protocol: TCP
+        {{- if .Values.redis.args }}
+          args:
+            {{- range .Values.redis.args }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- end }}
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "r3.fullname" . }}-redis-data-volume
+              subPath: data
+      volumes:
+      {{- if .Values.redis.seedDB }}
+      - name: {{ include "r3.fullname" . }}-seed-script
+        configMap:
+          name: {{ include "r3.fullname" . }}-configmap
+          defaultMode: 0777
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "r3.fullname" . }}-redis-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 100Gi
