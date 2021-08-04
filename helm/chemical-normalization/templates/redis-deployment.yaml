@@ -51,7 +51,7 @@ spec:
               name: {{ include "r3.fullname" . }}-redis-data-volume
               subPath: data
       volumes:
-      {{- if .Values.redis.seedDB }}
+      {{- if .Values.data_url }}
       - name: {{ include "r3.fullname" . }}-seed-script
         configMap:
           name: {{ include "r3.fullname" . }}-configmap
