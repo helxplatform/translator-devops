@@ -64,7 +64,7 @@ app:
     num_workers: 4
   port: 8080
   automatAddress: http://automat
-  bl_version: 1.8.2
+  bl_version: 2.1.0
   neo4j:
     httpPort: 7474
     boltPort: 7687
