@@ -7,7 +7,7 @@
 
 ### Introduction 
 
-This Chart can be used to install [Node normalization service](https://nodenormalization-sri.renci.org/docs).
+This Chart can be used to install [Chemical  normalization service](https://chemnormalization.renci.org/apidocs/).
 
 ### Parameters
 
@@ -15,7 +15,7 @@ This Chart can be used to install [Node normalization service](https://nodenorma
 | --------- | ----        | ----    | 
 | `redisImage.repository` | Redis  docker image  | `redis`
 | `redisImage.tag` |  Redis docker image tag | `latest`
-| `webserverImage.repository` |  Web server docker image  | `renciorg/r3_nodenorm`
+| `webserverImage.repository` |  Web server docker image  | `renciorg/r3_chemnorm`
 | `webserverImage.tag` | Web server docker tag  | `latest`
 | `redis.service.type` | Redis server kubernetes service type  | `ClusterIP`
 | `redis.port` | Redis server port | `6379`
@@ -41,13 +41,13 @@ Note:  Any of the above parameters can be overridden using set argument.
 ### Uninstalling
 
 ```shell script
-<.../helm/r3>$ helm uninstall myrelease
+$ helm uninstall myrelease
 ```
 
 ### Upgrading
 
 ```shell script
-<.../helm/r3>$ helm upgrade --set web.port=80 myrelease . 
+$ helm upgrade --set web.port=80 myrelease . 
 ```
 
 ###Other deployment commands
