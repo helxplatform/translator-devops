@@ -4,7 +4,7 @@
 
 image:
   repository: "renciorg/cam-pipeline"
-  tag: "0.1"
+  tag: "0.1-builder"
   pullPolicy: Always
 
 data:
