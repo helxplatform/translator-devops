@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cam-pipeline-web-server.fullname" . }}
+  labels:
+    app.kubernetes.io/name: cam-pipeline-web-server
+spec:
+  {{- include "cam-pipeline-web-server.serviceDefinition" . | nindent 2}}
+  selector:
+    app: {{ include "cam-pipeline-web-server.name" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port }}
+      protocol: TCP
+      name: http

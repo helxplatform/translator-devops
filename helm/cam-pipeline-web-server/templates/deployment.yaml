@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cam-pipeline-web-server.fullname" . }}
+  labels:
+    app: {{ include "cam-pipeline-web-server.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "cam-pipeline-web-server.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "cam-pipeline-web-server.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-container
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: http
+              protocol: TCP
