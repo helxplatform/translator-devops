@@ -26,6 +26,7 @@ strider:
     imagePullPolicy: Always
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
+    NORMALIZER_URL: https://nodenormalization-sri-dev.renci.org/1.1
   service:
     type: ClusterIP
     port: 5781

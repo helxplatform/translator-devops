@@ -37,6 +37,8 @@ spec:
               value: "redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}"
             - name: OPENAPI_SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
+            - name: NORMALIZER_URL
+              value: {{ .Values.strider.env.NORMALIZER_URL }}
           args:
             - "--host"
             - "0.0.0.0"

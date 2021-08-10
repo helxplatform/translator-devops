@@ -7,7 +7,7 @@
 
 ### Introduction 
 
-This Chart can be used to install [Node normalization service](https://nodenormalization-sri.renci.org/docs).
+This Chart can be used to install [Chemical  normalization service](https://chemnormalization.renci.org/apidocs/).
 
 ### Parameters
 
@@ -21,7 +21,7 @@ This Chart can be used to install [Node normalization service](https://nodenorma
 | `redis.port` | Redis server port | `6379`
 | `redis.resources.limits.memory` | Redis server memory limit  | `nil`
 | `redis.resources.requests.memory` | Redis server memory   | `nil`
-| `data_url` |  This will create an init container that downloads redis dump.rdb file before redis server starts. | `https://location.to/dump.rdb`
+| `redis.seedDB` |  This will create an init container that waits for loading data to redis before server starts. | `True`
 | `redis.storage.size` |  Redis storage size  | `nil`
 | `redis.args` |  Redis server args | `['--save', '', '--stop-writes-on-bgsave-error', 'no']`
 | `web.replicaCount` | Web server replica count   | `1`
@@ -41,13 +41,13 @@ Note:  Any of the above parameters can be overridden using set argument.
 ### Uninstalling
 
 ```shell script
-<.../helm/r3>$ helm uninstall myrelease
+$ helm uninstall myrelease
 ```
 
 ### Upgrading
 
 ```shell script
-<.../helm/r3>$ helm upgrade --set web.port=80 myrelease . 
+$ helm upgrade --set web.port=80 myrelease . 
 ```
 
 ###Other deployment commands

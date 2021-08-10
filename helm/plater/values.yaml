@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "latest"
+    tag: "1.1.1"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.2-apoc-gds
@@ -64,7 +64,7 @@ app:
     num_workers: 4
   port: 8080
   automatAddress: http://automat
-  bl_version: 1.8.2
+  bl_version: 2.1.0
   neo4j:
     httpPort: 7474
     boltPort: 7687
