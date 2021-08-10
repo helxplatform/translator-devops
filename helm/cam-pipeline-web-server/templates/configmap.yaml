@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "cam-pipeline-web-server.fullname" . }}-configmap
+  labels:
+    {{- include "cam-pipeline-web-server.labels" . | nindent 4 }}
+data:
+  run.sh: |-
+    #!/bin/sh
+    sed -i 's;-Xmx4g;-Xmx32g -Xms32g;g' /opt/docker/blazegraph/conf/blazegraph
+    sed -i 's;blazegraph.jnl;/data/cam-db-reasoned.jnl;g' /opt/docker/blazegraph/conf/RWStore.properties
+    /opt/docker/blazegraph/bin/blazegraph.sh start
