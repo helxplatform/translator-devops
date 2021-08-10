@@ -15,10 +15,20 @@ spec:
         app: {{ include "cam-pipeline-web-server.name" . }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}-web-container
+        - name: {{ .Chart.Name }}-web-app
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: {{ .Values.app.port }}
               name: http
               protocol: TCP
+          env:
+            - name: "JVM_OPTS"
+              value: "-Djava.awt.headless=true -server -Xmx32g -Xms32g -XX:MaxDirectMemorySize=3000m -XX:+UseG1GC"
+          command:
+            - 'blazegraph.sh'
+          args:
+            - "start"
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 }}
+      restartPolicy: Always

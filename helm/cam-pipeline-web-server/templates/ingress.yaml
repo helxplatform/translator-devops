@@ -1,15 +1,12 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "cam-pipeline-web-server.fullname" . -}}
-
-{{- $svcPort := .Values.service.port -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-ingress
+  name: {{ include "cam-pipeline-web-server.fullname" . }}-web-service
   labels:
     {{- include "cam-pipeline-web-server.labels" . | nindent 4 }}
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   tls:
     - hosts:
@@ -19,8 +16,7 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: "/1.1(/|$)(.*)"
+          - path: "/"
             backend:
-              serviceName: {{ include "cam-pipeline-web-server.fullname" . }}
-              servicePort: {{ $svcPort }}
-  {{- end }}
+              serviceName: {{ include "cam-pipeline-web-server.fullname" . }}-web-service
+              servicePort: {{ .Values.service.port }}
