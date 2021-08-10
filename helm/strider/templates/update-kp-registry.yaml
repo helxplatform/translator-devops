@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "strider.fullname" . }}-update-kp-registry
+spec:
+  schedule: "{{ .Values.kpRegistry.updateCronInterval }}"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: job-container
+            image: busybox
+            imagePullPolicy: IfNotPresent
+            command:
+            - wget
+            - "http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}/refresh"
+            - --post-data
+            - ""
+          restartPolicy: OnFailure

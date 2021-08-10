@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "strider.fullname" . }}-heath-configmap
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+data:
+  strider_health.sh: |-
+    #!/bin/bash
+    export status=$(timeout -s 3 $1 \
+    curl -s -o /dev/null -w "%{http_code}" -X 'POST' \
+      'http://localhost:{{ .Values.strider.container.port }}/query' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "message": {
+        "query_graph": {
+          "nodes": {
+            "n0": {
+              "ids": [
+                "MONDO:0005148"
+              ],
+              "categories": [
+                "biolink:Disease"
+              ]
+            },
+            "n1": {
+              "categories": [
+                "biolink:PhenotypicFeature"
+              ]
+            }
+          },
+          "edges": {
+            "e01": {
+              "subject": "n0",
+              "object": "n1",
+              "predicates": [
+                "biolink:has_phenotype"
+              ]
+            }
+          }
+        }
+      }
+    }')
+    if [ "$status" != "200" ]; then
+      exit 1;
+    fi
