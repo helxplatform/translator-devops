@@ -22,12 +22,20 @@ spec:
           image: "{{ .Values.kpRegistry.image.repository }}:{{ .Values.kpRegistry.image.tag }}"
           ports:
             - name: http
-              containerPort: 4983
+              containerPort: {{ .Values.kpRegistry.containerPort }}
               protocol: TCP
           volumeMounts:
             - mountPath: /home/murphy/data
               name: {{ include "strider.fullname" . }}-kp-registry-data-volume
               subPath: data
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.probes.kpRegistry.path }}
+              port: http
+            failureThreshold: {{ .Values.probes.kpRegistry.failureThreshold }}
+            periodSeconds: {{ .Values.probes.kpRegistry.period }}
+            successThreshold: {{ .Values.probes.kpRegistry.successThreshold }}
+
   volumeClaimTemplates:
     - metadata:
         name: {{ include "strider.fullname" . }}-kp-registry-data-volume

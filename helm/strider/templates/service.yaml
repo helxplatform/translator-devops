@@ -45,7 +45,7 @@ spec:
   type: {{ .Values.strider.service.type }}
   ports:
     - port: {{ .Values.strider.service.port }}
-      targetPort: 5781
+      targetPort: {{ .Values.strider.container.port }}
       protocol: TCP
       name: http
   selector:
