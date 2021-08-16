@@ -90,8 +90,7 @@ pipeline {
                     dir("helm/chemical-normalization") {
                         sh 'git clone --branch chem-norm git@github.com:Sphinx-Automation/translator-ops.git'
                         configFileProvider([
-                            configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml'),
-                            configFile(fileId: 'load_data.yaml', targetLocation: 'load_data.yaml')
+                            configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
                         ]){
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
