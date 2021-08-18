@@ -15,8 +15,8 @@ kpRegistry:
     type: ClusterIP
     port: 80
   containerPort: 4983
-  # every five minute
-  updateCronInterval: "*/1 * * * *"
+  # every 2 hrs
+  updateCronInterval: "0 */6 * * *"
 
 strider:
   replicaCount: 1
