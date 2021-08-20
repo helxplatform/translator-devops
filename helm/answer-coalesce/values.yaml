@@ -42,6 +42,9 @@ redis:
     size:
     class:
 
+nodenorm:
+  url: "Node Norm URL"
+
   # adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #   cpu: 100m
