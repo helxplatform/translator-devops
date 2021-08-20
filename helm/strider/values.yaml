@@ -21,7 +21,7 @@ kpRegistry:
 strider:
   replicaCount: 1
   image:
-    tag: v2.0.0
+    tag: latest
     repository: ghcr.io/ranking-agent/strider
     imagePullPolicy: Always
   env:
