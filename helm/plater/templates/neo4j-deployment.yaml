@@ -64,7 +64,9 @@ spec:
           - name: NEO4J_dbms_security_procedures_unrestricted
             value: "apoc.*"
           - name: NEO4J_dbms_jvm_additional
-            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC"
+            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xss{{ .Values.app.neo4j.jvmStackSize }}"
+          - name: NEO4J_dbms_transaction_timeout
+            value: "{{ .Values.app.Neo4jQueryTimeout }}s"
           ports:
             - name: neo4j-http
               containerPort: 7474
