@@ -65,6 +65,8 @@ spec:
               value: "{{ .Values.app.gunicorn.num_workers }}"
             - name: PROVENANCE_TAG
               value: "{{ .Values.datasetDesc.provenanceTag }}"
+            - name: NEO4J_QUERY_TIMEOUT
+              value: "{{ .Values.app.Neo4jQueryTimeout }}"
           volumeMounts:
             - mountPath: /home/plater/Plater/about.json
               name: {{ include "plater.fullname" . }}-config-files
