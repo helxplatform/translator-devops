@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "1.1.2-2rc"
+    tag: "1.1.2-1"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.2-apoc-gds
