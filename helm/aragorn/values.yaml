@@ -18,6 +18,7 @@ ingress:
   host: ingress_HOST
   class: ingress_CLASS
   enabled: true
+  timeout: 86400
 
 logs:
   storageSize: 3.5G
