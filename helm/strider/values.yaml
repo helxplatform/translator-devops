@@ -21,7 +21,7 @@ kpRegistry:
 strider:
   replicaCount: 1
   image:
-    tag: v3.7.0
+    tag: latest
     repository: ghcr.io/ranking-agent/strider
     imagePullPolicy: Always
   env:
@@ -42,11 +42,11 @@ strider:
 
   resources:
     requests:
-      memory: 10Gi
+      memory: 2Gi
       cpu: 500m
     limits:
-      memory: 10Gi
-      cpu: 2000m
+      memory: 3.5Gi
+      cpu: 1000m
 
 
 
