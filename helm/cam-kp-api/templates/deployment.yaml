@@ -1,28 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cam-kp-api.fullName" . }}-trapi-1-1
+  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-1
   labels:
-    app: { { include "cam-kp-api.name" . } }
-    trapi: "1.1"
+    app: {{ include "cam-kp-api.name" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ include "cam-kp-api.name" . }}
-      trapi: "1.1"
   template:
     metadata:
       labels:
         app: {{ include "cam-kp-api.name" . }}
-        trapi: "1.1"
     spec:
       containers:
-        - name: {{ .Chart.name }}-web-app
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        - name: {{ .Chart.Name }}-web-app
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.1
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.port }}
               name: http
               protocol: TCP
-
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-2
+  labels:
+    app: {{ include "cam-kp-api.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "cam-kp-api.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "cam-kp-api.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-app
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.2
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: http
+              protocol: TCP

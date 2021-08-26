@@ -1,24 +1,39 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "aragorn.fullname" . -}}
-
-{{- $svcPort := .Values.service.port -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ .Chart.name }}-ingress
+  name: {{ include "cam-kp-api.fullname" . }}-ingress-trapi-1-1
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
 spec:
   tls:
     - hosts:
-        - {{ .Values.ingress.host | quote }}
+      - {{ .Values.ingress.host }}
       secretName: cam-kp-api-dev-tls-secret
   rules:
-    - host: {{ .Chart.name }}.renci.org
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "/1.1(/|$)(.*)"
+          - path: "/1.1.0/(.*)"
             backend:
               serviceName: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-1
-              servicePort: {{ $svcPort }}
-  {{- end }}
+              servicePort: {{ .Values.app.port }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "cam-kp-api.fullname" . }}-ingress-trapi-1-2
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: cam-kp-api-dev-tls-secret
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: "/1.2.0/(.*)"
+            backend:
+              serviceName:  {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
+              servicePort: {{ .Values.app.port }}
