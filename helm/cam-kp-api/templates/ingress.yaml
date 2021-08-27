@@ -13,10 +13,11 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "/1.1.0/(.*)"
+          - pathType: Prefix
+            path: "/1.1.0"
             backend:
               serviceName: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-1
-              servicePort: {{ .Values.app.port }}
+              servicePort: 8080
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -33,7 +34,8 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "/1.2.0/(.*)"
+          - pathType: Prefix
+            path: "/1.2.0"
             backend:
               serviceName:  {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
-              servicePort: {{ .Values.app.port }}
+              servicePort: 8081
