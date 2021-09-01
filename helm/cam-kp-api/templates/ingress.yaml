@@ -23,19 +23,3 @@ spec:
             backend:
               serviceName: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
               servicePort: {{ .Values.app.port }}
-#---
-#apiVersion: extensions/v1beta1
-#kind: Ingress
-#metadata:
-#  name: {{ include "cam-kp-api.fullname" . }}-ingress-trapi-1-2
-#  annotations:
-#    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-#spec:
-#  rules:
-#    - host: {{ include "cam-kp-api.fullname" . }}-trapi-1-2.renci.org
-#      http:
-#        paths:
-#          - path: "/"
-#            backend:
-#              serviceName:  {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
-#              servicePort: {{ .Values.app.port }}
