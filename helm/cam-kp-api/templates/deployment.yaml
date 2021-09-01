@@ -1,27 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-1
+  name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
   labels:
-    {{- include "cam-kp-api.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
+    app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
+    app.kubernetes.io/version: "0.1.0"
+    app.kubernetes.io/managed-by: Helm
     service-type: webserver
     trapi: "1.1"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "cam-kp-api.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
+      app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
       service-type: webserver
       trapi: "1.1"
   template:
     metadata:
       labels:
-        {{- include "cam-kp-api.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
+        app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
         service-type: webserver
         trapi: "1.1"
     spec:
       containers:
-        - name: {{ .Chart.Name }}-web-server-trapi-1-1
+        - name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-server
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.1
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:
@@ -32,27 +37,30 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-2
+  name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
   labels:
-    {{- include "cam-kp-api.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
+    app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
     service-type: webserver
     trapi: "1.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "cam-kp-api.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
+      app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
       service-type: webserver
       trapi: "1.2"
   template:
     metadata:
       labels:
-        {{- include "cam-kp-api.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
+        app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
         service-type: webserver
         trapi: "1.2"
     spec:
       containers:
-        - name: {{ .Chart.Name }}-web-server-trapi-1-2
+        - name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-server
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.2
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:

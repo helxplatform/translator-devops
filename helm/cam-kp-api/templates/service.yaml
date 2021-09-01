@@ -3,8 +3,10 @@ kind: Service
 metadata:
   name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-service
   labels:
-    {{- include "cam-kp-api.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-service
+    app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-service
     service-type: webserver
+    trapi: "1.1"
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -13,7 +15,8 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "cam-kp-api.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
+    app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-deployment
     service-type: webserver
     trapi: "1.1"
 ---
@@ -22,8 +25,10 @@ kind: Service
 metadata:
   name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
   labels:
-    {{- include "cam-kp-api.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
+    app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
     service-type: webserver
+    trapi: "1.2"
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -32,6 +37,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "cam-kp-api.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
+    app.kubernetes.io/instance: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-deployment
     service-type: webserver
     trapi: "1.2"
