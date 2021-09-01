@@ -19,6 +19,10 @@ spec:
             backend:
               serviceName: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-service
               servicePort: {{ .Values.app.port }}
+          - path: "/1.2(/|$)(.*)"
+            backend:
+              serviceName: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
+              servicePort: {{ .Values.app.port }}
 #---
 #apiVersion: extensions/v1beta1
 #kind: Ingress
