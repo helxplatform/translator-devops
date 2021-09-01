@@ -1,41 +1,37 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-ingress-trapi-1-1
+  name: {{ include "cam-kp-api.fullname" . }}-trapi-ingress
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  tls:
-    - hosts:
-      - {{ .Values.ingress.host }}
-      secretName: cam-kp-api-dev-tls-secret
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - pathType: Prefix
-            path: "/1.1.0"
+          - path: "/1.1(/|$)(.*)"
             backend:
-              serviceName: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-1
-              servicePort: 8080
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-ingress-trapi-1-2
-  annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-spec:
-  tls:
-    - hosts:
-        - {{ .Values.ingress.host }}
-      secretName: cam-kp-api-dev-tls-secret
-  rules:
-    - host: {{ .Values.ingress.host }}
-      http:
-        paths:
-          - pathType: Prefix
-            path: "/1.2.0"
-            backend:
-              serviceName:  {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
-              servicePort: 8081
+              serviceName: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-service
+              servicePort: {{ .Values.app.port }}
+#---
+#apiVersion: extensions/v1beta1
+#kind: Ingress
+#metadata:
+#  name: {{ include "cam-kp-api.fullname" . }}-ingress-trapi-1-2
+#  annotations:
+#    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+#spec:
+#  rules:
+#    - host: {{ include "cam-kp-api.fullname" . }}-trapi-1-2.renci.org
+#      http:
+#        paths:
+#          - path: "/"
+#            backend:
+#              serviceName:  {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
+#              servicePort: {{ .Values.app.port }}

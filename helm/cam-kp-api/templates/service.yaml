@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-1
+  name: {{ include "cam-kp-api.fullname" . }}-trapi-1-1-service
   labels:
     {{- include "cam-kp-api.labels" . | nindent 4 }}
     service-type: webserver
@@ -14,27 +14,24 @@ spec:
       name: http
   selector:
     {{- include "cam-kp-api.selectorLabels" . | nindent 4 }}
-    app: {{ include "cam-kp-api.name" . }}
     service-type: webserver
     trapi: "1.1"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
-  labels:
-    {{- include "cam-kp-api.labels" . | nindent 4 }}
-    service-type: webserver
-spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.app.port }}
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "cam-kp-api.selectorLabels" . | nindent 4 }}
-    service-type: webserver
-    trapi: "1.2"
-
-
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: {{ include "cam-kp-api.fullname" . }}-web-service-trapi-1-2
+#  labels:
+#    {{- include "cam-kp-api.labels" . | nindent 4 }}
+#    service-type: webserver
+#spec:
+#  type: {{ .Values.service.type }}
+#  ports:
+#    - port: {{ .Values.service.port }}
+#      targetPort: {{ .Values.app.port }}
+#      protocol: TCP
+#      name: http
+#  selector:
+#    {{- include "cam-kp-api.selectorLabels" . | nindent 4 }}
+#    service-type: webserver
+#    trapi: "1.2"

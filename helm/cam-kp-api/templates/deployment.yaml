@@ -1,49 +1,55 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-1
+  name: {{ include "cam-kp-api.fullname" . }}-web-server
   labels:
-    app: {{ include "cam-kp-api.name" . }}
+    {{- include "cam-kp-api.labels" . | nindent 4 }}
+    service-type: webserver
+    trapi: "1.1"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "cam-kp-api.name" . }}
+      {{- include "cam-kp-api.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+      trapi: "1.1"
   template:
     metadata:
       labels:
-        app: {{ include "cam-kp-api.name" . }}
+        {{- include "cam-kp-api.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+        trapi: "1.1"
     spec:
       containers:
-        - name: {{ .Chart.Name }}-web-app
+        - name: {{ .Chart.Name }}-webserver
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.1
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           ports:
-            - containerPort: {{ .Values.service.port }}
-              name: http
+            - name: http
+              containerPort: {{ .Values.app.port }}
               protocol: TCP
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-2
-  labels:
-    app: {{ include "cam-kp-api.name" . }}
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ include "cam-kp-api.name" . }}
-  template:
-    metadata:
-      labels:
-        app: {{ include "cam-kp-api.name" . }}
-    spec:
-      containers:
-        - name: {{ .Chart.Name }}-web-app
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.2
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.service.port }}
-              name: http
-              protocol: TCP
+#---
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: {{ include "cam-kp-api.fullname" . }}-web-server-trapi-1-2
+#  labels:
+#    app: {{ include "cam-kp-api.name" . }}
+#spec:
+#  replicas: {{ .Values.replicaCount }}
+#  selector:
+#    matchLabels:
+#      app: {{ include "cam-kp-api.name" . }}
+#  template:
+#    metadata:
+#      labels:
+#        app: {{ include "cam-kp-api.name" . }}
+#    spec:
+#      containers:
+#        - name: {{ .Chart.Name }}-web-app
+#          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.2
+#          imagePullPolicy: {{ .Values.image.pullPolicy }}
+#          ports:
+#            - containerPort: {{ .Values.service.port }}
+#              name: http
+#              protocol: TCP

@@ -49,16 +49,4 @@ Selector labels
 {{- define "cam-kp-api.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "cam-kp-api.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end -}}
-
-{{/*
-Service type
-*/}}
-{{- define "cam-kp-api.serviceDefinition" -}}
-type: {{ .Values.service.type }}
-{{- if eq .Values.service.type "LoadBalancer" }}
-{{- if .Values.service.loadBalancerIP }}
-loadBalancerIP: {{ .Values.service.loadBalancerIP }}
 {{- end }}
-{{- end }}
-{{- end -}}

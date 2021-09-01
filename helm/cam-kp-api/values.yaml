@@ -15,7 +15,7 @@ service:
 ingress:
   host: ingress_HOST
   class: ingress_CLASS
-  enabled: true
+  timeout: 7200 # 1hr
 
 app:
   port: 8080
