@@ -16,36 +16,36 @@ This Chart can be used to install [CAM-KP-API](https://github.com/NCATS-Tangerin
 | `image.repository` | `renciorg/cam-kp-api`
 | `service.type` | `ClusterIP`
 | `service.port` | `8080`
-| `ingress.class` | `translator`
-| `ingress.host` | `cam-kp-api.renci.org`
+| `ingress.class` | `ingress_CLASS`
+| `ingress.host` | `ingress_HOST`
 
 ### Installing 
 
 Note:  Any of the above parameters can be overridden using set argument. 
 ```shell script
-$ helm install  myrelease . 
+$ helm install  <my-release> . 
 ```
 
 ### Uninstalling
 
 ```shell script
-$ helm uninstall myrelease
+$ helm uninstall <my-release>
 ```
 
 ### Upgrading
 
 ```shell script
-$ helm upgrade --set service.port=80 myrelease . 
+$ helm upgrade --set ingress.class=translator ingress.host=cam-kp-api.renci.org <my-release> . 
 ```
 
 ###Other deployment commands
 To render your chart without deploying:
  
 ```shell script
-$ helm template --debug -f <values_file> myrelease .
+$ helm template --debug -f <values_file> <my-release> .
 ```
 
 To dry run your chart install: 
-```console
-$ helm install -f <values_file> --dry-run --debug myrelease .
+```shell script
+$ helm install -f <values_file> --dry-run --debug <my-release> .
 ```
