@@ -29,4 +29,8 @@ spec:
             backend:
               serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-1
               servicePort: {{ $svcPort }}
+          - path: "/1.2(/|$)(.*)"
+            backend:
+              serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-2
+              servicePort: {{ $svcPort }}
 {{- end }}

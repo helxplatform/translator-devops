@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-web-container
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag11 }}
           imagePullPolicy: Always
           ports:
             - name: http
@@ -36,6 +36,58 @@ spec:
             - "4"
             - "--root-path"
             - "/1.1"
+            - "src.server:APP"
+          env:
+            - name: WEB_HOST
+              value: 0.0.0.0
+            - name: WEB_PORT
+              value: {{ .Values.app.port | quote}}
+          volumeMounts:
+            - name: aragorn-logs-vol
+              mountPath: /repo/aragorn/logs
+      volumes:
+        - name: aragorn-logs-vol
+          persistentVolumeClaim:
+            claimName: {{ include "aragorn.fullname" . }}-logs-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aragorn.fullname" . }}-trapi1-2
+  labels:
+    app: {{ include "aragorn.name" . }}
+    trapi: "1.2"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "aragorn.name" . }}
+      trapi: "1.2"
+  template:
+    metadata:
+      labels:
+        app: {{ include "aragorn.name" . }}
+        trapi: "1.2"
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-container
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag20 }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.app.port }}"
+            - "--workers"
+            - "4"
+            - "--root-path"
+            - "/1.2"
             - "src.server:APP"
           env:
             - name: WEB_HOST

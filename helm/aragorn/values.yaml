@@ -5,7 +5,8 @@
 replicaCount: 1
 image:
   repository: renciorg/aragorn
-  tag: eec
+  tag11: 1.1.1
+  tag20: 2.0.0
 
 nameOverride: ""
 fullnameOverride: ""
