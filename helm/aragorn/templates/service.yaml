@@ -12,7 +12,7 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ include "aragorn.name" . }}-web-service-trapi-1-1
+    app: {{ include "aragorn.name" . }}
     trapi: "1.1"
 ---
 apiVersion: v1
@@ -29,5 +29,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ include "aragorn.name" . }}-web-service-trapi-1-2
+    app: {{ include "aragorn.name" . }}
     trapi: "1.2"
