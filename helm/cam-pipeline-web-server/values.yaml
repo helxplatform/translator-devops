@@ -1,0 +1,26 @@
+replicaCount: 1
+image:
+  repository: "renciorg/cam-pipeline"
+  tag: "0.1-web-server"
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  host: ingress_HOST
+  class: ingress_CLASS
+  enabled: true
+
+app:
+  port: 8080
+
+resources:
+  limits:
+    memory: 40Gi
+  requests:
+    memory: 40Gi

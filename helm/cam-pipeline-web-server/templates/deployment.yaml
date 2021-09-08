@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cam-pipeline-web-server.fullname" . }}
+  labels:
+    app: {{ include "cam-pipeline-web-server.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "cam-pipeline-web-server.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "cam-pipeline-web-server.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-app
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.app.port }}
+              name: http
+              protocol: TCP
+          command:
+            - /home/cam/run.sh
+          volumeMounts:
+            - mountPath: /home/cam/run.sh
+              name: "configmap"
+              subPath: "run.sh"
+            - mountPath: /data
+              name: "data-dir"
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: configmap
+          configMap:
+            name: "{{ include "cam-pipeline-web-server.fullname" . }}-configmap"
+            defaultMode: 0777
+        - name: data-dir
+          persistentVolumeClaim:
+            claimName: "cam-pipeline-0.1-builder-cam-pipeline-builder-data-pvc"

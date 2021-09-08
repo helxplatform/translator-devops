@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "cam-pipeline-web-server.fullname" . }}-web-service
+  labels:
+    {{- include "cam-pipeline-web-server.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: cam-pipeline-web-server-tls-secret
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - path: "/"
+            backend:
+              serviceName: {{ include "cam-pipeline-web-server.fullname" . }}-web-service
+              servicePort: {{ .Values.service.port }}
