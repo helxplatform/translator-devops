@@ -23,7 +23,12 @@ spec:
       paths:
         - path: "/1.1(/|$)(.*)"
           backend:
-            serviceName:  {{ include "strider.fullname" . }}-strider-service
+            serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-1
+            servicePort: {{ .Values.strider.service.port }}
+
+        - path: "/1.2(/|$)(.*)"
+          backend:
+            serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-2
             servicePort: {{ .Values.strider.service.port }}
 ---
 apiVersion: extensions/v1beta1
