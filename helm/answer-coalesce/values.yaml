@@ -6,7 +6,9 @@ replicaCount: 1
 ac:
   image:
     repository: renciorg/ac
-    tag: eec
+    tag: 1.1.4
+    tag11: 1.1.4
+    tag12: 2.0.0
   service:
     type: ClusterIP
     port: 80
@@ -42,8 +44,8 @@ redis:
     size:
     class:
 
-nodenorm:
-  url: "Node Norm URL"
+node_norm:
+  url: "https://nodenormalization-sri-dev.renci.org/1.1"
 
   # adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
