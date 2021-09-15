@@ -45,7 +45,7 @@ redis:
     class:
 
 nodenorm:
-  url: "https://nodenormalization-sri-dev.renci.org/1.1"
+  url: "https://nodenormalization-sri.renci.org/1.2"
 
   # adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
