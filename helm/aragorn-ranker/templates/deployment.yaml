@@ -37,7 +37,55 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ include "aragorn-ranker.fullname" . }}-configmap
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag11 }}
+        imagePullPolicy: Always
+        name: {{ .Chart.Name }}-web-container
+        ports:
+        - containerPort: {{ .Values.app.port }}
+          name: http
+          protocol: TCP
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "aragorn-ranker.fullname" . }}-trapi-1-2
+  labels:
+    app: {{ include "aragorn-ranker.name" . }}
+    trapi: "1.2"
+spec:
+  selector:
+    matchLabels:
+      app: {{ include "aragorn-ranker.name" . }}
+      trapi: "1.2"
+  template:
+    metadata:
+      labels:
+        app: {{ include "aragorn-ranker.name" . }}
+        trapi: "1.2"
+    spec:
+      containers:
+      - env:
+        - name: WEB_HOST
+          value: 0.0.0.0
+        - name: WEB_PORT
+          value: {{ .Values.app.port | quote}}
+        command:
+          - 'uvicorn'
+        args:
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "{{ .Values.app.port}}"
+          - '--workers'
+          - '4'
+          - '--root-path'
+          - '/1.2'
+          - 'ranker.server:APP'
+        envFrom:
+          - configMapRef:
+              name: {{ include "aragorn-ranker.fullname" . }}-configmap
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag12 }}
         imagePullPolicy: Always
         name: {{ .Chart.Name }}-web-container
         ports:

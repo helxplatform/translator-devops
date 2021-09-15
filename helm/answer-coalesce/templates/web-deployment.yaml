@@ -24,11 +24,18 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag11 }}"
           imagePullPolicy: Always
+          command:
+            - "uvicorn"
           args:
             - "--host"
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.ac.containerPort }}"
+            - "--workers"
+            - "4"
+            - "--root-path"
+            - "/1.1"
+            - "src.server:APP"
           ports:
             - name: http
               containerPort: {{ .Values.ac.containerPort }}
@@ -68,11 +75,18 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag12 }}"
           imagePullPolicy: Always
+          command:
+            - "uvicorn"
           args:
             - "--host"
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.ac.containerPort }}"
+            - "--workers"
+            - "4"
+            - "--root-path"
+            - "/1.2"
+            - "src.server:APP"
           ports:
             - name: http
               containerPort: {{ .Values.ac.containerPort }}
