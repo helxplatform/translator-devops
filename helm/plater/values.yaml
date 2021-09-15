@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "1.2.0-2"
+    tag: "1.2.0-3"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.2-apoc-gds
@@ -110,6 +110,11 @@ app:
         # https://automat-dev.renci.org/<chart install name>
         url: ""
 dataUrl: ""
+
+skip_attributes:
+  - provided_by
+  - knowledge_source
+
 datasetDesc:
   version: ''
   description: ''
