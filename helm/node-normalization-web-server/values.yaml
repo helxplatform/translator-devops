@@ -9,8 +9,8 @@
 image:
   repository: "renciorg/r3_nodenorm"
   tag: "latest"
+  tag12: 2.0.0
   pullPolicy: Always
-
 
 web:
   port: 8080
@@ -26,29 +26,49 @@ resources:
 
 ingress:
   class:
- # same as web.serverHostName
+  # same as web.serverHostName
   hostName: #####
 
 
 redis_backend_config:
-  "eq_id_to_id_db" :
-    "is_cluster": true
+  "eq_id_to_id_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
     "hosts":
+      # list of cluster member ips and ports
       - "host_name": "####"
-        "port": "####"
-    "password": "####"
-    "ssl_enabled": true
-  "id_to_data_db":
-    "is_cluster": true
-    "hosts":
-      - "host_name": "####"
-        "port": "###"
+        "port": "#####"
     "password": "######"
-    "ssl_enabled": true
-  "curie_to_bl_type_db":
-    "is_cluster": true
+  "id_to_eqids_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
     "hosts":
       - "host_name": "####"
-        "port": "####"
-    "password": "#####"
-    "ssl_enabled": true
+        "port": "#####"
+    "password": "######"
+  "id_to_type_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
+    "hosts":
+      - "host_name": "####"
+        "port": "#####"
+    "password": "######"
+  "curie_to_bl_type_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
+    "hosts":
+      - "host_name": "####"
+        "port": "#####"
+    "password": "######"
+  "gene_protein_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
+    "hosts":
+      - "host_name": "####"
+        "port": "#####"
+    "password": "######"

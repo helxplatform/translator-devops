@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server"
+  name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server-trapi-1-2"
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
     service-type: "webserver"
-    path: "1.1"
+    path: "1.2"
 spec:
   selector:
     matchLabels:
       {{- include "node-normalization-webserver.selectorLabels" . | nindent 6 }}
       service-type: "webserver"
-      path: "1.1"
+      path: "1.2"
   template:
     metadata:
       labels:
         {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
-        path: "1.1"
+        path: "1.2"
     spec:
       containers:
         - name: webserver-container
-          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag12 }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - mountPath: /home/murphy/redis_config.yaml
@@ -40,7 +40,7 @@ spec:
             - '--workers'
             - '1'
             - '--root-path'
-            - '/1.1'
+            - '/1.2'
             - "--app-dir"
             - "/home/murphy/"
             - 'node_normalizer.server:app'
@@ -53,7 +53,6 @@ spec:
             name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
             defaultMode: 0777
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,7 +76,7 @@ spec:
     spec:
       containers:
         - name: webserver-container
-          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag12 }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - mountPath: /home/murphy/redis_config.yaml
