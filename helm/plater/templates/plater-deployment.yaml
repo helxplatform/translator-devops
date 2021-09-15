@@ -74,6 +74,9 @@ spec:
             - mountPath: /home/plater/Plater/PLATER/openapi-config.yaml
               name: {{ include "plater.fullname" . }}-config-files
               subPath: openapi-config.yaml
+            - mountPath: /home/plater/Plater/skip_attr.json
+              name: {{ include "plater.fullname" . }}-config-files
+              subPath: skip_attr.json
       volumes:
         - name: {{ include "plater.fullname" . }}-config-files
           configMap:
