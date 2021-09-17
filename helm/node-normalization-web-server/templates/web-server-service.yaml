@@ -15,7 +15,6 @@ spec:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
     service-type: "webserver"
     path: "1.2"
-
 ---
 apiVersion: v1
 kind: Service

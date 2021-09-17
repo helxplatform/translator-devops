@@ -19,10 +19,6 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: "/1.1(/|$)(.*)"
-            backend:
-              serviceName: {{ $fullName }}-web-trapi-1-1
-              servicePort: {{ $svcPort }}
           - path: "/1.2(/|$)(.*)"
             backend:
               serviceName: {{ $fullName }}-web-trapi-1-2
