@@ -5,7 +5,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-trapi-1-1
+  name: {{ $fullName }}-ingress
   labels:
     {{- include "aragorn.labels" . | nindent 4 }}
   annotations:
@@ -25,10 +25,6 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: "/1.1(/|$)(.*)"
-            backend:
-              serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-1
-              servicePort: {{ $svcPort }}
           - path: "/1.2(/|$)(.*)"
             backend:
               serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-2
