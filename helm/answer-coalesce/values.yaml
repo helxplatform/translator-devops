@@ -6,9 +6,7 @@ replicaCount: 1
 ac:
   image:
     repository: renciorg/ac
-    tag: 1.1.4
-    tag11: 1.1.4
-    tag12: 2.0.0
+    tag: latest
   service:
     type: ClusterIP
     port: 80

@@ -8,8 +8,7 @@
 
 image:
   repository: "renciorg/r3_nodenorm"
-  tag: "latest"
-  tag12: 2.0.0
+  tag: latest
   pullPolicy: Always
 
 web:

@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: webserver-container
-          image: "{{ .Values.image.repository}}:{{ .Values.image.tag12 }}"
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - mountPath: /home/murphy/redis_config.yaml
@@ -76,7 +76,7 @@ spec:
     spec:
       containers:
         - name: webserver-container
-          image: "{{ .Values.image.repository}}:{{ .Values.image.tag12 }}"
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
             - mountPath: /home/murphy/redis_config.yaml
