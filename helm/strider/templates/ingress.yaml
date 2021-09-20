@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "strider.fullname" . }}-ingress-trapi
+  name: {{ include "strider.fullname" . }}-ingress
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -21,11 +21,6 @@ spec:
   - host: {{ .Values.ingress.strider.host }}
     http:
       paths:
-        - path: "/1.1(/|$)(.*)"
-          backend:
-            serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-1
-            servicePort: {{ .Values.strider.service.port }}
-
         - path: "/1.2(/|$)(.*)"
           backend:
             serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-2

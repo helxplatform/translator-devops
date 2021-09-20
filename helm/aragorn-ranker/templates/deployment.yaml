@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aragorn-ranker.fullname" . }}-trapi-1-1
+  name: {{ include "aragorn-ranker.fullname" . }}-trapi-1-2
   labels:
     app: {{ include "aragorn-ranker.name" . }}
-    trapi: "1.1"
+    trapi: "1.2"
 spec:
   selector:
     matchLabels:
       app: {{ include "aragorn-ranker.name" . }}
-      trapi: "1.1"
+      trapi: "1.2"
   template:
     metadata:
       labels:
         app: {{ include "aragorn-ranker.name" . }}
-        trapi: "1.1"
+        trapi: "1.2"
     spec:
       containers:
       - env:
@@ -32,7 +32,7 @@ spec:
           - '--workers'
           - '4'
           - '--root-path'
-          - '/1.1'
+          - '/1.2'
           - 'ranker.server:APP'
         envFrom:
           - configMapRef:
