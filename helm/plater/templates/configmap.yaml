@@ -45,3 +45,5 @@ data:
     {{ .Values.datasetDesc | toJson }}
   openapi-config.yaml: |-
 {{ tpl $open_api_config . | indent 4 }}
+  skip-attr.json: |
+    {{ .Values.skipAttributes | toJson }}
