@@ -7,7 +7,7 @@ fullnameOverride: ""
 
 kpRegistry:
   image:
-    tag: v2.0.0
+    tag: latest
     repository: ghcr.io/ranking-agent/kp_registry
   service:
     type: ClusterIP
@@ -20,13 +20,11 @@ strider:
   replicaCount: 1
   image:
     tag: latest
-    tag11: v3.7.0
-    tag12: v3.11.0
     repository: ghcr.io/ranking-agent/strider
     imagePullPolicy: Always
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
-    NORMALIZER_URL: https://nodenormalization-sri-dev.renci.org/1.1
+    NORMALIZER_URL: https://nodenormalization-sri-dev.renci.org/1.2
   service:
     type: ClusterIP
     port: 5781

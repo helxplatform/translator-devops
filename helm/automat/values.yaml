@@ -4,7 +4,7 @@
 
 image:
   repository: renciorg/automat
-  tag: "2.1"
+  tag: "latest"
 
 nameOverride: ""
 fullnameOverride: ""
