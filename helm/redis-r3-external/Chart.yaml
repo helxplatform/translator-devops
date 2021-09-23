@@ -32,7 +32,15 @@ dependencies:
   - name: redis
     version: "12.7.4"
     repository: "https://charts.bitnami.com/bitnami"
-    alias: id-node
+    alias: id-eq-id
+  - name: redis
+    version: "12.7.4"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: id-categories
+  - name: redis
+    version: "12.7.4"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias:  conflation-db
   - name: redis
     version: "12.7.4"
     repository: "https://charts.bitnami.com/bitnami"

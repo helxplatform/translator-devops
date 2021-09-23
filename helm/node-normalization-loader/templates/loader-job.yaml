@@ -1,11 +1,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{- include "node-normalization-loader.fullname" . }}-job"
+  name: "{{- include "node-normalization-loader.fullname" . }}-com-job"
 spec:
   template:
     metadata:
-      name: "{{- include "node-normalization-loader.fullname" . }}-job"
+      name: "{{- include "node-normalization-loader.fullname" . }}-com-job"
     spec:
       containers:
         - name: loader-container
@@ -16,7 +16,7 @@ spec:
           volumeMounts:
             - mountPath:  /home/murphy/run_loader.sh
               name: "loader-config"
-              subPath: "run_loader.sh"
+              subPath: "run_loader_compendia.sh"
             - mountPath: /data
               name: "data-dir"
             - mountPath: /home/murphy/redis_config.yaml
@@ -24,7 +24,7 @@ spec:
               subPath: "redis_config.yaml"
             - mountPath: /home/murphy/config.json
               name: "loader-config"
-              subPath: "config.json"
+              subPath: "config-compendia.json"
           resources:
             {{ .Values.resources | toYaml | nindent 12 }}
       restartPolicy: OnFailure
@@ -36,4 +36,43 @@ spec:
             defaultMode: 0777
         - name: data-dir
           persistentVolumeClaim:
-            claimName: "{{ include "node-normalization-loader.fullname" . }}-data-pvc"
+            claimName: "{{ include "node-normalization-loader.fullname" . }}-compendia-pvc"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{- include "node-normalization-loader.fullname" . }}-con-job"
+spec:
+  template:
+    metadata:
+      name: "{{- include "node-normalization-loader.fullname" . }}-con-job"
+    spec:
+      containers:
+        - name: loader-container
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /home/murphy/run_loader.sh
+          volumeMounts:
+            - mountPath:  /home/murphy/run_loader.sh
+              name: "loader-config"
+              subPath: "run_loader_conflation.sh"
+            - mountPath: /data
+              name: "data-dir"
+            - mountPath: /home/murphy/redis_config.yaml
+              name: "loader-config"
+              subPath: "redis_config.yaml"
+            - mountPath: /home/murphy/config.json
+              name: "loader-config"
+              subPath: "config-conflation.json"
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 }}
+      restartPolicy: OnFailure
+      volumes:
+        - name: loader-config
+          configMap:
+            name: "{{ include "node-normalization-loader.fullname" . }}-loader-config"
+            defaultMode: 0777
+        - name: data-dir
+          persistentVolumeClaim:
+            claimName: "{{ include "node-normalization-loader.fullname" . }}-conflation-pvc"
