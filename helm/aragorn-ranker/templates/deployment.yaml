@@ -22,6 +22,8 @@ spec:
           value: 0.0.0.0
         - name: WEB_PORT
           value: {{ .Values.app.port | quote}}
+        - name: "SERVER_ROOT"
+          value: "{{ .Values.web.serverHostName }}"
         command:
           - 'uvicorn'
         args:
