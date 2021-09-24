@@ -5,7 +5,7 @@ id-id:
   master:
     resources:
       requests:
-        memory: #120Gi
+        memory: #
     readinessProbe:
       enabled: false
     livenessProbe:
@@ -13,8 +13,21 @@ id-id:
   cluster:
     slaveCount: 0
 
+id-categories:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+  cluster:
+    slaveCount: 0
 
-id-node:
+id-eq-id:
   auth:
     enabled: true
   master:
@@ -38,6 +51,20 @@ semantic-count:
       enabled: false
     resources:
       requests:
-        memory: #2Gi
+        memory: #
+  cluster:
+    slaveCount: 0
+
+conflation-db:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
   cluster:
     slaveCount: 0
