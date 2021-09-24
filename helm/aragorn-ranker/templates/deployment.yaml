@@ -17,13 +17,13 @@ spec:
         trapi: "1.2"
     spec:
       containers:
-        env:
-          - name: WEB_HOST
-            value: 0.0.0.0
-          - name: WEB_PORT
-            value: {{ .Values.app.port | quote}}
-          - name: "SERVER_ROOT"
-            value: "{{ .Values.web.serverHostName }}"
+      - env:
+        - name: WEB_HOST
+          value: 0.0.0.0
+        - name: WEB_PORT
+          value: {{ .Values.app.port | quote}}
+        - name: "SERVER_ROOT"
+          value: "{{ .Values.web.serverHostName }}"
         command:
           - 'uvicorn'
         args:
