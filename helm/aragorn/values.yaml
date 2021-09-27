@@ -28,4 +28,5 @@ logs:
 
 app:
   port: 4321
+  debugTiming: "True"
 
