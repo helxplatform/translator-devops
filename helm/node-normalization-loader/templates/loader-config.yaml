@@ -3,18 +3,50 @@ kind: ConfigMap
 metadata:
   name: "{{- include "node-normalization-loader.fullname" . }}-loader-config"
 data:
-  config.json: |-
+  config-compendia.json: |-
     {
     "compendium_directory": "/data/",
-    "data_files": "data.txt",
+    "conflation_directory": "/data/",
+    "data_files": ["data.txt"],
     "test_mode": 0,
-    "debug_messages": 1
+    "debug_messages": 1,
+    "conflations" : []
     }
-  run_loader.sh: |-
+  config-conflation.json: |-
+    {
+    "compendium_directory": "/data/",
+    "conflation_directory": "/data/",
+    "data_files": [],
+    "test_mode": 0,
+    "debug_messages": 1,
+    "conflations" : [{{ range $conflation := .Values.data.conflations.configs }}
+        {
+          "types" : {{ $conflation.types | toJson }},
+          "file": "{{ $conflation.file }}",
+          "redis_db": "{{ $conflation.redis_db }}"
+        } {{ end }}
+      ]
+    }
+  run_loader_conflation.sh: |-
     #!/bin/sh -x
     export DATA_DIR=/data
-    {{ $baseURL := .Values.data.sourceBaseUrl }}
-    export data_files="{{ range $file := .Values.data.files }}{{ printf "%s%s " $baseURL $file }}{{end}}"
+    {{ $baseURL := .Values.data.conflations.sourceBaseUrl }}
+    export data_files="{{ range $config := .Values.data.conflations.configs }}{{ printf "%s%s " $baseURL $config.file }}{{end}}"
+    export file_names="{{ range $config := .Values.data.conflations.configs }}{{ printf $config.file }}{{end}}"
+    for file in $data_files; do
+      echo DOWNLOADING $file
+      wget -nv -P $DATA_DIR $file
+    done
+    python load.py
+    for file in $file_names; do
+          rm $DATA_DIR/$file
+    done
+    echo "FINISHED"
+  run_loader_compendia.sh: |-
+    #!/bin/sh -x
+    export DATA_DIR=/data
+    {{ $baseURL := .Values.data.compendia.sourceBaseUrl }}
+    export data_files="{{ range $file := .Values.data.compendia.files }}{{ printf "%s%s " $baseURL $file }}{{end}}"
     for file in $data_files; do
       echo DOWNLOADING $file
       wget -nv -O $DATA_DIR/data.txt $file

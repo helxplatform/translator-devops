@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "latest"
+    tag: "1.2.0-5"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.2-apoc-gds
@@ -28,53 +28,74 @@ neo4j:
     failureThreshold: 3
     timeoutSeconds: 2
     periodSeconds: 10
-    tcpSocket:
-      port: 7687
+    exec:
+      command:
+        - bash
+        - -c
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
   livenessProbe:
     initialDelaySeconds: 60
     periodSeconds: 10
     failureThreshold: 3
     timeoutSeconds: 2
-    tcpSocket:
-      port: 7687
+    exec:
+      command:
+        - bash
+        - -c
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
   # Startup probes are used to know when a container application has started.
   # If such a probe is configured, it disables liveness and readiness checks until it succeeds
   startupProbe:
     failureThreshold: 2000
     periodSeconds: 25
-    tcpSocket:
-      port: 7687
+    exec:
+      command:
+        - bash
+        - -c
+        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
 
 service:
   type: ClusterIP
 app:
   gunicorn:
-    worker_timeout: 600
+    worker_timeout: 3600
     num_workers: 4
+  # this is the timeout used for the http request made to neo4j
+  # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
+  # 30 mins default
+  Neo4jQueryTimeout: 1600
+
   port: 8080
   automatAddress: http://automat
-  bl_version: 1.8.2
+  bl_version: 2.1.0
   neo4j:
     httpPort: 7474
     boltPort: 7687
     password: neo4jkp
     username: neo4j
-
+    # additional jvm parameters for large query strings
+    jvmStackSize: 1g
     # These are jvm based values hence suffix with one of the following G, M etc...
     heapSize:
     pageCacheSize:
     # It's used to request the cluster for memory capable of running neo4j per the heap and PageCache values above
-    # Compute this value by summing up heapSize + pageCacheSize + (1G for os)
+    # Compute this value by summing up heapSize + pageCacheSize + (1G for os) + jvmStackSize
     # https://neo4j.com/docs/operations-manual/current/performance/memory-configuration/
     totalMemory:
     storage:
       size: 20Mi
     service:
-      type: ClusterIP
+      type: NodePort
   openapi_config:
   # Adds more configs to default open api config
+    x-trapi:
+      version: 1.2.0
+      operation:
+        - lookup
+        - overlay_connect_knodes
+        - annotate_nodes
     x-translator:
       component: KP
       team:
@@ -94,6 +115,10 @@ app:
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
         url: ""
+
+skipAttributes:
+  - provided_by
+  - knowledge_source
 dataUrl: ""
 datasetDesc:
   version: ''

@@ -6,11 +6,15 @@ replicaCount: 1
 ac:
   image:
     repository: renciorg/ac
-    tag: eec
+    tag: latest
   service:
     type: ClusterIP
     port: 80
   containerPort: 80
+
+web:
+  serverHostName: "hostname"
+
 redis:
   image:
     repository: redis
@@ -41,6 +45,9 @@ redis:
     pvcName:
     size:
     class:
+
+nodenorm:
+  url: "https://nodenormalization-sri.renci.org/1.2"
 
   # adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:

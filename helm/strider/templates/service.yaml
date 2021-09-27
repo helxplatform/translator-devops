@@ -37,7 +37,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "strider.fullname" . }}-strider-service
+  name: {{ include "strider.fullname" . }}-web-service-trapi-1-2
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver
@@ -45,10 +45,10 @@ spec:
   type: {{ .Values.strider.service.type }}
   ports:
     - port: {{ .Values.strider.service.port }}
-      targetPort: 5781
+      targetPort: {{ .Values.strider.container.port }}
       protocol: TCP
       name: http
   selector:
     {{- include "strider.selectorLabels" . | nindent 4 }}
     service-type: webserver
-    trapi: "1.1"
+    trapi: "1.2"

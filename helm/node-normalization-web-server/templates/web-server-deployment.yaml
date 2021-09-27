@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server"
+  name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server-trapi-1-2"
   labels:
-    app: "{{ include "node-normalization-webserver.name"  . }}"
+    {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
     service-type: "webserver"
-    path: "1.1"
+    path: "1.2"
 spec:
   selector:
     matchLabels:
-      app: "{{ include "node-normalization-webserver.name" . }}"
+      {{- include "node-normalization-webserver.selectorLabels" . | nindent 6 }}
       service-type: "webserver"
-      path: "1.1"
+      path: "1.2"
   template:
     metadata:
       labels:
-        app: "{{ include "node-normalization-webserver.name" . }}"
+        {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
-        path: "1.1"
+        path: "1.2"
     spec:
       containers:
         - name: webserver-container
@@ -40,7 +40,7 @@ spec:
             - '--workers'
             - '1'
             - '--root-path'
-            - '/1.1'
+            - '/1.2'
             - "--app-dir"
             - "/home/murphy/"
             - 'node_normalizer.server:app'
@@ -53,25 +53,24 @@ spec:
             name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
             defaultMode: 0777
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: "{{- include "node-normalization-webserver.fullname" . }}-root-server"
   labels:
-    app: "{{ include "node-normalization-webserver.name"  . }}"
+    {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
     service-type: "webserver"
     path: "root"
 spec:
   selector:
     matchLabels:
-      app: "{{ include "node-normalization-webserver.name" . }}"
+      {{- include "node-normalization-webserver.selectorLabels" . | nindent 6 }}
       service-type: "webserver"
       path: "root"
   template:
     metadata:
       labels:
-        app: "{{ include "node-normalization-webserver.name" . }}"
+        {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
         path: "root"
     spec:

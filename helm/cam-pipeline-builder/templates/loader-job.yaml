@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{- include "cam-pipeline-builder.fullname" . }}-job"
+spec:
+  template:
+    metadata:
+      name: "{{- include "cam-pipeline-builder.fullname" . }}-job"
+    spec:
+      containers:
+        - name: loader-container
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /home/cam/run.sh
+          volumeMounts:
+            - mountPath:  /home/cam/run.sh
+              name: "loader-config"
+              subPath: "run.sh"
+            - mountPath: /data
+              name: "data-dir"
+          resources:
+            {{ .Values.resources | toYaml | nindent 12 }}
+      restartPolicy: OnFailure
+
+      volumes:
+        - name: loader-config
+          configMap:
+            name: "{{ include "cam-pipeline-builder.fullname" . }}-loader-config"
+            defaultMode: 0777
+        - name: data-dir
+          persistentVolumeClaim:
+            claimName: "{{ include "cam-pipeline-builder.fullname" . }}-data-pvc"

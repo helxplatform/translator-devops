@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aragorn.fullname" . }}-trapi1-1
+  name: {{ include "aragorn.fullname" . }}-trapi1-2
   labels:
     app: {{ include "aragorn.name" . }}
-    trapi: "1.1"
+    trapi: "1.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ include "aragorn.name" . }}
-      trapi: "1.1"
+      trapi: "1.2"
   template:
     metadata:
       labels:
         app: {{ include "aragorn.name" . }}
-        trapi: "1.1"
+        trapi: "1.2"
     spec:
       containers:
         - name: {{ .Chart.Name }}-web-container
@@ -35,13 +35,15 @@ spec:
             - "--workers"
             - "4"
             - "--root-path"
-            - "/1.1"
+            - "/1.2"
             - "src.server:APP"
           env:
             - name: WEB_HOST
               value: 0.0.0.0
             - name: WEB_PORT
               value: {{ .Values.app.port | quote}}
+            - name: "SERVER_ROOT"
+              value: "{{ .Values.web.serverHostName }}"
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs

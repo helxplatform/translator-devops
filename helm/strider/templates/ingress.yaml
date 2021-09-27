@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "strider.fullname" . }}-ingress-trapi
+  name: {{ include "strider.fullname" . }}-ingress
   annotations:
     kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -9,15 +9,21 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      keepalive_timeout {{ .Values.ingress.timeout }};
+    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/send-timeout: "{{ .Values.ingress.timeout }}"
+    nginx.ingress.kubernetes.io/service-upstream: 'true'
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "{{ .Values.ingress.timeout }}"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   rules:
   - host: {{ .Values.ingress.strider.host }}
     http:
       paths:
-        - path: "/1.1(/|$)(.*)"
+        - path: "/1.2(/|$)(.*)"
           backend:
-            serviceName:  {{ include "strider.fullname" . }}-strider-service
+            serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-2
             servicePort: {{ .Values.strider.service.port }}
 ---
 apiVersion: extensions/v1beta1

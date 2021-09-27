@@ -1,0 +1,70 @@
+
+id-id:
+  auth:
+    enabled: true
+  master:
+    resources:
+      requests:
+        memory: #
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+  cluster:
+    slaveCount: 0
+
+id-categories:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+  cluster:
+    slaveCount: 0
+
+id-eq-id:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #200Gi
+  cluster:
+    slaveCount: 0
+
+semantic-count:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+  cluster:
+    slaveCount: 0
+
+conflation-db:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+  cluster:
+    slaveCount: 0

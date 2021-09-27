@@ -5,10 +5,13 @@
 replicaCount: 1
 image:
   repository: renciorg/aragorn
-  tag: eec
+  tag: latest
 
 nameOverride: ""
 fullnameOverride: ""
+
+web:
+  serverHostName: "hostname"
 
 service:
   type: ClusterIP
@@ -18,6 +21,7 @@ ingress:
   host: ingress_HOST
   class: ingress_CLASS
   enabled: true
+  timeout: 86400
 
 logs:
   storageSize: 3.5G

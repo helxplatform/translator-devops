@@ -19,6 +19,8 @@ spec:
           value: 0.0.0.0
         - name: PORT
           value: {{ .Values.app.port | quote}}
+        - name: OPENAPI_SERVER_URL
+          value: https://{{ .Values.ingress.host }}
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: {{ .Chart.Name }}-web-container

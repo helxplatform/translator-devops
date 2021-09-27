@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "answer-coalesce.fullname" . }}-web-service-trapi-1-1
+  name: {{ include "answer-coalesce.fullname" . }}-web-service-trapi-1-2
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
     app: webServer
@@ -14,7 +14,7 @@ spec:
       name: http
   selector:
     {{- include "answer-coalesce.selectorLabels" . | nindent 4 }}
-    trapi: "1.1"
+    trapi: "1.2"
 ---
 apiVersion: v1
 kind: Service

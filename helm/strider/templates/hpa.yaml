@@ -1,0 +1,28 @@
+{{- if .Values.strider.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "strider.fullname" . }}-hpa-trapi-1-2
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "strider.fullname" . }}-trapi-1-2
+  minReplicas: {{ .Values.strider.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.strider.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.strider.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.strider.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.strider.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.strider.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}

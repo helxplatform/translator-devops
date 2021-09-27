@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-sub-path
+  name: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
   annotations:
@@ -14,15 +14,15 @@ spec:
     - host: {{ .Values.ingress.hostName | quote }}
       http:
         paths:
-          - path: "/1.1(/|$)(.*)"
+          - path: "/1.2(/|$)(.*)"
             backend:
-              serviceName: {{ include "node-normalization-webserver.fullname" . }}-web-service-sub-path
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path-trapi1-2
               servicePort: {{ .Values.web.port }}
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "node-normalization-webserver.fullname" . }}-web-service-root
+  name: {{ include "node-normalization-webserver.fullname" . }}-service-root
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
   annotations:
@@ -36,5 +36,5 @@ spec:
         paths:
           - path: "/"
             backend:
-              serviceName: {{ include "node-normalization-webserver.fullname" . }}-web-service-root
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-root
               servicePort: {{ .Values.web.port }}

@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "strider.fullname" . }}-web-server
+  name: {{ include "strider.fullname" . }}-trapi1-2
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver
-    trapi: "1.1"
+    trapi: "1.2"
 spec:
   replicas: {{ .Values.strider.replicaCount }}
   selector:
     matchLabels:
       {{- include "strider.selectorLabels" . | nindent 6 }}
       service-type: webserver
-      trapi: "1.1"
+      trapi: "1.2"
   template:
     metadata:
       labels:
         {{- include "strider.selectorLabels" . | nindent 8 }}
         service-type: webserver
-        trapi: "1.1"
+        trapi: "1.2"
     spec:
       containers:
         - name: {{ .Chart.Name }}-webserver
@@ -37,14 +37,39 @@ spec:
               value: "redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}"
             - name: OPENAPI_SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
+            - name: NORMALIZER_URL
+              value: {{ .Values.strider.env.NORMALIZER_URL }}
           args:
             - "--host"
             - "0.0.0.0"
             - "--port"
-            - "5781"
+            - "{{ .Values.strider.container.port }}"
             - "--root-path"
-            - "/1.1"
+            - "/1.2"
+            - "--workers"
+            - "{{ .Values.strider.uvicornWorkerCount }}"
           ports:
             - name: http
-              containerPort: 5781
+              containerPort: {{ .Values.strider.container.port }}
               protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - /strider_health.sh
+              - "{{ .Values.probes.strider.timeoutSeconds }}"
+            failureThreshold: {{ .Values.probes.strider.failureThreshold }}
+            periodSeconds: {{ .Values.probes.strider.period }}
+            successThreshold: {{ .Values.probes.strider.successThreshold }}
+            timeoutSeconds: {{ .Values.probes.strider.timeoutSeconds }}
+          {{ if .Values.strider.resources }}
+          resources: {{ toYaml .Values.strider.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+          - name: {{ include "strider.fullname" . }}-health-scripts
+            mountPath: /strider_health.sh
+            subPath: strider_health.sh
+      volumes:
+      - name: {{ include "strider.fullname" . }}-health-scripts
+        configMap:
+          name: {{ include "strider.fullname" . }}-heath-configmap
+          defaultMode: 0777

@@ -22,7 +22,7 @@ metadata:
   labels:
     {{- include "plater.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.app.neo4j.service.type }}
   ports:
     - port: {{ .Values.app.neo4j.httpPort }}
       targetPort: {{ .Values.app.neo4j.httpPort }}

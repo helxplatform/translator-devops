@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: "renciorg/cam-kp-api"
+  tag: "0.1"
+  pullPolicy: Always
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  host: ingress_HOST
+  class: ingress_CLASS
+  timeout: 7200 # 1hr
+
+app:
+  port: 8080

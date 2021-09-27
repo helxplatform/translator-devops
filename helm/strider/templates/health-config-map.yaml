@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "strider.fullname" . }}-heath-configmap
+  labels:
+    {{- include "strider.labels" . | nindent 4 }}
+data:
+  strider_health.sh: |-
+    #!/bin/bash
+    export status=$(timeout -s 3 $1 \
+    curl -s -o /dev/null -w "%{http_code}" -X 'GET' \
+      'http://localhost:{{ .Values.strider.container.port }}/docs' \
+    )
+    if [ "$status" != "200" ]; then
+      exit 1;
+    fi
