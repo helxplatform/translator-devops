@@ -99,8 +99,8 @@ pipeline {
                         script {
 
                             sh '''
-                            docker pull ghcr.io/ranking-agent/kp_registry:latest
-                            docker tag 	ghcr.io/ranking-agent/kp_registry:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker pull ghcr.io/ranking-agent/kp-registry:latest
+                            docker tag 	ghcr.io/ranking-agent/kp-registry:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
