@@ -24,6 +24,9 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag }}"
           imagePullPolicy: Always
+          env:
+            - name: "SERVER_ROOT"
+              value: "{{ .Values.web.serverHostName }}"
           command:
             - "uvicorn"
           args:

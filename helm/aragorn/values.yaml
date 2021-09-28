@@ -10,6 +10,9 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+web:
+  serverHostName: "hostname"
+
 service:
   type: ClusterIP
   port: 8080
@@ -25,4 +28,5 @@ logs:
 
 app:
   port: 4321
+  debugTiming: "True"
 

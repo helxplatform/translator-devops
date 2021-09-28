@@ -18,8 +18,12 @@ ingress:
   class: ingress_CLASS
   enabled: true
 
+web:
+  serverHostName: "hostname"
+
 app:
   port: 4321
+  debugTiming: "True"
 
 omnicorpCache:
   port: 5678
