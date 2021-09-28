@@ -5,7 +5,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-ingress-trapi
+  name: {{ $fullName }}-ingress
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
   annotations:
@@ -19,10 +19,6 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: "/1.1(/|$)(.*)"
-            backend:
-              serviceName: {{ $fullName }}-web-service-trapi-1-1
-              servicePort: {{ $svcPort }}
           - path: "/1.2(/|$)(.*)"
             backend:
               serviceName: {{ $fullName }}-web-service-trapi-1-2

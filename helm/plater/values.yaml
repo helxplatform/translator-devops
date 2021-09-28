@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "1.2.0-3"
+    tag: "1.2.0-5"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.2-apoc-gds
@@ -90,6 +90,12 @@ app:
       type: NodePort
   openapi_config:
   # Adds more configs to default open api config
+    x-trapi:
+      version: 1.2.0
+      operation:
+        - lookup
+        - overlay_connect_knodes
+        - annotate_nodes
     x-translator:
       component: KP
       team:
@@ -109,12 +115,11 @@ app:
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
         url: ""
-dataUrl: ""
 
-skip_attributes:
+skipAttributes:
   - provided_by
   - knowledge_source
-
+dataUrl: ""
 datasetDesc:
   version: ''
   description: ''

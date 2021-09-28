@@ -5,11 +5,13 @@
 replicaCount: 1
 image:
   repository: renciorg/aragorn
-  tag11: 1.1.1
-  tag20: 2.0.0
+  tag: latest
 
 nameOverride: ""
 fullnameOverride: ""
+
+web:
+  serverHostName: "hostname"
 
 service:
   type: ClusterIP
@@ -26,4 +28,5 @@ logs:
 
 app:
   port: 4321
+  debugTiming: "True"
 

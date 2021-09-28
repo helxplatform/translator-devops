@@ -4,56 +4,101 @@
 
 image:
   repository: "renciorg/r3_nodenorm"
-  tag: "test-cluster-loader"
+  tag: "latest"
   pullPolicy: Always
 
 data:
   storageSize: 30G
-  sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/biolink-2.1/"
-  files:
-    - AnatomicalEntity.txt
-    - BiologicalProcess.txt
-    - Cell.txt
-    - CellularComponent.txt
-    - ChemicalEntity.txt
-    - ChemicalMixture.txt
-    - ComplexMolecularMixture.txt
-    - Disease.txt
-    - GeneFamily.txt
-    - Gene.txt
-    - GrossAnatomicalStructure.txt
-    - MolecularActivity.txt
-    - MolecularMixture.txt
-    - OrganismTaxon.txt
-    - Pathway.txt
-    - PhenotypicFeature.txt
-    - Polypeptide.txt
-    - Protein.txtaa
-    - Protein.txtab
-    - Protein.txtac
-    - Protein.txtad
-    - Protein.txtae
-    - SmallMolecule.txtaa
-    - SmallMolecule.txtab
+  compendia:
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/biolink-2.1-conflated-v1.0/compendia/"
+    files:
+      - AnatomicalEntity.txt
+      - BiologicalProcess.txt
+      - Cell.txt
+      - CellularComponent.txt
+      - ChemicalEntity.txt
+      - ChemicalMixture.txt
+      - ComplexMolecularMixture.txt
+      - Disease.txt
+      - GeneFamily.txt
+      - Gene.txt
+      - GrossAnatomicalStructure.txt
+      - MolecularActivity.txt
+      - MolecularMixture.txt
+      - OrganismTaxon.txt
+      - Pathway.txt
+      - PhenotypicFeature.txt
+      - Polypeptide.txt
+      - Protein.txtaa
+      - Protein.txtab
+      - Protein.txtac
+      - Protein.txtad
+      - Protein.txtae
+      - Protein.txtaf
+      - Protein.txtag
+      - Protein.txtah
+      - Protein.txtai
+      - Protein.txtaj
+      - SmallMolecule.txtaa
+      - SmallMolecule.txtab
+      - SmallMolecule.txtac
+      - SmallMolecule.txtad
+      - SmallMolecule.txtae
+      - SmallMolecule.txtaf
+      - SmallMolecule.txtag
+      - SmallMolecule.txtah
+      - SmallMolecule.txtai
+      - SmallMolecule.txtaj
+  conflations:
+    sourceBaseUrl: https://stars.renci.org/var/babel_outputs/biolink-2.1-conflated-v1.0/conflation/
+    configs:
+      - file: "GeneProtein.txt"
+        types:
+          - biolink:Gene
+          - biolink:Protein
+        redis_db: "gene_protein_db"
 
 
 redis_backend_config:
-  "eq_id_to_id_db" :
-    "is_cluster": true
+  "eq_id_to_id_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
     "hosts":
-      - "host_name": "redis-cluster-redis-id-id-shard-headless"
+      # list of cluster member ips and ports
+      - "host_name": "host"
         "port": "6379"
     "password": "password"
-  "id_to_data_db":
-    "is_cluster": true
+  "id_to_eqids_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
     "hosts":
-      - "host_name": "redis-cluster-redis-id-data-shard-headless"
+      - "host_name": "host"
+        "port": "6379"
+    "password": "password"
+  "id_to_type_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
+    "hosts":
+      - "host_name": "host"
         "port": "6379"
     "password": "password"
   "curie_to_bl_type_db":
-    "is_cluster": true
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
     "hosts":
-      - "host_name": "redis-cluster-redis-curie-type-master"
+      - "host_name": "host"
+        "port": "6379"
+    "password": "password"
+  "gene_protein_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
+    "hosts":
+      - "host_name": "host"
         "port": "6379"
     "password": "password"
 
