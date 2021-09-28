@@ -51,16 +51,17 @@ strider:
 # liveliness prob values
 probes:
   strider:
+    enabled: false
     failureThreshold: 5
     successThreshold: 1
-    periodSeconds: 60
+    periodSeconds: 120
     timeoutSeconds: 10
 
   kpRegistry:
     path: "/kps"
     failureThreshold: 5
     successThreshold: 1
-    periodSeconds: 60
+    periodSeconds: 120
     timeoutSeconds: 3
 
 

@@ -23,6 +23,7 @@ web:
 
 app:
   port: 4321
+  debugTiming: "True"
 
 omnicorpCache:
   port: 5678
