@@ -94,6 +94,14 @@ spec:
           livenessProbe:
 {{ toYaml .Values.neo4j.livenessProbe | indent 12 }}
       restartPolicy: Always
+    {{ with .Values.neo4j.affinity }}
+      affinity:
+        {{ toYaml . | nindent 8 }}
+    {{ end }}
+    {{ with .Values.neo4j.tolerations }}
+      tolerations:
+      {{ toYaml . | nindent 8 }}
+    {{ end }}
       volumes:
         - name: {{ include "plater.fullname" . }}-scripts
           configMap:
