@@ -55,6 +55,8 @@ neo4j:
         - bash
         - -c
         - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
+  tolerations:
+  affinity:
 
 service:
   type: ClusterIP

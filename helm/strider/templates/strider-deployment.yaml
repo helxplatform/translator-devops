@@ -52,6 +52,7 @@ spec:
             - name: http
               containerPort: {{ .Values.strider.container.port }}
               protocol: TCP
+          {{ if .Values.probes.strider.enabled }}
           livenessProbe:
             exec:
               command:
@@ -61,6 +62,7 @@ spec:
             periodSeconds: {{ .Values.probes.strider.period }}
             successThreshold: {{ .Values.probes.strider.successThreshold }}
             timeoutSeconds: {{ .Values.probes.strider.timeoutSeconds }}
+          {{ end }}
           {{ if .Values.strider.resources }}
           resources: {{ toYaml .Values.strider.resources | nindent 12 }}
           {{ end }}
