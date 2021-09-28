@@ -21,3 +21,6 @@ spec:
             - name: http
               containerPort: 8144
               protocol: TCP
+          env:
+          - name: DEFAULT_VERSION
+            value: {{ .Values.app.defaultVersion }}
