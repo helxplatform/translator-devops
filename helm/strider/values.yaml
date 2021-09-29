@@ -8,7 +8,7 @@ fullnameOverride: ""
 kpRegistry:
   image:
     tag: latest
-    repository: ghcr.io/ranking-agent/kp_registry
+    repository: ghcr.io/ranking-agent/kp-registry
   service:
     type: ClusterIP
     port: 80
