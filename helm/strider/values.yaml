@@ -40,11 +40,11 @@ strider:
 
   resources:
     requests:
-      memory: 2Gi
-      cpu: 500m
-    limits:
-      memory: 3.5Gi
+      memory: 8Gi
       cpu: 1000m
+    limits:
+      memory: 12Gi
+      cpu: 2000m
 
 
 
