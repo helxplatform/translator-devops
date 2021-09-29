@@ -8,7 +8,7 @@ fullnameOverride: ""
 kpRegistry:
   image:
     tag: latest
-    repository: ghcr.io/ranking-agent/kp_registry
+    repository: ghcr.io/ranking-agent/kp-registry
   service:
     type: ClusterIP
     port: 80
@@ -40,27 +40,28 @@ strider:
 
   resources:
     requests:
-      memory: 2Gi
-      cpu: 500m
-    limits:
-      memory: 3.5Gi
+      memory: 8Gi
       cpu: 1000m
+    limits:
+      memory: 12Gi
+      cpu: 2000m
 
 
 
 # liveliness prob values
 probes:
   strider:
+    enabled: false
     failureThreshold: 5
     successThreshold: 1
-    periodSeconds: 5
+    periodSeconds: 120
     timeoutSeconds: 10
 
   kpRegistry:
     path: "/kps"
     failureThreshold: 5
     successThreshold: 1
-    periodSeconds: 5
+    periodSeconds: 120
     timeoutSeconds: 3
 
 

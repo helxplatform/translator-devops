@@ -15,3 +15,6 @@ service:
 ingress:
   host: #####HOSTNAME#####
   class: #####Ingress class #####
+
+app:
+  defaultVersion: "2.2.5"
