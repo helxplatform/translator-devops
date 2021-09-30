@@ -25,4 +25,4 @@ spec:
           - name: DEFAULT_VERSION
             value: {{ .Values.app.defaultVersion }}
           - name: SERVER_ROOT
-            value: {{ .Values.web }}
+            value: {{ .Values.web.serverHostName }}
