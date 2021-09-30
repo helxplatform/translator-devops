@@ -40,13 +40,11 @@ strider:
 
   resources:
     requests:
-      memory: 8Gi
+      memory: 16Gi
       cpu: 1000m
     limits:
-      memory: 12Gi
+      memory: 20Gi
       cpu: 2000m
-
-
 
 # liveliness prob values
 probes:
