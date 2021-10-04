@@ -12,14 +12,7 @@ data:
     "node_normalization_url": "{{ .Values.node_norm.url }}"
     }
   seed_db.sh: |-
-    #!/bin/bash
+    #!/bin/sh
     set -x
     FILE=/data/dump.rdb
-    DONE=/data/done
-    until [ -f "$DONE" ]; do
-        echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
-        echo "sleeping..."
-        sleep 3
-    done
-    rm -f $DONE
-    echo "$FILE found exiting .... "
+    wget -nv -O $FILE {{ .Values.dataUrl }}
