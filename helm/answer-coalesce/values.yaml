@@ -46,7 +46,7 @@ redis:
     size:
     class:
 
-dataUrl: "https://stars.renci.org/var/answer_coalesce/2021-09-24.rdb"
+dataUrl: "https://stars.renci.org/var/answer_coalesce/2021-09-25.rdb"
 
 nodenorm:
   url: "https://nodenormalization-sri.renci.org/1.2"
