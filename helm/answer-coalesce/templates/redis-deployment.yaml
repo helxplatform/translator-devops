@@ -17,10 +17,10 @@ spec:
         {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
         app: database
     spec:
-    {{- if .Values.redis.seedDB }}
+    {{- if .Values.dataUrl }}
       initContainers:
         - name: {{ include "answer-coalesce.fullname" . }}-redis-seed-container
-          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+          image: busybox:latest
           command:
             - '/seed_db.sh'
           volumeMounts:
@@ -51,7 +51,7 @@ spec:
               name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
               subPath: data
       volumes:
-      {{- if .Values.redis.seedDB }}
+      {{- if .Values.dataUrl}}
       - name: {{ include "answer-coalesce.fullname" . }}-seed-script
         configMap:
           name: {{ include "answer-coalesce.fullname" . }}-redis-config
