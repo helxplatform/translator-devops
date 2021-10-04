@@ -1,0 +1,28 @@
+{{ if .Values.dataUrl }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "name-lookup.fullname" . }}-restore-job
+spec:
+  template:
+    metadata:
+      name: "{{- include "name-lookup.fullname" . }}-restore-job"
+    spec:
+      volumes:
+        - name: {{ include "name-lookup.fullname" . }}-configmap
+          configMap:
+            name: {{ include "name-lookup.fullname" . }}-configmap
+            defaultMode: 0777
+      restartPolicy: OnFailure
+      containers:
+        - name: restore-container
+          image: "busybox"
+          command:
+            - /restore.sh
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath:  /restore.sh
+              name: {{ include "name-lookup.fullname" . }}-configmap
+              subPath: "restore.sh"
+{{ end }}

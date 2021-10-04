@@ -25,6 +25,9 @@ spec:
             value: {{ include "name-lookup.fullname" . }}-solr-svc
           - name: SOLR_PORT
             value: {{ .Values.solr.service.port | quote }}
+          # since this is just with out sub paths , using the ingress host name should be fine
+          - name: SERVER_ROOT
+            value: "https://{{ .Values.ingress.host }}"
           ports:
             - name: http
               containerPort: {{ .Values.webServer.port }}

@@ -15,13 +15,15 @@ webServer:
     repository: renciorg/name_lookup
     tag: latest
 
+dataUrl: "https://stars.renci.org/var/name_resolution_bkup/snapshot.backup.tar.gz"
+
 solr:
   service:
     port: 8983
     type: ClusterIP
   # container port
   port: 8983
-  heap_mem: "-Xms512m -Xmx512m"
+  heap_mem: "-Xms4000m -Xmx4000m"
   image:
     repository: solr
     tag: latest
