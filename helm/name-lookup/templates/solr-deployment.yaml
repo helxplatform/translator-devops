@@ -17,6 +17,24 @@ spec:
         {{- include "name-lookup.selectorLabels" . | nindent 8 }}
         app-name: solr
     spec:
+      volumes:
+        - name: {{ include "name-lookup.fullname" . }}-configmap
+          configMap:
+            name: {{ include "name-lookup.fullname" . }}-configmap
+            defaultMode: 0777
+      {{ if .Values.dataUrl }}
+      initContainers:
+        - name: {{ .Chart.Name }}-download-backup
+          image: busybox
+          command:
+            - /download.sh
+          volumeMounts:
+            - mountPath: /var/solr/data
+              name: {{ include "name-lookup.fullname" . }}-solr-data-vol
+            - mountPath: "/download.sh"
+              name: {{ include "name-lookup.fullname" . }}-configmap
+              subPath: download.sh
+      {{ end }}
       securityContext:
         runAsUser: 8983
         runAsGroup: 8983

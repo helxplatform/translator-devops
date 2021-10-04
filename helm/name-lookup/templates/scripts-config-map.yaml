@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "name-lookup.fullname" . }}-configmap
+  labels:
+    {{- include "name-lookup.labels" . | nindent 4 }}
+data:
+  download.sh: |-
+    #!/bin/sh
+    set -xa
+    DATA_DIR="/var/solr/data"
+    BACKUP_NAME="snapshot.backup"
+    BACKUP_ZIP="${BACKUP_NAME}.tar.gz"
+    BACKUP_URL="{{ .Values.dataUrl }}"
+    wget -nv -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL
+    cd $DATA_DIR
+    tar -xf $DATA_DIR/$BACKUP_ZIP -C $DATA_DIR
+  #    rm $BACKUP_ZIP
+  restore.sh: |-
+    #!/bin/sh
+    set -xa
+    COLLECTION_NAME="name_lookup"
+
+    SOLR_SERVER=http://{{ include "name-lookup.fullname" . }}-solr-svc:{{ .Values.solr.service.port }}
+
+    # liveliness check
+
+    HEALTH_ENDPOINT=http://{{ include "name-lookup.fullname" . }}-solr-svc:{{ .Values.solr.service.port }}/solr/admin/cores?action=STATUS
+    response=$(wget --spider --server-response ${HEALTH_ENDPOINT} 2>&1 | grep "HTTP/" | awk '{ print $2 }') >&2
+    until [ "$response" = "200" ]; do
+      response=$(wget --spider --server-response ${HEALTH_ENDPOINT} 2>&1 | grep "HTTP/" | awk '{ print $2 }') >&2
+      echo "  -- SOLR  is unavailable - sleeping"
+      sleep 3
+    done
+
+    # solr is ready Now we create collection if it doesn't exist
+
+    EXISTS=$(wget -O - ${SOLR_SERVER}/solr/admin/collections?action=LIST | grep name_lookup)
+
+    # create collection / shard
+    if [ -z "$EXISTS" ]
+    then
+      wget -O- ${SOLR_SERVER}/solr/admin/collections?action=CREATE'&'name=${COLLECTION_NAME}'&'numShards=1'&'replicationFactor=1
+      sleep 3
+    fi
+
+    # Setup fields for search
+    wget --post-data '{"set-user-property": {"update.autoCreateFields": "false"}}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/config
+    sleep 1
+    # Restore data
+    BACKUP_NAME="backup"
+    CORE_NAME=${COLLECTION_NAME}_shard1_replica_n1
+    RESTORE_URL=${SOLR_SERVER}/solr/${CORE_NAME}/replication?command=restore'&'location=/var/solr/data/var/solr/data/'&'name=${BACKUP_NAME}
+    wget -O - $RESTORE_URL
+    sleep 10
+    RESTORE_STATUS=$(wget -q -O - ${SOLR_SERVER}/solr/${CORE_NAME}/replication?command=restorestatus 2>&1 | grep "success") >&2
+    echo "Restore status: " $RESTORE_STATUS
+    until [ ! -z $RESTORE_STATUS ] ; do
+      echo "restore not done , probably still loading. Note: if this takes too long please check solr health"
+      RESTORE_STATUS=$(wget -O - ${SOLR_SERVER}/solr/${CORE_NAME}/replication?command=restorestatus 2>&1 | grep "success") >&2
+      sleep 10
+    done
+    echo "restore done"
+    wget --post-data '{
+              "add-field-type" : {
+                  "name": "LowerTextField",
+                  "class": "solr.TextField",
+                  "positionIncrementGap": "100",
+                  "analyzer": {
+                      "tokenizer": {
+                          "class": "solr.StandardTokenizerFactory"
+                      },
+                      "filters": [{
+                          "class": "solr.LowerCaseFilterFactory"
+                      }]
+                  }
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    sleep 1
+    wget --post-data '{
+                "add-field": [
+                    {
+                        "name":"name",
+                        "type":"LowerTextField",
+                        "stored":true
+                    },
+                    {
+                        "name":"length",
+                        "type":"plong",
+                        "stored":true
+                    },
+                    {
+                        "name":"curie",
+                        "type":"string",
+                        "stored":true
+                    }
+                ]
+            }' \
+          --header='Content-Type:application/json' \
+          -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    sleep 1
+    exit 0
