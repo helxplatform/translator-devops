@@ -44,7 +44,7 @@ strider:
       cpu: 1000m
     limits:
       memory: 20Gi
-      cpu: 2000m
+      cpu: 3000m
 
 # liveliness prob values
 probes:
