@@ -28,7 +28,7 @@ pipeline {
                 container('agent-docker') {
                     sh '''
                     cd monitoring
-                    run_test.sh
+                    ./run_test.sh
                     '''
                 }
             }
