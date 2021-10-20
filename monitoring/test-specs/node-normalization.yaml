@@ -1,0 +1,16 @@
+config:
+  target: "{{ $processEnvironment.SERVER_URL }}"
+  ensure:
+    maxErrorRate: 1
+    p95: 2
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  plugins:
+    expect: {}
+scenarios:
+  - docs:
+      - get:
+          url: "/docs"
+          expect:
+            - statusCode: 200
