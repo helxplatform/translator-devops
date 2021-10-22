@@ -20,6 +20,12 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-web-container
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "aragorn.fullname" . }}-configmap
+          env:
+            - name: QUEUE_HOST
+              value: "{{ include "aragorn.fullname" . }}-rbtmq-server-service.powen.svc.k8s.renci.org"
           imagePullPolicy: Always
           ports:
             - name: http
@@ -37,15 +43,6 @@ spec:
             - "--root-path"
             - "/1.2"
             - "src.server:APP"
-          env:
-            - name: WEB_HOST
-              value: 0.0.0.0
-            - name: WEB_PORT
-              value: {{ .Values.app.port | quote}}
-            - name: "SERVER_ROOT"
-              value: "{{ .Values.web.serverHostName }}"
-            - name: "DEBUG_TIMING"
-              value: "{{ .Values.app.debugTiming }}"
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs
