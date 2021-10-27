@@ -25,7 +25,7 @@ spec:
                 name: {{ include "aragorn.fullname" . }}-configmap
           env:
             - name: QUEUE_HOST
-              value: "{{ include "aragorn.fullname" . }}-rbtmq-server-service.powen.svc.k8s.renci.org"
+              value: "{{ include "aragorn.fullname" . }}-rbtmq-server-service"
           imagePullPolicy: Always
           ports:
             - name: http
