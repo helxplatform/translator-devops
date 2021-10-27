@@ -21,3 +21,11 @@ app:
 
 web:
   serverHostName: "hostname"
+
+x_trapi:
+  maturity:
+    key: "maturity"
+    value: "leveltype"
+  infores:
+    key: "infores"
+    value: "servicetype"

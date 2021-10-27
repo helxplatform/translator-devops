@@ -26,6 +26,14 @@ spec:
               value: {{ include "plater.fullname" . }}-neo4j-service
             - name: NEO4J_HTTP_PORT
               value: "{{ .Values.app.neo4j.httpPort }}"
+            - name: "MATURITY_KEY"
+              value: "{{ .Values.x_trapi.maturity.key }}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "INFORES_KEY"
+              value: "{{ .Values.x_trapi.infores.key }}"
+            - name: "INFORES_VALUE"
+              value: "{{ .Values.datasetDesc.provenanceTag }}"
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-config-files
               mountPath: /check_neo.sh

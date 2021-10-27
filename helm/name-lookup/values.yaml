@@ -42,3 +42,10 @@ ingress:
   host:
   class:
 
+x_trapi:
+  maturity:
+    key: "maturity"
+    value: "leveltype"
+  infores:
+    key: "infores"
+    value: "servicetype"

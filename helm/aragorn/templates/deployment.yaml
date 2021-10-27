@@ -46,6 +46,15 @@ spec:
               value: "{{ .Values.web.serverHostName }}"
             - name: "DEBUG_TIMING"
               value: "{{ .Values.app.debugTiming }}"
+            - name: "MATURITY_KEY"
+              value: "{{ .Values.x_trapi.maturity.key }}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "INFORES_KEY"
+              value: "{{ .Values.x_trapi.infores.key }}"
+            - name: "INFORES_VALUE"
+              value: "{{ .Values.x_trapi.infores.value }}"
+
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs

@@ -130,3 +130,11 @@ datasetDesc:
   neo4j_dump: ""
   provenanceTag: "infores:automat.platersource"
   license: "" # link to terms of service
+
+x_trapi:
+  maturity:
+    key: "maturity"
+    value: "leveltype"
+  infores:
+    key: "infores"
+    value: "servicetype"

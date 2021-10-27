@@ -42,3 +42,11 @@ secrets:
 answercoalesce:
   fullServiceName: ac_cache-host
   redisServicePort: 1234
+
+x_trapi:
+  maturity:
+    key: "maturity"
+    value: "leveltype"
+  infores:
+    key: "infores"
+    value: "servicetype"
