@@ -30,3 +30,4 @@ to run. This way we just need to add more test specs. Testing code will stay the
 #### Test spec 
 
 The testing tool used here is [artillery.io](https://artillery.io/docs/guides/overview/welcome.html) with the [expect-plugin](https://artillery.io/docs/guides/plugins/plugin-expectations-assertions.html).
+As such the test specs are artillery test specs. 
