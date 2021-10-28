@@ -31,7 +31,7 @@ function run_artillery() {
          --entrypoint "/bin/sh" \
          renciorg/artillery:2.0.2-2-expect-plugin
       )
-  docker cp ${PWD}/test-specs/${test_file} $container_id:/test.yaml
+  docker cp "${PWD}/test-specs/${test_file}" $container_id:/test.yaml
   docker exec $container_id  artillery run /test.yaml > test_output.yaml
 
   if grep -i "errors.enotfound" test_output.yaml; then
