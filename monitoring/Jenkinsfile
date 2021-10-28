@@ -34,6 +34,7 @@ pipeline {
                     cd monitoring
                     echo server : $SERVER_URL
                     echo test_spec: $ARTILLERY_CONF
+                    chmod +x -R ./run_test.sh
                     ./run_test.sh -t $ARTILLERY_CONF -s $SERVER_URL
                     '''
                 }
