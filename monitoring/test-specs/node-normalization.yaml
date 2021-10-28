@@ -9,7 +9,7 @@ config:
   plugins:
     expect: {}
 scenarios:
-  - docs:
+  - flow:
       - get:
           url: "/docs"
           expect:
