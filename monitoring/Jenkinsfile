@@ -25,10 +25,16 @@ pipeline {
     stages {
         stage('test') {
             steps {
+                script {
+                    env.SERVER_URL = params.server_to_test
+                    env.ARTILLERY_CONF = params.test_spec
+                }
                 container('agent-docker') {
                     sh '''
                     cd monitoring
-                    ./run_test.sh
+                    echo server : $SERVER_URL
+                    echo test_spec: $ARTILLERY_CONF
+                    ./run_test.sh -t $ARTILLERY_CONF -s $SERVER_URL
                     '''
                 }
             }
