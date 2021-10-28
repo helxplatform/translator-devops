@@ -24,25 +24,34 @@ function validate() {
 function run_artillery() {
   test_file=$1
   server_url=$2
-
-  docker run \
-         -v "${PWD}/test-specs:/scripts"  \
+  container_id=$( \
+      docker run \
+         -d -it \
          --env SERVER_URL=$server_url \
-         renciorg/artillery:2.0.2-2-expect-plugin \
-         run  /scripts/$test_file > test_output.yaml
+         --entrypoint "/bin/sh" \
+         renciorg/artillery:2.0.2-2-expect-plugin
+      )
+  docker cp ${PWD}/test-specs/${test_file} $container_id:/test.yaml
+  docker exec $container_id  artillery run /test.yaml > test_output.yaml
+
   if grep -i "errors.enotfound" test_output.yaml; then
     echo "server address ${server_url} not found"
+    docker rm -f $container_id
     exit 1
   fi
 
 
   if grep "expect.failed" test_output.yaml; then
     echo "error found check test_output.yaml"
+    docker rm -f $container_id
     exit 1
   else
     echo "SUCCESS"
+    docker rm -f $container_id
     exit 0
   fi
+
+  docker rm -f $container_id
 
   exit 0
 }
