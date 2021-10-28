@@ -1,5 +1,6 @@
 #!/bin/bash
 
+set -ax
 
 function help() {
     echo "
@@ -26,7 +27,7 @@ function run_artillery() {
   docker run \
          -v ${PWD}/test-specs:/scripts  \
          --env SERVER_URL=$server_url \
-         artillery-expect \
+         renciorg/artillery:2.0.2-2-expect-plugin \
          run  /scripts/$test_file > test_output.yaml
 
 
