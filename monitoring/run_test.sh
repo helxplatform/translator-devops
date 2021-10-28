@@ -25,7 +25,7 @@ function run_artillery() {
   server_url=$2
 
   docker run \
-         -v '${PWD}/test-specs':/scripts  \
+         -v "${PWD}/test-specs:/scripts"  \
          --env SERVER_URL=$server_url \
          renciorg/artillery:2.0.2-2-expect-plugin \
          run  /scripts/$test_file > test_output.yaml
