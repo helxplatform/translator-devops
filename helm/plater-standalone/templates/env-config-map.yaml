@@ -13,3 +13,5 @@ data:
   DB_TYPE: "{{ .Values.app.dbType }}"
   PLATER_TITLE: "{{ .Values.app.title }}"
   PLATER_VERSION: "{{ .Values.app.version }}"
+  MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
+  LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"

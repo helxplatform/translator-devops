@@ -24,8 +24,6 @@ web:
 
 x_trapi:
   maturity:
-    key: "maturity"
-    value: "leveltype"
-  infores:
-    key: "infores"
-    value: "servicetype"
+    value: "maturity"
+  location:
+    value: "location"

@@ -28,14 +28,10 @@ spec:
           # since this is just with out sub paths , using the ingress host name should be fine
           - name: SERVER_ROOT
             value: "https://{{ .Values.ingress.host }}"
-          - name: "MATURITY_KEY"
-            value: "{{ .Values.x_trapi.maturity.key }}"
           - name: "MATURITY_VALUE"
             value: "{{ .Values.x_trapi.maturity.value }}"
-          - name: "INFORES_KEY"
-            value: "{{ .Values.x_trapi.infores.key }}"
-          - name: "INFORES_VALUE"
-            value: "{{ .Values.x_trapi.infores.value }}"
+          - name: "LOCATION_VALUE"
+            value: "{{ .Values.x_trapi.location.value }}"
           ports:
             - name: http
               containerPort: {{ .Values.webServer.port }}
