@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "aragorn.fullname" . }}-rbtmq-server
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+    app-name: rbtmq
+spec:
+  serviceName: {{ include "aragorn.fullname" . }}-rbtmq-server-service
+  selector:
+    matchLabels:
+      {{- include "aragorn.selectorLabels" . | nindent 6 }}
+      app-name: rbtmq
+  template:
+    metadata:
+      labels:
+        {{- include "aragorn.selectorLabels" . | nindent 8 }}
+        app-name: rbtmq
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-rbtmq-container
+          image: "{{ .Values.rbtmq.image.repository }}:{{ .Values.rbtmq.image.tag }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "aragorn.fullname" . }}-configmap
+          ports:
+            - name: web-port
+              protocol: TCP
+              containerPort: {{ .Values.rbtmq.secrets.webPort }}
+            - name: amqp-port
+              protocol: TCP
+              containerPort: {{ .Values.rbtmq.secrets.amqpPort }}
+          resources:
+            {{- toYaml .Values.rbtmq.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "aragorn.fullname" . }}-rbtmq-data-volume
+              subPath: data
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "aragorn.fullname" . }}-rbtmq-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

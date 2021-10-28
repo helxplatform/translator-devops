@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "aragorn.fullname" . }}-configmap
+data:
+  QUEUE_HOST: "{{ include "aragorn.fullname" . }}-rbtmq-server-service"
+  QUEUE_MONITOR_PORT: "{{ .Values.rbtmq.secrets.webPort }}"
+  QUEUE_PORT: "{{ .Values.rbtmq.secrets.amqpPort }}"
+  QUEUE_USER: "{{ .Values.rbtmq.secrets.queueUser }}"
+  QUEUE_PW: "{{ .Values.rbtmq.secrets.queuePassword }}"
+  QUEUE_ADMIN_PW: "{{ .Values.rbtmq.secrets.queueAdminPassword }}"
+  WEB_HOST: 0.0.0.0
+  WEB_PORT: {{ .Values.app.port | quote}}
+  SERVER_ROOT: "{{ .Values.web.serverHostName }}"
+  DEBUG_TIMING: "{{ .Values.app.debugTiming }}"

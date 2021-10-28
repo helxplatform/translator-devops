@@ -1,0 +1,20 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "api-watchdog.fullname" . }}-cronjob
+spec:
+  schedule: "{{ .Values.app.updateCronInterval }}"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: api-watchdog-container
+            image: {{ .Values.image.repository }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            command:
+            - bash
+            - startup.sh
+          restartPolicy: OnFailure
