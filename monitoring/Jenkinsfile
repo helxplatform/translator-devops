@@ -46,7 +46,7 @@ pipeline {
         failure {
             emailext body: "Monitoring ${env.SERVER_URL} encountered some errors. Please see attached test output.",
             subject: "Translator service warn (${env.SERVER_URL})",
-            to: '${env.EMAIL_RECIPIENTS}',
+            to: "${env.EMAIL_RECIPIENTS}",
             attachmentsPattern: 'monitoring/test_output.yaml'
         }
     }
