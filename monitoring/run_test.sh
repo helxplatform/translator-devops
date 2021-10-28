@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -ax
+# stop test if any of the steps fail -x
+set -axe
 
 function help() {
     echo "
@@ -29,7 +30,6 @@ function run_artillery() {
          --env SERVER_URL=$server_url \
          renciorg/artillery:2.0.2-2-expect-plugin \
          run  /scripts/$test_file > test_output.yaml
-
 
   if grep "expect.failed" test_output.yaml; then
     echo "error found check test_output.yaml"
