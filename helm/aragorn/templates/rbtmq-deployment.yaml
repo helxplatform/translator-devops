@@ -23,9 +23,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "aragorn.fullname" . }}-configmap
-          env:
-            - name: QUEUE_HOST
-              value: "{{ include "aragorn.fullname" . }}-rbtmq-server-service"
           ports:
             - name: web-port
               protocol: TCP
