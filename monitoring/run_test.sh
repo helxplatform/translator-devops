@@ -28,6 +28,7 @@ function run_artillery() {
       docker run \
          -d -it \
          --env SERVER_URL=$server_url \
+         --env DEBUG=http*,plugin:expect \
          --entrypoint "/bin/sh" \
          renciorg/artillery:2.0.2-2-expect-plugin
       )
