@@ -67,3 +67,9 @@ ingress:
   enabled: true
   host: answercoalesce.renci.org
   class: "the ingress class"
+
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

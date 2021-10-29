@@ -47,6 +47,10 @@ spec:
               value: "{{ include "r3.fullname" . }}-redis-service"
             - name: REDIS_PORT
               value: "{{ .Values.redis.port}}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "LOCATION_VALUE"
+              value: "{{ .Values.x_trapi.location.value }}"
           livenessProbe:
             httpGet:
               path: /apidocs

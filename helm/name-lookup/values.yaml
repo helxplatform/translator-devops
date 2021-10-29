@@ -42,3 +42,8 @@ ingress:
   host:
   class:
 
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

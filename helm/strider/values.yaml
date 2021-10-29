@@ -88,3 +88,11 @@ ingress:
   kpRegistry:
     host: "the kp host name"
   timeout: 7200 # 1hr
+
+x_trapi:
+  maturity:
+    key: "maturity"
+    value: "leveltype"
+  infores:
+    key: "infores"
+    value: "servicetype"

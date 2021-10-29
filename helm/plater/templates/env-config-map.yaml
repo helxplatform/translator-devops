@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "plater.fullname" . }}-env-configmap
+data:
+  WEB_HOST: "0.0.0.0"
+  WEB_PORT: "{{ .Values.app.port }}"
+  NEO4J_HOST: {{ include "plater.fullname" . }}-neo4j-service
+  NEO4J_PASSWORD: "{{ .Values.app.neo4j.password }}"
+  NEO4J_HTTP_PORT: "{{ .Values.app.neo4j.httpPort }}"
+  NEO4J_USERNAME: "{{ .Values.app.neo4j.username }}"
+  PLATER_SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-plater-service"
+  AUTOMAT_HOST: {{ .Values.app.automatAddress }}
+  PLATER_TITLE: {{ .Release.Name }}
+  BL_VERSION: {{ .Values.app.bl_version }}
+  WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
+  NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"
+  PROVENANCE_TAG: "{{ .Values.datasetDesc.provenanceTag }}"
+  NEO4J_QUERY_TIMEOUT: "{{ .Values.app.Neo4jQueryTimeout }}"
+  MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
+  LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"

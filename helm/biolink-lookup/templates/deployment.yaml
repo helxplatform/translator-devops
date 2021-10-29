@@ -26,3 +26,8 @@ spec:
             value: {{ .Values.app.defaultVersion }}
           - name: SERVER_ROOT
             value: {{ .Values.web.serverHostName }}
+          - name: "MATURITY_VALUE"
+            value: "{{ .Values.x_trapi.maturity.value }}"
+          - name: "LOCATION_VALUE"
+            value: "{{ .Values.x_trapi.location.value }}"
+
