@@ -16,5 +16,5 @@ spec:
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             command:
             - bash
-            - startup.sh
+            - fetch-and-exec.sh
           restartPolicy: OnFailure
