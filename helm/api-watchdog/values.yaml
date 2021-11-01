@@ -5,11 +5,15 @@
 replicaCount: 1
 
 image:
-  repository: organization/container
   pullPolicy: Always
 
 app:
-    updateCronInterval: "0 */24 * * *"
+  updateCronInterval: "0 */24 * * *"
+
+env:
+  MAILGUN_API_URL: "msg email url"
+  MAILGUN_API_TOKEN: "the key"
+  MAILGUN_FROM: "from"
 
 imagePullSecrets: []
 nameOverride: ""
