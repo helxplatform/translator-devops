@@ -8,7 +8,7 @@ data:
   SERVER_ROOT: "{{ .Values.web.serverHostName }}"
   DEBUG_TIMING: "{{ .Values.app.debugTiming }}"
   MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
-  LOCATION_VALUEe: "{{ .Values.x_trapi.location.value }}"
+  LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
   CACHE_DB: "0"
   CACHE_HOST: "{{ .Values.secrets.omnicorpCacheHost }}"
   CACHE_PASSWORD: "{{ .Values.secrets.omnicorpCachePassword }}"

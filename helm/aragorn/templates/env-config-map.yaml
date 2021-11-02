@@ -15,3 +15,7 @@ data:
   DEBUG_TIMING: "{{ .Values.app.debugTiming }}"
   MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
   LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
+  STRIDER_URL: "{{ .Values.sub_processes.strider_url }}"
+  ANSWER_COALESCE_URL: "{{ .Values.sub_processes.answer_coalesce_url }}"
+  NODE_NORM_URL: "{{ .Values.sub_processes.node_norm_url }}"
+  RANKER_URL: "{{ .Values.sub_processes.ranker_url }}"

@@ -37,6 +37,12 @@ x_trapi:
   location:
     value: "location"
 
+sub_processes:
+  strider_url: "strider"
+  answer_coalesce_url: "ac"
+  ranker_url: "ranker"
+  node_norm_url: "nn"
+
 rbtmq:
   resources:
     limits:
