@@ -1,1 +1,4 @@
 values-populated.yaml filter=git-crypt diff=git-crypt
+ncats*.yaml filter=git-crypt diff=git-crypt
+renci*.yaml filter=git-crypt diff=git-crypt
+plater*.yaml filter=git-crypt diff=git-crypt
