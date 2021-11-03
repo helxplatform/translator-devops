@@ -10,5 +10,18 @@ services using helm.
 - Helm 3.5.1
 
 
+### Decrypting the repo 
 
+This repo contains values files that are setup to decrypt transparently through 
+[git-crypt](https://github.com/AGWA/git-crypt).
+
+###### Steps 
+**NOTE**: Insure "git config --global core.autocrlf true" is in effect. 
+1. Install [git-crypt](https://github.com/AGWA/git-crypt)
+2. Get ncats-git-crypy.key.asc and corresponding passphrase from repo maintainers securely 
+3. ```shell
+   cd /mnt/c/Users/powen/PycharmProjects/helm/translator-devops/helm/
+   gpg --decrypt ncats-git-crypt.key.asc | git-crypt unlock -
+   ```
+After the above steps repo shall enc/dec transprently on pull/push.
 
