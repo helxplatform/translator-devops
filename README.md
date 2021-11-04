@@ -23,5 +23,5 @@ This repo contains values files that are setup to decrypt transparently through
    cd ~/helm/
    gpg --decrypt ncats-git-crypt.key.asc | git-crypt unlock -
    ```
-After the above steps repo shall enc/dec transprently on pull/push.
+After the above steps repo shall encrypt/decrypt transparently on pull/push.
 
