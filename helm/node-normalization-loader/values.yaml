@@ -8,9 +8,9 @@ image:
   pullPolicy: Always
 
 data:
-  storageSize: 30G
   compendia:
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/biolink-2.1-conflated-v1.0/compendia/"
+    storageSize: 110G
+    sourceBaseUrl: https://stars.renci.org/var/babel_outputs/2021-11-3/compendia/
     files:
       - AnatomicalEntity.txt
       - BiologicalProcess.txt
@@ -50,7 +50,8 @@ data:
       - SmallMolecule.txtai
       - SmallMolecule.txtaj
   conflations:
-    sourceBaseUrl: https://stars.renci.org/var/babel_outputs/biolink-2.1-conflated-v1.0/conflation/
+    storageSize: 110G
+    sourceBaseUrl: https://stars.renci.org/var/babel_output/2021-11-3/conflation/
     configs:
       - file: "GeneProtein.txt"
         types:
@@ -69,6 +70,7 @@ redis_backend_config:
       - "host_name": "host"
         "port": "6379"
     "password": "password"
+
   "id_to_eqids_db":
     "ssl_enabled": false
     "is_cluster": false
@@ -77,6 +79,7 @@ redis_backend_config:
       - "host_name": "host"
         "port": "6379"
     "password": "password"
+
   "id_to_type_db":
     "ssl_enabled": false
     "is_cluster": false
@@ -85,6 +88,7 @@ redis_backend_config:
       - "host_name": "host"
         "port": "6379"
     "password": "password"
+
   "curie_to_bl_type_db":
     "ssl_enabled": false
     "is_cluster": false
@@ -93,6 +97,7 @@ redis_backend_config:
       - "host_name": "host"
         "port": "6379"
     "password": "password"
+
   "gene_protein_db":
     "ssl_enabled": false
     "is_cluster": false
@@ -102,6 +107,14 @@ redis_backend_config:
         "port": "6379"
     "password": "password"
 
+  "info_content_db":
+    "ssl_enabled": false
+    "is_cluster": false
+    "db": 0
+    "hosts":
+      - "host_name": "host"
+        "port": "6379"
+    "password": "password"
 
 resources:
   limits:
