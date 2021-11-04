@@ -9,7 +9,7 @@ image:
 
 data:
   compendia:
-    storageSize: 110G
+    storageSize: 1G
     sourceBaseUrl: https://stars.renci.org/var/babel_outputs/2021-11-3/compendia/
     files:
       - AnatomicalEntity.txt
@@ -50,7 +50,7 @@ data:
       - SmallMolecule.txtai
       - SmallMolecule.txtaj
   conflations:
-    storageSize: 110G
+    storageSize: 1G
     sourceBaseUrl: https://stars.renci.org/var/babel_output/2021-11-3/conflation/
     configs:
       - file: "GeneProtein.txt"
