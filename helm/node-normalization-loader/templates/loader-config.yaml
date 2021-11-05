@@ -12,6 +12,7 @@ data:
     "debug_messages": 1,
     "conflations" : []
     }
+
   config-conflation.json: |-
     {
     "compendium_directory": "/data/",
@@ -27,6 +28,7 @@ data:
         } {{ end }}
       ]
     }
+
   run_loader_conflation.sh: |-
     #!/bin/sh -x
     export DATA_DIR=/data
@@ -42,6 +44,7 @@ data:
           rm $DATA_DIR/$file
     done
     echo "FINISHED"
+
   run_loader_compendia.sh: |-
     #!/bin/sh -x
     export DATA_DIR=/data
