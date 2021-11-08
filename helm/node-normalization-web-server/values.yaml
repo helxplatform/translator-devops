@@ -71,3 +71,9 @@ redis_backend_config:
       - "host_name": "####"
         "port": "#####"
     "password": "######"
+
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

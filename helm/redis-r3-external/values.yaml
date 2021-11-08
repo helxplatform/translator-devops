@@ -68,3 +68,17 @@ conflation-db:
         memory: #
   cluster:
     slaveCount: 0
+
+info-content:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+  cluster:
+    slaveCount: 0

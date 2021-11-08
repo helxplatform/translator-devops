@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aragorn.fullname" . }}-rbtmq-server-service
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+spec:
+  {{- include "aragorn.serviceDefinition" . | nindent 2}}
+  ports:
+    - port: {{ .Values.rbtmq.secrets.webPort }}
+      targetPort: {{ .Values.rbtmq.secrets.webPort }}
+      protocol: TCP
+      name: rbtmq-http-prt
+    - port: {{ .Values.rbtmq.secrets.amqpPort }}
+      targetPort: {{ .Values.rbtmq.secrets.amqpPort }}
+      protocol: TCP
+      name: rbtmq-amqp-prt
+  selector:
+    {{- include "aragorn.selectorLabels" . | nindent 4 }}
+    app-name: rbtmq

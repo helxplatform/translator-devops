@@ -17,9 +17,17 @@ spec:
         app: {{ include "aragorn.name" . }}
         trapi: "1.2"
     spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 2000
+        runAsGroup: 3000
+
       containers:
         - name: {{ .Chart.Name }}-web-container
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "aragorn.fullname" . }}-configmap
           imagePullPolicy: Always
           ports:
             - name: http
@@ -37,15 +45,6 @@ spec:
             - "--root-path"
             - "/1.2"
             - "src.server:APP"
-          env:
-            - name: WEB_HOST
-              value: 0.0.0.0
-            - name: WEB_PORT
-              value: {{ .Values.app.port | quote}}
-            - name: "SERVER_ROOT"
-              value: "{{ .Values.web.serverHostName }}"
-            - name: "DEBUG_TIMING"
-              value: "{{ .Values.app.debugTiming }}"
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs

@@ -21,3 +21,9 @@ app:
 
 web:
   serverHostName: "hostname"
+
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

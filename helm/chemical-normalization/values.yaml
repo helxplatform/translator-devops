@@ -34,3 +34,9 @@ web:
 ingress:
   host:
   class: public
+
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

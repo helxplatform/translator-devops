@@ -1,0 +1,3 @@
+biolink-lookup:
+  image: "renciorg/bl_lookup"
+  vesion: "1.1.6"

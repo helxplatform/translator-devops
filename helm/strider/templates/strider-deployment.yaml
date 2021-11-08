@@ -39,6 +39,14 @@ spec:
               value: https://{{ .Values.ingress.strider.host }}
             - name: NORMALIZER_URL
               value: {{ .Values.strider.env.NORMALIZER_URL }}
+            - name: "MATURITY_KEY"
+              value: "{{ .Values.x_trapi.maturity.key }}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "INFORES_KEY"
+              value: "{{ .Values.x_trapi.infores.key }}"
+            - name: "INFORES_VALUE"
+              value: "{{ .Values.x_trapi.infores.value }}"
           args:
             - "--host"
             - "0.0.0.0"

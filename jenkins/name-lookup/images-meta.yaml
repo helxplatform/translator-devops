@@ -1,3 +1,0 @@
-name-lookup:
-  image: "renciorg/name_lookup"
-  version: "0.4"

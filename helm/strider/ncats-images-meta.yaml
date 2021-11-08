@@ -1,0 +1,7 @@
+strider:
+  image: "ghcr.io/ranking-agent/strider"
+  version: "v3.13.1"
+
+kp-registry:
+  image: "ghcr.io/ranking-agent/kp-registry"
+  version: "v2.3.2"
