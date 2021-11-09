@@ -15,3 +15,39 @@ spec:
   selector:
     {{- include "omnicorp.selectorLabels" . | nindent 4 }}
     type: dbms
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-webapi
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: webserver
+spec:
+  type: {{ .Values.webserver.service.type }}
+  ports:
+    - port: {{ .Values.webserver.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "omnicorp.selectorLabels" . | nindent 4 }}
+    type: webserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-redis
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: cache
+spec:
+  type: {{ .Values.webserver.service.type }}
+  ports:
+    - port: {{ .Values.webserver.service.port }}
+      targetPort: redis-port
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "omnicorp.selectorLabels" . | nindent 4 }}
+    type: cache

@@ -8,6 +8,64 @@ fullnameOverride: ""
 
 
 replicaCount: 1
+
+webserver:
+  image:
+    repository: renciorg/omnicorp-api
+    tag: "0.0.1"
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 3210
+
+redis:
+  dataUrl: "" #"https://stars.renci.org/var/omnicorp/omnicorp-10-6-2021.rdb"
+  dataSize: 62Gi
+  image:
+    repository: redis
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "6.2.6"
+
+  imagePullSecrets: []
+  storage:
+    size: 62Gi
+  password: "stayoutoftrouble"
+
+
+  podAnnotations: {}
+
+  podSecurityContext: {}
+    # fsGroup: 2000
+
+  securityContext: {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+  service:
+    type: ClusterIP
+    port: 6380
+
+
+
+  resources:
+    requests:
+      memory: 116Gi
+      cpu: 500m
+    limits:
+      memory: 120Gi
+      cpu: 500m
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
 postgres:
   dataUrl: "https://stars.renci.org/var/omnicorp/omnicorp-10-6-2021.sql"
   dataSize: 21Gi

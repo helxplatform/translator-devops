@@ -7,18 +7,18 @@ spec:
     metadata:
       name: "{{- include "omnicorp.fullname" . }}-postgre-job"
     spec:
-      # initContainers:
-      #   - name: download-bckp
-      #     image: busybox
-      #     command: 
-      #       - 'wget'
-      #     args: 
-      #       - '-O'
-      #       - '/data/dump.sql'
-      #       - '{{ .Values.postgres.dataUrl }}'
-      #     volumeMounts:
-      #     - name: data-dir
-      #       mountPath: '/data/'
+      initContainers:
+        - name: download-bckp
+          image: busybox
+          command:
+            - 'wget'
+          args:
+            - '-O'
+            - '/data/dump.sql'
+            - '{{ .Values.postgres.dataUrl }}'
+          volumeMounts:
+          - name: data-dir
+            mountPath: '/data/'
       containers:
       - name: loader-container
         image: "{{ .Values.postgres.image.repository}}:{{ .Values.postgres.image.tag }}"
