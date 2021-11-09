@@ -38,9 +38,9 @@ pipeline {
                 script {
                     script {
                         def image_meta = readYaml file: 'helm/aragorn-ranker/ncats-images-meta.yaml'
-                        env.ORIGINAL_REPO = image_meta.aragorn-ranker.image
-                        env.BUILD_VERSION = image_meta.aragorn-ranker.version
-                        currentBuild.displayName = image_meta.aragorn-ranker.version
+                        env.ORIGINAL_REPO = image_meta.aragornRanker.image
+                        env.BUILD_VERSION = image_meta.aragornRanker.version
+                        currentBuild.displayName = image_meta.aragornRanker.version
                     }
                 }
             }
