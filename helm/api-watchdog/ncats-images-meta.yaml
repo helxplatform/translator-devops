@@ -1,1 +1,1 @@
-apiWatchDog:  image: renciorg/api-watchdog  version: latest
+apiWatchDog:  image: "renciorg/api-watchdog"  version: "latest"
