@@ -1,1 +1,4 @@
 # no images yet
+camPipelineBuilder:
+  image: "tbd"
+  version: "tbd"
