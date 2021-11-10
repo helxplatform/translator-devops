@@ -36,12 +36,10 @@ pipeline {
             }
             steps{
                 script {
-                    script {
-                        def image_meta = readYaml file: 'helm/answer-coalesce/ncats-images-meta.yaml'
-                        env.ORIGINAL_REPO = image_meta.ac.image
-                        env.BUILD_VERSION = image_meta.ac.version
-                        currentBuild.displayName = image_meta.ac.version
-                    }
+                    def image_meta = readYaml file: 'helm/answer-coalesce/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = image_meta.ac.image
+                    env.BUILD_VERSION = image_meta.ac.version
+                    currentBuild.displayName = image_meta.ac.version
                 }
             }
         }
@@ -86,7 +84,7 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
+                sshagent (credentials: ['labshare-svc']) {
                     configFileProvider([
                         configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
