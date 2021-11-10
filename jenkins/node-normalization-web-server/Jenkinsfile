@@ -85,7 +85,7 @@ pipeline {
             steps {
                 sshagent (credentials: ['labshare-svc']) {
                     configFileProvider([
-                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
                         withCredentials([
                             file(
