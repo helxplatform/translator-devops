@@ -1,6 +1,6 @@
 aragorn:
   image: "renciorg/aragorn"
   version: "2.0.19"
-aragorn-rabbit-mq:
+aragornRabbitMq:
   image: "renciorg/aragorn-rbtmq"
   version: "0.0.1"
