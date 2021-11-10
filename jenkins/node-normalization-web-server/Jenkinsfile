@@ -35,12 +35,12 @@ pipeline {
                 }
             }
             steps{
-               script {
+                script {
                    def image_meta = readYaml file: 'helm/node-normalization-web-server/ncats-images-meta.yaml'
                     env.ORIGINAL_REPO = image_meta.nodeNormalization.image
                     env.BUILD_VERSION = image_meta.nodeNormalization.version
                     currentBuild.displayName = image_meta.nodeNormalization.version
-              }
+                }
            }
         }
         stage('build') {
