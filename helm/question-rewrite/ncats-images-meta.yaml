@@ -1,3 +1,3 @@
-question-rewrite:
+questionRewrite:
   image: "renciorg/qrw"
   version: "0.0.1"
