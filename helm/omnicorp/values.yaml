@@ -19,7 +19,7 @@ webserver:
     port: 3210
 
 redis:
-  dataUrl: "" #"https://stars.renci.org/var/omnicorp/omnicorp-10-6-2021.rdb"
+  dataUrl: "https://stars.renci.org/var/omnicorp/omnicorp-10-6-2021.rdb"
   dataSize: 62Gi
   image:
     repository: redis
@@ -30,7 +30,7 @@ redis:
   imagePullSecrets: []
   storage:
     size: 62Gi
-  password: "stayoutoftrouble"
+  password: "changeme"
 
 
   podAnnotations: {}
@@ -50,14 +50,12 @@ redis:
     type: ClusterIP
     port: 6380
 
-
-
   resources:
     requests:
       memory: 116Gi
       cpu: 500m
     limits:
-      memory: 120Gi
+      memory: 117Gi
       cpu: 500m
 
   nodeSelector: {}
@@ -77,10 +75,10 @@ postgres:
 
   imagePullSecrets: []
   storage:
-    size: 110G
-  user: murphy
-  dbName: "robokop"
-  password: "ncatsgamma"
+    size: 120Gi
+  user: changeme
+  dbName: "changeme"
+  password: "changeme"
 
 
   podAnnotations: {}
@@ -111,13 +109,13 @@ postgres:
   affinity: {}
 
 ingress:
-  enabled: false
+  enabled: true
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: "host"
       paths:
         - path: /
           pathType: ImplementationSpecific

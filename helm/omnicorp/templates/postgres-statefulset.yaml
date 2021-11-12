@@ -43,7 +43,7 @@ spec:
           ports:
             - name: postgres-port
               containerPort: 5432
-              protocol: TCP          
+              protocol: TCP
           resources:
             {{- toYaml .Values.postgres.resources | nindent 12 }}
           volumeMounts:

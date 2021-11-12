@@ -43,6 +43,13 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-redis
+          command:
+            - "redis-server"
+          args:
+            - "--port"
+            - "$(REDIS_PORT)"
+            - "--requirepass"
+            - "$(REDIS_PASSWORD)"
           securityContext:
             {{- toYaml .Values.redis.securityContext | nindent 12 }}
           image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"

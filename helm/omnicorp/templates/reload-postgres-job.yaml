@@ -24,9 +24,7 @@ spec:
         image: "{{ .Values.postgres.image.repository}}:{{ .Values.postgres.image.tag }}"
         imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}           
         command:
-        - /bin/bash
-        tty: true
-        stdin: true
+        - /loaddb.sh
         env:
         - name: PGHOST
           value: {{ include "omnicorp.fullname" . }}-postgres

@@ -27,7 +27,7 @@ spec:
   type: {{ .Values.webserver.service.type }}
   ports:
     - port: {{ .Values.webserver.service.port }}
-      targetPort: http
+      targetPort: 3210
       protocol: TCP
       name: http
   selector:
@@ -42,10 +42,10 @@ metadata:
     {{- include "omnicorp.labels" . | nindent 4 }}
     type: cache
 spec:
-  type: {{ .Values.webserver.service.type }}
+  type: {{ .Values.redis.service.type }}
   ports:
-    - port: {{ .Values.webserver.service.port }}
-      targetPort: redis-port
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.service.port }}
       protocol: TCP
       name: redis-port
   selector:
