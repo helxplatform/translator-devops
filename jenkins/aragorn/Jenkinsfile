@@ -84,7 +84,7 @@ pipeline {
             when {
                 allOf {
                     expression {
-                        return !params.BUILD_VERSION
+                        return !params.BUILD_VERSION_MQ
                     }
                     anyOf {
                         changeset "helm/aragorn/*"
