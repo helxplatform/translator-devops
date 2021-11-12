@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{- include "omnicorp.fullname" . }}-scripts"
+data:
+  loaddb.sh: |-
+    #!/bin/bash    
+    BCKP_FILE=/data/dump.sql
+    until pg_isready ; do
+        echo "postgres not ready";
+        sleep 10
+    done
+    psql < $BCKP_FILE
+
+  

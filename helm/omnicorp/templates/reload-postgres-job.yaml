@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{- include "omnicorp.fullname" . }}-postgre-job"
+spec:
+  template:
+    metadata:
+      name: "{{- include "omnicorp.fullname" . }}-postgre-job"
+    spec:
+      initContainers:
+        - name: download-bckp
+          image: busybox
+          command:
+            - 'wget'
+          args:
+            - '-O'
+            - '/data/dump.sql'
+            - '{{ .Values.postgres.dataUrl }}'
+          volumeMounts:
+          - name: data-dir
+            mountPath: '/data/'
+      containers:
+      - name: loader-container
+        image: "{{ .Values.postgres.image.repository}}:{{ .Values.postgres.image.tag }}"
+        imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}           
+        command:
+        - /loaddb.sh
+        env:
+        - name: PGHOST
+          value: {{ include "omnicorp.fullname" . }}-postgres
+        - name: PGPORT
+          value: "{{ .Values.postgres.service.port }}"
+        - name: PGUSER
+          value: {{ .Values.postgres.user }}
+        - name: PGPASSWORD
+          value: {{ .Values.postgres.password }}
+        - name: PGDATABASE
+          value: {{ .Values.postgres.dbName }}
+        volumeMounts:
+        - mountPath:  loaddb.sh
+          name: "loader-script"
+          subPath: "loaddb.sh"
+        - mountPath: /data
+          name: "data-dir"       
+      restartPolicy: OnFailure
+      volumes:
+      - name: loader-script
+        configMap:
+          name: "{{- include "omnicorp.fullname" . }}-scripts"
+          defaultMode: 0777
+      - name: data-dir
+        persistentVolumeClaim:
+          claimName: "{{ include "omnicorp.fullname" . }}-backup-pvc"

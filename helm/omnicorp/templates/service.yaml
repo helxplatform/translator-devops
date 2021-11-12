@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-postgres
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: dbms
+spec:
+  type: {{ .Values.postgres.service.type }}
+  ports:
+    - port: {{ .Values.postgres.service.port }}
+      targetPort: postgres-port
+      protocol: TCP
+      name: postgres-port
+  selector:
+    {{- include "omnicorp.selectorLabels" . | nindent 4 }}
+    type: dbms
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-webapi
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: webserver
+spec:
+  type: {{ .Values.webserver.service.type }}
+  ports:
+    - port: {{ .Values.webserver.service.port }}
+      targetPort: 3210
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "omnicorp.selectorLabels" . | nindent 4 }}
+    type: webserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-redis
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: cache
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.service.port }}
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "omnicorp.selectorLabels" . | nindent 4 }}
+    type: cache
