@@ -15,7 +15,7 @@ spec:
   tls:
   - hosts:
       - nodenormalization.apps.renci.org
-    secretName: nodenormalization.apps.renci.org-tls
+    secretName: nodenormalization-dev.apps.renci.org-tls
   rules:
     - host: {{ .Values.ingress.hostName | quote }}
       http:
@@ -41,7 +41,7 @@ spec:
   tls:
   - hosts:
       - nodenormalization.apps.renci.org
-    secretName: nodenormalization.apps.renci.org-tls
+    secretName: nodenormalization-dev.apps.renci.org-tls
   rules:
     - host: {{ .Values.ingress.hostName | quote }}
       http:
