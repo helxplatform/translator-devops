@@ -40,9 +40,9 @@ pipeline {
                         def imageMeta = readYaml file: 'helm/aragorn/ncats-images-meta.yaml'
                         env.ORIGINAL_REPO = imageMeta.aragorn.image
                         env.BUILD_VERSION = imageMeta.aragorn.version
-                        env.ORIGINAL_REPO_MQ = imageMeta.aragornrabbitmq.image
-                        env.BUILD_VERSION_MQ = imageMeta.aragornrabbitmq.version
-                        currentBuild.displayName = imageMeta.aragorn.version + "#" + imageMeta.aragornrabbitmq.version
+                        env.ORIGINAL_REPO_MQ = imageMeta.aragornRabbitMq.image
+                        env.BUILD_VERSION_MQ = imageMeta.aragornRabbitMq.version
+                        currentBuild.displayName = imageMeta.aragorn.version + "#" + imageMeta.aragornRabbitMq.version
                     }
                 }
             }
