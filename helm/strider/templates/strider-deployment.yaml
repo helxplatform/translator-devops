@@ -39,9 +39,9 @@ spec:
               value: https://{{ .Values.ingress.strider.host }}
             - name: NORMALIZER_URL
               value: {{ .Values.strider.env.NORMALIZER_URL }}
-            - name: "MATURITY_VALUE"
+            - name: "OPENAPI_SERVER_MATURITY"
               value: "{{ .Values.x_trapi.maturity.value }}"
-            - name: "LOCATION_VALUE"
+            - name: "OPENAPI_SERVER_LOCATION"
               value: "{{ .Values.x_trapi.location.value }}"
           args:
             - "--host"
