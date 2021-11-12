@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ include "node-normalization-loader.fullname" . }}-conflation-pvc"
+  name: "{{ include "node-normalization-loader.fullname" . }}-compendia-pvc"
 spec:
   accessModes:
   - ReadWriteOnce
@@ -9,13 +9,15 @@ spec:
     requests:
       storage: {{ .Values.data.compendia.storageSize }}
 ---
+{{- if .Values.data.conflations.enabled }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ include "node-normalization-loader.fullname" . }}-compendia-pvc"
+  name: "{{ include "node-normalization-loader.fullname" . }}-conflation-pvc"
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.data.conflations.storageSize }}
+{{- end }}
