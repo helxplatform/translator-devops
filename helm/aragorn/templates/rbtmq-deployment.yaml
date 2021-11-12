@@ -20,6 +20,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-rbtmq-container
           image: "{{ .Values.rbtmq.image.repository }}:{{ .Values.rbtmq.image.tag }}"
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: {{ include "aragorn.fullname" . }}-configmap
