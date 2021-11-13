@@ -95,7 +95,7 @@ pipeline {
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-aragorn-rbtmq",
+                    "IMAGE_NAME=translator-aragorn-rabbitmq",
                     "BUILD_VERSION_MQ=" + (params.BUILD_VERSION_MQ ?: env.BUILD_VERSION_MQ)
                 ]) {
                     dir("helm/aragorn") {
