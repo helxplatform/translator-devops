@@ -23,7 +23,7 @@ ingress:
   class: ""
   enabled: true
   pathType: "ImplementationSpecific"
-  annotation:
+  annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/configuration-snippet: |
@@ -41,6 +41,13 @@ logs:
 app:
   port: 4321
   debugTiming: "True"
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 3Gi
+      cpu: 1000m
 
 x_trapi:
   maturity:
