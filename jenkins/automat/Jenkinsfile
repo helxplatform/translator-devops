@@ -41,9 +41,9 @@ pipeline {
                 script {
                     script {
                         def imageMeta  = readYaml file: 'helm/automat/ncats-images-meta.yaml'
-                        env.ORIGINAL_REPO = imageMeta .automat.image
-                        env.BUILD_VERSION = imageMeta .automat.version
-                        currentBuild.displayName = imageMeta .automat.version
+                        env.ORIGINAL_REPO = imageMeta.automat.image
+                        env.BUILD_VERSION = imageMeta.automat.version
+                        currentBuild.displayName = imageMeta.automat.version
                     }
                 }
             }
