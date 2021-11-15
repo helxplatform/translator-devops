@@ -1,3 +1,3 @@
 camKpApi:
   image: "renciorg/cam-kp-api"
-  vesion: "0.1trapi1.2"
+  version: "0.1-trapi-1.2"
