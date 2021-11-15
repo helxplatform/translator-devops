@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-redis
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: cache
+spec:
+  serviceName: {{ include "omnicorp.fullname" . }}-redis
+  selector:
+    matchLabels:
+      {{- include "omnicorp.selectorLabels" . | nindent 6 }}
+      type: cache
+  template:
+    metadata:
+      {{- with .Values.redis.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "omnicorp.selectorLabels" . | nindent 8 }}
+        type: cache
+    spec:
+      {{- with .Values.redis.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.postgres.podSecurityContext | nindent 8 }}
+      {{- if .Values.redis.dataUrl }}
+      initContainers:
+        - name: download-bckp
+          image: busybox
+          command:
+            - 'wget'
+          args:
+            - '-O'
+            - '/data/dump.rdb'
+            - '{{ .Values.redis.dataUrl }}'
+          volumeMounts:
+          - name: {{ include "omnicorp.fullname" . }}-redis-data
+            mountPath: '/data/'
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-redis
+          command:
+            - "redis-server"
+          args:
+            - "--port"
+            - "$(REDIS_PORT)"
+            - "--requirepass"
+            - "$(REDIS_PASSWORD)"
+          securityContext:
+            {{- toYaml .Values.redis.securityContext | nindent 12 }}
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          env:
+          - name: REDIS_PASSWORD
+            value: {{ .Values.redis.password }}
+          - name: REDIS_PORT
+            value: {{ .Values.redis.service.port | quote }}
+          ports:
+            - name: redis-port
+              containerPort: {{ .Values.redis.service.port }}
+              protocol: TCP          
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /data
+            name: {{ include "omnicorp.fullname" . }}-redis-data
+      {{- with .Values.redis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "omnicorp.fullname" . }}-redis-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.redis.storage.size }}
