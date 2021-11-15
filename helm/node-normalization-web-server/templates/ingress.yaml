@@ -5,11 +5,17 @@ metadata:
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 256m
     nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
 spec:
+  tls:
+  - hosts:
+      - nodenormalization-dev.apps.renci.org
+    secretName: nodenormalization-dev.apps.renci.org-tls
   rules:
     - host: {{ .Values.ingress.hostName | quote }}
       http:
@@ -26,10 +32,16 @@ metadata:
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
   annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 256m
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
 spec:
+  tls:
+  - hosts:
+      - nodenormalization-dev.apps.renci.org
+    secretName: nodenormalization-dev.apps.renci.org-tls
   rules:
     - host: {{ .Values.ingress.hostName | quote }}
       http:
