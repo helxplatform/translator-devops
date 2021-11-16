@@ -48,6 +48,8 @@ spec:
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
       volumes:
         - name: aragorn-logs-vol
           persistentVolumeClaim:

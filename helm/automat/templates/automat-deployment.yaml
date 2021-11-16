@@ -33,4 +33,6 @@ spec:
         - containerPort: {{ .Values.app.port }}
           name: http
           protocol: TCP
+        resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
       restartPolicy: Always
