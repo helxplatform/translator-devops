@@ -17,6 +17,9 @@ ingress:
   host: ingress_HOST
   class: ingress_CLASS
   enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
 
 app:
   port: 4321

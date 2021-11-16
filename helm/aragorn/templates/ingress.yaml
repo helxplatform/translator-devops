@@ -1,33 +1,47 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "aragorn.fullname" . -}}
-
 {{- $svcPort := .Values.service.port -}}
+{{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}-ingress
   labels:
     {{- include "aragorn.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    # TODO remove the class if deploying to sterling
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      keepalive_timeout {{ .Values.ingress.timeout }};
-    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
-    nginx.ingress.kubernetes.io/send-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/service-upstream: 'true'
-    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
           - path: "/1.2(/|$)(.*)"
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: "{{ .Values.ingress.pathType }}"
+            {{- end }}
             backend:
-              serviceName: {{ include "aragorn.fullname" . }}-web-service-trapi-1-2
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}-web-service-trapi-1-2
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}-web-service-trapi-1-2
               servicePort: {{ $svcPort }}
+              {{- end }}
 {{- end }}

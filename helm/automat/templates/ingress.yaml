@@ -1,13 +1,29 @@
+{{- $fullName := include "automat.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "automat.fullname" . }}-ingress
+  {{- with .Values.ingress.annotations }}
   annotations:
-  {{- if .Values.ingress.class }}
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-    nginx.ingress.kubernetes.io/enable-cors: "true"
+
 spec:
+ {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
   {{- range .Values.ingress.tls.hosts }}
@@ -20,6 +36,17 @@ spec:
   - host: {{ .Values.ingress.host }}
     http:
       paths:
-      - backend:
-          serviceName:  {{ include "automat.fullname" . }}
-          servicePort: {{ .Values.service.port }}
+      - path: "/"
+        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+        pathType: "{{ .Values.ingress.pathType }}"
+        {{- end }}
+        backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: {{ $fullName }}
+            port:
+              number: {{ $svcPort }}
+          {{- else }}
+          serviceName: {{ $fullName }}
+          servicePort: {{ $svcPort }}
+          {{- end }}

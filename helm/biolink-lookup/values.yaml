@@ -15,9 +15,19 @@ service:
 ingress:
   host: #####HOSTNAME#####
   class: #####Ingress class #####
-
+  annotations: {}
+  pathType: ImplementationSpecific
 app:
   defaultVersion: "2.2.5"
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 500Mi
+      cpu: 250m
+
+
 
 web:
   serverHostName: "hostname"
