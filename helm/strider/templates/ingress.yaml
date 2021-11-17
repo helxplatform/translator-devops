@@ -43,6 +43,8 @@ spec:
             serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-2
             servicePort: {{ .Values.strider.service.port }}
             {{- end }}
+
+{{- if .Values.kpRegistry.enabled }}
 ---
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
@@ -79,3 +81,4 @@ spec:
         {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
         pathType: "{{ .Values.ingress.pathType }}"
         {{- end }}
+  {{- end }}
