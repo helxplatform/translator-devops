@@ -1,0 +1,47 @@
+config:
+  target: "{{ $processEnvironment.SERVER_URL }}"
+  timeout: 10
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  plugins:
+    expect: {}
+  payload:
+  - path: "data/name-resolution-lookup-data.csv"
+    order: iterate
+    skipHeader: true
+    fields:
+      - inputText
+      - expectedCurie
+  - path: "data/name-resolution-reverse-lookup-data.csv"
+    order: iterate
+    skipHeader: true
+    delimiter: "~"
+    fields:
+      - inputCurie
+      - expectedText
+scenarios:
+  - flow:
+      # test apidocs
+    - get:
+        url: "/docs"
+        expect:
+          - statusCode: 200
+
+    - post:
+        url: "/reverse_lookup"
+        json:
+          curies:
+          - "{{ inputCurie }}"
+        capture:
+        - json: $["{{ inputCurie }}"][0]
+          as: item
+        expect:
+        - statusCode: 200
+        - equals: {{ expectedText }}
+    - post:
+        url: "/lookup?string={{ inputText }}"
+        expect:
+        - contentType: json
+        - statusCode: 200
+        - hasProperty: "{{ expectedCurie }}"

@@ -44,10 +44,12 @@ pipeline {
     }
     post {
         failure {
-            emailext body: "Monitoring ${env.SERVER_URL} encountered some errors. Please see attached test output.",
+            emailext
             subject: "Translator service warn (${env.SERVER_URL})",
             to: "${env.EMAIL_RECIPIENTS}",
-            attachmentsPattern: 'monitoring/test_output.yaml'
+            body: '${monitoring/reports/report.html}',
+            mimeType: 'text/html'
+
         }
     }
 }

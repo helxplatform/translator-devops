@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # stop test if any of the steps fail -x
-set -axe
+set -ax
 
 function help() {
     echo "
@@ -30,19 +30,16 @@ function run_artillery() {
          --env SERVER_URL=$server_url \
          --env DEBUG=http*,plugin:expect \
          --entrypoint "/bin/sh" \
-         renciorg/artillery:2.0.2-2-expect-plugin
+         --volume "${PWD}/test-specs/data":/data \
+         --volume "${PWD}/reports/":/reports \
+         renciorg/artillery:2.0.0-5-expect-plugin
       )
   docker cp "${PWD}/test-specs/${test_file}" $container_id:/test.yaml
-  docker exec $container_id  artillery run /test.yaml > test_output.yaml
-
-  if grep -i "errors.enotfound" test_output.yaml; then
-    echo "server address ${server_url} not found"
-    docker rm -f $container_id
-    exit 1
-  fi
-
-
-  if grep "expect.failed" test_output.yaml; then
+  docker exec $container_id  artillery run --output /reports/report.json /test.yaml > test_output.yaml
+  has_error=$?
+  docker exec $container_id  artillery report --output /reports/report.html /reports/report.json
+  echo has_error
+  if [ $has_error -eq 1 ]; then
     echo "error found check test_output.yaml"
     docker rm -f $container_id
     exit 1
