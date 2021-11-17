@@ -30,17 +30,17 @@ function run_artillery() {
          --env SERVER_URL=$server_url \
          --env DEBUG=http*,plugin:expect \
          --entrypoint "/bin/sh" \
-         --volume "${PWD}/test-specs/data":/data \
-         --volume "${PWD}/reports/":/reports \
          renciorg/artillery:2.0.0-5-expect-plugin
       )
   docker cp "${PWD}/test-specs/${test_file}" $container_id:/test.yaml
-  docker exec $container_id  artillery run --output /reports/report.json /test.yaml > test_output.yaml
+  docker cp "${PWD}/test-specs/data/" $container_id:/data/
+  docker exec $container_id  artillery run --output /report.json /test.yaml > test_output.yaml
   has_error=$?
-  docker exec $container_id  artillery report --output /reports/report.html /reports/report.json
-  echo has_error
+  docker exec $container_id  artillery report --output /report.html /report.json
+  docker cp $container_id:/report.html "report.html"
+  docker cp $container_id:/report.json "report.json"
   if [ $has_error -eq 1 ]; then
-    echo "error found check test_output.yaml"
+    echo "error found check reports"
     docker rm -f $container_id
     exit 1
   else
