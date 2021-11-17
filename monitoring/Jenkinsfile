@@ -44,10 +44,9 @@ pipeline {
     }
     post {
         failure {
-            emailext
-            subject: "Translator service warn (${env.SERVER_URL})",
+            emailext subject: "Translator service warn (${env.SERVER_URL})",
             to: "${env.EMAIL_RECIPIENTS}",
-            body: '${monitoring/reports/report.html}',
+            body: '${monitoring/reports/report.html}'
             mimeType: 'text/html'
 
         }
