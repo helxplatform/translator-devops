@@ -27,7 +27,16 @@ ingress:
   class:
   # same as web.serverHostName
   hostName: #####
-
+  annotations:
+    # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  pathType: "Prefix"
+  tls: []
+#   - hosts:
+#       - nodenormalization-dev.apps.renci.org
+#     secretName: nodenormalization-dev.apps.renci.org-tls
 
 redis_backend_config:
   "eq_id_to_id_db":

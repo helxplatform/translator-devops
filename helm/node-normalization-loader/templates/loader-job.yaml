@@ -38,6 +38,7 @@ spec:
           persistentVolumeClaim:
             claimName: "{{ include "node-normalization-loader.fullname" . }}-compendia-pvc"
 ---
+{{- if .Values.data.conflations.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -76,3 +77,4 @@ spec:
         - name: data-dir
           persistentVolumeClaim:
             claimName: "{{ include "node-normalization-loader.fullname" . }}-conflation-pvc"
+{{- end -}}

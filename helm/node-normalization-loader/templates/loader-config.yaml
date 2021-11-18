@@ -13,6 +13,22 @@ data:
     "conflations" : []
     }
 
+  run_loader_compendia.sh: |-
+    #!/bin/sh -x
+    export DATA_DIR=/data
+    {{ $baseURL_Com := .Values.data.compendia.sourceBaseUrl }}
+    export data_files="{{ range $file := .Values.data.compendia.files }}{{ printf "%s%s " $baseURL_Com $file }}{{end}}"
+    for file in $data_files; do
+      echo DOWNLOADING $file
+      wget -nv -O $DATA_DIR/data.txt $file
+      ls -al $DATA_DIR
+      head -25 $DATA_DIR/data.txt
+      python load.py
+      rm $DATA_DIR/data.txt
+    done
+    echo "FINISHED"
+
+  {{ if .Values.data.conflations.enabled }}
   config-conflation.json: |-
     {
     "compendium_directory": "/data/",
@@ -32,8 +48,8 @@ data:
   run_loader_conflation.sh: |-
     #!/bin/sh -x
     export DATA_DIR=/data
-    {{ $baseURL := .Values.data.conflations.sourceBaseUrl }}
-    export data_files="{{ range $config := .Values.data.conflations.configs }}{{ printf "%s%s " $baseURL $config.file }}{{end}}"
+    {{ $baseURLCon := .Values.data.conflations.sourceBaseUrl }}
+    export data_files="{{ range $config := .Values.data.conflations.configs }}{{ printf "%s%s " $baseURLCon $config.file }}{{end}}"
     export file_names="{{ range $config := .Values.data.conflations.configs }}{{ printf $config.file }}{{end}}"
     for file in $data_files; do
       echo DOWNLOADING $file
@@ -44,18 +60,7 @@ data:
           rm $DATA_DIR/$file
     done
     echo "FINISHED"
+  {{ end }}
 
-  run_loader_compendia.sh: |-
-    #!/bin/sh -x
-    export DATA_DIR=/data
-    {{ $baseURL := .Values.data.compendia.sourceBaseUrl }}
-    export data_files="{{ range $file := .Values.data.compendia.files }}{{ printf "%s%s " $baseURL $file }}{{end}}"
-    for file in $data_files; do
-      echo DOWNLOADING $file
-      wget -nv -O $DATA_DIR/data.txt $file
-      python load.py
-      rm $DATA_DIR/data.txt
-    done
-    echo "FINISHED"
   redis_config.yaml: |
     {{ .Values.redis_backend_config | toYaml | nindent 4 }}
