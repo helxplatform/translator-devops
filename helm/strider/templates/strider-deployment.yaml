@@ -47,6 +47,10 @@ spec:
               value: "{{ .Values.x_trapi.maturity.value }}"
             - name: "OPENAPI_SERVER_LOCATION"
               value: "{{ .Values.x_trapi.location.value }}"
+            - name: "ROOT_PATH"
+              value: "/1.2"
+          command:
+            - 'uvicorn'
           args:
             - "--host"
             - "0.0.0.0"
@@ -56,6 +60,7 @@ spec:
             - "/1.2"
             - "--workers"
             - "{{ .Values.strider.uvicornWorkerCount }}"
+            - "strider.server:APP"
           ports:
             - name: http
               containerPort: {{ .Values.strider.container.port }}

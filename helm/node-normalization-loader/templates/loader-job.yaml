@@ -12,17 +12,17 @@ spec:
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /home/murphy/run_loader.sh
+            - /code/run_loader.sh
           volumeMounts:
-            - mountPath:  /home/murphy/run_loader.sh
+            - mountPath:  /code/run_loader.sh
               name: "loader-config"
               subPath: "run_loader_compendia.sh"
             - mountPath: /data
               name: "data-dir"
-            - mountPath: /home/murphy/redis_config.yaml
+            - mountPath: /code/redis_config.yaml
               name: "loader-config"
               subPath: "redis_config.yaml"
-            - mountPath: /home/murphy/config.json
+            - mountPath: /code/config.json
               name: "loader-config"
               subPath: "config-compendia.json"
           resources:
@@ -53,17 +53,17 @@ spec:
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
-            - /home/murphy/run_loader.sh
+            - /code/run_loader.sh
           volumeMounts:
-            - mountPath:  /home/murphy/run_loader.sh
+            - mountPath:  /code/run_loader.sh
               name: "loader-config"
               subPath: "run_loader_conflation.sh"
             - mountPath: /data
               name: "data-dir"
-            - mountPath: /home/murphy/redis_config.yaml
+            - mountPath: /code/redis_config.yaml
               name: "loader-config"
               subPath: "redis_config.yaml"
-            - mountPath: /home/murphy/config.json
+            - mountPath: /code/config.json
               name: "loader-config"
               subPath: "config-conflation.json"
           resources:

@@ -21,6 +21,13 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-kp-registry-container
           image: "{{ .Values.kpRegistry.image.repository }}:{{ .Values.kpRegistry.image.tag }}"
+          env:
+            - name: "OPENAPI_SERVER_MATURITY"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "OPENAPI_SERVER_LOCATION"
+              value: "{{ .Values.x_trapi.location.value }}"
+            - name: OPENAPI_SERVER_URL
+              value: https://{{ .Values.ingress.kpRegistry.host }}
           ports:
             - name: http
               containerPort: {{ .Values.kpRegistry.containerPort }}
