@@ -28,6 +28,8 @@ spec:
             - mountPath: /home/murphy/data
               name: {{ include "strider.fullname" . }}-kp-registry-data-volume
               subPath: data
+          resources:
+            {{ toYaml .Values.kpRegistry.resources | nindent 12 }}
           livenessProbe:
             httpGet:
               path: {{ .Values.probes.kpRegistry.path }}

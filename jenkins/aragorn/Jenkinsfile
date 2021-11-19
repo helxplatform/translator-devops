@@ -9,11 +9,15 @@ pipeline {
     }
     parameters {
         string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        string(name: 'BUILD_VERSION_MQ', defaultValue: '', description: 'The build version to deploy (optional)')
         string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
         string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
     }
     triggers {
         pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "ci"
     }
     stages {
         stage('Clean') {
@@ -22,7 +26,7 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Build Version') {
+        stage('Build Version aragorn') {
             when {
                 allOf {
                     expression {
@@ -35,17 +39,19 @@ pipeline {
                 }
             }
             steps{
-               script {
-                    BUILD_VERSION_GENERATED = VersionNumber(
-                        versionNumberString: 'v${BUILD_YEAR, XX}.${BUILD_MONTH, XX}${BUILD_DAY, XX}.${BUILDS_TODAY}',
-                        projectStartDate:    '1970-01-01',
-                        skipFailedBuilds:    true)
-                    currentBuild.displayName = BUILD_VERSION_GENERATED
-                    env.BUILD_VERSION = BUILD_VERSION_GENERATED
-              }
-           }
+                script {
+                    script {
+                        def imageMeta = readYaml file: 'helm/aragorn/ncats-images-meta.yaml'
+                        env.ORIGINAL_REPO = imageMeta.aragorn.image
+                        env.BUILD_VERSION = imageMeta.aragorn.version
+                        env.ORIGINAL_REPO_MQ = imageMeta.aragornRabbitMq.image
+                        env.BUILD_VERSION_MQ = imageMeta.aragornRabbitMq.version
+                        currentBuild.displayName = imageMeta.aragorn.version + "#" + imageMeta.aragornRabbitMq.version
+                    }
+                }
+            }
         }
-        stage('build') {
+        stage('Build aragorn') {
             when {
                 allOf {
                     expression {
@@ -66,10 +72,43 @@ pipeline {
                         script {
 
                             sh '''
-                            docker pull renciorg/aragorn:latest
-                            docker tag renciorg/aragorn:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build rabbit-mq') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION_MQ
+                    }
+                    anyOf {
+                        changeset "helm/aragorn/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=translator-aragorn-rabbitmq",
+                    "BUILD_VERSION_MQ=" + (params.BUILD_VERSION_MQ ?: env.BUILD_VERSION_MQ)
+                ]) {
+                    dir("helm/aragorn") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO_MQ:$BUILD_VERSION_MQ
+                            docker tag $ORIGINAL_REPO_MQ:$BUILD_VERSION_MQ 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_MQ
+                            '''
+                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_MQ')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
                                 image.push()
                             }
@@ -86,19 +125,33 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
-                    dir("helm/aragorn") {
-                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
-                        configFileProvider([
-                            configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
-                        ]){
-                            withAWS(credentials:'aws-ifx-deploy') {
-                                sh '''
-                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cp -R translator-ops/ops/sri/aragorn/deploy/* ./
-                                mv values-ci.yaml values.yaml
-                                /bin/bash deploy.sh
-                                '''
+            sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
+                configFileProvider([
+                    configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
+                ]){
+                    withCredentials([
+                        file(
+                            credentialsId: 'sri-git-crypt.key.asc',
+                            variable: 'cryptasc'),
+                        file(
+                            credentialsId: 'sri-git-crypt.key.pwd',
+                            variable: 'cryptpwd'),
+                    ]){
+                        withAWS(credentials:'aws-ifx-deploy') {
+                            sh '''
+                            # copy secret files to current directory
+                            cp $cryptasc sri-git-crypt.key.asc
+                            cp $cryptpwd sri-git-crypt.key.pwd
+                            # git crypt unlock the repo
+                            gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
+                            cd helm/aragorn
+                            git clone git@github.com:Sphinx-Automation/translator-ops.git
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            cp -R translator-ops/ops/sri/aragorn/deploy/* ./
+                            mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
+                            mv ncats-dev-values.yaml ./values-ncats.yaml
+                            /bin/bash deploy.sh
+                            '''
                             }
                         }
                     }
@@ -107,4 +160,3 @@ pipeline {
         }
     }
 }
-

@@ -1,0 +1,3 @@
+nodeNormalization:
+  image: "renciorg/r3_nodenorm"
+  version: "2.0.2"

@@ -37,8 +37,15 @@ nameOverride: ""
 fullnameOverride: ""
 
 ingress:
-  proxyConnectTimeout: "600"
-  proxyReadTimeout: "600"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+  pathType: "ImplementationSpecific"
   host:
   class:
 
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

@@ -45,3 +45,7 @@ dependencies:
     version: "12.7.4"
     repository: "https://charts.bitnami.com/bitnami"
     alias: semantic-count
+  - name: redis
+    version: "12.7.4"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: info-content
