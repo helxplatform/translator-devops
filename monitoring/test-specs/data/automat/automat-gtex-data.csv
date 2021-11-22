@@ -1,0 +1,2 @@
+n0Curie,n0Type,n1Type,predicate
+ENSEMBL:ENSG00000227232,biolink:BiologicalEntity,biolink:SequenceVariant,biolink:expression_decreased_by
