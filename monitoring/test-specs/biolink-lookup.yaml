@@ -1,0 +1,40 @@
+config:
+  target: "{{ $processEnvironment.SERVER_URL }}"
+  timeout: 10
+  phases:
+    - duration: 1
+      arrivalRate: 1
+  plugins:
+    expect: {}
+scenarios:
+  - flow:
+      # test apidocs
+    - get:
+        url: "/apidocs/"
+        expect:
+          - statusCode: 200
+
+    - get:
+        url: "/bl/biological_process/ancestors?version=latest"
+        expect:
+        - statusCode: 200
+    - get:
+        url: "/bl/biological_process/descendants?version=latest"
+        expect:
+        - statusCode: 200
+    - get:
+        url: "/bl/biological_process/lineage?version=latest"
+        expect:
+        - statusCode: 200
+    - get:
+        url: "/uri_lookup/RO:0002606"
+        expect:
+        - statusCode: 200
+    - get:
+        url: "/bl/biological_process"
+        expect:
+        - statusCode: 200
+    - get:
+        url: "/resolve_predicate?predicate=SEMMEDDB%3ACAUSES&predicate=RO%3A0000052&version=latest"
+        expect:
+        - statusCode: 200
