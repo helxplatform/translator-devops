@@ -1,0 +1,4 @@
+n0Curie,n0Type,n1Type,predicate
+CHEBI:33609,biolink:ChemicalSubstance,biolink:ChemicalSubstance,biolink:similar_to
+CHEBI:33609,biolink:ChemicalSubstance,biolink:ChemicalSubstance,biolink:similar_to
+CHEBI:30149,biolink:ChemicalSubstance,biolink:ChemicalSubstance,biolink:similar_to

@@ -1,0 +1,2 @@
+n0Curie,n0Type,n1Type,predicate
+MONDO:0005148,biolink:Disease,biolink:PhenotypicFeature,biolink:has_phenotype

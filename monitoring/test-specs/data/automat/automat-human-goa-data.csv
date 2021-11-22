@@ -1,0 +1,4 @@
+n0Curie,n0Type,n1Type,predicate
+UniProtKB:A0A024RBG1,biolink:BiologicalEntity,biolink:BiologicalEntity,biolink:actively_involved_in
+UniProtKB:A0A024RBG1,biolink:BiologicalEntity,biolink:BiologicalEntity,biolink:located_in
+UniProtKB:A0A024RBG1,biolink:BiologicalEntity,biolink:PhysicalEssenceOrOccurrent,biolink:enables
