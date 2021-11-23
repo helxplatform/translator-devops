@@ -17,6 +17,7 @@ web:
     type: ClusterIP
   serverHostName: "http(s)://#####"
   securityContext: {}
+  configPath: "/code/redis_config.yaml"
 
 resources:
   limits:
