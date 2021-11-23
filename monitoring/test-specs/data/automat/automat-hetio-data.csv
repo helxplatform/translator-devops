@@ -1,0 +1,2 @@
+n0Curie,n0Type,n1Type,predicate
+UBERON:0000178,biolink:Entity,biolink:Entity,biolink:entity_positively_regulates_entity

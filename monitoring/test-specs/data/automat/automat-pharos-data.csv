@@ -1,0 +1,3 @@
+n0Curie,n0Type,n1Type,predicate
+NCBIGene:10280,biolink:BiologicalEntity,biolink:Disease,biolink:genetic_association
+NCBIGene:10280,biolink:BiologicalEntity,biolink:ThingWithTaxon,biolink:genetic_association

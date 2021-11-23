@@ -1,0 +1,5 @@
+n0Curie,n0Type,n1Type,predicate
+UniProtKB:A0A386JUR1,biolink:MacromolecularMachineMixin,biolink:NamedThing,biolink:in_taxon
+UniProtKB:A0A6G6XP78,biolink:MacromolecularMachineMixin,biolink:NamedThing,biolink:in_taxon
+UniProtKB:A0A1B0YTK1,biolink:MacromolecularMachineMixin,biolink:NamedThing,biolink:in_taxon
+UniProtKB:A0A0P0QKP1,biolink:MacromolecularMachineMixin,biolink:NamedThing,biolink:in_taxon

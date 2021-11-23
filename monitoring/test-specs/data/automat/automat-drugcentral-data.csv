@@ -1,0 +1,3 @@
+n0Curie,n0Type,n1Type,predicate
+PUBCHEM.COMPOUND:10206,biolink:Entity,biolink:Entity,biolink:activity_decreased_by
+PUBCHEM.COMPOUND:10206,biolink:Entity,biolink:Entity,biolink:treats

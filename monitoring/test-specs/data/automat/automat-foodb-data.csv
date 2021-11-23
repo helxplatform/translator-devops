@@ -1,0 +1,4 @@
+n0Curie,n0Type,n1Type,predicate
+CHEMBL.COMPOUND:CHEMBL1574834,biolink:NamedThing,biolink:NamedThing,biolink:related_to
+PUBCHEM.COMPOUND:431099,biolink:NamedThing,biolink:NamedThing,biolink:related_to
+PUBCHEM.COMPOUND:8150830,biolink:NamedThing,biolink:NamedThing,biolink:related_to
