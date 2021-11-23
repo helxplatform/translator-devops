@@ -1,0 +1,2 @@
+n0Curie,n0Type,n1Type,predicate
+NCBIGene:23221,biolink:Gene,biolink:Gene,biolink:entity_negatively_regulates_entity
