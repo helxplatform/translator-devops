@@ -28,7 +28,7 @@ spec:
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /code/redis_config.yaml
+            - mountPath: {{ .Values.web.configPath }}
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:
@@ -91,7 +91,7 @@ spec:
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /code/redis_config.yaml
+            - mountPath: {{ .Values.web.configPath }}
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:
