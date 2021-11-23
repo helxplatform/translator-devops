@@ -1,0 +1,3 @@
+n0Curie,n0Type,n1Type,predicate
+PR:000029351,biolink:GeneOrGeneProduct,biolink:AnatomicalEntity,biolink:related_to
+PR:000029351,biolink:GeneOrGeneProduct,biolink:SequenceFeature,biolink:related_to

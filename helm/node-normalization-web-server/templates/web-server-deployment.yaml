@@ -14,21 +14,23 @@ spec:
       path: "1.2"
   template:
     metadata:
+      annotations:
+        checksum/config: {{ .Values.redis_backend_config | toString | sha256sum  }}
       labels:
         {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
         path: "1.2"
     spec:
+      {{- with .Values.web.securityContext }}
       securityContext:
-        runAsUser: 1001
-        fsGroup: 2000
-        runAsGroup: 3000
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: webserver-container
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /code/redis_config.yaml
+            - mountPath: {{ .Values.web.configPath }}
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:
@@ -77,21 +79,23 @@ spec:
       path: "root"
   template:
     metadata:
+      annotations:
+        checksum/config: {{ .Values.redis_backend_config | toString | sha256sum  }}
       labels:
         {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
         path: "root"
     spec:
+      {{- with .Values.web.securityContext }}
       securityContext:
-        runAsUser: 1001
-        fsGroup: 2000
-        runAsGroup: 3000
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: webserver-container
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /code/redis_config.yaml
+            - mountPath: {{ .Values.web.configPath }}
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:

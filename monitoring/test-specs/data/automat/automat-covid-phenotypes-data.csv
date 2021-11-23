@@ -1,0 +1,5 @@
+n0Curie,n0Type,n1Type,predicate
+HP:0012735,biolink:NamedThing,biolink:NamedThing,biolink:has_phenotype
+HP:0002098,biolink:NamedThing,biolink:NamedThing,biolink:has_phenotype
+HP:0032141,biolink:NamedThing,biolink:NamedThing,biolink:has_phenotype
+HP:0002027,biolink:NamedThing,biolink:NamedThing,biolink:has_phenotype
