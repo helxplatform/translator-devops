@@ -100,8 +100,13 @@ postgres:
 
 
 
-  resources: {}
-
+  resources:
+    requests:
+     memory: 3Gi
+     cpu: 250m
+    limits:
+     memory: 20Gi
+     cpu: 2000m
   nodeSelector: {}
 
   tolerations: []
