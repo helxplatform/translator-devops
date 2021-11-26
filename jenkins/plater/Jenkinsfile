@@ -66,7 +66,7 @@ pipeline {
             steps {
                 withEnv([
                     "IMAGE_NAME=translator-sri-plater-clustered",
-                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0]​ : env.BUILD_VERSION)
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
                 ]) {
                     dir("helm/plater") {
                         script {
@@ -84,7 +84,7 @@ pipeline {
                 }
                 withEnv([
                     "IMAGE_NAME=translator-sri-neo4j-42-apoc-gds",
-                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1]​ : env.BUILD_VERSION_NEO4J)
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
                 ]) {
                     dir("helm/plater") {
                         script {
@@ -120,8 +120,8 @@ pipeline {
                             variable: 'cryptpwd'),
                     ]){
                         withEnv([
-                            "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0]​ : env.BUILD_VERSION),
-                            "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1]​ : env.BUILD_VERSION_NEO4J)
+                            "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                            "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
                         ]) {
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
