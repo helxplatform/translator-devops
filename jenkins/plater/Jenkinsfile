@@ -18,6 +18,9 @@ pipeline {
     triggers {
         pollSCM('H/2 * * * *')
     }
+    environment {
+        DEPLOY_ENV = "ci"
+    }
     stages {
         stage('Clean') {
             steps {
@@ -39,14 +42,65 @@ pipeline {
             }
             steps{
                script {
-                    BUILD_VERSION_GENERATED = VersionNumber(
-                        versionNumberString: 'v${BUILD_YEAR, XX}.${BUILD_MONTH, XX}${BUILD_DAY, XX}.${BUILDS_TODAY}',
-                        projectStartDate:    '1970-01-01',
-                        skipFailedBuilds:    true)
-                    currentBuild.displayName = BUILD_VERSION_GENERATED
-                    env.BUILD_VERSION = BUILD_VERSION_GENERATED
+                    def imageMeta = readYaml file: 'helm/plater/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = imageMeta.plater.image
+                    env.BUILD_VERSION = imageMeta.plater.version
+                    env.ORIGINAL_REPO_NEO4J = imageMeta.neo4j.image
+                    env.BUILD_VERSION_NEO4J = imageMeta.neo4j.version
+                    currentBuild.displayName = imageMeta.plater.version + "#" + imageMeta.neo4j.version
               }
            }
+        }
+        stage('build image') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/plater/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=translator-sri-plater-clustered",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0]​ : env.BUILD_VERSION)
+                ]) {
+                    dir("helm/plater") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+                withEnv([
+                    "IMAGE_NAME=translator-sri-neo4j-42-apoc-gds",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1]​ : env.BUILD_VERSION_NEO4J)
+                ]) {
+                    dir("helm/plater") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J
+                            docker tag $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+            }
         }
         stage('Deploy') {
             when {
@@ -56,15 +110,33 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['github-kw']) {
-                    dir("helm/plater") {
-                        sh 'git clone -b plater git@github.com:Sphinx-Automation/translator-ops.git'
-                        withAWS(credentials:'aws-ifx-deploy') {
-                            sh '''
-                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            cp -R translator-ops/ops/sri/plater/deploy/* ./
-                            /bin/bash deploy.sh
-                            '''
+                sshagent (credentials: ['labshare-svc']) {
+                    withCredentials([
+                        file(
+                            credentialsId: 'sri-git-crypt.key.asc',
+                            variable: 'cryptasc'),
+                        file(
+                            credentialsId: 'sri-git-crypt.key.pwd',
+                            variable: 'cryptpwd'),
+                    ]){
+                        withEnv([
+                            "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0]​ : env.BUILD_VERSION),
+                            "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1]​ : env.BUILD_VERSION_NEO4J)
+                        ]) {
+                            withAWS(credentials:'aws-ifx-deploy') {
+                                sh '''
+                                # copy secret files to current directory
+                                cp $cryptasc sri-git-crypt.key.asc
+                                cp $cryptpwd sri-git-crypt.key.pwd
+                                # git crypt unlock the repo
+                                gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
+                                cd helm/plater
+                                git clone -b sri-platers git@github.com:Sphinx-Automation/translator-ops.git
+                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                                cp -R translator-ops/ops/sri/plater/deploy/* ./
+                                /bin/bash deploy.sh
+                                '''
+                            }
                         }
                     }
                 }
