@@ -1,11 +1,13 @@
 config:
   target: "{{ $processEnvironment.SERVER_URL }}"
+  http:
+    timeout: 60
   ensure:
     maxErrorRate: 1
     p95: 2
   phases:
-    - duration: 10
-      arrivalRate: 100
+    - duration: 1
+      arrivalRate: 10
   plugins:
     expect: {}
   payload:
