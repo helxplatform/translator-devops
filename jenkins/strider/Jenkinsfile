@@ -45,6 +45,8 @@ pipeline {
                         env.ORIGINAL_REPO_KP = imageMeta.kpRegistry.image
                         env.BUILD_VERSION_KP = imageMeta.kpRegistry.version
                         currentBuild.displayName = imageMeta.strider.version + "#" + imageMeta.kpRegistry.version
+                        env.BUILD_VERSION = 'true'
+                        env.BUILD_VERSION_KP = 'true'
                     }
                 }
             }
