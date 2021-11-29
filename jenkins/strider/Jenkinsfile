@@ -53,7 +53,8 @@ pipeline {
             when {
                 allOf {
                     expression {
-                        return !params.BUILD_VERSION
+                    //    return !params.BUILD_VERSION
+                          return env.BUILD_VERSION == 'true'
                     }
                     anyOf {
                         changeset "helm/strider/*"
@@ -85,9 +86,10 @@ pipeline {
         stage('build - kpRegistry') {
             when {
                 allOf {
-                    expression {
-                        return !params.BUILD_VERSION_KP
-                    }
+                //    expression {
+              //          return !params.BUILD_VERSION_KP
+            //        }
+                    expression { return env.BUILD_VERSION_KP == 'true' }
                     anyOf {
                         changeset "helm/strider/*"
                         triggeredBy 'UserIdCause'
