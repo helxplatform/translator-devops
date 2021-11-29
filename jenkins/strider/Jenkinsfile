@@ -28,6 +28,7 @@ pipeline {
                 allOf {
                     expression {
                         return !params.BUILD_VERSION
+                        return !params.BUILD_VERSION_KP
                     }
                     anyOf {
                         changeset "helm/strider/*"
