@@ -1,3 +1,4 @@
+{{- if .Values.kpRegistry.enabled }}
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
@@ -20,3 +21,4 @@ spec:
             - --post-data
             - ""
           restartPolicy: OnFailure
+  {{- end }}

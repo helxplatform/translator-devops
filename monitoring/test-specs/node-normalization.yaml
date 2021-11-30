@@ -1,13 +1,22 @@
 config:
   target: "{{ $processEnvironment.SERVER_URL }}"
+  http:
+    timeout: 60
   ensure:
     maxErrorRate: 1
     p95: 2
   phases:
     - duration: 1
-      arrivalRate: 1
+      arrivalRate: 10
   plugins:
     expect: {}
+  payload:
+    path: "data/node-normalization-data.csv"
+    order: iterate
+    skipHeader: true
+    fields:
+      - curie
+      - expected
 scenarios:
   - flow:
       # test apidocs
@@ -17,34 +26,30 @@ scenarios:
             - statusCode: 200
       # test normalized node post
       - get:
-          url: "/get_normalized_nodes?curie=MESH%3AD014867&curie=NCIT%3AC34373"
+          url: "/get_normalized_nodes?curie={{ curie }}"
           capture:
-           - json: $["MESH:D014867"]
-             as: water
-           - json: $["NCIT:C34373"]
-             as: sclerosis
+           - json: $["{{ curie }}"]
+             as: item
           expect:
             - statusCode: 200
             - equals:
-                - "{{ water.id.identifier }}"
-                - "PUBCHEM.COMPOUND:962"
-      # test normalized nodes post
+                - {{ item.id.identifier }}
+                - {{ expected }}
+#       test normalized nodes post
       - post:
           url: "/get_normalized_nodes"
           json:
             curies:
-             - "MESH:D014867"
-             - "NCIT:C34373"
+             - "{{ curie }}"
           capture:
-           - json: $["MESH:D014867"]
-             as: water
-           - json: $["NCIT:C34373"]
-             as: sclerosis
+           - json: $["{{ curie }}"]
+             as: item
           expect:
             - statusCode: 200
             - equals:
-                - "{{ water.id.identifier }}"
-                - "PUBCHEM.COMPOUND:962"
+                - {{ item.id.identifier }}
+                - {{ expected }}
+
       # test semantic_types
       - get:
           url: /get_semantic_types
