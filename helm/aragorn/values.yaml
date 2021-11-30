@@ -9,7 +9,8 @@ image:
   tag: latest
 
 web:
-  serverHostName: "hostname"
+  serverHostName: "serverHostName"
+  callbackHostName: "callbackHostName"
 
 nameOverride: ""
 fullnameOverride: ""
