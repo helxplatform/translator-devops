@@ -22,7 +22,9 @@ data:
       echo DOWNLOADING $file
       wget -nv -O $DATA_DIR/data.txt $file
       ls -al $DATA_DIR
-      head -25 $DATA_DIR/data.txt
+      head -1 $DATA_DIR/data.txt
+      tail -1 $DATA_DIR/data.txt
+      cat config.json
       python load.py
       rm $DATA_DIR/data.txt
     done

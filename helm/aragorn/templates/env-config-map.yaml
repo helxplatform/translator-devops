@@ -12,6 +12,7 @@ data:
   WEB_HOST: 0.0.0.0
   WEB_PORT: {{ .Values.app.port | quote}}
   SERVER_ROOT: "{{ .Values.web.serverHostName }}"
+  CALLBACK_HOST: "{{ .Values.web.callbackHostName }}"
   DEBUG_TIMING: "{{ .Values.app.debugTiming }}"
   MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
   LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"

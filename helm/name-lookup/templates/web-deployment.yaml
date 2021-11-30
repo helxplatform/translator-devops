@@ -27,7 +27,7 @@ spec:
             value: {{ .Values.solr.service.port | quote }}
           # since this is just with out sub paths , using the ingress host name should be fine
           - name: SERVER_ROOT
-            value: "https://{{ .Values.ingress.host }}"
+            value: "{{ .Values.webServer.serverHostName }}"
           - name: "MATURITY_VALUE"
             value: "{{ .Values.x_trapi.maturity.value }}"
           - name: "LOCATION_VALUE"
