@@ -15,9 +15,6 @@ pipeline {
     triggers {
         pollSCM('H/2 * * * *')
     }
-    environment {
-        DEPLOY_ENV = "ci"
-    }
     stages {
         stage('Clean') {
             steps {
