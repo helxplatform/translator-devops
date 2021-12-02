@@ -44,7 +44,7 @@ spec:
             servicePort: {{ .Values.strider.service.port }}
             {{- end }}
 
-{{- if .Values.strider.enabled }}
+{{- if .Values.kpRegistry.enabled }}
 ---
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
