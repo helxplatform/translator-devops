@@ -28,10 +28,10 @@ spec:
               subPath: "run_loader_compendia.sh"
             - mountPath: /data
               name: "data-dir"
-            - mountPath: {{ $codeDir}}/redis_config.yaml
+            - mountPath: {{ $codeDir }}/redis_config.yaml
               name: "loader-config"
               subPath: "redis_config.yaml"
-            - mountPath: {{ $codeDir}}/config.json
+            - mountPath: {{ $codeDir }}/config.json
               name: "loader-config"
               subPath: "config-compendia.json"
           resources:
