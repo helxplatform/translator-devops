@@ -40,9 +40,9 @@ pipeline {
             steps{
                 script {
                     def image_meta = readYaml file: 'helm/omnicorp/ncats-images-meta.yaml'
-                    env.ORIGINAL_REPO = image_meta.filterResultsTopN.image
-                    env.BUILD_VERSION = image_meta.filterResultsTopN.version
-                    currentBuild.displayName = image_meta.filterResultsTopN.version
+                    env.ORIGINAL_REPO = image_meta.omnicorpApi.image
+                    env.BUILD_VERSION = image_meta.omnicorpApi.version
+                    currentBuild.displayName = image_meta.omnicorpApi.version
                 }
            }
         }
