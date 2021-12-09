@@ -60,7 +60,7 @@ pipeline {
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-filter-results-top-n",
+                    "IMAGE_NAME=translator-omnicorp-api",
                     "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
                 ]) {
                     dir("helm/omnicorp") {
