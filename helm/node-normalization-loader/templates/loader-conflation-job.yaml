@@ -44,6 +44,6 @@ spec:
             defaultMode: 0777
         - name: data-dir
           persistentVolumeClaim:
-            claimName: "{{ $fullName}}-conflation-{{ $index }}-pvc"
+            claimName: "{{ $fullName }}-conflation-{{ $index }}-pvc"
 ---
 {{- end }}
