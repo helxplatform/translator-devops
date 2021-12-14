@@ -29,10 +29,6 @@ spec:
         {{- toYaml .Values.postgres.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}-postgres
-          command:
-            - /bin/sh
-          stdin: true
-          tty: true
           securityContext:
             {{- toYaml .Values.postgres.securityContext | nindent 12 }}
           image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
@@ -52,6 +48,7 @@ spec:
             {{- toYaml .Values.postgres.resources | nindent 12 }}
           volumeMounts:
           - mountPath: /var/lib/postgresql/data
+            subPath: postgresdata
             name: {{ include "omnicorp.fullname" . }}-postgres-data
           - mountPath: /dev/shm
             name: dshm
