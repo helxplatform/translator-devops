@@ -1,23 +1,30 @@
+{{- $fullName := include "node-normalization-loader.fullname" . -}}
+{{- $compendiaStorageSize := .Values.data.compendia.storageSize }}
+{{- $conflationStorageSize := .Values.data.conflations.storageSize }}
+{{- range $index, $compendia := .Values.data.compendia.files }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ include "node-normalization-loader.fullname" . }}-compendia-pvc"
+  name: "{{ $fullName }}-compendia-{{ $index }}-pvc"
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.data.compendia.storageSize }}
+      storage: {{ $compendiaStorageSize }}
 ---
-{{- if .Values.data.conflations.enabled }}
+{{- end }}
+---
+{{- range $index, $compendia := .Values.data.conflations.configs }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ include "node-normalization-loader.fullname" . }}-conflation-pvc"
+  name: "{{ $fullName}}-conflation-{{ $index }}-pvc"
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.data.conflations.storageSize }}
+      storage: {{ $conflationStorageSize }}
+---
 {{- end }}

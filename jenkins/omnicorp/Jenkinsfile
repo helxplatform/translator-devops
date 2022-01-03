@@ -32,17 +32,17 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "helm/node-normalization-web-server/*"
+                        changeset "helm/omnicorp/*"
                         triggeredBy 'UserIdCause'
                     }
                 }
             }
             steps{
                 script {
-                   def image_meta = readYaml file: 'helm/node-normalization-web-server/ncats-images-meta.yaml'
-                    env.ORIGINAL_REPO = image_meta.nodeNormalization.image
-                    env.BUILD_VERSION = image_meta.nodeNormalization.version
-                    currentBuild.displayName = image_meta.nodeNormalization.version
+                    def image_meta = readYaml file: 'helm/omnicorp/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = image_meta.omnicorpApi.image
+                    env.BUILD_VERSION = image_meta.omnicorpApi.version
+                    currentBuild.displayName = image_meta.omnicorpApi.version
                 }
            }
         }
@@ -53,17 +53,17 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "helm/node-normalization-web-server/*"
+                        changeset "helm/omnicorp/*"
                         triggeredBy 'UserIdCause'
                     }
                 }
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-node-normalization-loader",
+                    "IMAGE_NAME=translator-omnicorp-api",
                     "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
                 ]) {
-                    dir("helm/node-normalization-web-server") {
+                    dir("helm/omnicorp") {
                         script {
                             sh '''
                             docker pull $ORIGINAL_REPO:$BUILD_VERSION
@@ -81,7 +81,7 @@ pipeline {
         stage('Deploy') {
             when {
                 anyOf {
-                    changeset "helm/node-normalization-web-server/*"
+                    changeset "helm/omnicorp/*"
                     triggeredBy 'UserIdCause'
                 }
             }
@@ -105,10 +105,10 @@ pipeline {
                                 cp $cryptpwd sri-git-crypt.key.pwd
                                 # git crypt unlock the repo
                                 gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                                cd helm/node-normalization-web-server
+                                cd helm/omnicorp
                                 git clone git@github.com:Sphinx-Automation/translator-ops.git
                                 aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cp -R translator-ops/ops/sri/node-normalization-web-server/deploy/* ./
+                                cp -R translator-ops/ops/sri/omnicorp/deploy/* ./
                                 mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
                                 mv ncats-dev-values.yaml ./values-ncats.yaml
                                 /bin/bash deploy.sh
