@@ -23,9 +23,12 @@ spec:
             - "git"
           args:
             - "clone"
+            - "--single-branch"
+            - "--branch"
+            - "{{ .Values.manager.branch }}"
             - "https://github.com/NCATS-Gamma/robokop.git"
           volumeMounts:
-            - mountPath: /home/murphy/
+            - mountPath: /home/murphy/robokop
               name: code-dir
         - name: {{ .Chart.Name }}-manager-npm-install-container
           image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
@@ -37,15 +40,23 @@ spec:
             - configMapRef:
                 name: {{ include "robokop.fullname" . }}-configmap
           volumeMounts:
-            - mountPath: /home/murphy/
+            - mountPath: /home/murphy/robokop
               name: code-dir
             - mountPath: /npm-installer.sh
               name: installer
               subPath: npm-installer.sh
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 500m
+            limits:
+              memory: 2Gi
+              cpu: 500m
       containers:
         # Manager container
         - name: {{ .Chart.Name }}-manager-container
           image: "{{ .Values.manager.image.repository }}:{{ .Values.manager.image.tag }}"
+          imagePullPolicy: {{ .Values.manager.image.imagePullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ include "robokop.fullname" . }}-configmap
@@ -78,8 +89,11 @@ spec:
             - mountPath: /home/murphy/logs
               name: manager-logs-volume
               subPath: manager-logs
-            - mountPath: /home/murphy
+            - mountPath: /home/murphy/robokop
               name: code-dir
+            - mountPath: /home/murphy/robokop/deploy/manager/supervisord.conf
+              name: supervisord-config
+              subPath: manager.conf
         # Pubmed Cache Container
         - name: {{ .Chart.Name }}-pubmed-cache-container
           image: {{ .Values.manager.pubmedCache.image }}
@@ -101,6 +115,10 @@ spec:
           - name: postgres-port
             protocol: TCP
             containerPort: {{ .Values.manager.postgres.port }}
+          {{- with .Values.manager.postgres.resources }}
+          resources:
+            {{- toYaml  . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgres-data
@@ -108,13 +126,17 @@ spec:
       volumes:
         - name: manager-logs-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.logs.pvcName }}
+            claimName: {{ include "robokop.fullname" . }}-logs-pvc
         - name: code-dir
           emptyDir: {}
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: {{ .Values.manager.postgres.pvcName }}
+            claimName: {{ include "robokop.fullname" . }}-postgres-pvc
         - name: installer
           configMap:
             name: {{ include "robokop.fullname" . }}-manager-scripts-configmap
+            defaultMode: 0777
+        - name: supervisord-config
+          configMap:
+            name: {{ include "robokop.fullname" . }}-sup-configmap
             defaultMode: 0777

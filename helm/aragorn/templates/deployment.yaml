@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: {{ include "aragorn.fullname" . }}-trapi1-2
   labels:
-    app: {{ include "aragorn.name" . }}
+    app: {{ include "aragorn.fullname" . }}
     trapi: "1.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "aragorn.name" . }}
+      app: {{ include "aragorn.fullname" . }}
       trapi: "1.2"
   template:
     metadata:
       labels:
-        app: {{ include "aragorn.name" . }}
+        app: {{ include "aragorn.fullname" . }}
         trapi: "1.2"
     spec:
       securityContext:

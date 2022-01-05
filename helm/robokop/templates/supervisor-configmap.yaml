@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "robokop.fullname" . }}-sup-configmap
+data:
+  manager.conf: |
+    [supervisord]
+    nodaemon=true
+    [program:answer_worker]
+    command=%(ENV_ROBOKOP_HOME)s/robokop/deploy/manager/manager_answer_worker.sh
+    user=%(ENV_USER)s
+    stdout_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-answer_worker-stdout.log
+    stdout_logfile_maxbytes=1000000
+    stdout_logfile_backups=9
+    stderr_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-answer_worker-stderr.log
+    stderr_logfile_maxbytes=1000000
+    stderr_logfile_backups=9
+    autorestart=false
+
+    [program:update_worker]
+    command=%(ENV_ROBOKOP_HOME)s/robokop/deploy/manager/manager_update_worker.sh
+    user=%(ENV_USER)s
+    stdout_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-update_worker-stdout.log
+    stdout_logfile_maxbytes=1000000
+    stdout_logfile_backups=9
+    stderr_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-update_worker-stderr.log
+    stderr_logfile_maxbytes=1000000
+    stderr_logfile_backups=9
+    autorestart=false
+
+    [program:pubmed_worker]
+    command=%(ENV_ROBOKOP_HOME)s/robokop/deploy/manager/manager_pubmed_worker.sh
+    user=%(ENV_USER)s
+    stdout_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-pubmed_worker-stdout.log
+    stdout_logfile_maxbytes=1000000
+    stdout_logfile_backups=9
+    stderr_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-pubmed_worker-stderr.log
+    stderr_logfile_maxbytes=1000000
+    stderr_logfile_backups=9
+    autorestart=false
+
+    [program:server]
+    command=%(ENV_ROBOKOP_HOME)s/robokop/manager/server.py
+    user=murphy
+    stdout_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-server-stdout.log
+    stdout_logfile_maxbytes=1000000
+    stdout_logfile_backups=9
+    stderr_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-server-stderr.log
+    stderr_logfile_maxbytes=1000000
+    stderr_logfile_backups=9
+    autorestart=false
+    # command=nohup gunicorn -c serverConfig.py python.wsgi:app &
+
+    [program:postgraphile]
+    command=%(ENV_ROBOKOP_HOME)s/robokop/deploy/postgraphile/main.sh
+    stdout_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-postgraphile-stdout.log
+    stdout_logfile_maxbytes=1000000
+    stdout_logfile_backups=9
+    stderr_logfile=%(ENV_ROBOKOP_HOME)s/logs/manager-super-postgraphile-stderr.log
+    stderr_logfile_maxbytes=1000000
+    stderr_logfile_backups=9
+    autorestart=false
+
+    [supervisorctl]
+    serverurl=http://127.0.0.1:%(ENV_SUPERVISOR_PORT)s
+
+    [inet_http_server]
+    port = :%(ENV_SUPERVISOR_PORT)s
+    username = %(ENV_SUPERVISOR_USER)s
+    password = %(ENV_SUPERVISOR_PASSWORD)s
+
+    [rpcinterface:supervisor]
+    supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
