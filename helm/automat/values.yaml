@@ -21,12 +21,13 @@ ingress:
   class: ""
   annotations:
    nginx.ingress.kubernetes.io/enable-cors: "true"
+   cert-manager.io/cluster-issuer: letsencrypt
   pathType: ImplementationSpecific
   tls:
     # provide tls secrets
     #hosts:
     #- host:
-    #  secretName:
+    #  secretName
 
 app:
   port: 8080

@@ -34,6 +34,10 @@ spec:
         - name: {{ include "plater.fullname" . }}-web-container
           image: "{{ .Values.image.plater.repository }}:{{ .Values.image.plater.tag }}"
           imagePullPolicy: {{ .Values.image.plater.imagePullPolicy }}
+          {{- with .Values.app.web.resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{ end }}
           ports:
             - name: http
               containerPort: {{ .Values.app.port }}
