@@ -33,7 +33,6 @@ ingress:
     # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 256m
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
   pathType: "Prefix"
   tls: []
 #   - hosts:
