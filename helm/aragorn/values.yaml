@@ -39,6 +39,9 @@ ingress:
 logs:
   storageSize: 5Gi
 
+queue_files:
+  storageSize: 20Gi
+
 app:
   port: 4321
   debugTiming: "True"
