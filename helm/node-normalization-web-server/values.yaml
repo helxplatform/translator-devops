@@ -18,12 +18,52 @@ web:
   serverHostName: "http(s)://#####"
   securityContext: {}
   configPath: "/code/redis_config.yaml"
-
+  # exra Args for uvicorn
+  extraArgs:
+    - "--workers"
+    - "1"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    # 80 % utilization
+    targetCPU: 80
+    targetMemory: 80
+  # readiness and liveness probe will start if startup succeeds
+  startupProbe:
+    enabled: true
+    config:
+      initialDelaySeconds: 10
+      periodSeconds: 1
+      timeoutSeconds: 1
+      successThreshold: 1
+      # to be able to detect pod started asap  pinged every second, but not cause restart
+      failureThreshold: 1500
+  # if rediness probe fails no requests will be routed to the pod
+  readinessProbe:
+    enabled: true
+    config:
+      initialDelaySeconds: 1
+      periodSeconds: 1600
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 1
+  # if liveliness prob fails pod is restarted
+  livenessProbe:
+    enabled: true
+    config:
+      initialDelaySeconds: 1
+      periodSeconds: 1600 # five minutes
+      timeoutSeconds: 30
+      successThreshold: 1
+      failureThreshold: 5
 resources:
   limits:
     memory: 5Gi
+    cpu: 1000m
   requests:
     memory: 5Gi
+    cpu: 500m
 
 ingress:
   class:
