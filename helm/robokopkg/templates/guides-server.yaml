@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokopkg.fullname" . }}-guides-server
+  labels:
+    {{- include "robokopkg.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokopkg.selectorLabels" . | nindent 6 }}
+      app: guide-server
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "robokopkg.selectorLabels" . | nindent 8 }}
+        app: guide-server
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.guides.image.repository }}:{{ .Values.guides.image.tag  }}"
+          imagePullPolicy: {{ .Values.guides.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /guide
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /guide
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

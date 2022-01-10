@@ -47,6 +47,10 @@ spec:
       containers:
         - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           name: {{ include "plater.fullname" . }}-neo4j-container
+          {{- with .Values.app.neo4j.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           imagePullPolicy:  {{ .Values.image.neo4j.imagePullPolicy }}
           env:
           - name: NEO4J_AUTH
@@ -77,9 +81,7 @@ spec:
             - name: neo4j-bolt
               containerPort: 7687
               protocol: TCP
-          resources:
-            requests:
-              memory: {{ .Values.app.neo4j.totalMemory }}
+
           volumeMounts:
           - mountPath: /data
             name: {{ include "plater.fullname" . }}-neo4jkp-pvc

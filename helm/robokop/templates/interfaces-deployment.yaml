@@ -46,6 +46,10 @@ spec:
               subPath: interfaces-logs
             - mountPath: /home/murphy
               name: code-dir
+          {{ with .Values.interfaces.resources }}
+          resources:
+            {{ . | toYaml | nindent 12 }}
+          {{ end }}
         - name: robokop-build-cache
           image: {{ .Values.interfaces.buildCacheImage }}
           envFrom:
@@ -60,6 +64,6 @@ spec:
       volumes:
         - name: interfaces-logs-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.logs.pvcName }}
+            claimName: {{ include "robokop.fullname" . }}-logs-pvc
         - name: code-dir
           emptyDir: {}
