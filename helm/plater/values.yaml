@@ -73,7 +73,7 @@ app:
     resources:
       requests:
         memory: 1Gi
-        cpu: 500m
+        cpu: 250m
       limits:
         memory: 3Gi
         cpu: 2000m
@@ -103,7 +103,7 @@ app:
   # Adds more configs to default open api config
     x-trapi:
       version: 1.2.0
-      operation:
+      operations:
         - lookup
         - overlay_connect_knodes
         - annotate_nodes
