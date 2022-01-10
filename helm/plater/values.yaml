@@ -26,7 +26,7 @@ neo4j:
   readinessProbe:
     initialDelaySeconds: 30
     failureThreshold: 3
-    timeoutSeconds: 2
+    timeoutSeconds: 10
     periodSeconds: 10
     exec:
       command:
@@ -38,7 +38,7 @@ neo4j:
     initialDelaySeconds: 60
     periodSeconds: 10
     failureThreshold: 3
-    timeoutSeconds: 2
+    timeoutSeconds: 10
     exec:
       command:
         - bash
@@ -49,7 +49,8 @@ neo4j:
   # If such a probe is configured, it disables liveness and readiness checks until it succeeds
   startupProbe:
     failureThreshold: 2000
-    periodSeconds: 25
+    periodSeconds: 10
+    timeoutSeconds: 10
     exec:
       command:
         - bash
@@ -68,6 +69,14 @@ app:
   # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
   # 30 mins default
   Neo4jQueryTimeout: 1600
+  web:
+    resources:
+      requests:
+        memory: 1Gi
+        cpu: 250m
+      limits:
+        memory: 3Gi
+        cpu: 2000m
 
   port: 8080
   automatAddress: http://automat
@@ -89,12 +98,12 @@ app:
     storage:
       size: 20Mi
     service:
-      type: NodePort
+      type: ClusterIP
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
       version: 1.2.0
-      operation:
+      operations:
         - lookup
         - overlay_connect_knodes
         - annotate_nodes
