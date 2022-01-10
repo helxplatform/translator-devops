@@ -15,6 +15,13 @@ kpRegistry:
   containerPort: 4983
   # every 2 hrs
   updateCronInterval: "0 */6 * * *"
+  resources:
+    requests:
+      memory: 500Mi
+      cpu: 250m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
 
 strider:
   replicaCount: 1
@@ -24,7 +31,7 @@ strider:
     imagePullPolicy: Always
   env:
     OMNICORP_URL: http://robokop.renci.org:3210
-    NORMALIZER_URL: https://nodenormalization-sri-dev.renci.org/1.2
+    NORMALIZER_URL: https://nodenormalization-sri.renci.org/1.2
   service:
     type: ClusterIP
     port: 5781
@@ -44,7 +51,7 @@ strider:
       cpu: 1000m
     limits:
       memory: 20Gi
-      cpu: 2000m
+      cpu: 3000m
 
 # liveliness prob values
 probes:
@@ -85,6 +92,30 @@ ingress:
   class: ""
   strider:
     host: "the strider host name"
+    annotations:
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        keepalive_timeout 86400;
+      nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+      nginx.ingress.kubernetes.io/send-timeout: "86400"
+      nginx.ingress.kubernetes.io/service-upstream: "true"
+      nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
   kpRegistry:
     host: "the kp host name"
-  timeout: 7200 # 1hr
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+  pathType: "ImplementationSpecific"
+
+x_trapi:
+  maturity:
+    value: "production"
+  location:
+    value: "RENCI"

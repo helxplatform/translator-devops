@@ -16,18 +16,68 @@ web:
   service:
     type: ClusterIP
   serverHostName: "http(s)://#####"
-
+  securityContext: {}
+  configPath: "/code/redis_config.yaml"
+  # exra Args for uvicorn
+  extraArgs:
+    - "--workers"
+    - "1"
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    # 80 % utilization
+    targetCPU: 80
+    targetMemory: 80
+  # readiness and liveness probe will start if startup succeeds
+  startupProbe:
+    enabled: true
+    config:
+      initialDelaySeconds: 10
+      periodSeconds: 1
+      timeoutSeconds: 1
+      successThreshold: 1
+      # to be able to detect pod started asap  pinged every second, but not cause restart
+      failureThreshold: 1500
+  # if rediness probe fails no requests will be routed to the pod
+  readinessProbe:
+    enabled: true
+    config:
+      initialDelaySeconds: 1
+      periodSeconds: 1600
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 1
+  # if liveliness prob fails pod is restarted
+  livenessProbe:
+    enabled: true
+    config:
+      initialDelaySeconds: 1
+      periodSeconds: 1600 # five minutes
+      timeoutSeconds: 30
+      successThreshold: 1
+      failureThreshold: 5
 resources:
   limits:
     memory: 5Gi
+    cpu: 1000m
   requests:
     memory: 5Gi
+    cpu: 500m
 
 ingress:
   class:
   # same as web.serverHostName
   hostName: #####
-
+  annotations:
+    # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m
+  pathType: "Prefix"
+  tls: []
+#   - hosts:
+#       - nodenormalization-dev.apps.renci.org
+#     secretName: nodenormalization-dev.apps.renci.org-tls
 
 redis_backend_config:
   "eq_id_to_id_db":
@@ -71,3 +121,9 @@ redis_backend_config:
       - "host_name": "####"
         "port": "#####"
     "password": "######"
+
+x_trapi:
+  maturity:
+    value: "maturity"
+  location:
+    value: "location"

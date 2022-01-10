@@ -1,0 +1,64 @@
+pipeline {
+    agent {
+        kubernetes {
+            cloud 'kubernetes'
+            yaml '''
+              apiVersion: v1
+              kind: Pod
+              spec:
+                containers:
+                - name: agent-docker
+                  image: helxplatform/agent-docker:latest
+                  command:
+                  - cat
+                  tty: true
+                  volumeMounts:
+                    - name: dockersock
+                      mountPath: "/var/run/docker.sock"
+                volumes:
+                - name: dockersock
+                  hostPath:
+                    path: /var/run/docker.sock
+            '''
+        }
+    }
+    stages {
+        stage('test') {
+            steps {
+                script {
+                    env.SERVER_URL = params.server_to_test
+                    env.ARTILLERY_CONF = params.test_spec
+                    env.EMAIL_RECIPIENTS = params.email_recipients
+                }
+                container('agent-docker') {
+                    sh '''
+                    cd monitoring
+                    echo server : $SERVER_URL
+                    echo test_spec: $ARTILLERY_CONF
+                    chmod +x -R ./run_test.sh
+                    ./run_test.sh -t $ARTILLERY_CONF -s $SERVER_URL
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts 'monitoring/report*'
+            publishHTML (target : [allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'monitoring',
+                        reportFiles: 'report.html',
+                        reportName: 'Report',
+                        reportTitles: 'Artillery Report'])
+        }
+        failure {
+            emailext subject: "Translator service warn (${env.SERVER_URL})",
+            to: params.email_recipients,
+            body: '${monitoring/reports/report.html}',
+            mimeType: 'text/html'
+
+        }
+    }
+}

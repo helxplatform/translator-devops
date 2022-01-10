@@ -47,6 +47,10 @@ spec:
       containers:
         - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           name: {{ include "plater.fullname" . }}-neo4j-container
+          {{- with .Values.app.neo4j.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           imagePullPolicy:  {{ .Values.image.neo4j.imagePullPolicy }}
           env:
           - name: NEO4J_AUTH
@@ -64,7 +68,7 @@ spec:
           - name: NEO4J_dbms_security_procedures_unrestricted
             value: "apoc.*"
           - name: NEO4J_dbms_jvm_additional
-            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xss{{ .Values.app.neo4j.jvmStackSize }}"
+            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xss{{ .Values.app.neo4j.jvmStackSize }} -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
           - name: NEO4J_dbms_transaction_timeout
             value: "{{ .Values.app.Neo4jQueryTimeout }}s"
           ports:
@@ -77,9 +81,7 @@ spec:
             - name: neo4j-bolt
               containerPort: 7687
               protocol: TCP
-          resources:
-            requests:
-              memory: {{ .Values.app.neo4j.totalMemory }}
+
           volumeMounts:
           - mountPath: /data
             name: {{ include "plater.fullname" . }}-neo4jkp-pvc

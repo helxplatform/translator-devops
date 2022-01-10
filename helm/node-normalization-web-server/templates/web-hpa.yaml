@@ -1,0 +1,55 @@
+{{- if .Values.web.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: "{{- include "node-normalization-webserver.fullname" . }}-subpath-hpa"
+  labels:
+    app.kubernetes.io/component: replica
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server-trapi-1-2"
+  minReplicas: {{ .Values.web.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.web.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.web.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.web.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.web.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.web.autoscaling.targetMemory }}
+    {{- end }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: "{{- include "node-normalization-webserver.fullname" . }}-root-hpa"
+  labels:
+    app.kubernetes.io/component: replica
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: "{{- include "node-normalization-webserver.fullname" . }}-root-server"
+  minReplicas: {{ .Values.web.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.web.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.web.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.web.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.web.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.web.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}

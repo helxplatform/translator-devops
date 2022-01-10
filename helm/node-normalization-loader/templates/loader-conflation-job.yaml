@@ -1,0 +1,49 @@
+{{- $fullName := include "node-normalization-loader.fullname" . -}}
+{{- $image := .Values.image.repository }}
+{{- $imageTag := .Values.image.tag }}
+{{- $pullPolicy := .Values.imagePullPolicy }}
+{{- $codeDir := .Values.codeDir }}
+{{- $resources := .Values.resources }}
+{{- range $index, $conflationConfig := .Values.data.conflations.configs }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ $fullName }}-con-{{ $index }}-job"
+spec:
+  template:
+    metadata:
+      name: "{{ $fullName }}-con-{{ $index }}-job"
+    spec:
+      containers:
+        - name: loader-container
+          image: "{{ $image }}:{{ $imageTag }}"
+          imagePullPolicy: {{ $pullPolicy }}
+          command:
+            - {{ $codeDir }}/run_loader.sh
+          args:
+            - {{ $conflationConfig.file }}
+          volumeMounts:
+            - mountPath:  {{ $codeDir }}/run_loader.sh
+              name: "loader-config"
+              subPath: "run_loader_conflation.sh"
+            - mountPath: /data
+              name: "data-dir"
+            - mountPath: {{ $codeDir }}/redis_config.yaml
+              name: "loader-config"
+              subPath: "redis_config.yaml"
+            - mountPath: {{ $codeDir }}/config.json
+              name: "loader-config"
+              subPath: "config-conflation{{ $index }}.json"
+          resources:
+            {{ $resources | toYaml | nindent 12 }}
+      restartPolicy: OnFailure
+      volumes:
+        - name: loader-config
+          configMap:
+            name: "{{ $fullName }}-loader-config"
+            defaultMode: 0777
+        - name: data-dir
+          persistentVolumeClaim:
+            claimName: "{{ $fullName }}-conflation-{{ $index }}-pvc"
+---
+{{- end }}

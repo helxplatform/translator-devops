@@ -1,3 +1,4 @@
+{{- if .Values.kpRegistry.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -20,6 +21,13 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-kp-registry-container
           image: "{{ .Values.kpRegistry.image.repository }}:{{ .Values.kpRegistry.image.tag }}"
+          env:
+            - name: "OPENAPI_SERVER_MATURITY"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "OPENAPI_SERVER_LOCATION"
+              value: "{{ .Values.x_trapi.location.value }}"
+            - name: OPENAPI_SERVER_URL
+              value: https://{{ .Values.ingress.kpRegistry.host }}
           ports:
             - name: http
               containerPort: {{ .Values.kpRegistry.containerPort }}
@@ -28,6 +36,8 @@ spec:
             - mountPath: /home/murphy/data
               name: {{ include "strider.fullname" . }}-kp-registry-data-volume
               subPath: data
+          resources:
+            {{ toYaml .Values.kpRegistry.resources | nindent 12 }}
           livenessProbe:
             httpGet:
               path: {{ .Values.probes.kpRegistry.path }}
@@ -44,3 +54,4 @@ spec:
         resources:
           requests:
             storage: 1Gi
+  {{- end }}

@@ -3,23 +3,31 @@ kind: Deployment
 metadata:
   name: {{ include "aragorn.fullname" . }}-trapi1-2
   labels:
-    app: {{ include "aragorn.name" . }}
+    app: {{ include "aragorn.fullname" . }}
     trapi: "1.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "aragorn.name" . }}
+      app: {{ include "aragorn.fullname" . }}
       trapi: "1.2"
   template:
     metadata:
       labels:
-        app: {{ include "aragorn.name" . }}
+        app: {{ include "aragorn.fullname" . }}
         trapi: "1.2"
     spec:
+      securityContext:
+        runAsUser: 1001
+        fsGroup: 2000
+        runAsGroup: 3000
+
       containers:
         - name: {{ .Chart.Name }}-web-container
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "aragorn.fullname" . }}-configmap
           imagePullPolicy: Always
           ports:
             - name: http
@@ -37,19 +45,17 @@ spec:
             - "--root-path"
             - "/1.2"
             - "src.server:APP"
-          env:
-            - name: WEB_HOST
-              value: 0.0.0.0
-            - name: WEB_PORT
-              value: {{ .Values.app.port | quote}}
-            - name: "SERVER_ROOT"
-              value: "{{ .Values.web.serverHostName }}"
-            - name: "DEBUG_TIMING"
-              value: "{{ .Values.app.debugTiming }}"
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs
+            - name: aragorn-queue-files-vol
+              mountPath: /repo/aragorn/queue-files
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
       volumes:
         - name: aragorn-logs-vol
           persistentVolumeClaim:
             claimName: {{ include "aragorn.fullname" . }}-logs-pvc
+        - name: aragorn-queue-files-vol
+          persistentVolumeClaim:
+            claimName: {{ include "aragorn.fullname" . }}-queue-files-pvc

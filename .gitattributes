@@ -1,0 +1,5 @@
+values-populated.yaml filter=git-crypt diff=git-crypt
+ncats*-values.yaml filter=git-crypt diff=git-crypt
+renci*.yaml filter=git-crypt diff=git-crypt
+plater*.yaml filter=git-crypt diff=git-crypt
+ncats-images-meta.yaml !filter !diff

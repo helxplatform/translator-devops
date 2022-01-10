@@ -10,6 +10,11 @@ id-id:
       enabled: false
     livenessProbe:
       enabled: false
+    extraFlags:
+    - "--save"
+    - '"60 10000"'
+    - "--appendonly no"
+
   cluster:
     slaveCount: 0
 
@@ -24,6 +29,11 @@ id-categories:
     resources:
       requests:
         memory: #
+    extraFlags:
+    - "--save"
+    - '"60 10000"'
+    - "--appendonly no"
+
   cluster:
     slaveCount: 0
 
@@ -38,6 +48,10 @@ id-eq-id:
     resources:
       requests:
         memory: #200Gi
+    extraFlags:
+    - "--save"
+    - '"60 10000"'
+    - "--appendonly no"
   cluster:
     slaveCount: 0
 
@@ -52,6 +66,10 @@ semantic-count:
     resources:
       requests:
         memory: #
+    extraFlags:
+    - "--save"
+    - '"60 10000"'
+    - "--appendonly no"
   cluster:
     slaveCount: 0
 
@@ -66,5 +84,27 @@ conflation-db:
     resources:
       requests:
         memory: #
+    extraFlags:
+    - "--save"
+    - '"60 10000"'
+    - "--appendonly no"
+  cluster:
+    slaveCount: 0
+
+info-content:
+  auth:
+    enabled: true
+  master:
+    readinessProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+    extraFlags:
+    - "--save"
+    - '"60 10000"'
+    - "--appendonly no"
   cluster:
     slaveCount: 0

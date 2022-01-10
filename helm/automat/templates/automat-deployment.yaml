@@ -21,6 +21,11 @@ spec:
           value: {{ .Values.app.port | quote}}
         - name: AUTOMAT_SERVER_URL
           value: {{ .Values.fullHostName }}
+        - name: "MATURITY_VALUE"
+          value: "{{ .Values.x_trapi.maturity.value }}"
+        - name: "LOCATION_VALUE"
+          value: "{{ .Values.x_trapi.location.value }}"
+
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always
         name: {{ .Chart.Name }}-web-container
@@ -28,4 +33,6 @@ spec:
         - containerPort: {{ .Values.app.port }}
           name: http
           protocol: TCP
+        resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
       restartPolicy: Always

@@ -1,0 +1,3 @@
+n0Curie,n0Type,n1Type,predicate
+CAID:CA11735881,biolink:Entity,biolink:Entity,biolink:is_non_coding_variant_of
+CAID:CA11735881,biolink:Entity,biolink:Entity,biolink:is_nearby_variant_of

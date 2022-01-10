@@ -1,14 +1,40 @@
+{{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "biolink-lookup.fullname" . }}-ingress
+  {{- with .Values.ingress.annotations }}
   annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.host }}
     http:
       paths:
       - backend:
-          serviceName:  {{ include "biolink-lookup.fullname" . }}
+        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: {{ include "biolink-lookup.fullname" . }}
+            port:
+              number: 80
+          {{- else }}
+          serviceName: {{ include "biolink-lookup.fullname" . }}
           servicePort: 80
+        {{- end }}
+        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+        pathType: "{{ .Values.ingress.pathType }}"
+        {{- end }}

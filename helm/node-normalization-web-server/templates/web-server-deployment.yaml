@@ -14,22 +14,32 @@ spec:
       path: "1.2"
   template:
     metadata:
+      annotations:
+        checksum/config: {{ .Values.redis_backend_config | toString | sha256sum  }}
       labels:
         {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
         path: "1.2"
     spec:
+      {{- with .Values.web.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: webserver-container
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /home/murphy/redis_config.yaml
+            - mountPath: {{ .Values.web.configPath }}
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:
             - name: "SERVER_ROOT"
               value: "{{ .Values.web.serverHostName }}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "LOCATION_VALUE"
+              value: "{{ .Values.x_trapi.location.value }}"
           command:
             - 'uvicorn'
           args:
@@ -37,21 +47,49 @@ spec:
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.web.port }}"
-            - '--workers'
-            - '1'
+            {{ with .Values.web.extraArgs }}
+              {{ . | toYaml | nindent 12 }}
+            {{ end }}
             - '--root-path'
             - '/1.2'
-            - "--app-dir"
-            - "/home/murphy/"
             - 'node_normalizer.server:app'
           resources:
             {{ .Values.resources | toYaml | nindent 12 }}
+          {{ if .Values.web.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+             path: /docs
+             port: {{ .Values.web.port }}
+           {{ with .Values.web.startupProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end }}
+          {{ if .Values.web.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.readinessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+          {{ if .Values.web.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.livenessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+
       restartPolicy: Always
       volumes:
         - name: webserver-config
           configMap:
             name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
             defaultMode: 0777
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -69,22 +107,32 @@ spec:
       path: "root"
   template:
     metadata:
+      annotations:
+        checksum/config: {{ .Values.redis_backend_config | toString | sha256sum  }}
       labels:
         {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
         service-type: "webserver"
         path: "root"
     spec:
+      {{- with .Values.web.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: webserver-container
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - mountPath: /home/murphy/redis_config.yaml
+            - mountPath: {{ .Values.web.configPath }}
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:
             - name: "SERVER_ROOT"
               value: "{{ .Values.web.serverHostName }}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "LOCATION_VALUE"
+              value: "{{ .Values.x_trapi.location.value }}"
           command:
             - 'uvicorn'
           args:
@@ -92,13 +140,40 @@ spec:
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.web.port }}"
-            - '--workers'
-            - '1'
-            - "--app-dir"
-            - "/home/murphy/"
+            {{ with .Values.web.extraArgs }}
+              {{ . | toYaml | nindent 12 }}
+            {{ end }}
             - 'node_normalizer.server:app'
           resources:
             {{ .Values.resources | toYaml | nindent 12 }}
+          {{ if .Values.web.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+             path: /docs
+             port: {{ .Values.web.port }}
+           {{ with .Values.web.startupProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end }}
+          {{ if .Values.web.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.readinessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+          {{ if .Values.web.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.livenessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+
       restartPolicy: Always
       volumes:
         - name: webserver-config

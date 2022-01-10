@@ -1,0 +1,28 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "api-watchdog.fullname" . }}-cronjob
+spec:
+  schedule: "{{ .Values.app.updateCronInterval }}"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: api-watchdog-container
+            image: {{ .Values.image.repository }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            command:
+              - bash
+              - fetch-and-exec.sh
+            env:
+            - name: MAILGUN_API_URL
+              value: {{ .Values.env.MAILGUN_API_URL }}
+            - name: MAILGUN_API_TOKEN
+              value: {{ .Values.env.MAILGUN_API_TOKEN }}
+            - name: MAILGUN_FROM
+              value: {{ .Values.env.MAILGUN_FROM }}
+
+          restartPolicy: OnFailure

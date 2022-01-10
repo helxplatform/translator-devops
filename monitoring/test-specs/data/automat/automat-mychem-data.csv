@@ -1,0 +1,3 @@
+n0Curie,n0Type,n1Type,predicate
+CHEBI:15377,biolink:NamedThing,biolink:NamedThing,biolink:treats
+CHEBI:15377,biolink:NamedThing,biolink:NamedThing,biolink:causes_adverse_event

@@ -1,47 +1,84 @@
+{{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.ingress.strider.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.strider.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- end }}
+  {{- if not (hasKey .Values.ingress.kpRegistry.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.kpRegistry.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "strider.fullname" . }}-ingress
+  {{- with .Values.ingress.strider.annotations }}
   annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      keepalive_timeout {{ .Values.ingress.timeout }};
-    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
-    nginx.ingress.kubernetes.io/send-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/service-upstream: 'true'
-    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
 spec:
+  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.strider.host }}
     http:
       paths:
         - path: "/1.2(/|$)(.*)"
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          pathType: "{{ .Values.ingress.pathType }}"
+          {{- end }}
           backend:
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            service:
+              name: {{ include "strider.fullname" . }}-web-service-trapi-1-2
+              port:
+                number: {{ .Values.strider.service.port }}
+            {{- else }}
             serviceName: {{ include "strider.fullname" . }}-web-service-trapi-1-2
             servicePort: {{ .Values.strider.service.port }}
+            {{- end }}
+
+{{- if .Values.kpRegistry.enabled }}
 ---
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
   name: {{ include "strider.fullname" . }}-ingress-kp
+  {{- with .Values.ingress.kpRegistry.annotations }}
   annotations:
-    kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "{{ .Values.ingress.timeout }}"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "{{ .Values.ingress.timeout }}"
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
+  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingress.kpRegistry.host }}
     http:
       paths:
       - backend:
-          serviceName:  {{ include "strider.fullname" . }}-kp-service
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: {{ include "strider.fullname" . }}-kp-service
+            port:
+              number: {{ .Values.kpRegistry.service.port }}
+          {{- else }}
+          serviceName: {{ include "strider.fullname" . }}-kp-service
           servicePort: {{ .Values.kpRegistry.service.port }}
+          {{- end }}
+        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+        pathType: "{{ .Values.ingress.pathType }}"
+        {{- end }}
+  {{- end }}

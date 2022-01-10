@@ -1,0 +1,9 @@
+omnicorpApi:
+  image: renciorg/omnicorp-api
+  version: "0.0.1"
+redis:
+  image: redis
+  version: "6.2.6"
+postgres:
+  image: "postgres"
+  version: "9.6.23"

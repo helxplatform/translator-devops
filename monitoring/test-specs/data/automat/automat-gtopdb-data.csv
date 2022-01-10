@@ -1,0 +1,5 @@
+n0Curie,n0Type,n1Type,predicate
+PUBCHEM.COMPOUND:11841193,biolink:NamedThing,biolink:BiologicalEntity,biolink:affects_activity_of
+GTOPDB:9311,biolink:NamedThing,biolink:BiologicalEntity,biolink:directly_interacts_with
+GTOPDB:9244,biolink:NamedThing,biolink:BiologicalEntity,biolink:directly_interacts_with
+GTOPDB:8737,biolink:NamedThing,biolink:BiologicalEntity,biolink:directly_interacts_with

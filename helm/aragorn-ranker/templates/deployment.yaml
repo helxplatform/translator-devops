@@ -17,35 +17,28 @@ spec:
         trapi: "1.2"
     spec:
       containers:
-      - env:
-        - name: WEB_HOST
-          value: 0.0.0.0
-        - name: WEB_PORT
-          value: {{ .Values.app.port | quote}}
-        - name: "SERVER_ROOT"
-          value: "{{ .Values.web.serverHostName }}"
-        - name: "DEBUG_TIMING"
-          value: "{{ .Values.app.debugTiming }}"
-        command:
-          - 'uvicorn'
-        args:
-          - "--host"
-          - "0.0.0.0"
-          - "--port"
-          - "{{ .Values.app.port}}"
-          - '--workers'
-          - '4'
-          - '--root-path'
-          - '/1.2'
-          - 'ranker.server:APP'
-        envFrom:
-          - configMapRef:
-              name: {{ include "aragorn-ranker.fullname" . }}-configmap
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: Always
-        name: {{ .Chart.Name }}-web-container
-        ports:
-        - containerPort: {{ .Values.app.port }}
-          name: http
-          protocol: TCP
+        - name: {{ .Chart.Name }}-web-container
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.app.port}}"
+            - '--workers'
+            - '4'
+            - '--root-path'
+            - '/1.2'
+            - 'ranker.server:APP'
+          envFrom:
+            - configMapRef:
+                name: {{ include "aragorn-ranker.fullname" . }}-configmap
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: Always
+          ports:
+          - containerPort: {{ .Values.app.port }}
+            name: http
+            protocol: TCP
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
       restartPolicy: Always

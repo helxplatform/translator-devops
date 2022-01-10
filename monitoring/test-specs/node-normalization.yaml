@@ -1,0 +1,136 @@
+config:
+  target: "{{ $processEnvironment.SERVER_URL }}"
+  http:
+    timeout: 60
+  ensure:
+    maxErrorRate: 1
+    p95: 2
+  phases:
+    - duration: 1
+      arrivalRate: 10
+  plugins:
+    expect: {}
+  payload:
+    path: "data/node-normalization-data.csv"
+    order: iterate
+    skipHeader: true
+    fields:
+      - curie
+      - expected
+scenarios:
+  - flow:
+      # test apidocs
+      - get:
+          url: "/docs"
+          expect:
+            - statusCode: 200
+      # test normalized node post
+      - get:
+          url: "/get_normalized_nodes?curie={{ curie }}"
+          capture:
+           - json: $["{{ curie }}"]
+             as: item
+          expect:
+            - statusCode: 200
+            - equals:
+                - {{ item.id.identifier }}
+                - {{ expected }}
+#       test normalized nodes post
+      - post:
+          url: "/get_normalized_nodes"
+          json:
+            curies:
+             - "{{ curie }}"
+          capture:
+           - json: $["{{ curie }}"]
+             as: item
+          expect:
+            - statusCode: 200
+            - equals:
+                - {{ item.id.identifier }}
+                - {{ expected }}
+
+      # test semantic_types
+      - get:
+          url: /get_semantic_types
+          expect:
+           - statusCode: 200
+           - hasProperty: semantic_types.types
+      # test curie prefixes
+      - get:
+          url: /get_curie_prefixes
+          expect:
+           - statusCode: 200
+           - matchesRegexp: .+ # body is not empty
+
+      - post:
+          # test /response endpoint
+          capture:
+          - json :  $['message']['query_graph']['nodes']['n0']['ids'][0]
+            as: normalizedID
+          url: /response
+          expect:
+           - statusCode: 200
+           - equals:
+             - "{{ normalizedID }}"
+             - "NCBIGene:336159"
+           - hasProperty: message.knowledge_graph.nodes['NCBIGene:336159']
+          # Trapi Payload as yaml
+          json:
+            message:
+              query_graph:
+                nodes:
+                  n0:
+                    ids:
+                    - ENSEMBL:ENSDARG00000002663
+                    categories:
+                    - biolink:Gene
+                    is_set: false
+                    constraints: []
+                  n1:
+                    ids:
+                    - NCBIGene:565873
+                    categories:
+                    - biolink:Gene
+                    is_set: false
+                    constraints: []
+                edges:
+                  e0:
+                    subject: n0
+                    object: n1
+                    predicates:
+                    - biolink:related_to
+                    constraints: []
+              knowledge_graph:
+                nodes:
+                  ENSEMBL:ENSDARG00000002663:
+                    categories:
+                    - biolink:Gene
+                    - biolink:NamedThing
+                    - biolink:GeneOrGeneProduct
+                    - biolink:BiologicalEntity
+                    - biolink:Entity
+                    - biolink:MacromolecularMachineMixin
+                    name: optn
+                edges:
+                  5cb301f0541362e6d1e2a14b5fd2df9d:
+                    subject: NCBIGene:565873
+                    object: ENSEMBL:ENSDARG00000002663
+                    predicate: biolink:interacts_with
+              results:
+              - node_bindings:
+                  n0:
+                  - id: ENSEMBL:ENSDARG00000002663
+                    qnode_id: ENSEMBL:ENSDARG00000002663
+                  n1:
+                  - id: NCBIGene:565873
+                    qnode_id: NCBIGene:565873
+                edge_bindings:
+                  e0:
+                  - id: 5cb301f0541362e6d1e2a14b5fd2df9d
+                    attributes:
+                score:
+            log_level:
+            workflow:
+            - id: lookup
+              parameters:

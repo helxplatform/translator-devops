@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "omnicorp.fullname" . }}-webserver
+  labels:
+    {{- include "omnicorp.labels" . | nindent 4 }}
+    type: webserver
+spec:
+  selector:
+    matchLabels:
+      {{- include "omnicorp.labels" . | nindent 6 }}
+      type: webserver
+  template:
+    metadata:
+      labels:
+        {{- include "omnicorp.labels" . | nindent 8 }}
+        type: webserver
+    spec:
+      containers:
+        - name: webserver
+          image: "{{ .Values.webserver.image.repository }}:{{ .Values.webserver.image.tag }}"
+          imagePullPolicy: {{ .Values.webserver.image.pullPolicy }}
+          env:
+            - name: "POSTGRES_HOST"
+              value: "{{ include "omnicorp.fullname" . }}-postgres"
+            - name: "POSTGRES_PORT"
+              value: "{{ .Values.postgres.service.port }}"
+            - name: "POSTGRES_USER"
+              value: "{{ .Values.postgres.user }}"
+            - name: "POSTGRES_PASSWORD"
+              value: "{{ .Values.postgres.password }}"
+            - name: "POSTGRES_DB"
+              value: "{{ .Values.postgres.dbName }}"
+            - name: REDIS_HOST
+              value: "{{ include "omnicorp.fullname" . }}-redis"
+            - name: "REDIS_PORT"
+              value: "{{ .Values.redis.service.port }}"
+            - name: REDIS_PASSWORD
+              value: "{{ .Values.redis.password }}"
+          ports:
+            - name: http
+              containerPort: 3210
+              protocol: TCP

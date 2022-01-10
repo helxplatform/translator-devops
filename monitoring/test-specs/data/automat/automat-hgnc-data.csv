@@ -1,0 +1,2 @@
+n0Curie,n0Type,n1Type,predicate
+HGNC.FAMILY:594,biolink:NamedThing,biolink:NamedThing,biolink:has_part

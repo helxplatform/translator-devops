@@ -15,6 +15,9 @@ pipeline {
     triggers {
         pollSCM('H/2 * * * *')
     }
+    environment {
+        DEPLOY_ENV = "ci"
+    }
     stages {
         stage('Clean') {
             steps {
@@ -35,15 +38,13 @@ pipeline {
                 }
             }
             steps{
-               script {
-                    BUILD_VERSION_GENERATED = VersionNumber(
-                        versionNumberString: 'v${BUILD_YEAR, XX}.${BUILD_MONTH, XX}${BUILD_DAY, XX}.${BUILDS_TODAY}',
-                        projectStartDate:    '1970-01-01',
-                        skipFailedBuilds:    true)
-                    currentBuild.displayName = BUILD_VERSION_GENERATED
-                    env.BUILD_VERSION = BUILD_VERSION_GENERATED
-              }
-           }
+                script {
+                   def image_meta = readYaml file: 'helm/node-normalization-loader/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = image_meta.nodeNormalizationLoader.image
+                    env.BUILD_VERSION = image_meta.nodeNormalizationLoader.version
+                    currentBuild.displayName = image_meta.nodeNormalizationLoader.version
+                }
+            }
         }
         stage('build') {
             when {
@@ -64,10 +65,9 @@ pipeline {
                 ]) {
                     dir("helm/node-normalization-loader") {
                         script {
- 
                             sh '''
-                            docker pull renciorg/r3_nodenorm:latest
-                            docker tag renciorg/r3_nodenorm:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
@@ -86,17 +86,31 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['github-kw']) {
-                    dir("helm/node-normalization-loader") {
-                        sh 'git clone git@github.com:Sphinx-Automation/translator-ops.git'
-                        configFileProvider([
-                            configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ci.yaml')
+                sshagent (credentials: ['labshare-svc']) {
+                    configFileProvider([
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
+                    ]){
+                        withCredentials([
+                            file(
+                                credentialsId: 'sri-git-crypt.key.asc',
+                                variable: 'cryptasc'),
+                            file(
+                                credentialsId: 'sri-git-crypt.key.pwd',
+                                variable: 'cryptpwd'),
                         ]){
                             withAWS(credentials:'aws-ifx-deploy') {
                                 sh '''
+                                # copy secret files to current directory
+                                cp $cryptasc sri-git-crypt.key.asc
+                                cp $cryptpwd sri-git-crypt.key.pwd
+                                # git crypt unlock the repo
+                                gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
+                                cd helm/node-normalization-loader
+                                git clone git@github.com:Sphinx-Automation/translator-ops.git
                                 aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                                 cp -R translator-ops/ops/sri/node-normalization-loader/deploy/* ./
-                                mv values-ci.yaml values.yaml 
+                                mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
+                                mv ncats-dev-values.yaml ./values-ncats.yaml
                                 /bin/bash deploy.sh
                                 '''
                             }
