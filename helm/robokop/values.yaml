@@ -4,20 +4,6 @@
 
 adminEmail: ##############
 
-omnicorpPostgres:
-  image:
-    repository: postgres
-    tag: 11
-  port: 5432
-  serviceType: ClusterIP
-  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
-  dbName: robokop
-  dbUser: murphy
-  pvcName: ####REQUIRED####
-  createPVC: false
-  createPV: false
-  storageSize: ####REQUIRED_IF_CREATEPVC_TRUE####
-
 ranker:
   image:
     repository: renciorg/robokop_ranker
@@ -25,11 +11,20 @@ ranker:
   serviceType: ClusterIP
   port: 6011
   supervisorPort: 9003
+  resources:
+    requests:
+      memory: 5Gi
+      cpu: 500m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
 
 manager:
+  branch: master
   image:
     repository: renciorg/robokop_manager
     tag: latest
+    imagePullPolicy: Always
   serviceType: ClusterIP
   loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
   webPort: 8080
@@ -58,9 +53,11 @@ manager:
     image: postgres:10
     port: 5432
     pvcName: ##############
-    createPV: false
-    createPVC: false
-    storageSize: 10Mi
+    storageSize: 5Gi
+    resources:
+      requests:
+        memory: 1Gi
+      limits: 1Gi
 
 messenger:
   image:
@@ -68,6 +65,13 @@ messenger:
     tag: "2.0"
   serviceType: ClusterIP
   port: 4868
+  resources:
+    requests:
+      cpu: 1000m
+      memory: 1Gi
+    limits:
+      cpu: 2000m
+      memory: 5Gi
 
 backendServices:
   serviceType: ClusterIP
@@ -83,7 +87,12 @@ backendServices:
     image: patrickkwang/robokop-rabbitmq
     webPort: 15672
     amqpPort: 5672
-    user: murphy
+    user: ""
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        memory: 4Gi
   nlp:
     image: patrickkwang/robokop-nlp
     port: 9475
@@ -98,45 +107,6 @@ interfaces:
   buildCachePort: 6380
   serviceType: ClusterIP
 
-knowledgeGraph:
-  image:
-    repository: renciorg/neo4jkp
-    tag: latest
-  port: 7474
-  boltPort: 7687
-  pageCacheMemorySize: 17G
-  heapMemorySize: 32G
-  resources:
-    limits:
-      memory: 50G # pagecache + heap + 1G os
-    requests:
-      memory: 50G
-  serviceType:  ClusterIP
-  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
-  createPV: false
-  createPVC: false
-  pvcName: ##############
-  storageSize:
-  seedDB: false
-
-requestsCache:
-  image:
-    repository: redis
-    tag: latest
-  port: 6380
-  serviceType: ClusterIP
-  loadBalancerIP: "" ##### if service is configured as LoadBalancer IP adjust this value ########
-  pvcName: ##############
-  seedDB: false
-  createPV: false
-  createPVC: false
-  storageSize:
-  resources:
-    limits:
-      memory: 40G
-    requests:
-      memory: 40G
-
 nginxProxy:
   image:
     repository: nginx
@@ -145,19 +115,35 @@ nginxProxy:
   serviceType: ClusterIP
 
 logs:
-  pvcName: translator-robokop-logs-pvc
-  storageSize:
-  createPVC: false
-  createPV: false
+  storageSize: 10Gi
 
 mail:
-  server: smtp.mailgun.org
-  userName: postmaster@mailer.robokop.org
-  robokopEmailAddr: no-reply@mailer.robokop.org
+  server: ""
+  userName: ""
+  robokopEmailAddr: ""
 
 
 service:
   type: ClusterIP
+
+
+externalServices:
+  omnicorpPostgres:
+    host: "omnicorp-postgres"
+    dbUser: "murphy"
+    password: "changeme"
+    dbName: "robokop"
+    port: "5432"
+  redisCache:
+    host: omnicorp-redis
+    password: "changeme"
+    db: "0"
+    port: 6380
+  neo4j:
+    host: "covidkop-neo4j-robokopkg-neo4j-service"
+    boltPort: "7687"
+    user: "neo4j"
+    password: "ncatsgamma"
 
 
 secrets:
@@ -179,15 +165,17 @@ fullnameOverride: ""
 
 
 ingress:
-  class: translator
+  class: ""
+  pathType: "ImplementationSpecific"
   enabled: true
-  annotations: {}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  host: ##############
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  host: ""
+  tls:
+  - hosts:
+      - ""
+    secretName: ""
 
 

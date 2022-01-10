@@ -50,6 +50,10 @@ spec:
         envFrom:
           - configMapRef:
               name: {{ include "robokop.fullname" . }}-configmap
+        {{- with .Values.backendServices.broker.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+        {{- end }}
         ports:
         - name: web-port
           protocol: TCP

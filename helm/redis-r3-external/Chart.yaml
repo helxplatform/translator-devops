@@ -49,3 +49,4 @@ dependencies:
     version: "12.7.4"
     repository: "https://charts.bitnami.com/bitnami"
     alias: info-content
+    condition: info-content.enabled

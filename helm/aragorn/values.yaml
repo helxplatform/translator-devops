@@ -35,9 +35,14 @@ ingress:
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
+  tls:
+    enabled: false
 
 logs:
   storageSize: 5Gi
+
+queue_files:
+  storageSize: 20Gi
 
 app:
   port: 4321

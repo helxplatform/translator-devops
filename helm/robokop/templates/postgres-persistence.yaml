@@ -1,31 +1,10 @@
-{{- if .Values.manager.postgres.createPVC}}
 apiVersion: v1
-items:
-  {{- if .Values.manager.postgres.createPV }}
-- apiVersion: v1
-  kind: PersistentVolume
-  metadata:
-    name: {{ include "robokop.fullname" . }}-postgres-pv
-  spec:
-    accessModes:
-      - ReadWriteOnce
-    capacity:
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "robokop.fullname" . }}-postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
       storage: {{ .Values.manager.postgres.storageSize }}
-    persistentVolumeReclaimPolicy: Retain
-    storageClassName: {{ include "robokop.fullname" . }}-postgres-pv-sc
-  {{- end }}
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    name: {{ .Values.manager.postgres.pvcName }}
-  spec:
-    accessModes:
-      - ReadWriteOnce
-    resources:
-      requests:
-        storage: {{ .Values.manager.postgres.storageSize }}
-    {{- if .Values.manager.postgres.createPV }}
-    storageClassName: {{ include "robokop.fullname" . }}-postgres-pv-sc
-    {{- end }}
-kind: List
-{{- end}}
