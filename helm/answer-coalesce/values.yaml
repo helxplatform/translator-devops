@@ -11,7 +11,13 @@ ac:
     type: ClusterIP
     port: 80
   containerPort: 80
-
+  resources:
+    requests:
+      memory: 5Gi
+      cpu: 250m
+    limits:
+      memory: 10Gi
+      cpu: 500m
 web:
   serverHostName: "hostname"
 
