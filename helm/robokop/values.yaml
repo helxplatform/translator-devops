@@ -48,10 +48,10 @@ manager:
     # manager container, to avoid swapping
     resources:
       requests:
-        cpu: 250m
+        cpu: 500m
         memory: "9G" ####REQUIRED####
       limits:
-        cpu: 500m
+        cpu: 1000m
         memory: "9G" ####REQUIRED####
   postgres:
     image: postgres:10
