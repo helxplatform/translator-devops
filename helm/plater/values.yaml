@@ -7,12 +7,12 @@ replicaCount: 1
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "1.2.0-7"
+    tag: "1.2.0-8"
     imagePullPolicy: Always
   neo4j:
-    repository: renciorg/neo4j-4.2-apoc-gds
-    tag: latest
-    imagePullPolicy: IfNotPresent
+    repository: renciorg/neo4j-4.2.14-apoc-gds
+    tag: 0.0.1
+    imagePullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
@@ -49,7 +49,7 @@ neo4j:
   # If such a probe is configured, it disables liveness and readiness checks until it succeeds
   startupProbe:
     failureThreshold: 2000
-    periodSeconds: 10
+    periodSeconds: 1
     timeoutSeconds: 10
     exec:
       command:
