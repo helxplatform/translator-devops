@@ -35,8 +35,10 @@ manager:
     port: 6382
     resources:
       requests:
+        cpu: 500m
         memory: 200Mi
       limits:
+        cpu: 1000m
         memory: 200Mi
   # Memory config for postgraphile
   nodeJS:
@@ -46,8 +48,10 @@ manager:
     # manager container, to avoid swapping
     resources:
       requests:
+        cpu: 500m
         memory: "9G" ####REQUIRED####
       limits:
+        cpu: 1000m
         memory: "9G" ####REQUIRED####
   postgres:
     image: postgres:10
@@ -56,8 +60,11 @@ manager:
     storageSize: 5Gi
     resources:
       requests:
+        cpu: 250m
         memory: 1Gi
-      limits: 1Gi
+      limits:
+        cpu: 500m
+        memory: 1Gi
 
 messenger:
   image:
@@ -80,8 +87,10 @@ backendServices:
     port: 6381
     resources:
       requests:
+        cpu: 500m
         memory: 1Gi
       limits:
+        cpu: 1000m
         memory: 1Gi
   broker:
     image: patrickkwang/robokop-rabbitmq
@@ -90,8 +99,10 @@ backendServices:
     user: ""
     resources:
       requests:
+        cpu: 250m
         memory: 1Gi
       limits:
+        cpu: 500m
         memory: 4Gi
   nlp:
     image: patrickkwang/robokop-nlp
