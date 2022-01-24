@@ -51,6 +51,8 @@ spec:
             - mountPath: /repo/AnswerCoalesce/config.json
               name: redis-config
               subPath: config.json
+          resources:
+            {{- toYaml .Values.ac.resources | nindent 12 }}
       volumes:
         - name: redis-config
           configMap:
