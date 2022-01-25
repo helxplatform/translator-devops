@@ -9,4 +9,4 @@ data:
   OPENAPI_SERVER_LOCATION: "{{ .Values.x_trapi.location.value }}"
   SERVICES_MATURITY: "{{ .Values.external_services.SERVICES_MATURITY }}"
   WEB_HOST: 0.0.0.0
-  PORT: "{{ .Values.app.port | quote }}"
+  PORT: {{ .Values.app.port | quote }}
