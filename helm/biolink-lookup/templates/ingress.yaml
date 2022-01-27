@@ -1,6 +1,8 @@
-{{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+{{- if .Values.ingress.enabled -}}
+  {{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+    {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
+    {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -24,15 +26,19 @@ spec:
   {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:
-      - {{ .Values.ingress.host }}
+      - {{ .Values.ingress.host | quote }}
     secretName: {{ .Values.ingress.host }}-tls
   {{- end }}
   rules:
   - host: {{ .Values.ingress.host }}
     http:
       paths:
-      - backend:
+      - path: "/"
         {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+        pathType: "{{ .Values.ingress.pathType }}"
+        {{- end }}
+        backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
             name: {{ include "biolink-lookup.fullname" . }}
             port:
@@ -40,7 +46,4 @@ spec:
           {{- else }}
           serviceName: {{ include "biolink-lookup.fullname" . }}
           servicePort: 80
-        {{- end }}
-        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-        pathType: "{{ .Values.ingress.pathType }}"
-        {{- end }}
+          {{- end }}
