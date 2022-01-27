@@ -6,6 +6,10 @@ image:
   repository: ghcr.io/ncatstranslator/workflow-runner:latest
   tag: latest
 
+external_services:
+  NORMALIZER_URL: "https://nodenormalization-sri.renci.org"
+  SERVICES_MATURITY: "production"
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -23,3 +27,9 @@ ingress:
 
 app:
   port: 4321
+
+x_trapi:
+  maturity:
+    value: "production"
+  location:
+    value: "RENCI"

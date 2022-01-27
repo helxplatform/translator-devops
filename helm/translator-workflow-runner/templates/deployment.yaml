@@ -14,18 +14,14 @@ spec:
         app: {{ include "translator-workflow-runner.name" . }}
     spec:
       containers:
-      - env:
-        - name: WEB_HOST
-          value: 0.0.0.0
-        - name: PORT
-          value: {{ .Values.app.port | quote}}
-        - name: OPENAPI_SERVER_URL
-          value: https://{{ .Values.ingress.host }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-        imagePullPolicy: Always
-        name: {{ .Chart.Name }}-web-container
-        ports:
-        - containerPort: {{ .Values.app.port }}
-          name: http
-          protocol: TCP
+        - envFrom:
+            - configMapRef:
+                name: {{ include "translator-workflow-runner.fullname" . }}-configmap
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: Always
+          name: {{ .Chart.Name }}-web-container
+          ports:
+          - containerPort: {{ .Values.app.port }}
+            name: http
+            protocol: TCP
       restartPolicy: Always
