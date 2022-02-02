@@ -22,6 +22,7 @@ service:
 ingress:
   host: ""
   class: ""
+  pathType: ImplementationSpecific
   timeout: 7200 # 1hr
 
 app:

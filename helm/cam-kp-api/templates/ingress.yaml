@@ -4,6 +4,7 @@ metadata:
   name: {{ include "cam-kp-api.fullname" . }}-trapi-ingress
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: "250m"
@@ -26,7 +27,7 @@ spec:
       http:
         paths:
           - path: "/1.2.0(/|$)(.*)"
-            pathType: ImplementationSpecific
+            pathType: {{ .Values.ingress.pathType }}
             backend:
               service:
                 name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
