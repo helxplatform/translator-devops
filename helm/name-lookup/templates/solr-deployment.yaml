@@ -34,6 +34,9 @@ spec:
             - mountPath: "/download.sh"
               name: {{ include "name-lookup.fullname" . }}-configmap
               subPath: download.sh
+          resources:
+            {{- toYaml .Values.solr.resources | nindent 12 }}
+
       {{ end }}
       securityContext:
         runAsUser: 8983
