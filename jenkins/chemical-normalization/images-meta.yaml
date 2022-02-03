@@ -1,3 +1,0 @@
-chemical-normalization:
-  image: "renciorg/r3_chemnorm"
-  version: "0.0.1"
