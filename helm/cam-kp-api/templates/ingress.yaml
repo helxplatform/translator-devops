@@ -3,18 +3,31 @@ kind: Ingress
 metadata:
   name: {{ include "cam-kp-api.fullname" . }}-trapi-ingress
   annotations:
-  {{- if .Values.ingress.class }}
-  kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
-  {{- end }}
-  nginx.ingress.kubernetes.io/enable-cors: "true"
-  nginx.ingress.kubernetes.io/rewrite-target: /$2
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      keepalive_timeout 86400;
+    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/send-timeout: "86400"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
 spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.host }}-tls
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: "/1.2.0(/|$)(.*)"
-            pathType: Prefix
+            pathType: {{ .Values.ingress.pathType }}
             backend:
               service:
                 name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
