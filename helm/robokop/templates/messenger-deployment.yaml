@@ -49,11 +49,16 @@ spec:
             - "uvicorn.workers.UvicornWorker"
             - "-t"
             - "600"
+            - "--log-level=debug"
             - "messenger.server:APP"
           ports:
           - name: messenger-http
             containerPort: {{ .Values.messenger.port }}
             protocol: TCP
+          {{ with .Values.messenger.resources }}
+          resources:
+            {{ . | toYaml | nindent 12 }}
+          {{ end }}
           volumeMounts:
             - mountPath: /home/murphy/logs
               name: messenger-logs-volume
@@ -64,6 +69,6 @@ spec:
       volumes:
         - name: messenger-logs-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.logs.pvcName }}
+            claimName: {{ include "robokop.fullname" . }}-logs-pvc
         - name: code-dir
           emptyDir: {}

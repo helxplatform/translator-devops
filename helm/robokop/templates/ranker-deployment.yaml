@@ -40,6 +40,10 @@ spec:
           - name: rank-superv
             containerPort: {{ .Values.ranker.supervisorPort }}
             protocol: TCP
+          {{- with .Values.ranker.resources }}
+          resources:
+            {{- toYaml  . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /home/murphy/logs
               name: ranker-logs-volume
@@ -50,6 +54,6 @@ spec:
       volumes:
         - name: ranker-logs-volume
           persistentVolumeClaim:
-            claimName: {{ .Values.logs.pvcName }}
+            claimName: {{ include "robokop.fullname" . }}-logs-pvc
         - name: code-dir
           emptyDir: {}

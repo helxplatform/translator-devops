@@ -33,7 +33,7 @@ spec:
               subPath: "redis_config.yaml"
             - mountPath: {{ $codeDir }}/config.json
               name: "loader-config"
-              subPath: "config-compendia.json"
+              subPath: "config-compendia{{ $index }}.json"
           resources:
             {{ $resources | toYaml | nindent 12 }}
       restartPolicy: OnFailure

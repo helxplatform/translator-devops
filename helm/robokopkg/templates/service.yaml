@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokopkg.fullname" . }}-nginx
+  labels:
+    {{- include "robokopkg.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.nginx.service.type }}
+  {{ if .Values.nginx.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.nginx.service.loadBalancerIP }}
+  {{ end }}
+  ports:
+    - port: {{ .Values.nginx.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: http
+    - port: {{ .Values.nginx.service.boltPort }}
+      targetPort: 7687
+      protocol: TCP
+      name: bolt
+  selector:
+    {{- include "robokopkg.selectorLabels" . | nindent 4 }}
+    app: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokopkg.fullname" . }}-guides-service
+  labels:
+    {{- include "robokopkg.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.guides.service.type }}
+  ports:
+    - port: {{ .Values.guides.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "robokopkg.selectorLabels" . | nindent 4 }}
+    app: guide-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "robokopkg.fullname" . }}-neo4j-service
+  labels:
+    {{- include "robokopkg.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.neo4j.service.type }}
+  ports:
+    - port: 7474
+      targetPort: 7474
+      protocol: TCP
+      name: neo4j-http
+    - port: 7687
+      targetPort: 7687
+      protocol: TCP
+      name: neo4j-bolt
+  selector:
+    {{- include "robokopkg.selectorLabels" . | nindent 4 }}
+    service-type: database

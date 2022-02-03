@@ -1,0 +1,17 @@
+{{ if .Values.nginx.service.loadBalancerIP}}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "robokopkg.fullname" . }}-nginx-policy
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "robokopkg.selectorLabels" . | nindent 6 }}
+      app: nginx
+  ingress:
+  - from: []
+    ports:
+      - port: 443
+      - port: 8080
+      - port: 7687
+{{ end }}

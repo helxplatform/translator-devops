@@ -47,21 +47,49 @@ spec:
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.web.port }}"
-            - '--workers'
-            - '1'
+            {{ with .Values.web.extraArgs }}
+              {{ . | toYaml | nindent 12 }}
+            {{ end }}
             - '--root-path'
             - '/1.2'
-            - "--app-dir"
-            - "/code"
             - 'node_normalizer.server:app'
           resources:
             {{ .Values.resources | toYaml | nindent 12 }}
+          {{ if .Values.web.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+             path: /docs
+             port: {{ .Values.web.port }}
+           {{ with .Values.web.startupProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end }}
+          {{ if .Values.web.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.readinessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+          {{ if .Values.web.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.livenessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+
       restartPolicy: Always
       volumes:
         - name: webserver-config
           configMap:
             name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
             defaultMode: 0777
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -112,13 +140,40 @@ spec:
             - "0.0.0.0"
             - "--port"
             - "{{ .Values.web.port }}"
-            - '--workers'
-            - '1'
-            - "--app-dir"
-            - "/code"
+            {{ with .Values.web.extraArgs }}
+              {{ . | toYaml | nindent 12 }}
+            {{ end }}
             - 'node_normalizer.server:app'
           resources:
             {{ .Values.resources | toYaml | nindent 12 }}
+          {{ if .Values.web.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+             path: /docs
+             port: {{ .Values.web.port }}
+           {{ with .Values.web.startupProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end }}
+          {{ if .Values.web.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.readinessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+          {{ if .Values.web.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Values.web.port }}
+           {{ with .Values.web.livenessProbe.config }}
+            {{ . | toYaml | nindent 12 }}
+           {{ end }}
+          {{ end}}
+
       restartPolicy: Always
       volumes:
         - name: webserver-config
