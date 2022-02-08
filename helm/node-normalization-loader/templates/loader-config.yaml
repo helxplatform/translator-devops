@@ -3,16 +3,17 @@ kind: ConfigMap
 metadata:
   name: "{{- include "node-normalization-loader.fullname" . }}-loader-config"
 data:
-  config-compendia.json: |-
+  {{ range $index,$compendia := .Values.data.compendia.files }}
+  config-compendia{{ $index }}.json: |-
     {
     "compendium_directory": "/data/",
     "conflation_directory": "/data/",
-    "data_files": ["data.txt"],
+    "data_files": ["{{$compendia}}"],
     "test_mode": 0,
     "debug_messages": 1,
     "conflations" : []
     }
-
+  {{ end }}
   run_loader_compendia.sh: |-
     #!/bin/sh -x
     export DATA_DIR=/data
@@ -20,10 +21,10 @@ data:
     {{ $baseURL_Com := .Values.data.compendia.sourceBaseUrl }}
     export FILE_URL={{ $baseURL_Com }}${FILE_NAME}
     echo DOWNLOADING $file
-    wget -nv -O $DATA_DIR/data.txt $FILE_URL
+    wget -nv -O $DATA_DIR/${FILE_NAME} $FILE_URL
     ls -al $DATA_DIR
-    head -1 $DATA_DIR/data.txt
-    tail -1 $DATA_DIR/data.txt
+    head -1 $DATA_DIR/${FILE_NAME}
+    tail -1 $DATA_DIR/${FILE_NAME}
     cat config.json
     python load.py
     rm $DATA_DIR/data.txt

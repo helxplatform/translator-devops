@@ -105,8 +105,8 @@ postgres:
      memory: 3Gi
      cpu: 250m
     limits:
-     memory: 20Gi
-     cpu: 4000m
+     memory: 25Gi
+     cpu: 5000m
   nodeSelector: {}
 
   tolerations: []

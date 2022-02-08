@@ -1,3 +1,0 @@
-filter-results-top-n:
-  image: "renciorg/filter-results-top-n"
-  version: "0.0.1"

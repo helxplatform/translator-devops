@@ -1,4 +1,4 @@
-{{ if .Values.dataUrl }}
+{{ if or .Values.dataUrl .Values.forceRun }}
 apiVersion: batch/v1
 kind: Job
 metadata:

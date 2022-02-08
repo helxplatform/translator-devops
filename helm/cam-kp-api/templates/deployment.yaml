@@ -31,3 +31,4 @@ spec:
             - name: http
               containerPort: {{ .Values.app.port }}
               protocol: TCP
+          resources: {{ toYaml .Values.service.resources | nindent 12 }}
