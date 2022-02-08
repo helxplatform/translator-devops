@@ -15,7 +15,8 @@ webServer:
     repository: renciorg/name_lookup
     tag: latest
 
-dataUrl: "https://stars.renci.org/var/name_resolution_bkup/snapshot.backup.tar.gz"
+dataUrl: ""
+forceRun: false
 
 solr:
   service:
