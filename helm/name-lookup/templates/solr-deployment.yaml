@@ -34,6 +34,9 @@ spec:
             - mountPath: "/download.sh"
               name: {{ include "name-lookup.fullname" . }}-configmap
               subPath: download.sh
+          resources:
+            {{- toYaml .Values.solr.resources | nindent 12 }}
+
       {{ end }}
       securityContext:
         runAsUser: 8983
@@ -52,6 +55,12 @@ spec:
               value: "{{ .Values.solr.heap_mem }}"
             - name: SOLR_HOST
               value: {{ include "name-lookup.fullname" . }}-solr-svc
+            - name: GC_TUNE
+              value: {{ .Values.solr.gc | quote }}
+              # "-XX:-UseLargePages -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=30 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=70"
+              # "-XX:-UseLargePages -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=20 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=20"
+              # "-XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
+              # "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90
           ports:
             - name: solr-port
               containerPort: {{ .Values.solr.port }}
