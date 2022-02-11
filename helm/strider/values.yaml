@@ -13,6 +13,7 @@ kpRegistry:
     type: ClusterIP
     port: 80
   containerPort: 4983
+  dbPath: "/app/data"
   # every 2 hrs
   updateCronInterval: "0 */6 * * *"
   resources:
