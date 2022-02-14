@@ -23,7 +23,7 @@ spec:
       protocol: TCP
       name: graphql-port
     - port: {{ .Values.manager.pubmedCache.port }}
-      targetPort: {{ .Values.manager.pubmedCache.port }}
+      targetPort: 6379
       protocol: TCP
       name: pubmed-port
     - port: {{ .Values.manager.postgres.port }}
