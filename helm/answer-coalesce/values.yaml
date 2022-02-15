@@ -21,6 +21,10 @@ ac:
 web:
   serverHostName: "hostname"
 
+busybox:
+  image:
+    repository: busybox
+    tag: latest
 redis:
   image:
     repository: redis
@@ -79,7 +83,8 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-
+  tls:
+   enabled: false
 x_trapi:
   maturity:
     value: "maturity"

@@ -6,6 +6,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 
+busybox:
+  image:
+   repository: busybox
+   tag: latest
 
 replicaCount: 1
 
