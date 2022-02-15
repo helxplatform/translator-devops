@@ -17,6 +17,10 @@ webServer:
 
 dataUrl: ""
 forceRun: false
+busybox:
+  image:
+   repository: busybox
+   tag: latest
 
 solr:
   service:
