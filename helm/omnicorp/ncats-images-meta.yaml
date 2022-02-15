@@ -7,3 +7,6 @@ redis:
 postgres:
   image: "postgres"
   version: "9.6.23"
+busybox:
+  image: "busybox"
+  version: "stable"
