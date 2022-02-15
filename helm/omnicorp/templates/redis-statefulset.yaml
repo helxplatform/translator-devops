@@ -30,7 +30,7 @@ spec:
       {{- if .Values.redis.dataUrl }}
       initContainers:
         - name: download-bckp
-          image: busybox
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           command:
             - 'wget'
           args:
