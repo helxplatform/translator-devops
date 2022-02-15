@@ -20,7 +20,7 @@ spec:
     spec:
       initContainers:
         - name: {{ include "plater.fullname" . }}-init-container
-          image: busybox
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           command:
             - './check_neo.sh'
           env:
