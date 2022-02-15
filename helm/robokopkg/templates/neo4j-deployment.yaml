@@ -89,7 +89,7 @@ spec:
             value: {{ .Values.nginx.service.loadBalancerIP }}
             {{ end }}
           - name: NEO4J_dbms_connector_bolt_advertised__address
-            {{ if .Values.nginx.service.hostName }}:{{ .Values.nginx.service.boltPort }}
+            {{ if .Values.nginx.service.hostName }}
             value: {{ .Values.nginx.service.hostName }}:{{ .Values.nginx.service.boltPort }}
             {{ else }}
             value: {{ .Values.nginx.service.loadBalancerIP }}:{{ .Values.nginx.service.boltPort }}

@@ -33,7 +33,7 @@ spec:
               containerPort: {{ .Values.kpRegistry.containerPort }}
               protocol: TCP
           volumeMounts:
-            - mountPath: /home/murphy/data
+            - mountPath: {{ .Values.kpRegistry.dbPath }}
               name: {{ include "strider.fullname" . }}-kp-registry-data-volume
               subPath: data
           resources:

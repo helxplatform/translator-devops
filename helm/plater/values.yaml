@@ -4,6 +4,13 @@
 
 replicaCount: 1
 
+
+busybox:
+  image:
+    repository: busybox
+    tag: latest
+
+
 image:
   plater:
     repository: renciorg/plater-clustered

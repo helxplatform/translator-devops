@@ -100,7 +100,10 @@ spec:
           ports:
           - name: pubmed-port
             protocol: TCP
-            containerPort: {{ .Values.manager.pubmedCache.port }}
+            containerPort: 6379
+          args:
+          - "--requirepass"
+          - {{ .Values.secrets.pubmedCachePassword }}
           {{- with .Values.manager.pubmedCache.resources }}
           resources:
             {{- toYaml  . | nindent 12 }}
