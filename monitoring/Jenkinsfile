@@ -56,7 +56,7 @@ pipeline {
         failure {
 
             emailext subject: "Translator service warn (${env.SERVER_URL})",
-            to: env.email_recipients,
+            to: env.EMAIL_RECIPIENTS,
             body: "Some monitoring checks failed. Please view report here (https://stars.renci.org/var/translator-monitoring/reports/${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}.html)",
             mimeType: 'text/html'
             script {
