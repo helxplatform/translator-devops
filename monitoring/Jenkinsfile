@@ -54,10 +54,10 @@ pipeline {
                         reportTitles: 'Artillery Report'])
         }
         failure {
-            def remote_file_name = env.JOB_BASE_NAME + "- " + env.BUILD_NUMBER + ".html"
+
             emailext subject: "Translator service warn (${env.SERVER_URL})",
             to: env.email_recipients,
-            body: "Some monitoring checks failed. Please view report here (https://stars.renci.org/var/translator-monitoring/reports/${remote_file_name})",
+            body: "Some monitoring checks failed. Please view report here (https://stars.renci.org/var/translator-monitoring/reports/${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}.html)",
             mimeType: 'text/html'
             script {
                 withCredentials([sshUserPrivateKey(credentialsId: 'stars-user', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
@@ -67,6 +67,7 @@ pipeline {
                     remote.identityFile = identity
                     remote.allowAnyHosts = true
                     remote.host = "stars.renci.org"
+                    def remote_file_name = env.JOB_BASE_NAME + "-" + env.BUILD_NUMBER + ".html"
                     sshPut remote: remote, from: 'monitoring/report.html', into: "/projects/stars/var/translator-monitoring/reports/" + remote_file_name
                 }
             }
