@@ -4,7 +4,7 @@ metadata:
   name: {{ include "aragorn.fullname" . }}-logs-pvc
 spec:
   accessModes:
-  - ReadWriteMany
+  - ReadWriteOnce
   resources:
     requests:
       storage: {{ .Values.logs.storageSize }}
