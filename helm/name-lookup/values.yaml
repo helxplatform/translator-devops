@@ -38,6 +38,14 @@ solr:
     limits:
       memory: "5Gi"
 
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 500m
+
 nameOverride: ""
 fullnameOverride: ""
 

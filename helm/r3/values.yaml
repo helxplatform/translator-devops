@@ -16,6 +16,13 @@ redis:
       memory: 256Gi
     requests:
       memory: 256Gi
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 500m
   seedDB: false
   storage:
     size: 100Gi
