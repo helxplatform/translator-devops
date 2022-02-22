@@ -37,7 +37,7 @@ redis:
       cpu: 1000m
     limits:
       memory: 10Gi
-      cpu: 500m
+      cpu: 1000m
 
   imagePullSecrets: []
   storage:
@@ -91,7 +91,7 @@ postgres:
       cpu: 1000m
     limits:
       memory: 10Gi
-      cpu: 500m
+      cpu: 1000m
 
   imagePullSecrets: []
   storage:

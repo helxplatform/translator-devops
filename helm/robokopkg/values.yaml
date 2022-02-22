@@ -17,7 +17,7 @@ neo4j:
       cpu: 1000m
     limits:
       memory: 10Gi
-      cpu: 500m
+      cpu: 1000m
   totalMemory: 10Gi
   heapSize: 8G
   pageCacheSize: 1G
