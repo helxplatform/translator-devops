@@ -25,6 +25,9 @@ spec:
           env:
             - name: NEO4J_DATA_URL
               value: {{ .Values.dataUrl }}
+          resources:
+            {{- toYaml .Values.initresources | nindent 12 }}
+
           volumeMounts:
             - mountPath: /data
               name: {{ include "plater.fullname" . }}-neo4jkp-pvc
