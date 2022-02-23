@@ -1,4 +1,4 @@
 n0Curie,n0Type,n1Type,predicate
 PUBCHEM.COMPOUND:6591,biolink:Entity,biolink:Entity,biolink:contributes_to
 PUBCHEM.COMPOUND:6591,biolink:Entity,biolink:Entity,biolink:affects
-PUBCHEM.COMPOUND:51130,biolink:Entity,biolink:Entity,biolink:expression_increased_by
+PUBCHEM.COMPOUND:51130,biolink:Entity,biolink:Entity,biolink:increases_expression_of
