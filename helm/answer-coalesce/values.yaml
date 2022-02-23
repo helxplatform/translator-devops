@@ -46,6 +46,14 @@ redis:
       memory: 20Gi
     requests:
       memory: 20Gi
+
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
   pvcName: #### Name pv accordingly
   seedDB: false
   createPV: false
