@@ -9,7 +9,6 @@ pipeline {
     }
     parameters {
         string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
-        string(name: 'BUILD_VERSION_MQ', defaultValue: '', description: 'The build version to deploy (optional)')
         string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
         string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
     }
@@ -31,6 +30,7 @@ pipeline {
                 allOf {
                     expression {
                         return !params.BUILD_VERSION
+                        return !params.BUILD_VERSION_MQ
                     }
                     anyOf {
                         changeset "helm/aragorn/*"
@@ -66,7 +66,7 @@ pipeline {
             steps {
                 withEnv([
                     "IMAGE_NAME=translator-aragorn",
-                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                    "BUILD_VERSION=" +  (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
                 ]) {
                     dir("helm/aragorn") {
                         script {
@@ -82,24 +82,9 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-        stage('Build rabbit-mq') {
-            when {
-                allOf {
-                    expression {
-                        return !params.BUILD_VERSION_MQ
-                    }
-                    anyOf {
-                        changeset "helm/aragorn/*"
-                        triggeredBy 'UserIdCause'
-                    }
-                }
-            }
-            steps {
                 withEnv([
                     "IMAGE_NAME=translator-aragorn-rabbitmq",
-                    "BUILD_VERSION_MQ=" + (params.BUILD_VERSION_MQ ?: env.BUILD_VERSION_MQ)
+                    "BUILD_VERSION_MQ=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_MQ)
                 ]) {
                     dir("helm/aragorn") {
                         script {
@@ -137,6 +122,10 @@ pipeline {
                             credentialsId: 'sri-git-crypt.key.pwd',
                             variable: 'cryptpwd'),
                     ]){
+                    withEnv([
+                        "BUILD_VERSION_ARAGORN=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                        "BUILD_VERSION_MQ=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_MQ)
+                    ]) {
                         withAWS(credentials:'aws-ifx-deploy') {
                             sh '''
                             # copy secret files to current directory
@@ -152,6 +141,7 @@ pipeline {
                             mv ncats-dev-values.yaml ./values-ncats.yaml
                             /bin/bash deploy.sh
                             '''
+                                }
                             }
                         }
                     }

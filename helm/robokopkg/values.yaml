@@ -11,6 +11,13 @@ neo4j:
     tag: latest
     imagePullPolicy: Always
   dataUrl: ""
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
   totalMemory: 10Gi
   heapSize: 8G
   pageCacheSize: 1G
