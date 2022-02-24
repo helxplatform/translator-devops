@@ -40,6 +40,8 @@ spec:
           volumeMounts:
           - name: {{ include "omnicorp.fullname" . }}-redis-data
             mountPath: '/data/'
+          resources:
+            {{- toYaml .Values.redis.initresources | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-redis
