@@ -32,6 +32,9 @@ spec:
             - name: {{ include "robokopkg.fullname" . }}-scripts
               mountPath: /download_data.sh
               subPath: download_data.sh
+          resources:
+            {{- toYaml .Values.neo4j.initresources | nindent 12 }}
+
         - name: {{ include "robokopkg.fullname" . }}-neo4j-seed-container
           image: {{ .Values.neo4j.image.repository }}:{{ .Values.neo4j.image.tag }}
           command:

@@ -30,6 +30,8 @@ spec:
             - name: {{ include "r3.fullname" . }}-seed-script
               mountPath: /seed_db.sh
               subPath: seed_db.sh
+          resources:
+            {{- toYaml .Values.redis.initresources | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-redis-container

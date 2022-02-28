@@ -11,9 +11,9 @@ id-id:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save"
-    - '"60 10000"'
+    - "--save 60 10000"
     - "--appendonly no"
+    - "--stop-writes-on-bgsave-error no"
 
   cluster:
     slaveCount: 0
@@ -30,9 +30,9 @@ id-categories:
       requests:
         memory: #
     extraFlags:
-    - "--save"
-    - '"60 10000"'
+    - "--save 60 10000"
     - "--appendonly no"
+    - "--stop-writes-on-bgsave-error no"
 
   cluster:
     slaveCount: 0
@@ -49,9 +49,9 @@ id-eq-id:
       requests:
         memory: #200Gi
     extraFlags:
-    - "--save"
-    - '"60 10000"'
+    - "--save 60 10000"
     - "--appendonly no"
+    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -67,9 +67,9 @@ semantic-count:
       requests:
         memory: #
     extraFlags:
-    - "--save"
-    - '"60 10000"'
+    - "--save 60 10000"
     - "--appendonly no"
+    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -85,9 +85,9 @@ conflation-db:
       requests:
         memory: #
     extraFlags:
-    - "--save"
-    - '"60 10000"'
+    - "--save 60 10000"
     - "--appendonly no"
+    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -103,8 +103,8 @@ info-content:
       requests:
         memory: #
     extraFlags:
-    - "--save"
-    - '"60 10000"'
+    - "--save 60 10000"
     - "--appendonly no"
+    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
