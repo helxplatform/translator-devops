@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: "ghcr.io/ranking-agent/robokop-ara/robokop-ara"
+  repository: "ghcr.io/ranking-agent/robokop-ara"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v2.6.2"
+  tag: "v2.6.4"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -40,13 +40,10 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-app:
-  xTrapi:
-   server:
-     location: RENCI
-     maturity: development
-  port: 7092
-
+x_trapi:
+  server:
+    location: RENCI
+    maturity: development
 
 service:
   type: ClusterIP

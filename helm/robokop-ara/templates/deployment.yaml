@@ -43,10 +43,10 @@ spec:
             - "--host"
             - "0.0.0.0"
             - "--port"
-            - "{{ .Values.app.port }}"
+            - "7092"
           ports:
             - name: http
-              containerPort: {{ .Values.app.port }}
+              containerPort: "7092"
               protocol: TCP
           livenessProbe:
             httpGet:
