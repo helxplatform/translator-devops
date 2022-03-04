@@ -16,6 +16,7 @@ data:
   {{ end }}
   run_loader_compendia.sh: |-
     #!/bin/sh -x
+    set -x
     export DATA_DIR=/data
     export FILE_NAME=$1
     {{ $baseURL_Com := .Values.data.compendia.sourceBaseUrl }}
@@ -27,7 +28,7 @@ data:
     tail -1 $DATA_DIR/${FILE_NAME}
     cat config.json
     python load.py
-    rm $DATA_DIR/data.txt
+    rm $DATA_DIR/${FILE_NAME}
     echo "FINISHED"
 
   {{ range $index,$conflation := .Values.data.conflations.configs }}
@@ -49,6 +50,7 @@ data:
   {{ end }}
   run_loader_conflation.sh: |-
     #!/bin/sh -x
+    set -x
     export FILE_NAME=$1
     export DATA_DIR=/data
     {{ $baseURLCon := .Values.data.conflations.sourceBaseUrl }}
