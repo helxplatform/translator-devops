@@ -84,7 +84,7 @@ postgres:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "9.6.23"
-
+  mountSubPath: "" # for ncats itrb env this seems to be needing to be set, renci env doesn't need it
   initresources:
     requests:
       memory: 5Gi

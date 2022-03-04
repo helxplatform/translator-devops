@@ -62,6 +62,12 @@ codeDir: /code
 
 redis_backend_config: {}
 
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+  fsGroupChangePolicy: "Always"
+
 resources:
   limits:
     memory: 10Gi

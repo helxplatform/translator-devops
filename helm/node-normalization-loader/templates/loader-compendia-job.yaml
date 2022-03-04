@@ -4,6 +4,7 @@
 {{- $pullPolicy := .Values.imagePullPolicy }}
 {{- $codeDir := .Values.codeDir }}
 {{- $resources := .Values.resources }}
+{{- $securityContext := .Values.securityContext }}
 {{- range $index, $compendiaFile := .Values.data.compendia.files }}
 apiVersion: batch/v1
 kind: Job
@@ -37,7 +38,10 @@ spec:
           resources:
             {{ $resources | toYaml | nindent 12 }}
       restartPolicy: OnFailure
-
+      {{ with $securityContext }}
+      securityContext:
+        {{ $securityContext | toYaml | nindent 8 }}
+      {{ end }}
       volumes:
         - name: loader-config
           configMap:
