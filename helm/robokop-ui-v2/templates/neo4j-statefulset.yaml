@@ -25,6 +25,8 @@ spec:
           env:
             - name: NEO4J_DATA_URL
               value: {{ .Values.neo4j.dataUrl }}
+          resources:
+            {{- toYaml .Values.neo4j.initresources | nindent 12 }}
           volumeMounts:
             - mountPath: /data
               name: {{ include "robokop-ui-v2.fullname" . }}-neo4jkp-pvc

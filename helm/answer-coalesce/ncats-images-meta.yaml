@@ -1,4 +1,9 @@
 ac:
   image: "renciorg/ac"
-  version: "2.2.10"
-
+  version: "2.2.11"
+busyBox:
+  image: "busybox"
+  version: "stable"
+redis:
+  image: "redis"
+  version: "6.2.6"

@@ -6,6 +6,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 
+busybox:
+  image:
+   repository: busybox
+   tag: latest
 
 replicaCount: 1
 
@@ -26,6 +30,14 @@ redis:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "6.2.6"
+
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
 
   imagePullSecrets: []
   storage:
@@ -72,6 +84,14 @@ postgres:
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "9.6.23"
+  mountSubPath: "" # for ncats itrb env this seems to be needing to be set, renci env doesn't need it
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
 
   imagePullSecrets: []
   storage:

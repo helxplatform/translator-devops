@@ -1,3 +1,10 @@
 nameLookup:
   image: "renciorg/name_lookup"
   version: "1.0.2"
+solr:
+  image: "solr"
+  version: "8.11.1"
+
+busyBox:
+  image: "busybox"
+  version: "stable"

@@ -9,7 +9,7 @@ spec:
     spec:
       initContainers:
         - name: download-bckp
-          image: busybox
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           command:
             - 'wget'
           args:
@@ -19,6 +19,8 @@ spec:
           volumeMounts:
           - name: data-dir
             mountPath: '/data/'
+          resources:
+            {{- toYaml .Values.postgres.initresources | nindent 12 }}
       containers:
       - name: loader-container
         image: "{{ .Values.postgres.image.repository}}:{{ .Values.postgres.image.tag }}"

@@ -38,6 +38,8 @@ spec:
               value: "/home/murphy/robokop-messenger"
             - name: NEO4J_URL
               value: "http://$(NEO4J_HOST):$(NEO4J_HTTP_PORT)"
+            - name: NN_URL
+              value: {{ .Values.messenger.nn_url }}
           command:
             - "gunicorn"
           args:
