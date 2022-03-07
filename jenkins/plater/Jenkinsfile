@@ -19,7 +19,7 @@ pipeline {
         pollSCM('H/2 * * * *')
     }
     environment {
-        DEPLOY_ENV = "ci"
+        DEPLOY_ENV = "dev"
     }
     stages {
         stage('Clean') {
@@ -47,6 +47,8 @@ pipeline {
                     env.BUILD_VERSION = imageMeta.plater.version
                     env.ORIGINAL_REPO_NEO4J = imageMeta.neo4j.image
                     env.BUILD_VERSION_NEO4J = imageMeta.neo4j.version
+                    env.ORIGINAL_REPO_BUSYBOX = imageMeta.busybox.image
+                    env.BUILD_VERSION_BUSYBOX = imageMeta.busybox.version
                     currentBuild.displayName = imageMeta.plater.version + "#" + imageMeta.neo4j.version
               }
            }
@@ -96,6 +98,27 @@ pipeline {
                             def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
                                 image.push()
+                            }
+                        }
+                    }
+                }
+                withEnv([
+                    "IMAGE_NAME=translator-busybox"
+                ]) {
+                    dir("helm/plater") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO_BUSYBOX:stable
+                            docker pull $ORIGINAL_REPO_BUSYBOX:latest
+                            docker tag $ORIGINAL_REPO_BUSYBOX:stable 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable
+                            docker tag $ORIGINAL_REPO_BUSYBOX:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest
+                            '''
+                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable')
+                            def imageLatest = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest')
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                                imageLatest.push()
                             }
                         }
                     }

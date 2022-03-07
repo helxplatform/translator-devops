@@ -20,7 +20,7 @@ spec:
     {{- if .Values.dataUrl }}
       initContainers:
         - name: {{ include "answer-coalesce.fullname" . }}-redis-seed-container
-          image: busybox:latest
+          image: {{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}
           command:
             - '/seed_db.sh'
           volumeMounts:
@@ -30,6 +30,8 @@ spec:
             - name: {{ include "answer-coalesce.fullname" . }}-seed-script
               mountPath: /seed_db.sh
               subPath: seed_db.sh
+          resources:
+            {{- toYaml .Values.redis.initresources | nindent 12 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-redis-container

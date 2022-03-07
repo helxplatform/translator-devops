@@ -54,7 +54,7 @@ manager:
         cpu: 1000m
         memory: "9G" ####REQUIRED####
   postgres:
-    image: postgres:10
+    image: postgres:12
     port: 5432
     pvcName: ##############
     storageSize: 5Gi
@@ -71,6 +71,7 @@ messenger:
     repository: renciorg/robokop_messenger
     tag: "2.0"
   serviceType: ClusterIP
+  nn_url: "http://nn-web-prod-node-normalization-web-service-root.translator.svc.cluster.local:8080/get_normalized_nodes?conflate=false&"
   port: 4868
   resources:
     requests:

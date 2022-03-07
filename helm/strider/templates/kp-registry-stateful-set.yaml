@@ -22,6 +22,14 @@ spec:
         - name: {{ .Chart.Name }}-kp-registry-container
           image: "{{ .Values.kpRegistry.image.repository }}:{{ .Values.kpRegistry.image.tag }}"
           env:
+            {{ if .Values.HTTPS_PROXY }}
+            - name: "HTTPS_PROXY"
+              value: "{{ .Values.HTTPS_PROXY }}"
+            {{ end }}
+            {{ if .Values.NO_PROXY }}
+            - name: "NO_PROXY"
+              value: "{{ .Values.NO_PROXY}}"
+            {{ end }}
             - name: "OPENAPI_SERVER_MATURITY"
               value: "{{ .Values.x_trapi.maturity.value }}"
             - name: "OPENAPI_SERVER_LOCATION"
@@ -33,7 +41,7 @@ spec:
               containerPort: {{ .Values.kpRegistry.containerPort }}
               protocol: TCP
           volumeMounts:
-            - mountPath: /home/murphy/data
+            - mountPath: {{ .Values.kpRegistry.dbPath }}
               name: {{ include "strider.fullname" . }}-kp-registry-data-volume
               subPath: data
           resources:

@@ -17,6 +17,10 @@ webServer:
 
 dataUrl: ""
 forceRun: false
+busybox:
+  image:
+   repository: busybox
+   tag: latest
 
 solr:
   service:
@@ -33,6 +37,14 @@ solr:
       memory: "5Gi"
     limits:
       memory: "5Gi"
+
+  initresources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
 
 nameOverride: ""
 fullnameOverride: ""
