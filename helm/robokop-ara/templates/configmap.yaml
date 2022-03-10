@@ -1,14 +1,11 @@
-
-{{- $protocol := include "server-protocol" .  -}}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "robokop-ara.fullname" . }}-env-configmap
 data:
- {{- with (index .Values.ingress.hosts 0) }}
-  OPENAPI_SERVER_URL: "{{ $protocol }}://{{ .host }}"
- {{- end }}
-  OPENAPI_SERVER_MATURITY: {{ .Values.app.xTrapi.server.maturity | quote }}
-  OPENAPI_SERVER_LOCATION: {{ .Values.app.xTrapi.server.location | quote }}
-  PORT: {{ .Values.app.port | quote }}
+  OPENAPI_SERVER_URL: "https://{{ .Values.ingress.host }}"
+  OPENAPI_SERVER_MATURITY: {{ .Values.x_trapi.server.maturity | quote }}
+  OPENAPI_SERVER_LOCATION: {{ .Values.x_trapi.server.location | quote }}
+  ROBOKOP_KG: {{ .Values.app.robokop_kg }}
+  ARAGORN_RANKER: {{ .Values.app.aragorn_ranker }}
+  NODE_NORM: {{ .Values.app.node_norm }}
