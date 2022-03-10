@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "robokop-ara.fullname" . }}
+  name: {{ include "robokop-ara.fullname" . }}-web-service-trapi-1-2
   labels:
     {{- include "robokop-ara.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.port }}
       protocol: TCP
       name: http
   selector:
