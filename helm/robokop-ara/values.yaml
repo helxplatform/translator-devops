@@ -47,14 +47,16 @@ x_trapi:
 
 service:
   type: ClusterIP
-  port: 80
+  port: 7092
 
 ingress:
   enabled: true
-  className: ""
+  host: "hostname"
+  pathType: ImplementationSpecific
+  class: ""
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+    # cert-manager.io/cluster-issuer: letsencrypt
+    # nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
@@ -62,15 +64,8 @@ ingress:
     nginx.ingress.kubernetes.io/service-upstream: 'true'
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
-  hosts:
-    - host: robokop-ara.apps.renci.org
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
   tls:
-   - secretName: robokop-ara.apps.renci.org-tls
-     hosts:
-       - robokop-ara.apps.renci.org
+    enabled: false
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious

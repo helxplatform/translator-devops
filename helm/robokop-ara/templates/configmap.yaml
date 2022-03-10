@@ -3,9 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "robokop-ara.fullname" . }}-env-configmap
 data:
-  {{- with (index .Values.ingress.hosts 0) }}
-    OPENAPI_SERVER_URL: "https://{{ .host }}"
-  {{- end }}
+  OPENAPI_SERVER_URL: "https://{{ .Values.ingress.host }}"
   OPENAPI_SERVER_MATURITY: {{ .Values.x_trapi.server.maturity | quote }}
   OPENAPI_SERVER_LOCATION: {{ .Values.x_trapi.server.location | quote }}
   ROBOKOP_KG: {{ .Values.app.robokop_kg }}
