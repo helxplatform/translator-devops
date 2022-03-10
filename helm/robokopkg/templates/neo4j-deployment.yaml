@@ -58,12 +58,13 @@ spec:
           {{ else }}
             value: "none"
           {{ end }}
-
           - name: NEO4J_browser_remote__content__hostname__whitelist
             {{ if .Values.nginx.service.hostName }}
             value: {{ .Values.nginx.service.hostName }}
-            {{ else }}
+            {{ else if .Values.nginx.service.loadBalancerIP  }}
             value: {{ .Values.nginx.service.loadBalancerIP }}
+            {{ else }}
+            value: "0.0.0.0"
             {{ end }}
           - name: NEO4J_dbms_security_procedures_unrestricted
             value: "gds.*,apoc.*"
@@ -85,17 +86,23 @@ spec:
             value: "{{ .Values.neo4j.jvmOptions }}"
           - name: NEO4J_dbms_transaction_timeout
             value: "{{ .Values.neo4j.queryTimeout }}s"
+          - name: "NEO4J_dbms_threads_worker__count"
+            value: "{{ .Values.neo4j.workerCount }}"
           - name: NEO4J_dbms_default__advertised__address
             {{ if .Values.nginx.service.hostName }}
             value: {{ .Values.nginx.service.hostName }}
-            {{ else }}
+            {{ else if .Values.nginx.service.loadBalancerIP }}
             value: {{ .Values.nginx.service.loadBalancerIP }}
+            {{ else }}
+            value: "0.0.0.0"
             {{ end }}
           - name: NEO4J_dbms_connector_bolt_advertised__address
             {{ if .Values.nginx.service.hostName }}
             value: {{ .Values.nginx.service.hostName }}:{{ .Values.nginx.service.boltPort }}
-            {{ else }}
+            {{ else if .Values.nginx.service.loadBalancerIP }}
             value: {{ .Values.nginx.service.loadBalancerIP }}:{{ .Values.nginx.service.boltPort }}
+            {{ else }}
+            value: 0.0.0.0:{{ .Values.nginx.service.boltPort }}
             {{ end }}
           ports:
             - name: neo4j-http
@@ -107,13 +114,10 @@ spec:
             - name: neo4j-bolt
               containerPort: 7687
               protocol: TCP
+          {{ with .Values.neo4j.resources }}
           resources:
-            requests:
-              memory: {{ .Values.neo4j.totalMemory }}
-            limits:
-              cpu: 1
-              memory: {{ .Values.neo4j.totalMemory }}
-
+            {{ . | toYaml | nindent 12 }}
+          {{ end }}
           volumeMounts:
           - mountPath: /data
             name: {{ include "robokopkg.fullname" . }}-neo4jkp-pvc
