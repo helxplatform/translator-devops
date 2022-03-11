@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - name: api-watchdog-container
-            image: {{ .Values.image.repository }}
+            image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
             imagePullPolicy: {{ .Values.image.pullPolicy }}
             command:
               - bash

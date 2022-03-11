@@ -13,10 +13,8 @@ spec:
       {{- include "robokop-ara.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
       labels:
         {{- include "robokop-ara.selectorLabels" . | nindent 8 }}
     spec:
@@ -43,10 +41,10 @@ spec:
             - "--host"
             - "0.0.0.0"
             - "--port"
-            - "{{ .Values.app.port }}"
+            - "{{ .Values.service.port }}"
           ports:
             - name: http
-              containerPort: {{ .Values.app.port }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
