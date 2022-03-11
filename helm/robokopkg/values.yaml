@@ -19,13 +19,20 @@ neo4j:
       memory: 10Gi
       cpu: 1000m
   totalMemory: 10Gi
+  resources:
+    requests:
+      memory: 10Gi
+      cpu: 500m
+    limits:
+      memory: 10Gi
+      cpu: 2
   heapSize: 8G
   pageCacheSize: 1G
   username: "neo4j"
   password: ""
   readOnly: "true"
   queryTimeout: 600 # in seconds
-  jvmOptions: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xss250m -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
+  jvmOptions: "-Xss250m -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
   storage:
     size: 10Gi
   service:
