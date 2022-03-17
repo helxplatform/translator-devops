@@ -23,6 +23,11 @@ spec:
             - "git"
           args:
             - "clone"
+            {{ if .Values.ranker.branch }}
+            - "--single-branch"
+            - "--branch"
+            - "{{ .Values.ranker.branch }}"
+            {{end}}
             - "https://github.com/NCATS-Gamma/robokop-rank.git"
           volumeMounts:
             - mountPath: /home/murphy/
