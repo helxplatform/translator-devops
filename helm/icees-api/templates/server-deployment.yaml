@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-server
+  labels:
+    app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
+  template:
+    metadata:
+      labels:
+        app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
+    spec:
+      containers:
+        - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-server
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+              containerPort: {{ .Values.service.port }} 
+          env:
+           - name: UID
+             value: "1001"
+           - name: GID
+             value: "1001"
+           - name: ICEES_PORT
+             value: "5432"
+           - name: ICEES_HOST
+             value: {{ .Values.secrets.ICEES_HOST }}
+           - name: ICEES_DBUSER
+             value: {{ .Values.secrets.ICEES_DBUSER }}
+           - name: ICEES_DBPASS
+             value: {{ .Values.secrets.ICEES_DBPASS }}
+           - name: POSTGRES_PASSWORD
+             value: {{ .Values.secrets.POSTGRES_PASSWORD }}
+           - name: ICEES_DATABASE
+             value: {{ .Values.secrets.ICEES_DATABASE }}
+           - name: ICEES_API_LOG_PATH
+             value: {{ .Values.custom_envs.ICEES_API_LOG_PATH }}
+           - name: ICEES_API_HOST_PORT
+             value: "8080"
+           - name: POOL_SIZE
+             value: "10"
+           - name: MAX_OVERFLOW
+             value: "0"
+           - name: OPENAPI_TITLE
+             value: {{ .Values.custom_envs.OPENAPI_TITLE }}
+           - name: OPENAPI_HOST
+             value: {{ .Values.ingress.hosts.host }}
+           - name: OPENAPI_SCHEME
+             value: "https"
+           - name: DATA_PATH
+             value: "./db/data"
+           - name: DB_PATH
+             value: {{ .Values.custom_envs.DB_PATH }}
+           - name: CONFIG_PATH
+             value: {{ .Values.custom_envs.CONFIG_PATH }}
+           - name: ICEES_API_INSTANCE_NAME
+             value: {{ .Values.custom_envs.ICEES_API_INSTANCE_NAME }}
+           - name: OPENAPI_SERVER_URL
+             value: https://{{ .Values.ingress.hosts.host }}
+           - name: ICEES_INFORES_CURIE
+             value: {{ .Values.custom_envs.ICEES_INFORES_CURIE }}
+           - name: OPENAPI_SERVER_MATURITY
+             value: {{ .Values.custom_envs.OPENAPI_SERVER_MATURITY }}
+           - name: OPENAPI_SERVER_LOCATION
+             value: "RENCI"
+           - name: REDIS_HOST
+             value: {{ .Values.custom_envs.REDIS_HOST }}
+          livenessProbe:
+            periodSeconds: 5
+            httpGet:
+              path: /apidocs
+              port: 8080
+          startupProbe:
+            httpGet:
+              path: /apidocs
+              port: 8080
+            failureThreshold: 30
+            periodSeconds: 5    
+          readinessProbe:
+            periodSeconds: 5
+            httpGet:
+              path: /apidocs
+              port: 8080
+          volumeMounts:
+            - name: iceesdata
+              mountPath: /iceesdata 
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: iceesdata
+          persistentVolumeClaim:
+            claimName: iceesdata

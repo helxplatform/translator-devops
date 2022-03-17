@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-redis
+  labels:
+    app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
+  template:
+    metadata:
+      labels:
+        app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
+    spec:
+      containers:
+        - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-redis
+          image: redis:6.2
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+              containerPort: 6379
+              
+          livenessProbe:
+            periodSeconds: 5
+            exec:
+              command: ["redis-cli", "ping"]
+          startupProbe:
+            exec:
+              command: ["redis-cli", "ping"]      
+            failureThreshold: 30
+            periodSeconds: 5    
+          readinessProbe:
+            periodSeconds: 5
+            exec:
+              command: ["redis-cli", "ping"]
+          volumeMounts:
+            - name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-data
+              mountPath: /data 
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-db-pvc
