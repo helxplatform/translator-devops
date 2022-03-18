@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-redis
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
   labels:
     app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
 spec:
@@ -17,11 +17,11 @@ spec:
         app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
     spec:
       containers:
-        - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-redis
+        - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
           image: redis:6.2
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-              containerPort: 6379
+           - containerPort: 6379
               
           livenessProbe:
             periodSeconds: 5

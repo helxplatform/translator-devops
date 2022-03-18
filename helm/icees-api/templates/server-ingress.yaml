@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    # This line will automatically generate a Let's Encrypt TLS certificate which will be stored in the secretName below. See https://cert-manager.io/docs/usage/ingress/
+    # This only works for DNS names in public zones like *.renci.org or *.apps.renci.org. See https://wiki.renci.org/index.php/Kubernetes_Cloud/Let%27s_Encrypt_Migration
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"      
+    cert-manager.io/cluster-issuer: letsencrypt
+    # Ensure you don't have any "kubernetes.io/ingress.class" annotations; those are deprecated in favor of IngressClasses, but you want to use the default class anyway.
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-ingress
+spec:
+  tls:
+  - hosts:
+      - {{ .Values.custom_envs.HOSTNAME }}
+    secretName: {{ .Values.custom_envs.HOSTNAME }}-tls
+  rules:
+    # This line will automatically create the DNS record using https://github.com/kubernetes-sigs/external-dns/
+    # This only works for hostnames within *.apps.renci.org. If you need a DNS name outside that zone, contact ACIS.
+    - host: {{ .Values.custom_envs.HOSTNAME }}
+      http:
+        paths:
+          - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              # The service name and port should match the name and port on your own Kubernetes Service: https://kubernetes.io/docs/concepts/services-networking/service/
+              name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-service
+              port:
+                number: {{ .Values.service.port }}

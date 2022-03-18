@@ -21,10 +21,17 @@ podSecurityContext: {}
 service:
   type: ClusterIP
   port: 8080
+  resources:
+    requests:
+      cpu: "2"
+      memory: 16Gi
+    limits:
+      memory: "20Gi"
+      cpu: "4"
 
 redis:
   storage:
-    size: 10Gi      
+    size: 10Gi 
 
 secrets:
   ICEES_HOST: ############## 
@@ -43,40 +50,4 @@ custom_envs:
   ICEES_INFORES_CURIE: infores:icees-pcd
   OPENAPI_SERVER_MATURITY: development
   REDIS_HOST: redis-pcd
-
-ingress:
-  enabled: true
-  className: ""
-  annotations:
-    # This line will automatically generate a Let's Encrypt TLS certificate which will be stored in the secretName below. See https://cert-manager.io/docs/usage/ingress/
-    # This only works for DNS names in public zones like *.renci.org or *.apps.renci.org. See https://wiki.renci.org/index.php/Kubernetes_Cloud/Let%27s_Encrypt_Migration
-    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
-    cert-manager.io/cluster-issuer: letsencrypt
-    # Ensure you don't have any "kubernetes.io/ingress.class" annotations; those are deprecated in favor of IngressClasses, but you want to use the default class anyway.
-  hosts:
-    - host: icees-pcd-dev.apps.renci.org
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources:
-  requests:
-      cpu: "2"
-      memory: 16Gi
-    limits:
-      memory: "20Gi"
-      cpu: "4"       
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+  HOSTNAME: icees-pcd-dev.apps.renci.org

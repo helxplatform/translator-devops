@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-server
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-server
   labels:
     app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
 spec:
@@ -17,11 +17,11 @@ spec:
         app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
     spec:
       containers:
-        - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.appVersion }}-server
+        - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-server
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-              containerPort: {{ .Values.service.port }} 
+           - containerPort: {{ .Values.service.port }} 
           env:
            - name: UID
              value: "1001"
@@ -42,7 +42,7 @@ spec:
            - name: ICEES_API_LOG_PATH
              value: {{ .Values.custom_envs.ICEES_API_LOG_PATH }}
            - name: ICEES_API_HOST_PORT
-             value: "8080"
+             value: "{{ .Values.service.port }}"
            - name: POOL_SIZE
              value: "10"
            - name: MAX_OVERFLOW
@@ -50,7 +50,7 @@ spec:
            - name: OPENAPI_TITLE
              value: {{ .Values.custom_envs.OPENAPI_TITLE }}
            - name: OPENAPI_HOST
-             value: {{ .Values.ingress.hosts.host }}
+             value: {{ .Values.custom_envs.HOSTNAME }}
            - name: OPENAPI_SCHEME
              value: "https"
            - name: DATA_PATH
@@ -62,7 +62,7 @@ spec:
            - name: ICEES_API_INSTANCE_NAME
              value: {{ .Values.custom_envs.ICEES_API_INSTANCE_NAME }}
            - name: OPENAPI_SERVER_URL
-             value: https://{{ .Values.ingress.hosts.host }}
+             value: https://{{ .Values.custom_envs.HOSTNAME }}
            - name: ICEES_INFORES_CURIE
              value: {{ .Values.custom_envs.ICEES_INFORES_CURIE }}
            - name: OPENAPI_SERVER_MATURITY
@@ -75,18 +75,18 @@ spec:
             periodSeconds: 5
             httpGet:
               path: /apidocs
-              port: 8080
+              port: {{ .Values.service.port }}
           startupProbe:
             httpGet:
               path: /apidocs
-              port: 8080
+              port: {{ .Values.service.port }}
             failureThreshold: 30
             periodSeconds: 5    
           readinessProbe:
             periodSeconds: 5
             httpGet:
               path: /apidocs
-              port: 8080
+              port: {{ .Values.service.port }}
           volumeMounts:
             - name: iceesdata
               mountPath: /iceesdata 
