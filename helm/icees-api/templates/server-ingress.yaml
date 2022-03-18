@@ -10,20 +10,20 @@ metadata:
   name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-ingress
 spec:
   tls:
-  - hosts:
-      - {{ .Values.custom_envs.HOSTNAME }}
-    secretName: {{ .Values.custom_envs.HOSTNAME }}-tls
+    - hosts:
+        - {{ .Values.custom_envs.HOSTNAME | quote }}
+      secretName: {{ .Values.custom_envs.HOSTNAME }}-tls
   rules:
     # This line will automatically create the DNS record using https://github.com/kubernetes-sigs/external-dns/
     # This only works for hostnames within *.apps.renci.org. If you need a DNS name outside that zone, contact ACIS.
-    - host: {{ .Values.custom_envs.HOSTNAME }}
+    - host: {{ .Values.custom_envs.HOSTNAME | quote }}
       http:
         paths:
-          - pathType: Prefix
-          path: "/"
-          backend:
-            service:
-              # The service name and port should match the name and port on your own Kubernetes Service: https://kubernetes.io/docs/concepts/services-networking/service/
-              name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-service
-              port:
-                number: {{ .Values.service.port }}
+          - pathType: "ImplementationSpecific"
+            path: "/"
+            backend:
+              service:
+                # The service name and port should match the name and port on your own Kubernetes Service: https://kubernetes.io/docs/concepts/services-networking/service/
+                name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-service
+                port:
+                  number: {{ .Values.service.port }}
