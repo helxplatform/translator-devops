@@ -1,15 +1,22 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-service       
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}       
   labels:
-    service-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-service
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+    service-type: webserver
+    trapi: "1.2"      
 spec:
   ports:
-    - name: "{{ .Values.service.port }}"
+    - name: http
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.port }}
+      protocol: TCP
   selector:
-    service-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-service
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+    service-type: webserver
+    trapi: "1.2"      
   type: {{ .Values.service.type }}
 

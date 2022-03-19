@@ -34,11 +34,11 @@ redis:
     size: 10Gi 
 
 secrets:
-  ICEES_HOST: ##############
-  ICEES_DBUSER: ##############
-  ICEES_DBPASS: ##############
-  POSTGRES_PASSWORD: ##############
-  ICEES_DATABASE: ##############
+  ICEES_HOST: db
+  ICEES_DBUSER: icees_dbuser
+  ICEES_DBPASS: icees_dbpass
+  POSTGRES_PASSWORD: icees_postgres_password
+  ICEES_DATABASE: icees_database
 
 custom_envs:
   INSTANCE_NAME: pcd-dev

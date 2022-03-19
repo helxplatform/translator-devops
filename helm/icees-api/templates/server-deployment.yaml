@@ -1,27 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-server
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
   labels:
-    app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+    service-type: webserver
+    trapi: "1.2"      
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
+      app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+      app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+      service-type: webserver
+      trapi: "1.2"       
   template:
     metadata:
       labels:
-        app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-server
+        app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+        app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+        service-type: webserver
+        trapi: "1.2"
     spec:
       containers:
         - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-server
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-           - containerPort: {{ .Values.service.port }} 
+           - name: http       
+             containerPort: {{ .Values.service.port }} 
+             protocol: TCP
           env:
            - name: UID
              value: "1001"
@@ -50,7 +61,7 @@ spec:
            - name: OPENAPI_TITLE
              value: {{ .Values.custom_envs.OPENAPI_TITLE }}
            - name: OPENAPI_HOST
-             value: {{ .Values.custom_envs.HOSTNAME }}
+             value: {{ .Values.ingress.host }}
            - name: OPENAPI_SCHEME
              value: "https"
            - name: DATA_PATH
@@ -62,7 +73,7 @@ spec:
            - name: ICEES_API_INSTANCE_NAME
              value: {{ .Values.custom_envs.ICEES_API_INSTANCE_NAME }}
            - name: OPENAPI_SERVER_URL
-             value: https://{{ .Values.custom_envs.HOSTNAME }}
+             value: https://{{ .Values.ingress.host }}
            - name: ICEES_INFORES_CURIE
              value: {{ .Values.custom_envs.ICEES_INFORES_CURIE }}
            - name: OPENAPI_SERVER_MATURITY
@@ -70,7 +81,7 @@ spec:
            - name: OPENAPI_SERVER_LOCATION
              value: "RENCI"
            - name: REDIS_HOST
-             value: {{ .Values.custom_envs.REDIS_HOST }}
+             value: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
           livenessProbe:
             periodSeconds: 5
             httpGet:

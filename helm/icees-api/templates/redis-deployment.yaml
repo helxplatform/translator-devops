@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
   labels:
-    app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
+    app-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
+      app-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
   template:
     metadata:
       labels:
-        app-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis
+        app-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
     spec:
       containers:
         - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis

@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis-service       
+  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis       
   labels:
-    service-name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-service
-  name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-service
+    service-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
 spec:
   ports:
     - name: "6379"
       port: 6379
       targetPort: 6379
   selector:
-    io.kompose.service: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-service
+    service-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
   type: {{ .Values.service.type }}
 
