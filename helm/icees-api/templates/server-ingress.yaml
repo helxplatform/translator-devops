@@ -7,7 +7,7 @@ metadata:
     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"      
     cert-manager.io/cluster-issuer: letsencrypt
     # Ensure you don't have any "kubernetes.io/ingress.class" annotations; those are deprecated in favor of IngressClasses, but you want to use the default class anyway.
-  name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-ingress
+  name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-ingress
 spec:
   tls:
     - hosts:
@@ -24,6 +24,6 @@ spec:
             backend:
               service:
                 # The service name and port should match the name and port on your own Kubernetes Service: https://kubernetes.io/docs/concepts/services-networking/service/
-                name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}
+                name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
                 port:
                   number: {{ .Values.service.port }}

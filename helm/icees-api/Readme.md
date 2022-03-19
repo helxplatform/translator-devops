@@ -7,26 +7,34 @@ This Chart can be used to install [ICEES-API](https://github.com/NCATS-Tangerine
 
 This chart has configurations for different instances of ICEES API, e.g., asthma, DILI, PCD, and covid instances, controlled and customized through `values.yaml`.
 
-### Installing 
+### Installing ICEES TRAPI instances
 
-Note:  Any of the above parameters can be overridden using set argument. 
 ```shell script
-$ helm install  <my-release> . 
+$ helm -n <namespace> install  <release> . -f <values_file>
 ```
+
+For example:
+
+```
+$ helm -n icees-dev install  icees-api-pcd-dev . -f renci-pcd-dev-values-populated.yaml 
+$ helm -n icees-dev install  icees-api-dili-dev . -f renci-dili-dev-values-populated.yaml
+$ helm -n icees-dev install  icees-api-asthma-dev . -f renci-asthma-dev-values-populated.yaml
+$ helm -n icees-dev install  icees-api-covid-dev . -f renci-covid-dev-values-populated.yaml
+$ helm -n icees-prod install  icees-api-pcd . -f renci-pcd-values-populated.yaml 
+$ helm -n icees-prod install  icees-api-dili . -f renci-dili-values-populated.yaml
+$ helm -n icees-prod install  icees-api-asthma . -f renci-asthma-values-populated.yaml
+$ helm -n icees-prod install  icees-api-covid . -f renci-covid-values-populated.yaml
+```
+
+
 
 ### Uninstalling
 
 ```shell script
-$ helm uninstall <my-release>
+$ helm -n <namespace> delete <release>
 ```
 
-### Upgrading
-
-```shell script
-$ helm upgrade --set ingress.class=translator ingress.host=icees-asthma.renci.org <my-release> . 
-```
-
-###Other deployment commands
+## Other deployment commands
 To render your chart without deploying:
 
 ```shell script
