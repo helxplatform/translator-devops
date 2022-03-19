@@ -3,18 +3,27 @@ kind: Deployment
 metadata:
   name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
   labels:
-    app-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+    server-type: redis
+    trapi: "1.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+      app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+      app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+      server-type: redis
+      trapi: "1.2"      
   template:
     metadata:
       labels:
-        app-name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+        app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+        app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+        server-type: redis
+        trapi: "1.2"      
     spec:
       containers:
         - name: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
@@ -22,7 +31,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
            - containerPort: 6379
-              
+             name: redis-port
+             protocol: TCP
+    
           livenessProbe:
             periodSeconds: 5
             exec:

@@ -81,7 +81,7 @@ spec:
            - name: OPENAPI_SERVER_LOCATION
              value: "RENCI"
            - name: REDIS_HOST
-             value: {{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis
+             value: '{{ include "icees-api.fullname" . }}-{{ .Values.custom_envs.INSTANCE_NAME }}-trapi-{{ .Chart.AppVersion }}-redis'
           livenessProbe:
             periodSeconds: 5
             httpGet:
