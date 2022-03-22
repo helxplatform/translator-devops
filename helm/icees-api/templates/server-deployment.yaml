@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+  labels:
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+    service-type: webserver
+    trapi: "1.2"      
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+      app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+      service-type: webserver
+      trapi: "1.2"       
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+        app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+        service-type: webserver
+        trapi: "1.2"
+    spec:
+      containers:
+        - name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-server
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+           - name: http       
+             containerPort: {{ .Values.service.port }} 
+             protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-configmap
+          livenessProbe:
+            periodSeconds: 5
+            httpGet:
+              path: /apidocs
+              port: {{ .Values.service.port }}
+          startupProbe:
+            httpGet:
+              path: /apidocs
+              port: {{ .Values.service.port }}
+            failureThreshold: 30
+            periodSeconds: 5    
+          readinessProbe:
+            periodSeconds: 5
+            httpGet:
+              path: /apidocs
+              port: {{ .Values.service.port }}
+          volumeMounts:
+            - name: iceesdata
+              mountPath: /iceesdata 
+          resources:
+            {{- toYaml .Values.service.resources | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: iceesdata
+          persistentVolumeClaim:
+            claimName: iceesdata
