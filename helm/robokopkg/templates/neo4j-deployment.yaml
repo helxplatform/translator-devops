@@ -52,6 +52,11 @@ spec:
           name: {{ include "robokopkg.fullname" . }}-neo4j-container
           imagePullPolicy:  {{ .Values.neo4j.image.imagePullPolicy }}
           env:
+          {{ if .Values.neo4j.javaHome }}
+          - name: JAVA_HOME
+            value: {{ .Values.neo4j.javaHome }}
+          {{ end }}
+
           - name: NEO4J_AUTH
           {{ if .Values.neo4j.password }}
             value: {{ .Values.neo4j.username }}/{{ .Values.neo4j.password }}

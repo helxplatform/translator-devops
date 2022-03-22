@@ -5,10 +5,17 @@ metadata:
 data:
   WEB_HOST: "0.0.0.0"
   WEB_PORT: "{{ .Values.app.port }}"
+  {{ if not .Values.externalNeo4j }}
   NEO4J_HOST: {{ include "plater.fullname" . }}-neo4j-service
-  NEO4J_PASSWORD: "{{ .Values.app.neo4j.password }}"
   NEO4J_HTTP_PORT: "{{ .Values.app.neo4j.httpPort }}"
+  NEO4J_PASSWORD: "{{ .Values.app.neo4j.password }}"
   NEO4J_USERNAME: "{{ .Values.app.neo4j.username }}"
+  {{ else }}
+  NEO4J_HOST: {{ .Values.externalNeo4j.hostName }}
+  NEO4J_HTTP_PORT: "{{ .Values.externalNeo4j.port }}"
+  NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
+  NEO4J_USERNAME: "{{ .Values.externalNeo4j.username }}"
+  {{ end }}
   PLATER_SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-plater-service"
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
   PLATER_TITLE: {{ .Release.Name }}

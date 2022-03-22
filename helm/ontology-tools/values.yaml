@@ -12,10 +12,16 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+uberongraphEndpoint: "https://ubergraph.apps.renci.org/sparql"
+HTTPS_PROXY: "http://proxy.renci.org:8080"
+
 service:
   type: ClusterIP
   port: 80
 
 ingress:
+  pathType: ImplementationSpecific
   host:
   class:
+  tls:
+    enabled: False

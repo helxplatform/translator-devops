@@ -24,6 +24,11 @@ spec:
           args:
             - "clone"
             - "https://github.com/NCATS-Gamma/robokop-messenger.git"
+            {{ if .Values.messenger.branch }}
+            - "--single-branch"
+            - "--branch"
+            - "{{ .Values.messenger.branch }}"
+            {{ end }}
           volumeMounts:
             - mountPath: /home/murphy/
               name: code-dir
