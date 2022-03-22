@@ -6,17 +6,15 @@ metadata:
     app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
     app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
     server-type: redis
-    trapi: "1.2"      
 spec:
   ports:
-    - name: "6379"
-      port: 6379
-      targetPort: 6379
+    - name: "{{ .Values.redis.port }}"
+      port: {{ .Values.redis.port }}
+      targetPort: {{ .Values.redis.port }}
       protocol: TCP
   selector:
     app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
     app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
     server-type: redis
-    trapi: "1.2"      
   type: {{ .Values.service.type }}
 

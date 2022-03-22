@@ -7,7 +7,6 @@ replicaCount: 1
 image:
   repository: renci/icees-api-server
   pullPolicy: Always
-  # Overrides the image tag whose default is the chart appVersion.
   tag: "0.5.0"
 
 imagePullSecrets: []
@@ -30,6 +29,10 @@ service:
       cpu: "4"
 
 redis:
+  port: "6379"
+  image:
+    repository: redis
+    tag: "6.2"
   storage:
     size: 10Gi 
 
@@ -41,16 +44,31 @@ secrets:
   ICEES_DATABASE: ##############
 
 custom_envs:
-  INSTANCE_NAME: pcd-dev
-  ICEES_API_LOG_PATH: /iceesdata/pcd/logs
-  OPENAPI_TITLE: ICEES PCD Instance API - development
-  DB_PATH: /iceesdata/pcd/sqlite/example.db
-  CONFIG_PATH: /iceesdata/pcd/config
-  ICEES_API_INSTANCE_NAME: trapi-v1.2-pcd-dev
-  ICEES_INFORES_CURIE: infores:icees-pcd
-  OPENAPI_SERVER_MATURITY: development
+  INSTANCE_NAME: ##############
+
+server_env_config:
+  UID: "1001"
+  GID: "1001"
+  ICEES_PORT: "5432"
+  ICEES_API_LOG_PATH: ##############
+  ICEES_API_HOST_PORT: 8080
+  OPENAPI_TITLE: ##############
+  POOL_SIZE: "10"
+  MAX_OVERFLOW: "0"
+  OPENAPI_SCHEME: "https"
+  DATA_PATH: "./db/data"
+  DB_PATH: ##############
+  CONFIG_PATH: ##############
+  ICEES_API_INSTANCE_NAME: ##############
+  ICEES_INFORES_CURIE: ##############
+  OPENAPI_SERVER_MATURITY: ##############
+  OPENAPI_SERVER_LOCATION: "RENCI"
 
 ingress:
-  host: icees-pcd-dev.apps.renci.org
+  host: ##############
   class: ""
   pathType: Prefix
+  annotations:
+    # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 256m 

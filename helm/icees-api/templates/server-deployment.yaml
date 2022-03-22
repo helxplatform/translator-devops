@@ -34,54 +34,20 @@ spec:
              containerPort: {{ .Values.service.port }} 
              protocol: TCP
           env:
-           - name: UID
-             value: "1001"
-           - name: GID
-             value: "1001"
-           - name: ICEES_PORT
-             value: "5432"
-           - name: ICEES_HOST
-             value: {{ .Values.secrets.ICEES_HOST }}
-           - name: ICEES_DBUSER
-             value: {{ .Values.secrets.ICEES_DBUSER }}
-           - name: ICEES_DBPASS
-             value: {{ .Values.secrets.ICEES_DBPASS }}
-           - name: POSTGRES_PASSWORD
-             value: {{ .Values.secrets.POSTGRES_PASSWORD }}
-           - name: ICEES_DATABASE
-             value: {{ .Values.secrets.ICEES_DATABASE }}
-           - name: ICEES_API_LOG_PATH
-             value: {{ .Values.custom_envs.ICEES_API_LOG_PATH }}
-           - name: ICEES_API_HOST_PORT
-             value: "{{ .Values.service.port }}"
-           - name: POOL_SIZE
-             value: "10"
-           - name: MAX_OVERFLOW
-             value: "0"
-           - name: OPENAPI_TITLE
-             value: {{ .Values.custom_envs.OPENAPI_TITLE }}
-           - name: OPENAPI_HOST
-             value: {{ .Values.ingress.host }}
-           - name: OPENAPI_SCHEME
-             value: "https"
-           - name: DATA_PATH
-             value: "./db/data"
-           - name: DB_PATH
-             value: {{ .Values.custom_envs.DB_PATH }}
-           - name: CONFIG_PATH
-             value: {{ .Values.custom_envs.CONFIG_PATH }}
-           - name: ICEES_API_INSTANCE_NAME
-             value: {{ .Values.custom_envs.ICEES_API_INSTANCE_NAME }}
-           - name: OPENAPI_SERVER_URL
-             value: https://{{ .Values.ingress.host }}
-           - name: ICEES_INFORES_CURIE
-             value: {{ .Values.custom_envs.ICEES_INFORES_CURIE }}
-           - name: OPENAPI_SERVER_MATURITY
-             value: {{ .Values.custom_envs.OPENAPI_SERVER_MATURITY }}
-           - name: OPENAPI_SERVER_LOCATION
-             value: "RENCI"
-           - name: REDIS_HOST
-             value: '{{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis'
+            {{- range $key, $value := .Values.server_env_config }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.secrets}}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: OPENAPI_HOST
+              value: {{ .Values.ingress.host }}
+            - name: OPENAPI_SERVER_URL
+              value: https://{{ .Values.ingress.host }}  
+            - name: REDIS_HOST
+              value: '{{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis'
           livenessProbe:
             periodSeconds: 5
             httpGet:
@@ -102,7 +68,7 @@ spec:
             - name: iceesdata
               mountPath: /iceesdata 
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.service.resources | nindent 12 }}
       restartPolicy: Always
       volumes:
         - name: iceesdata

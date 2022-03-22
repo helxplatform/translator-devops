@@ -6,7 +6,6 @@ metadata:
     app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
     app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
     server-type: redis
-    trapi: "1.2"
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
@@ -16,21 +15,19 @@ spec:
       app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
       app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
       server-type: redis
-      trapi: "1.2"      
   template:
     metadata:
       labels:
         app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
         app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
         server-type: redis
-        trapi: "1.2"      
     spec:
       containers:
         - name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
-          image: redis:6.2
+          image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-           - containerPort: 6379
+           - containerPort: {{ .Values.redis.port }}
              name: redis-port
              protocol: TCP
     
@@ -51,7 +48,7 @@ spec:
             - name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-data
               mountPath: /data 
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.service.resources | nindent 12 }}
       restartPolicy: Always
       volumes:
         - name: {{ .Values.custom_envs.INSTANCE_NAME }}-redis-data
