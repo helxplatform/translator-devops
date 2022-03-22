@@ -33,21 +33,9 @@ spec:
            - name: http       
              containerPort: {{ .Values.service.port }} 
              protocol: TCP
-          env:
-            {{- range $key, $value := .Values.server_env_config }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            {{- range $key, $value := .Values.secrets}}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            - name: OPENAPI_HOST
-              value: {{ .Values.ingress.host }}
-            - name: OPENAPI_SERVER_URL
-              value: https://{{ .Values.ingress.host }}  
-            - name: REDIS_HOST
-              value: '{{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis'
+          envFrom:
+            - configMapRef:
+                name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-configmap
           livenessProbe:
             periodSeconds: 5
             httpGet:
