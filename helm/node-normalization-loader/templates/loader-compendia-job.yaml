@@ -1,7 +1,7 @@
 {{- $fullName := include "node-normalization-loader.fullname" . -}}
 {{- $image := .Values.image.repository }}
 {{- $imageTag := .Values.image.tag }}
-{{- $pullPolicy := .Values.imagePullPolicy }}
+{{- $pullPolicy := .Values.image.pullPolicy }}
 {{- $codeDir := .Values.codeDir }}
 {{- $resources := .Values.resources }}
 {{- $securityContext := .Values.securityContext }}

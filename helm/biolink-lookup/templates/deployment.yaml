@@ -30,5 +30,9 @@ spec:
             value: "{{ .Values.x_trapi.maturity.value }}"
           - name: "LOCATION_VALUE"
             value: "{{ .Values.x_trapi.location.value }}"
+          {{ if .Values.HTTPS_PROXY }}
+          - name: "HTTPS_PROXY"
+            value: "{{ .Values.HTTPS_PROXY }}"
+          {{ end }}
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
