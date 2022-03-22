@@ -1,4 +1,4 @@
-{{ if .Values.nginx.service.loadBalancerIP}}
+{{ if eq .Values.nginx.service.type "LoadBalancer" }}
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
