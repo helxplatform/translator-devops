@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-configmap
+data:
+  REDIS_HOST: '{{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis'
+  OPENAPI_SERVER_URL: "https://{{ .Values.ingress.host }}"
+  OPENAPI_HOST: "{{ .Values.ingress.host }}"
+  ICEES_HOST: "{{ .Values.secrets.ICEES_HOST }}"
+  ICEES_DBUSER: "{{ .Values.secrets.ICEES_DBUSER }}" 
+  ICEES_DBPASS: "{{ .Values.secrets.ICEES_DBPASOPENAPI_TITLES }}"
+  POSTGRES_PASSWORD: "{{ .Values.secrets.POSTGRES_PASSWORD }}"
+  ICEES_DATABASE: "{{ .Values.secrets.ICEES_DATABASE }}"
+  UID: "{{ .Values.server_env_config.UID }}"
+  GID: "{{ .Values.server_env_config.GID }}"
+  ICEES_PORT: "{{ .Values.server_env_config.ICEES_PORT }}"
+  ICEES_API_LOG_PATH: "{{ .Values.server_env_config.ICEES_API_LOG_PATH }}"
+  ICEES_API_HOST_PORT: "{{ .Values.server_env_config.ICEES_API_HOST_PORT }}"
+  OPENAPI_TITLE: "{{ .Values.server_env_config.OPENAPI_TITLE }}"
+  POOL_SIZE: "{{ .Values.server_env_config.POOL_SIZE }}"
+  MAX_OVERFLOW: "{{ .Values.server_env_config.MAX_OVERFLOW }}"
+  OPENAPI_SCHEME: "{{ .Values.server_env_config.OPENAPI_SCHEME }}"
+  DATA_PATH: "{{ .Values.server_env_config.DATA_PATH }}"
+  DB_PATH: "{{ .Values.server_env_config.DB_PATH }}"
+  CONFIG_PATH: "{{ .Values.server_env_config.CONFIG_PATH }}"
+  ICEES_API_INSTANCE_NAME: "{{ .Values.server_env_config.ICEES_API_INSTANCE_NAME }}"
+  ICEES_INFORES_CURIE: "{{ .Values.server_env_config.ICEES_INFORES_CURIE }}"
+  OPENAPI_SERVER_MATURITY: "{{ .Values.server_env_config.OPENAPI_SERVER_MATURITY }}"
+  OPENAPI_SERVER_LOCATION: "{{ .Values.server_env_config.OPENAPI_SERVER_LOCATION }}"
