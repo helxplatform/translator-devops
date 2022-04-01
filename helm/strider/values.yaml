@@ -90,14 +90,12 @@ redis:
     - 'no'
 
 ingress:
-  enabled: true
+  enabled: false
   class: ""
+  pathType: "ImplementationSpecific"
   strider:
     host: "the strider host name"
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt
-      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
-      nginx.ingress.kubernetes.io/enable-cors: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: "250m"
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
@@ -112,15 +110,10 @@ ingress:
   kpRegistry:
     host: "the kp host name"
     annotations:
-      cert-manager.io/cluster-issuer: letsencrypt
-      nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
       nginx.ingress.kubernetes.io/proxy-body-size: "250m"
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
-  pathType: "ImplementationSpecific"
-  tls:
-    enabled: true
 
 x_trapi:
   maturity:

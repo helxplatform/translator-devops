@@ -14,13 +14,11 @@ service:
   port: 8080
 
 ingress:
+  enabled: false
   host: ingress_HOST
   class: ""
-  enabled: true
   pathType: "ImplementationSpecific"
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt
-    nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
@@ -30,8 +28,6 @@ ingress:
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: 'true'
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
-  tls:
-    enabled: true
 
 web:
   serverHostName: "hostname"
