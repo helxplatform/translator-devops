@@ -4,6 +4,10 @@ metadata:
   name: {{ include "robokopkg.fullname" . }}-nginx
   labels:
     {{- include "robokopkg.labels" . | nindent 4 }}
+  {{ if .Values.nginx.service.hostName }}
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.nginx.service.hostName }}
+  {{ end }}
 spec:
   type: {{ .Values.nginx.service.type }}
   {{ if .Values.nginx.service.loadBalancerIP }}

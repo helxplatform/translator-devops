@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-ingress
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ .Values.ingress.host }}-tls
+  rules:
+    # This line will automatically create the DNS record using https://github.com/kubernetes-sigs/external-dns/
+    # This only works for hostnames within *.apps.renci.org. If you need a DNS name outside that zone, contact ACIS.
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          - pathType: {{ .Values.ingress.pathType }}
+            path: "/"
+            backend:
+              service:
+                # The service name and port should match the name and port on your own Kubernetes Service: https://kubernetes.io/docs/concepts/services-networking/service/
+                name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}
+                port:
+                  number: {{ .Values.service.port }}
