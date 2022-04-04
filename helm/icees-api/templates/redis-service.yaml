@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis       
+  labels:
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
+    server-type: redis
+spec:
+  ports:
+    - name: "{{ .Values.redis.port }}"
+      port: {{ .Values.redis.port }}
+      targetPort: {{ .Values.redis.port }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
+    app.kubernetes.io/instance: {{ include "icees-api.fullname" . }}-trapi-{{ .Chart.AppVersion }}-redis
+    server-type: redis
+  type: {{ .Values.service.type }}
+
