@@ -64,10 +64,10 @@ redis:
     size:
     class:
 
-dataUrl: "https://stars.renci.org/var/answer_coalesce/2021-09-25.rdb"
+dataUrl: ""
 
 nodenorm:
-  url: "https://nodenormalization-sri.renci.org/1.2"
+  url: "hostname"
 
   # adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
@@ -82,20 +82,16 @@ nameOverride: ""
 fullnameOverride: ""
 
 ingress:
-  enabled: true
+  enabled: false
   host: "hostname"
   class: ""
   pathType: "ImplementationSpecific"
   annotations:
-    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
-    cert-manager.io/cluster-issuer: letsencrypt
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-  tls:
-   enabled: true
 
 x_trapi:
   maturity:
