@@ -30,9 +30,6 @@ strider:
     tag: latest
     repository: ghcr.io/ranking-agent/strider
     imagePullPolicy: Always
-  env:
-    OMNICORP_URL: http://robokop.renci.org:3210
-    NORMALIZER_URL: https://nodenormalization-sri.renci.org/1.2
   service:
     type: ClusterIP
     port: 5781
