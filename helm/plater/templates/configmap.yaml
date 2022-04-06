@@ -41,6 +41,56 @@ data:
     rm -rf /data/transactions/*
     # load dump file
     neo4j-admin load --from $FILE
+  {{ if .Values.csvFiles }}
+  seed_db_csv.sh: |-
+    #!/bin/bash
+    set -x
+    # make new csv dir
+    {{ $dataDir := "/data/csv/" }}
+    mkdir -p {{ $dataDir }}
+    # clear out previous data if there
+    rm -rf  {{ $dataDir }}*
+    {{ $baseUrl := .Values.csvFiles.baseUrl }}
+
+    # download node files and build neo4j nodes parameters
+
+    {{ $neo4jFileParameter := "" }}
+
+    {{ range .Values.csvFiles.nodeFiles }}
+       # {{ required "One of the .Values.csvFiles.nodeFiles entry is missing `data` attribute" .data }}
+       {{ $currentParameter := "" }}
+       {{ if .header }}
+         wget -O {{ $dataDir }}{{ .header }} {{ $baseUrl }}{{ .header }}
+         {{ $currentParameter = printf "--nodes=%s%s," $dataDir .header }}
+       {{ else }}
+         {{ $currentParameter = printf "--nodes=" }}
+       {{ end }}
+     wget -O {{ $dataDir }}{{ .data }} {{ $baseUrl }}{{ .data }}
+       {{ $currentParameter = printf "%s%s%s " $currentParameter $dataDir .data }}
+       {{ $neo4jFileParameter = printf "%s%s" $neo4jFileParameter $currentParameter }}
+    {{ end }}
+    {{ $neo4jFileParameter }}
+
+    # download edge files and builder neo4j edges parameters
+
+    {{ range .Values.csvFiles.edgeFiles }}
+       # {{ required "One of the .Values.csvFiles.edgeFiles entry is missing `data` attribute" .data }}
+       {{ $currentParameter := "" }}
+       {{ if .header }}
+       wget -O {{ $dataDir }}{{ .header }} {{ $baseUrl }}{{ .header }}
+       {{ $currentParameter = printf "--relationships=%s%s," $dataDir .header }}
+       {{ else }}
+       {{ $currentParameter = printf "--relationships=" }}
+       {{ end }}
+       wget -O {{ $dataDir }}{{ .data }} {{ $baseUrl }}{{ .data }}
+       {{ $currentParameter = printf "%s%s%s " $currentParameter $dataDir .data }}
+       {{ $neo4jFileParameter = printf "%s%s" $neo4jFileParameter $currentParameter }}
+    {{ end }}
+
+    # Compile neo4j load script
+
+    neo4j-admin import --database=graph.db {{ $neo4jFileParameter }}
+   {{ end }}
   dataset-desc.json: |
     {{ .Values.datasetDesc | toJson }}
   openapi-config.yaml: |-

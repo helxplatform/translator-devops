@@ -17,7 +17,7 @@ spec:
         {{- include "plater.selectorLabels" . | nindent 8 }}
         service-type: database
     spec:
-      {{- if .Values.dataUrl }}
+      {{- if and .Values.dataUrl (eq .Values.dataFormat "dump" )}}
       initContainers:
         - name: {{ include "plater.fullname" . }}-neo4j-download-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
@@ -48,6 +48,22 @@ spec:
               mountPath: /seed_db.sh
               subPath: seed_db.sh
       {{- end }}
+      {{- if and .Values.csvFiles (eq .Values.dataFormat "csv" )}}
+      initContainers:
+        - name: {{ include "plater.fullname" . }}-neo4j-csv-loader
+          image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
+          command:
+            - '/seed_db_csv.sh'
+          resources:
+            {{- toYaml .Values.initresources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "plater.fullname" . }}-neo4jkp-pvc
+              subPath: neo4j_data
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /seed_db_csv.sh
+              subPath: seed_db_csv.sh
+      {{- end  }}
       containers:
         - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           name: {{ include "plater.fullname" . }}-neo4j-container

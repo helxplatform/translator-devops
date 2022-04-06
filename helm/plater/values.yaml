@@ -145,6 +145,19 @@ skipAttributes:
   - provided_by
   - knowledge_source
 dataUrl: ""
+dataFormat: "dump" # set this as neo4j dump by default... other option is "csv"
+
+csvFiles: {}
+#   baseUrl: https://stars.renci.org/var/robokop_neo4j_backups/csv/test/ # base  location of files
+#   nodeFiles:
+#     - header: actors_header.csv # header files are optional if data files contain headers
+#       data: actors.csv # data files are required
+#     - header: movies_header.csv
+#       data: movies.csv
+#   edgeFiles:
+#     - header: roles_header.csv
+#       data: roles.csv
+
 datasetDesc:
   version: ''
   description: ''
