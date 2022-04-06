@@ -38,8 +38,8 @@ securityContext: {}
 
 x_trapi:
   server:
-    location: RENCI
-    maturity: development
+    location: "location"
+    maturity: "maturity"
 
 service:
   type: ClusterIP
