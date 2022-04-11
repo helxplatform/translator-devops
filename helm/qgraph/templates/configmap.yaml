@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "qgraph.fullname" . }}-env-configmap
+data:
+  FRONTEND: {{ .Values.app.env.frontend }}
+  QUERY_DISPATCHER: {{ .Values.app.env.query_dispatcher }}
+  ROBOKACHE: {{ .Values.app.env.robokache }}
+  STRIDER: {{ .Values.app.env.strider }}
+  ARAGORN: {{ .Values.app.env.aragorn }}
+  ROBOKOP: {{ .Values.app.env.robokop_ara }}
+  NODE_NORMALIZER: {{ .Values.app.env.node_normalizer }}
+  NAME_RESOLVER: {{ .Values.app.env.name_resolver }}
+  BIOLINK: {{ .Values.app.env.biolink }}

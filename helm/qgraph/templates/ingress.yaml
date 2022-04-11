@@ -1,9 +1,9 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "qgraph.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{- $svcPort := .Values.proxy.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- if not (hasKey .Values.ingress.proxy.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.proxy.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -18,7 +18,7 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "qgraph.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
+  {{- with .Values.ingress.proxy.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -26,36 +26,29 @@ spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.ingress.tls.enabled }}
   tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+  - hosts:
+      - {{ .Values.ingress.host | quote }}
+    secretName: {{ .Values.ingress.host }}-tls
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
-            {{- end }}
-            backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-              service:
-                name: {{ $fullName }}
-                port:
-                  number: {{ $svcPort }}
-              {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
-              {{- end }}
+        - path: "/"
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          pathType: "{{ .Values.ingress.pathType }}"
           {{- end }}
+          backend:
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            service:
+              name: {{ $fullName }}-web-service-trapi-1-2
+              port:
+                number: {{ .Values.strider.service.port }}
+            {{- else }}
+            serviceName: {{ $fullName }}-web-service-trapi-1-2
+            servicePort: {{ .Values.proxy.service.port }}
+            {{- end }}
     {{- end }}
 {{- end }}
