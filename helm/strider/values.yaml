@@ -30,9 +30,6 @@ strider:
     tag: latest
     repository: ghcr.io/ranking-agent/strider
     imagePullPolicy: Always
-  env:
-    OMNICORP_URL: http://robokop.renci.org:3210
-    NORMALIZER_URL: https://nodenormalization-sri.renci.org/1.2
   service:
     type: ClusterIP
     port: 5781
@@ -90,11 +87,12 @@ redis:
     - 'no'
 
 ingress:
+  enabled: false
   class: ""
+  pathType: "ImplementationSpecific"
   strider:
     host: "the strider host name"
     annotations:
-      nginx.ingress.kubernetes.io/enable-cors: "true"
       nginx.ingress.kubernetes.io/proxy-body-size: "250m"
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
@@ -113,10 +111,9 @@ ingress:
       nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
       nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
       nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
-  pathType: "ImplementationSpecific"
 
 x_trapi:
   maturity:
-    value: "production"
+    value: "maturity"
   location:
-    value: "RENCI"
+    value: "location"
