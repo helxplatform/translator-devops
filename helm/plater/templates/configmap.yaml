@@ -48,6 +48,8 @@ data:
     # make new csv dir
     {{ $dataDir := "/data/csv/" }}
     mkdir -p {{ $dataDir }}
+    mkdir -p /data/databases
+    rm -rf /data/databases/*
     # clear out previous data if there
     rm -rf  {{ $dataDir }}*
     {{ $baseUrl := .Values.csvFiles.baseUrl }}
@@ -88,8 +90,7 @@ data:
     {{ end }}
 
     # Compile neo4j load script
-
-    neo4j-admin import --database=graph.db {{ $neo4jFileParameter }}
+    neo4j-admin import --database={{ .Values.csvFiles.dbName }} {{ $neo4jFileParameter }} {{ .Values.csvFiles.additionalParams }}
    {{ end }}
   dataset-desc.json: |
     {{ .Values.datasetDesc | toJson }}
