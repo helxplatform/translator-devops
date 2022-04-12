@@ -36,6 +36,12 @@ spec:
               value: "{{ .Values.x_trapi.location.value }}"
             - name: OPENAPI_SERVER_URL
               value: https://{{ .Values.ingress.kpRegistry.host }}
+            # remove
+          command:
+          - /bin/bash
+          tty: true
+          stdin: true
+            # -end remove
           ports:
             - name: http
               containerPort: {{ .Values.kpRegistry.containerPort }}
