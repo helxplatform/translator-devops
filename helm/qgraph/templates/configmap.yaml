@@ -3,12 +3,13 @@ kind: ConfigMap
 metadata:
   name: {{ include "qgraph.fullname" . }}-env-configmap
 data:
-  FRONTEND: {{ .Values.app.env.frontend }}
-  QUERY_DISPATCHER: {{ .Values.app.env.query_dispatcher }}
-  ROBOKACHE: {{ .Values.app.env.robokache }}
-  STRIDER: {{ .Values.app.env.strider }}
-  ARAGORN: {{ .Values.app.env.aragorn }}
-  ROBOKOP: {{ .Values.app.env.robokop_ara }}
-  NODE_NORMALIZER: {{ .Values.app.env.node_normalizer }}
-  NAME_RESOLVER: {{ .Values.app.env.name_resolver }}
-  BIOLINK: {{ .Values.app.env.biolink }}
+  DNS_SERVER: {{ .Values.env.dns }}
+  FRONTEND: http://qgraph-frontend:{{ .Values.frontend.service.port }}
+  QUERY_DISPATCHER: http://qgraph-query-dispatcher:{{ .Values.query_dispatcher.service.port }}
+  ROBOKACHE: http://qgraph-robokache:{{ .Values.robokache.service.port }}
+  STRIDER: {{ .Values.env.strider }}
+  ARAGORN: {{ .Values.env.aragorn }}
+  ROBOKOP: {{ .Values.env.robokop_ara }}
+  NODE_NORMALIZER: {{ .Values.env.node_normalizer }}
+  NAME_RESOLVER: {{ .Values.env.name_resolver }}
+  BIOLINK: {{ .Values.env.biolink }}

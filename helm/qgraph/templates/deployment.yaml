@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qgraph.fullname" . }}-proxy
+  labels:
+    {{- include "qgraph.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  selector:
+    matchLabels:
+      {{- include "qgraph.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "qgraph.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-proxy
+          envFrom:
+            - configMapRef:
+                name: {{ include "qgraph.fullname" . }}-env-configmap
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.proxy.repository }}:{{ .Values.proxy.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.proxy.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.proxy.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.proxy.resources | nindent 12 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qgraph.fullname" . }}-frontend
+  labels:
+    {{- include "qgraph.labels" . | nindent 4 }}
+    service-type: ui
+spec:
+  selector:
+    matchLabels:
+      {{- include "qgraph.selectorLabels" . | nindent 6 }}
+      service-type: ui
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "qgraph.selectorLabels" . | nindent 8 }}
+        service-type: ui
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-frontend 
+          envFrom:
+            - configMapRef:
+                name: {{ include "qgraph.fullname" . }}-env-configmap
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.frontend.repository }}:{{ .Values.frontend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.frontend.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "qgraph.fullname" . }}-query-dispatcher
+  labels:
+    {{- include "qgraph.labels" . | nindent 4 }}
+    service-type: dispatcher
+spec:
+  selector:
+    matchLabels:
+      {{- include "qgraph.selectorLabels" . | nindent 6 }}
+      service-type: dispatcher
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "qgraph.selectorLabels" . | nindent 8 }}
+        service-type: dispatcher
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-query-dispatcher
+          envFrom:
+            - configMapRef:
+                name: {{ include "qgraph.fullname" . }}-env-configmap
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.query_dispatcher.repository }}:{{ .Values.query_dispatcher.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.query_dispatcher.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.query_dispatcher.resources | nindent 12 }}

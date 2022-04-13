@@ -43,12 +43,11 @@ spec:
           backend:
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             service:
-              name: {{ $fullName }}-web-service-trapi-1-2
+              name: {{ $fullName }}-proxy
               port:
-                number: {{ .Values.strider.service.port }}
+                number: {{ .Values.proxy.service.port }}
             {{- else }}
-            serviceName: {{ $fullName }}-web-service-trapi-1-2
+            serviceName: {{ $fullName }}-proxy
             servicePort: {{ .Values.proxy.service.port }}
             {{- end }}
     {{- end }}
-{{- end }}
