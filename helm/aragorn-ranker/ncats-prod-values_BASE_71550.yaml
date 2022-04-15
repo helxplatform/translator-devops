@@ -1,0 +1,30 @@
+image:
+  repository: 853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-aragorn-ranker
+  tag: DOCKER_IMAGE_VERSION
+
+# no values
+ingress:
+  enabled: true
+  host: "tbd"
+  class: ""
+
+web:
+  serverHostName: tbd
+
+# @TODO MAKE OMNICORP available
+secrets:
+  omnicorpHost: ""
+  omnicorpPassword: ""
+  omnicorpCacheHost: ""
+  omnicorpCachePassword: ""
+
+answercoalesce:
+ # Assumes ac is deployed in the same namespace
+  fullServiceName: answer-coalesce-redis-service
+  redisServicePort: 6379
+
+x_trapi:
+  maturity:
+    value: "tbd"
+  location:
+    value: "ITRB"

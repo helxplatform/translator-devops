@@ -1,0 +1,27 @@
+image:
+  repository: 853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-aragorn-ranker
+  tag: DOCKER_IMAGE_VERSION
+
+ingress:
+  enabled: true
+  host: aragorn-ranker.ci.transltr.io
+  class: ""
+  annotations: {}
+
+service:
+  type: NodePort
+
+web:
+  serverHostName: "https://aragorn-ranker.ci.transltr.io"
+
+# Use OMNICORP secrets in values-populated.yaml
+
+answercoalesce:
+  fullServiceName: answer-coalesce-redis-service
+  redisServicePort: 6379
+
+x_trapi:
+  maturity:
+    value: "development"
+  location:
+    value: "ITRB"

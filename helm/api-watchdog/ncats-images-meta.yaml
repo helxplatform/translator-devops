@@ -1,5 +1,5 @@
 apiWatchDog:
-  image: "renciorg/api-watchdog"
+  image: "ghcr.io/ranking-agent/api-watchdog-translator-tests"
   version: "latest"
 
 
