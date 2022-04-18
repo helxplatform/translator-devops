@@ -77,7 +77,7 @@ pipeline {
                             docker pull $ORIGINAL_REPO:$BUILD_VERSION
                             docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
-                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
                                 image.push()
                             }
@@ -95,7 +95,7 @@ pipeline {
                             docker pull $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J
                             docker tag $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
-                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION')
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
                                 image.push()
                             }
@@ -114,8 +114,8 @@ pipeline {
                             docker tag $ORIGINAL_REPO_BUSYBOX:stable 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable
                             docker tag $ORIGINAL_REPO_BUSYBOX:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest
                             '''
-                            def image = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable')
-                            def imageLatest = docker.image('853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest')
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable")
+                            def imageLatest = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest")
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
                                 image.push()
                                 imageLatest.push()
