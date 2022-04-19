@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.custom_envs.INSTANCE_NAME}}-redis-db-pvc
+spec:
+  storageClassName: basic
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.redis.storage.size }} 
+
