@@ -30,6 +30,6 @@ app:
 
 x_trapi:
   maturity:
-    value: "production"
+    value: "maturity"
   location:
-    value: "RENCI"
+    value: "location"
