@@ -3,22 +3,11 @@ pipeline {
         kubernetes {
             cloud 'kubernetes'
             yaml '''
-              apiVersion: v1
-              kind: Pod
               spec:
                 containers:
-                - name: agent-docker
-                  image: helxplatform/agent-docker:latest
-                  command:
-                  - cat
-                  tty: true
-                  volumeMounts:
-                    - name: dockersock
-                      mountPath: "/var/run/docker.sock"
-                volumes:
-                - name: dockersock
-                  hostPath:
-                    path: /var/run/docker.sock
+                - name: artillery
+                  image: renciorg/artillery:2.0.0-5-expect-plugin
+                  command: ["sleep", "1200"]
             '''
         }
     }
@@ -30,14 +19,14 @@ pipeline {
                     env.ARTILLERY_CONF = params.test_spec
                     env.EMAIL_RECIPIENTS = params.email_recipients
                 }
-                container('agent-docker') {
-                    sh '''
-                    cd monitoring
-                    echo server : $SERVER_URL
-                    echo test_spec: $ARTILLERY_CONF
-                    chmod +x -R ./run_test.sh
-                    ./run_test.sh -t $ARTILLERY_CONF -s $SERVER_URL
-                    '''
+                container('artillery') {
+                    dir('monitoring') {
+                        sh '''
+                        echo server : $SERVER_URL
+                        echo test_spec: $ARTILLERY_CONF
+                        ./run_test.sh -t $ARTILLERY_CONF -s $SERVER_URL
+                        '''
+                    }
                 }
             }
         }
