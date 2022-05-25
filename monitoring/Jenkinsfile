@@ -8,6 +8,8 @@ pipeline {
                 - name: artillery
                   image: renciorg/artillery:2.0.0-5-expect-plugin
                   command: ["sleep", "1200"]
+                  securityContext:
+                    runAsUser: 1000
             '''
         }
     }
