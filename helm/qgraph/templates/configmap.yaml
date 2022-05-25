@@ -3,10 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "qgraph.fullname" . }}-env-configmap
 data:
-  DNS_SERVER: {{ .Values.env.dns }}
-  FRONTEND: http://qgraph-frontend:{{ .Values.frontend.service.port }}
-  QUERY_DISPATCHER: http://qgraph-query-dispatcher:{{ .Values.query_dispatcher.service.port }}
-  ROBOKACHE: http://qgraph-robokache:{{ .Values.robokache.service.port }}
+  ROBOKACHE: {{ .Values.env.robokache }}:{{ .Values.robokache.service.port }}
   STRIDER: {{ .Values.env.strider }}
   ARAGORN: {{ .Values.env.aragorn }}
   ROBOKOP: {{ .Values.env.robokop_ara }}

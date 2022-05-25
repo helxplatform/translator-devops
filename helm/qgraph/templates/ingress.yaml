@@ -1,9 +1,9 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "qgraph.fullname" . -}}
-{{- $svcPort := .Values.proxy.service.port -}}
+{{- $svcPort := .Values.qgraph.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingress.proxy.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.proxy.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
+  {{- if not (hasKey .Values.ingress.frontend.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -15,10 +15,10 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $fullName }}-ingress
   labels:
     {{- include "qgraph.labels" . | nindent 4 }}
-  {{- with .Values.ingress.proxy.annotations }}
+  {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -36,18 +36,18 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-        - path: "/"
+        - path: "/(.*)"
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           pathType: "{{ .Values.ingress.pathType }}"
           {{- end }}
           backend:
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             service:
-              name: {{ $fullName }}-proxy
+              name: {{ $fullName }}-qgraph
               port:
-                number: {{ .Values.proxy.service.port }}
+                number: {{ .Values.qgraph.service.port }}
             {{- else }}
-            serviceName: {{ $fullName }}-proxy
-            servicePort: {{ .Values.proxy.service.port }}
+            serviceName: {{ $fullName }}-qgraph
+            servicePort: {{ .Values.qgraph.service.port }}
             {{- end }}
-    {{- end }}
+{{- end }}

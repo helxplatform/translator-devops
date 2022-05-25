@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "qgraph.fullname" . }}:{{ .Values.proxy.service.port }}']
+      args: ['{{ include "qgraph.fullname" . }}:{{ .Values.qgraph.service.port }}']
   restartPolicy: Never

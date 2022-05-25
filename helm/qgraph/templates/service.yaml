@@ -1,55 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "qgraph.fullname" . }}-proxy
+  name: {{ include "qgraph.fullname" . }}-qgraph
   labels:
     {{- include "qgraph.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.proxy.service.type }}
+  type: {{ .Values.qgraph.service.type }}
   ports:
-    - port: {{ .Values.proxy.service.port }}
-      targetPort: http
+    - port: {{ .Values.qgraph.service.port }}
+      targetPort: {{ .Values.qgraph.service.port }}
       protocol: TCP
       name: http
   selector:
     {{- include "qgraph.selectorLabels" . | nindent 4 }}
     service-type: webserver
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "qgraph.fullname" . }}-frontend
-  labels:
-    {{- include "qgraph.labels" . | nindent 4 }}
-    service-type: ui
-spec:
-  type: {{ .Values.frontend.service.type }}
-  ports:
-    - port: {{ .Values.frontend.service.port }}
-      targetPort: {{ .Values.frontend.service.port }}
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "qgraph.selectorLabels" . | nindent 4 }}
-    service-type: ui
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "qgraph.fullname" . }}-query-dispatcher
-  labels:
-    {{- include "qgraph.labels" . | nindent 4 }}
-    service-type: dispatcher
-spec:
-  type: {{ .Values.query_dispatcher.service.type }}
-  ports:
-    - port: {{ .Values.query_dispatcher.service.port }}
-      targetPort: 80
-      protocol: TCP
-      name: query-dispatcher
-  selector:
-    {{- include "qgraph.selectorLabels" . | nindent 4 }}
-    service-type: dispatcher
 ---
 apiVersion: v1
 kind: Service
@@ -64,7 +28,7 @@ spec:
     - port: {{ .Values.robokache.service.port }}
       targetPort: 8080
       protocol: TCP
-      name: http
+      name: robokache-port
   selector:
     {{- include "qgraph.selectorLabels" . | nindent 4 }}
     service-type: database
