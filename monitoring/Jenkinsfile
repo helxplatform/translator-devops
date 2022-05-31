@@ -7,7 +7,7 @@ pipeline {
                 containers:
                 - name: artillery
                   image: renciorg/artillery:2.0.0-5-expect-plugin
-                  command: ["sleep", "1200"]
+                  command: ["sleep", "3600"]
                   securityContext:
                     runAsUser: 1000
             '''
@@ -17,16 +17,12 @@ pipeline {
         stage('test') {
             steps {
                 script {
-                    env.SERVER_URL = params.server_to_test
-                    env.ARTILLERY_CONF = params.test_spec
                     env.EMAIL_RECIPIENTS = params.email_recipients
                 }
                 container('artillery') {
                     dir('monitoring') {
                         sh '''
-                        echo server : $SERVER_URL
-                        echo test_spec: $ARTILLERY_CONF
-                        ./run_test.sh -t $ARTILLERY_CONF -s $SERVER_URL
+                        ./run_tests.sh
                         '''
                     }
                 }
@@ -35,7 +31,7 @@ pipeline {
     }
     post {
         always {
-            archiveArtifacts 'monitoring/report*'
+            archiveArtifacts 'monitoring/reports/*'
             publishHTML (target : [allowMissing: false,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
@@ -53,16 +49,16 @@ pipeline {
             )
             script {
 
-                withCredentials([sshUserPrivateKey(credentialsId: 'stars-user', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
-                    def remote = [:]
-                    remote.name = "stars"
-                    remote.user = userName
-                    remote.identityFile = identity
-                    remote.allowAnyHosts = true
-                    remote.host = "stars.renci.org"
-                    def remote_file_name = env.JOB_BASE_NAME + "-" + env.BUILD_NUMBER + ".html"
-                    sshPut remote: remote, from: 'monitoring/report.html', into: "/projects/stars/var/translator-monitoring/reports/" + remote_file_name
-                }
+                // withCredentials([sshUserPrivateKey(credentialsId: 'stars-user', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
+                //     def remote = [:]
+                //     remote.name = "stars"
+                //     remote.user = userName
+                //     remote.identityFile = identity
+                //     remote.allowAnyHosts = true
+                //     remote.host = "stars.renci.org"
+                //     def remote_file_name = env.JOB_BASE_NAME + "-" + env.BUILD_NUMBER + ".html"
+                //     sshPut remote: remote, from: 'monitoring/report.html', into: "/projects/stars/var/translator-monitoring/reports/" + remote_file_name
+                // }
             }
 
         }

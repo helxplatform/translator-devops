@@ -1,8 +1,9 @@
 #!/bin/ash
-# This runs inside renciorg/artillery which is alpine-based (ash)
+# This runs inside renciorg/artillery which is alpine-based (ash).
+# It's called by run_tests.sh in parallel over every arg in job_config.txt
 
-# stop test if any of the steps fail -x
-set -ax
+# stop test if any of the steps fail
+set -exuo pipefail
 
 function help() {
     echo "
@@ -33,15 +34,22 @@ function run_artillery() {
   export HTTPS_PROXY=http://proxy.renci.org:8080
   export HTTP_PROXY=http://proxy.renci.org:8080
 
-  artillery run --output report.json "${PWD}/test-specs/${test_file}" > test_output.yaml
-  has_error=$?
-  artillery report --output report.html report.json
+  output_file=$(mktemp)
+  report_json=$(mktemp)
+  mkdir -p reports
+  # Remove colons and slashes from file name
+  url_slug=$(echo "${server_url}" | sed 's/[^a-z\. A-Z]//g')
+  report_html="./reports/${url_slug}_${test_file}.html"
 
-  if grep -i "errors.enotfound" test_output.yaml; then
+  artillery run --output $report_json "${PWD}/test-specs/${test_file}" > $output_file
+  has_error=$?
+  artillery report --output "$report_html" $report_json
+
+  if grep -i "errors.enotfound" $output_file; then
     echo "server address ${server_url} not found"
     exit 1
   fi
-  if grep -i "errors.etimedout" test_output.yaml; then
+  if grep -i "errors.etimedout" $output_file; then
     echo "server address ${server_url} timed out in a test"
     exit 1
   fi
