@@ -34,12 +34,13 @@ As such the test specs are artillery test specs.
 
 ## Running Locally
 
-You can run the monitoring scripts locally with this command:
+You can run the monitoring scripts locally with this command (note proxying is disabled locally since the proxy's IP allow-list doesn't include VPN clients):
 
 ```
-docker run -it --entrypoint=ash \
+docker run -it --rm --entrypoint=ash \
+    -e='DISABLE_PROXY=1' \
     -v=$PWD:/home/jenkins/workspace/ \
     --workdir=/home/jenkins/workspace/ \
-    renciorg/artillery:2.0.0-5-expect-plugin
+    renciorg/artillery:2.0.0-5-expect-plugin \
     ./run_tests.sh
 ```
