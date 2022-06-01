@@ -38,7 +38,7 @@ pipeline {
 Some monitoring checks failed:
 
 <pre>
-${FILE, path="monitoring/reports/reported_failures.txt"}
+${readFile "monitoring/reports/reported_failures.txt"}
 </pre>
 
 Please view the full reports here (<a href='https://stars.renci.org/var/translator-monitoring/reports/${env.JOB_BASE_NAME}-${env.BUILD_NUMBER}'>Report</a>).
