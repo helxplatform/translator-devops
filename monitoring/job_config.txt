@@ -3,7 +3,8 @@
 -t answer-coalesce.yaml -s https://answercoalesce-dev.apps.renci.org
 -t answer-coalesce.yaml -s https://answercoalesce.renci.org
 # Aragorn and Strider
--t aragorn.yaml -s https://answercoalesce.renci.org
+# Commented out due to failures
+# -t aragorn.yaml -s https://answercoalesce.renci.org
 -t aragorn.yaml -s https://aragorn-dev.apps.renci.org
 -t aragorn.yaml -s https://aragorn.renci.org
 -t aragorn-ranker.yaml -s https://aragorn-ranker.ci.transltr.io
@@ -33,7 +34,8 @@
 -t automat/automat-ontological-hierarchy.yaml -s https://automat.ci.transltr.io
 -t automat/automat-panther.yaml -s https://automat.ci.transltr.io
 -t automat/automat-pharos.yaml -s https://automat.ci.transltr.io
--t automat/automat-robokopkg.yaml -s https://automat.ci.transltr.io
+# Commented out due to failures
+# -t automat/automat-robokopkg.yaml -s https://automat.ci.transltr.io
 -t automat/automat-textminingkp.yaml -s https://automat.ci.transltr.io
 -t automat/automat-uberongraph.yaml -s https://automat.ci.transltr.io
 -t automat/automat-viral-proteome.yaml -s https://automat.ci.transltr.io
