@@ -10,6 +10,12 @@ pipeline {
                   command: ["sleep", "3600"]
                   securityContext:
                     runAsUser: 1000
+                  resources:
+                    requests:
+                      cpu: "2"
+                    limits:
+                      cpu: "2"
+                      memory: "1Gi"
             '''
         }
     }
