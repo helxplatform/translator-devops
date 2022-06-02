@@ -8,7 +8,7 @@ config:
     expect:
      outputFormat: "prettyError"
   payload:
-    path: "data/automat/automat-gtex-data.csv"
+    path: "../data/automat/automat-gtex-data.csv"
     order: iterate
     skipHeader: true
     fields:

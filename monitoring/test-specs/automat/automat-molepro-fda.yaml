@@ -8,7 +8,7 @@ config:
     expect:
      outputFormat: "prettyError"
   payload:
-    path: "data/automat/automat-molepro-fda-data.csv"
+    path: "../data/automat/automat-molepro-fda-data.csv"
     order: iterate
     skipHeader: true
     fields:

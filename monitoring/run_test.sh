@@ -1,8 +1,9 @@
 #!/bin/ash
-# This runs inside renciorg/artillery which is alpine-based (ash)
+# This runs inside renciorg/artillery which is alpine-based (ash).
+# It's called by run_tests.sh in parallel over every arg in job_config.txt
 
-# stop test if any of the steps fail -x
-set -ax
+# Don't set -e since we need to catch errors ourselves
+set -o pipefail
 
 function help() {
     echo "
@@ -27,31 +28,44 @@ function run_artillery() {
   server_url=$2
 
   export SERVER_URL=$server_url
-  export DEBUG='http*,plugin:expect'
   export ARTILLERY_PLUGIN_PATH=${PWD}/test-specs/plugins
   # https://wiki.renci.org/index.php/Kubernetes_Cloud/Sterling#Pods_can't_access_Ingress_hostnames
-  export HTTPS_PROXY=http://proxy.renci.org:8080
-  export HTTP_PROXY=http://proxy.renci.org:8080
+  if [ "${DISABLE_PROXY}" == "" ]; then
+    export HTTPS_PROXY=http://proxy.renci.org:8080
+    export HTTP_PROXY=http://proxy.renci.org:8080
+  fi
+  export ARTILLERY_DISABLE_TELEMETRY=true
 
-  artillery run --output report.json "${PWD}/test-specs/${test_file}" > test_output.yaml
+  mkdir -p reports
+  # Write failures to a file so they can all be printed at the end
+  reported_failures="reports/reported_failures.txt"
+  touch $reported_failures
+  report_json=$(mktemp)
+  # Remove colons and slashes from file name
+  report_name_slug=$(echo "${server_url}_${test_file}" | sed 's/[^a-z\.A-Z]/_/g')
+  report_html="./reports/${report_name_slug}.html"
+
+  # Run the actual test
+  artillery run --output $report_json "${PWD}/test-specs/${test_file}"
   has_error=$?
-  artillery report --output report.html report.json
 
-  if grep -i "errors.enotfound" test_output.yaml; then
-    echo "server address ${server_url} not found"
-    exit 1
+  # Artillery's exit code is still zero for timeouts/errnotfound
+  if grep -i "errors.enotfound" $report_json; then
+    has_error=1
   fi
-  if grep -i "errors.etimedout" test_output.yaml; then
-    echo "server address ${server_url} timed out in a test"
-    exit 1
+  if grep -i "errors.etimedout" $report_json; then
+    has_error=1
   fi
 
-
-  if [ $has_error -eq 1 ]; then
-    echo "error found check reports"
+  if [ $has_error -ne 0 ]; then
+    echo "${server_url} ${test_file}: ERROR"
+    printf "ERROR: Server ${server_url} failed on test ${test_file}:\n \
+    $(grep -i 'errors.' $report_json)\n" >> $reported_failures
+    # Only generate reports on error
+    artillery report --output "$report_html" $report_json
     exit 1
   else
-    echo "SUCCESS"
+    echo "${server_url} ${test_file}: SUCCESS"
     exit 0
   fi
 
