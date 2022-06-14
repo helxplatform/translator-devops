@@ -8,7 +8,7 @@ config:
     expect:
      outputFormat: "prettyError"
   payload:
-    path: "data/automat/automat-hmdb-data.csv"
+    path: "../data/automat/automat-hmdb-data.csv"
     order: iterate
     skipHeader: true
     fields:
