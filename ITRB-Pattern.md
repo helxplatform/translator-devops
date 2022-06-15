@@ -31,7 +31,7 @@ would be re-populated with the images from the private repo to generate a new va
 
 Using the newly generate values file, Jenkins then issues helm upgrade on the release, hence upgrading the chart. 
 
-#### Case 2: Chart Updates
+##### Case 2: Chart Updates
 
 There might be cases where chart template files are updated on a branch. Or for that matter change in a value in one of the values files. 
 In such cases, the output of helm upgrade would patch parts of the chart that need upgrade. The Jenkins pipeline would still run the process
