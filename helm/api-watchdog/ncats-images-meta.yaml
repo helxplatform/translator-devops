@@ -1,6 +1,6 @@
 apiWatchDog:
   image: "ghcr.io/ranking-agent/api-watchdog-translator-tests"
-  version: "latest"
+  version: "v0.2.0"
 
 
 
