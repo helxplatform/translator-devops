@@ -5,8 +5,14 @@ metadata:
   labels:
     app: {{ include "aragorn.fullname" . }}
     trapi: "1.2"
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  {{ if .Values.deploymentStrategy }}
+  strategy:
+    type: {{ .Values.deploymentStrategy }}
+  {{ end }}
   selector:
     matchLabels:
       app: {{ include "aragorn.fullname" . }}
@@ -16,6 +22,8 @@ spec:
       labels:
         app: {{ include "aragorn.fullname" . }}
         trapi: "1.2"
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
     spec:
       securityContext:
         runAsUser: 1001
