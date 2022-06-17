@@ -9,6 +9,10 @@ metadata:
     checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  {{ if .Values.deploymentStrategy }}
+  strategy:
+    type: {{ .Values.deploymentStrategy }}
+  {{ end }}
   selector:
     matchLabels:
       app: {{ include "aragorn.fullname" . }}
