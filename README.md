@@ -25,3 +25,6 @@ This repo contains values files that are setup to decrypt transparently through
    ```
 After the above steps repo shall encrypt/decrypt transparently on pull/push.
 
+##### ITRB Docs
+
+Please refer to [ITRB-Pattern.md](./ITRB-Pattern.md) for deployment strategy.

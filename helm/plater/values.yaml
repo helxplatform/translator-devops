@@ -21,7 +21,7 @@ initresources:
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "1.2.0-10"
+    tag: "1.2.0-12"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.2.14-apoc-gds

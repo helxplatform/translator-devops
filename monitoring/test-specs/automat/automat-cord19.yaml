@@ -8,7 +8,7 @@ config:
     expect:
      outputFormat: "prettyError"
   payload:
-    path: "data/automat/automat-cord19-data.csv"
+    path: "../data/automat/automat-cord19-data.csv"
     order: iterate
     skipHeader: true
     fields:
