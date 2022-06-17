@@ -12,6 +12,8 @@ web:
   serverHostName: "serverHostName"
   callbackHostName: "callbackHostName"
 
+deploymentStrategy: RollingUpdate
+
 nameOverride: ""
 fullnameOverride: ""
 
