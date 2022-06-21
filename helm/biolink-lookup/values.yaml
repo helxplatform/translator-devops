@@ -21,7 +21,7 @@ app:
   defaultVersion: "2.2.5"
   resources:
     limits:
-      memory: 1Gi
+      memory: 3Gi
       cpu: 500m
     requests:
       memory: 500Mi
