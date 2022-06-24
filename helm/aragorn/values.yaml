@@ -49,6 +49,8 @@ queue_files:
 app:
   port: 4321
   debugTiming: "True"
+  multistrider_batch_size: 3
+  maximum_multistrider_rules: 75
   resources:
     requests:
       memory: 2Gi
