@@ -22,3 +22,4 @@ data:
   ANSWER_COALESCE_URL: "{{ .Values.sub_processes.answer_coalesce_url }}"
   RANKER_URL: "{{ .Values.sub_processes.ranker_url }}"
   NODENORM_URL: "{{ .Values.sub_processes.node_norm_url }}"
+  ROBOKOPKG_URL: "{{ .Values.sub_processes.robokop_kg_url }}"

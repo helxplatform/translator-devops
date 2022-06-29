@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "aragorn.fullname" . }}-aragorn-robokop-server
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+    app-name: aragorn-robokop
+    app: {{ include "aragorn.fullname" . }}
+spec:
+  serviceName: {{ include "aragorn.fullname" . }}-aragorn-robokop-service
+  selector:
+    matchLabels:
+      {{- include "aragorn.selectorLabels" . | nindent 6 }}
+      app: {{ include "aragorn.fullname" . }}
+      app-name: aragorn-robokop
+  template:
+    metadata:
+      labels:
+        {{- include "aragorn.selectorLabels" . | nindent 8 }}
+        app-name: aragorn-robokop
+        app: {{ include "aragorn.fullname" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-web-server
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: {{ include "aragorn.fullname" . }}-configmap
+
+          env:
+          - name: CALLBACK_HOST
+            value: http://{{ include "aragorn.fullname" . }}-aragorn-robokop-service:{{ .Values.service.port }}/robokop
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.app.port }}"
+            - "--workers"
+            - "4"
+            - "--root-path"
+            - "/robokop"
+            - "src.robokop_app:ROBOKOP_APP"
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: {{ .Values.app.port }}
+          volumeMounts:
+            - mountPath: /repo/aragorn/logs
+              name: {{ include "aragorn.fullname" . }}-logs
+          resources:
+            {{- toYaml .Values.app.resources | nindent 12 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "aragorn.fullname" . }}-logs
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

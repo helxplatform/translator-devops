@@ -70,6 +70,7 @@ sub_processes:
   answer_coalesce_url: "ac"
   ranker_url: "ranker"
   node_norm_url: "nn"
+  robokop_kg_url: "robokopkg"
 
 rbtmq:
   resources:
