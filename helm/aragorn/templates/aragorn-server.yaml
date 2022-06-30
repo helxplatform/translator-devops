@@ -41,6 +41,8 @@ spec:
             - "{{ .Values.app.port }}"
             - "--workers"
             - "4"
+            - "--root-path"
+            - "/aragorn"
             - "src.aragorn_app:ARAGORN_APP"
           ports:
             - name: http
