@@ -17,6 +17,7 @@ spec:
         service-type: web-server
       annotations:
         checksum/openapi: {{ print .Values.app.openapi_config | sha256sum }}
+        checksum/envconfig: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
     spec:
       initContainers:
         - name: {{ include "plater.fullname" . }}-init-container
