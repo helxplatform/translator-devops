@@ -17,6 +17,8 @@ occurs every half hour.
 
 For eg. if we push changes to  `helm/answer-coalesce` files, Jenkins for ITRB development environment (configured via [./jenkins/answer-coalesce](./jenkins/answer-coalesce/Jenkinsfile)) will start the deployment process.
 
+> **Note** This configuration is for deployment to CI ITRB enviroment. For Test and Production enviroments , a request needs to be made to ITRB for deploying the changes. 
+
 ### Deployment Process in Jenkins
 
 ---
