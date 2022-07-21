@@ -22,10 +22,10 @@ busybox:
 
 dataUrl: ""
 forceRun: false
-busybox:
-  image:
-   repository: busybox
-   tag: latest
+# busybox:
+#   image:
+#    repository: busybox
+#    tag: latest
 
 solr:
   service:
