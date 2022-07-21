@@ -1,6 +1,8 @@
 # Answer Coalesce
 -t answer-coalesce.yaml -s https://answer-coalesce.ci.transltr.io
--t answer-coalesce.yaml -s https://answercoalesce-dev.apps.renci.org
+-t answer-coalesce.yaml -s https://answer-coalesce.test.transltr.io
+-t answer-coalesce.yaml -s https://answer-coalesce.transltr.io
+#-t answer-coalesce.yaml -s https://answercoalesce-dev.apps.renci.org
 -t answer-coalesce.yaml -s https://answercoalesce.renci.org
 # Aragorn and Strider
 # Commented out due to failures
@@ -13,7 +15,7 @@
 -t strider.yaml -s https://strider.ci.transltr.io
 -t strider.yaml -s https://strider-dev.apps.renci.org
 -t strider.yaml -s https://strider.renci.org
-# Automat ITRB
+# Automat ITRB - CI
 -t automat/automat-biolink.yaml -s https://automat.ci.transltr.io
 -t automat/automat-chemical-normalization.yaml -s https://automat.ci.transltr.io
 -t automat/automat-cord19.yaml -s https://automat.ci.transltr.io
@@ -34,11 +36,60 @@
 -t automat/automat-ontological-hierarchy.yaml -s https://automat.ci.transltr.io
 -t automat/automat-panther.yaml -s https://automat.ci.transltr.io
 -t automat/automat-pharos.yaml -s https://automat.ci.transltr.io
-# Commented out due to failures
-# -t automat/automat-robokopkg.yaml -s https://automat.ci.transltr.io
+-t automat/automat-robokopkg.yaml -s https://automat.ci.transltr.io
 -t automat/automat-textminingkp.yaml -s https://automat.ci.transltr.io
 -t automat/automat-uberongraph.yaml -s https://automat.ci.transltr.io
 -t automat/automat-viral-proteome.yaml -s https://automat.ci.transltr.io
+# Automat ITRB - TEST
+-t automat/automat-biolink.yaml -s https://automat.test.transltr.io
+-t automat/automat-chemical-normalization.yaml -s https://automat.test.transltr.io
+-t automat/automat-cord19.yaml -s https://automat.test.transltr.io
+-t automat/automat-covidkopkg.yaml -s https://automat.test.transltr.io
+-t automat/automat-ctd.yaml -s https://automat.test.transltr.io
+-t automat/automat-drugcentral.yaml -s https://automat.test.transltr.io
+-t automat/automat-foodb.yaml -s https://automat.test.transltr.io
+-t automat/automat-gtex.yaml -s https://automat.test.transltr.io
+-t automat/automat-gtopdb.yaml -s https://automat.test.transltr.io
+-t automat/automat-gwas-catalog.yaml -s https://automat.test.transltr.io
+-t automat/automat-hetio.yaml -s https://automat.test.transltr.io
+-t automat/automat-hgnc.yaml -s https://automat.test.transltr.io
+-t automat/automat-hmdb.yaml -s https://automat.test.transltr.io
+-t automat/automat-human-goa.yaml -s https://automat.test.transltr.io
+-t automat/automat-intact.yaml -s https://automat.test.transltr.io
+-t automat/automat-molepro-fda.yaml -s https://automat.test.transltr.io
+-t automat/automat-mychem.yaml -s https://automat.test.transltr.io
+-t automat/automat-ontological-hierarchy.yaml -s https://automat.test.transltr.io
+-t automat/automat-panther.yaml -s https://automat.test.transltr.io
+-t automat/automat-pharos.yaml -s https://automat.test.transltr.io
+-t automat/automat-robokopkg.yaml -s https://automat.test.transltr.io
+-t automat/automat-textminingkp.yaml -s https://automat.test.transltr.io
+-t automat/automat-uberongraph.yaml -s https://automat.test.transltr.io
+-t automat/automat-viral-proteome.yaml -s https://automat.test.transltr.io
+# Automat ITRB - Production
+-t automat/automat-biolink.yaml -s https://automat.transltr.io
+-t automat/automat-chemical-normalization.yaml -s https://automat.transltr.io
+-t automat/automat-cord19.yaml -s https://automat.transltr.io
+-t automat/automat-covidkopkg.yaml -s https://automat.transltr.io
+-t automat/automat-ctd.yaml -s https://automat.transltr.io
+-t automat/automat-drugcentral.yaml -s https://automat.transltr.io
+-t automat/automat-foodb.yaml -s https://automat.transltr.io
+-t automat/automat-gtex.yaml -s https://automat.transltr.io
+-t automat/automat-gtopdb.yaml -s https://automat.transltr.io
+-t automat/automat-gwas-catalog.yaml -s https://automat.transltr.io
+-t automat/automat-hetio.yaml -s https://automat.transltr.io
+-t automat/automat-hgnc.yaml -s https://automat.transltr.io
+-t automat/automat-hmdb.yaml -s https://automat.transltr.io
+-t automat/automat-human-goa.yaml -s https://automat.transltr.io
+-t automat/automat-intact.yaml -s https://automat.transltr.io
+-t automat/automat-molepro-fda.yaml -s https://automat.transltr.io
+-t automat/automat-mychem.yaml -s https://automat.transltr.io
+-t automat/automat-ontological-hierarchy.yaml -s https://automat.transltr.io
+-t automat/automat-panther.yaml -s https://automat.transltr.io
+-t automat/automat-pharos.yaml -s https://automat.transltr.io
+-t automat/automat-robokopkg.yaml -s https://automat.transltr.io
+-t automat/automat-textminingkp.yaml -s https://automat.transltr.io
+-t automat/automat-uberongraph.yaml -s https://automat.transltr.io
+-t automat/automat-viral-proteome.yaml -s https://automat.transltr.io
 # Automat RENCI
 -t automat/automat-biolink.yaml -s https://automat.renci.org
 -t automat/automat-chemical-normalization.yaml -s https://automat.renci.org
@@ -66,12 +117,18 @@
 -t automat/automat-viral-proteome.yaml -s https://automat.renci.org
 # Biolink Lookup
 -t biolink-lookup.yaml -s https://biolink-lookup.ci.transltr.io
+-t biolink-lookup.yaml -s https://biolink-lookup.test.transltr.io
+-t biolink-lookup.yaml -s https://biolink-lookup.transltr.io
 -t biolink-lookup.yaml -s https://bl-lookup-sri.renci.org
 # Name Resolution
 -t name-resolution.yaml -s https://name-lookup.ci.transltr.io
--t name-resolution.yaml -s http://name-resolution-sri-dev.apps.renci.org
+-t name-resolution.yaml -s https://name-lookup.test.transltr.io
+-t name-resolution.yaml -s https://name-lookup.transltr.io
+# -t name-resolution.yaml -s http://name-resolution-sri-dev.apps.renci.org
 -t name-resolution.yaml -s https://name-resolution-sri.renci.org
 # Node Normalization
 -t node-normalization.yaml -s https://nodenorm.ci.transltr.io/1.2
--t node-normalization.yaml -s https://nodenormalization-dev.apps.renci.org/1.2
+-t node-normalization.yaml -s https://nodenorm.test.transltr.io/1.2
+-t node-normalization.yaml -s https://nodenorm.transltr.io/1.2
+# -t node-normalization.yaml -s https://nodenormalization-dev.apps.renci.org/1.2
 -t node-normalization.yaml -s https://nodenormalization-sri.renci.org
