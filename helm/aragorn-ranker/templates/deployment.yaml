@@ -15,6 +15,8 @@ spec:
       labels:
         app: {{ include "aragorn-ranker.name" . }}
         trapi: "1.2"
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
     spec:
       containers:
         - name: {{ .Chart.Name }}-web-container

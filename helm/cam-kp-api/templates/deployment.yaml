@@ -27,6 +27,11 @@ spec:
         - name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-server
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.2
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          env:
+          - name: SPARQL_ENDPOINT
+            value: {{ .Values.app.sparql_endpoint }}
+          - name: CAM_KP_LOG_LEVEL
+            value: {{ .Values.app.log_level }}
           ports:
             - name: http
               containerPort: {{ .Values.app.port }}
