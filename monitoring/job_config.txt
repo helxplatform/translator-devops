@@ -5,10 +5,10 @@
 # Aragorn and Strider
 # Commented out due to failures
 -t answer-coalesce.yaml -s https://answercoalesce.renci.org
--t aragorn.yaml -s https://aragorn-dev.apps.renci.org
+# -t aragorn.yaml -s https://aragorn-dev.apps.renci.org
 -t aragorn.yaml -s https://aragorn.renci.org
 -t aragorn-ranker.yaml -s https://aragorn-ranker.ci.transltr.io
-# -t aragorn-ranker.yaml -s https://aragorn-ranker-dev.apps.renci.org
+-t aragorn-ranker.yaml -s https://aragorn-ranker-dev.apps.renci.org
 -t aragorn-ranker.yaml -s https://aragorn-ranker.renci.org
 -t strider.yaml -s https://strider.ci.transltr.io
 -t strider.yaml -s https://strider-dev.apps.renci.org
