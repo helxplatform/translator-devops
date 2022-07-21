@@ -15,6 +15,11 @@ webServer:
     repository: renciorg/name_lookup
     tag: latest
 
+busybox:
+  image:
+    repository: busybox
+    tag: stable
+
 dataUrl: ""
 forceRun: false
 busybox:
