@@ -24,8 +24,8 @@ dataUrl: ""
 forceRun: false
 # busybox:
 #   image:
-#    repository: busybox
-#    tag: latest
+#     repository: busybox
+#     tag: latest
 
 solr:
   service:
