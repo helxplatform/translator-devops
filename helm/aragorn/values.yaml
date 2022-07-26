@@ -35,7 +35,6 @@ ingress:
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: 'true'
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
   tls:
     enabled: false
@@ -49,6 +48,8 @@ queue_files:
 app:
   port: 4321
   debugTiming: "True"
+  multistrider_batch_size: 75
+  maximum_multistrider_rules: 75
   resources:
     requests:
       memory: 2Gi
@@ -68,6 +69,7 @@ sub_processes:
   answer_coalesce_url: "ac"
   ranker_url: "ranker"
   node_norm_url: "nn"
+  robokop_kg_url: "robokopkg"
 
 rbtmq:
   resources:

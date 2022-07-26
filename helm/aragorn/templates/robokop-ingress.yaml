@@ -1,4 +1,3 @@
-{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "aragorn.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
@@ -15,12 +14,13 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-ingress
+  name: {{ $fullName }}-robokop-ingress
   labels:
     {{- include "aragorn.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
   {{- end }}
 spec:
   {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
@@ -36,18 +36,45 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: "/"
+          - path: "/robokop(/|$)(.*)"
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: "{{ .Values.ingress.pathType }}"
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-web-service-trapi-1-2
+                name: {{ $fullName }}-aragorn-robokop-service
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}-web-service-trapi-1-2
+              serviceName: {{ $fullName }}-aragorn-robokop-service
               servicePort: {{ $svcPort }}
               {{- end }}
-{{- end }}
+          - path: "/aragorn(/|$)(.*)"
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: "{{ .Values.ingress.pathType }}"
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}-aragorn-service
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}-aragorn-service
+              servicePort: {{ $svcPort }}
+              {{- end }}
+          - path: "/1.2(/|$)(.*)"
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: "{{ .Values.ingress.pathType }}"
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}-aragorn-service
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}-aragorn-service
+              servicePort: {{ $svcPort }}
+              {{- end }}
