@@ -14,3 +14,41 @@ spec:
   selector:
     app: {{ include "aragorn.fullname" . }}
     trapi: "1.2"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aragorn.fullname" . }}-aragorn-robokop-service
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+    app-name: aragorn-robokop
+spec:
+  {{- include "aragorn.serviceDefinition" . | nindent 2}}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port}}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "aragorn.fullname" . }}
+    app-name: aragorn-robokop
+    {{- include "aragorn.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aragorn.fullname" . }}-aragorn-service
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+    app-name: aragorn
+spec:
+  {{- include "aragorn.serviceDefinition" . | nindent 2}}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.app.port}}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "aragorn.fullname" . }}
+    app-name: aragorn
+    {{- include "aragorn.selectorLabels" . | nindent 4 }}

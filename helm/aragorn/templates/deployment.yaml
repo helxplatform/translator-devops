@@ -50,20 +50,14 @@ spec:
             - "{{ .Values.app.port }}"
             - "--workers"
             - "4"
-            - "--root-path"
-            - "/1.2"
             - "src.server:APP"
           volumeMounts:
             - name: aragorn-logs-vol
               mountPath: /repo/aragorn/logs
-            - name: aragorn-queue-files-vol
-              mountPath: /repo/aragorn/queue-files
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
       volumes:
         - name: aragorn-logs-vol
           persistentVolumeClaim:
             claimName: {{ include "aragorn.fullname" . }}-logs-pvc
-        - name: aragorn-queue-files-vol
-          persistentVolumeClaim:
-            claimName: {{ include "aragorn.fullname" . }}-queue-files-pvc
+
