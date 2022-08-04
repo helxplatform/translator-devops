@@ -32,6 +32,10 @@ spec:
             value: {{ .Values.app.sparql_endpoint }}
           - name: CAM_KP_LOG_LEVEL
             value: {{ .Values.app.log_level }}
+          - name: LOCATION
+            value: {{ .Values.app.location }}
+          - name: MATURITY
+            value: {{ .Values.app.maturity }}
           ports:
             - name: http
               containerPort: {{ .Values.app.port }}
