@@ -5,14 +5,14 @@
 replicaCount: 1
 
 image:
-  repository: renciorg/aragorn
+  repository: ghcr.io/ranking-agent/aragorn
   tag: latest
 
 web:
   serverHostName: "serverHostName"
   callbackHostName: "callbackHostName"
 
-deploymentStrategy: RollingUpdate
+deploymentStrategy: Recreate
 
 nameOverride: ""
 fullnameOverride: ""
