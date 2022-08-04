@@ -1,0 +1,124 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+        string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "ci"
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/translator-workflow-runner/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+                script {
+                    script {
+                        def imageMeta = readYaml file: 'helm/translator-workflow-runner/ncats-images-meta.yaml'
+                        env.ORIGINAL_REPO = imageMeta.translatorWorkflowRunner.image
+                        env.BUILD_VERSION = imageMeta.translatorWorkflowRunner.version
+                        currentBuild.displayName = imageMeta.translatorWorkflowRunner.version
+                    }
+                }
+            }
+        stage('Build Translator Workflow Runner') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/translator-workflow-runner/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=translator-workflow-runner",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                ]) {
+                    dir("helm/translator-workflow-runner") {
+                        script {
+                            sh '''
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                anyOf {
+                    changeset "helm/translator-workflow-runner/*"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            steps {
+                sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
+                    configFileProvider([
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
+                    ]){
+                        withCredentials([
+                            file(
+                                credentialsId: 'sri-git-crypt.key.asc',
+                                variable: 'cryptasc'),
+                            file(
+                                credentialsId: 'sri-git-crypt.key.pwd',
+                                variable: 'cryptpwd'),
+                        ]){
+                            withAWS(credentials:'aws-ifx-deploy') {
+                                sh '''
+                                # copy secret files to current directory
+                                cp $cryptasc sri-git-crypt.key.asc
+                                cp $cryptpwd sri-git-crypt.key.pwd
+                                # git crypt unlock the repo
+                                gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
+                                cd helm/translator-workflow-runner
+                                git clone git@github.com:Sphinx-Automation/translator-ops.git
+                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                                cp -R translator-ops/ops/sri/translator-workflow-runner/deploy/* ./
+                                mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
+                                mv ncats-dev-values.yaml ./values-ncats.yaml
+                                /bin/bash deploy.sh
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
