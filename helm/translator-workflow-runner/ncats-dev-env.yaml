@@ -5,7 +5,7 @@ image:
 ingress:
   enabled: true
   host: translator-workflow-runner.ci.transltr.io
-
+  class: "nginx"
 
 x_trapi:
   maturity:
