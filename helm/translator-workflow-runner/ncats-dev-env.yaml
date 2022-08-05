@@ -4,5 +4,15 @@ image:
 
 ingress:
   enabled: true
-  host: "tbd"
-  class: ""
+  host: translator-workflow-runner.ci.transltr.io
+
+
+x_trapi:
+  maturity:
+    value: "staging"
+  location:
+    value: "ITRB"
+
+external_services:
+  NORMALIZER_URL: "https://nodenorm.ci.transltr.io/1.2"
+  SERVICES_MATURITY: "staging"

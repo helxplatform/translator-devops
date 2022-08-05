@@ -2,7 +2,18 @@ image:
   repository: 853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-workflow-runner
   tag: DOCKER_IMAGE_VERSION
 
+
 ingress:
   enabled: true
-  host: "tbd"
-  class: ""
+  host: translator-workflow-runner.transltr.io
+
+
+x_trapi:
+  maturity:
+    value: "production"
+  location:
+    value: "ITRB"
+
+external_services:
+  NORMALIZER_URL: "https://nodenorm.transltr.io/1.2"
+  SERVICES_MATURITY: "production"
