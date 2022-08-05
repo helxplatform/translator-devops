@@ -112,7 +112,7 @@ pipeline {
                                 aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                                 cp -R translator-ops/ops/sri/translator-workflow-runner/deploy/* ./
                                 mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
-                                mv ncats-dev-values.yaml ./values-ncats.yaml
+                                mv ncats-dev-env.yaml ./values-ncats.yaml
                                 /bin/bash deploy.sh
                                 '''
                             }
