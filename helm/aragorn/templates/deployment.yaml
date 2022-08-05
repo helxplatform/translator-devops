@@ -4,7 +4,7 @@ metadata:
   name: {{ include "aragorn.fullname" . }}-trapi1-2
   labels:
     app: {{ include "aragorn.fullname" . }}
-    trapi: {{ .Values.ingress.path }}
+    trapi: "1.2"
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
 spec:
