@@ -19,11 +19,16 @@ service:
 
 ingress:
   host: ingress_HOST
-  class: ingress_CLASS
   enabled: true
+  class: ""
+  pathType: "ImplementationSpecific"
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+  tls:
+    enabled: false
 
 app:
   port: 4321
