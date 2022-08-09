@@ -57,6 +57,7 @@ app:
     limits:
       memory: 3Gi
       cpu: 1000m
+  logLevel: "trace"
 
 x_trapi:
   maturity:

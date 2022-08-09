@@ -48,6 +48,10 @@ spec:
             - "4"
             - "--root-path"
             - "/robokop"
+            {{ if .Values.app.logLevel }}
+            - "--log-level"
+            - {{ .Values.app.logLevel}}
+            {{ end  }}
             - "src.robokop_app:ROBOKOP_APP"
           ports:
             - name: http
