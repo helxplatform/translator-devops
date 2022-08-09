@@ -47,6 +47,10 @@ spec:
             - "4"
             - "--root-path"
             - "/aragorn"
+            {{ if .Values.app.logLevel }}
+            - "--log-level"
+            - {{ .Values.app.logLevel}}
+            {{ end  }}
             - "src.aragorn_app:ARAGORN_APP"
           ports:
             - name: http
