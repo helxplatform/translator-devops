@@ -58,6 +58,7 @@ app:
       memory: 3Gi
       cpu: 1000m
   logLevel: "trace"
+  queueStorageSize: 10Gi
 
 x_trapi:
   maturity:
