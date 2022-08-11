@@ -50,6 +50,10 @@ spec:
             - "{{ .Values.app.port }}"
             - "--workers"
             - "4"
+            {{ if .Values.app.logLevel }}
+            - "--log-level"
+            - {{ .Values.app.logLevel}}
+            {{ end  }}
             - "src.server:APP"
           volumeMounts:
             - name: aragorn-logs-vol
