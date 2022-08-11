@@ -20,7 +20,12 @@ spec:
         service-type: webserver
         trapi: "1.2"
     spec:
+      {{- with .Values.strider.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
       containers:
+
         - name: {{ .Chart.Name }}-webserver
           image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag }}"
           imagePullPolicy: "{{ .Values.strider.image.imagePullPolicy }}"
@@ -91,8 +96,13 @@ spec:
           - name: {{ include "strider.fullname" . }}-health-scripts
             mountPath: /strider_health.sh
             subPath: strider_health.sh
+          - name: {{ include "strider.fullname" . }}-logs-pvc
+            mountPath: /app/logs/
       volumes:
       - name: {{ include "strider.fullname" . }}-health-scripts
         configMap:
           name: {{ include "strider.fullname" . }}-heath-configmap
           defaultMode: 0777
+      - name: {{ include "strider.fullname" . }}-logs-pvc
+        persistentVolumeClaim:
+          claimName: {{ include "strider.fullname" . }}-logs-pvc

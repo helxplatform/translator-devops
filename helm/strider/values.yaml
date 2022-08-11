@@ -26,6 +26,11 @@ kpRegistry:
 
 strider:
   replicaCount: 1
+  logsPVCSize: 3Gi
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 3000
+    fsGroup: 2000
   image:
     tag: latest
     repository: ghcr.io/ranking-agent/strider
