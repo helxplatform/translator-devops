@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
         - name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-server
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}-trapi-1.2
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           env:
           - name: SPARQL_ENDPOINT
