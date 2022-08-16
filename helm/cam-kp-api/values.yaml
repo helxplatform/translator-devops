@@ -9,24 +9,6 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
-
-service:
-  type: NodePort
-  port: 8080
-
-service:
-  type: ClusterIP
-  port: 8080
-  resources:
-    requests:
-      memory: 20Gi
-      cpu: 1
-    limits:
-      memory: 24Gi
-      cpu: 3
-
-
-
 ingress:
   host: ""
   class: ""
