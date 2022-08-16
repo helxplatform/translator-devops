@@ -25,4 +25,4 @@ ingress:
     nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: "true"
-    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
