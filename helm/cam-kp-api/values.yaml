@@ -12,6 +12,7 @@ fullnameOverride: ""
 ingress:
   host: ""
   class: ""
+  pathType: ImplementationSpecific
   timeout: 7200 # 1hr
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
