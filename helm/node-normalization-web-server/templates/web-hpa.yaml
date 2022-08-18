@@ -9,7 +9,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server-trapi-1-3"
+    name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server"
   minReplicas: {{ .Values.web.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.web.autoscaling.maxReplicas }}
   metrics:
