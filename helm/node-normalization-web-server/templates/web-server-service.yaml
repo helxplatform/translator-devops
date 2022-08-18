@@ -14,7 +14,7 @@ spec:
   selector:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
     service-type: "webserver"
-    path: "/{{.Values.ingress.trapiVersion}}"
+    path: "{{.Values.ingress.trapiVersion}}"
 ---
 apiVersion: v1
 kind: Service
