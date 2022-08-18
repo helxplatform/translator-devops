@@ -42,18 +42,18 @@ spec:
     - host: {{ .Values.ingress.hostName | quote }}
       http:
         paths:
-          - path: {{ .Values.ingress.path }}
+          - path: "/1.3(/|$)(.*)"
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: "{{ .Values.ingress.pathType }}"
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path-trapi1-2
+                name: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path-trapi1-3
                 port:
                   number: {{ .Values.web.port }}
               {{- else }}
-              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path-trapi1-2
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path-trapi1-3
               servicePort: {{ .Values.web.port }}
               {{- end }}
 ---
