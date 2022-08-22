@@ -5,11 +5,32 @@ metadata:
   labels:
     {{- include "ontology-kp.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.ontologyKpAPI.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.ontologyKpAPI.service.port }}
       targetPort: http
       protocol: TCP
       name: http
   selector:
     {{- include "ontology-kp.selectorLabels" . | nindent 4 }}
+    app: webserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ontology-kp.fullname" . }}-sparql-service
+  labels:
+    {{- include "ontology-kp.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.blazeGraph.service.type }}
+  {{- if .Values.blazeGraph.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.blazeGraph.service.loadBalancerIP }}
+  {{- end}}
+  ports:
+    - port: {{ .Values.blazeGraph.service.port }}
+      targetPort: sparql-port
+      protocol: TCP
+      name: sparql-port
+  selector:
+    {{- include "ontology-kp.selectorLabels" . | nindent 4 }}
+    app: database

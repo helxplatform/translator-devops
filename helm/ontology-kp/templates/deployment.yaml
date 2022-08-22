@@ -4,6 +4,7 @@ metadata:
   name: {{ include "ontology-kp.fullname" . }}
   labels:
     {{- include "ontology-kp.labels" . | nindent 4 }}
+    app: webserver
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
@@ -11,6 +12,7 @@ spec:
   selector:
     matchLabels:
       {{- include "ontology-kp.selectorLabels" . | nindent 6 }}
+      app: webserver
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,34 +21,31 @@ spec:
       {{- end }}
       labels:
         {{- include "ontology-kp.selectorLabels" . | nindent 8 }}
+        app: webserver
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "ontology-kp.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.ontologyKpAPI.image.repository }}:{{ .Values.ontologyKpAPI.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ontologyKpAPI.image.pullPolicy }}
+          env:
+          - name: JAVA_OPTS
+            value: "-Xmx4G"
+          - name: PORT
+            value: "8080"
+          - name: SPARQL_ENDPOINT
+            value: "http://{{ include "ontology-kp.fullname" . }}-sparql-service:{{ .Values.blazeGraph.service.port }}/blazegraph/sparql"
+          - name: MATURITY
+            value: "development"
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.ontologyKpAPI.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

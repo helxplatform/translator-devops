@@ -4,13 +4,49 @@
 
 replicaCount: 1
 
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+ontologyKpAPI:
+  image:
+    repository: renciorg/ontology-kp
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "0.4"
+  javaOpts: "-Xmx4G"
+  x-trapiMaturity: "development"
+  resources:
+    limits:
+      memory: 6G
+      cpu: '1'
+    requests:
+      cpu: '1'
+      memory: 6G
+  service:
+    type: ClusterIP
+    port: 80
 
-imagePullSecrets: []
+blazeGraph:
+  init:
+    repository: obolibrary/odklite
+    tag: v1.3.1
+    resources: {}
+  image:
+    repository: phenoscape/blazegraph
+    tag: 2.1.5.0
+  service:
+    type: ClusterIP
+    port: 80
+  blazeGraphMemory: 24G
+  blazeGraphTimeout: "1200000"
+  blazeGraphReadOnly: true
+  dataStorageSize: 100Gi
+  dataUrl: "https://ubergraph.apps.renci.org/downloads/current/ubergraph.jnl.gz"
+  resources:
+    limits:
+      cpu: 2
+      memory: 32Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 nameOverride: ""
 fullnameOverride: ""
 
@@ -25,7 +61,10 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  runAsUser: 1001
+  runAsGroup: 3000
+  fsGroup: 2000
   # fsGroup: 2000
 
 securityContext: {}
@@ -36,9 +75,6 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-service:
-  type: ClusterIP
-  port: 80
 
 ingress:
   enabled: false
@@ -57,27 +93,6 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
-nodeSelector: {}
 
-tolerations: []
-
-affinity: {}

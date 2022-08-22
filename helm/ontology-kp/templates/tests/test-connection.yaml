@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "ontology-kp.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "ontology-kp.fullname" . }}:{{ .Values.ontologyKpAPI.service.port }}']
   restartPolicy: Never
