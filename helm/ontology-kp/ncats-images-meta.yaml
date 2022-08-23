@@ -1,0 +1,9 @@
+ontologyKpApi:
+  image: "renciorg/ontology-kp"
+  version: "0.4"
+blazeGraphInit:
+  image: "obolibrary/odklite"
+  version: "v1.3.1"
+blazeGraph:
+  image: "phenoscape/blazegraph"
+  version: "2.1.5.0"
