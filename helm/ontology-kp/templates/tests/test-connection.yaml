@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "ontology-kp.fullname" . }}-test-connection"
+  labels:
+    {{- include "ontology-kp.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "ontology-kp.fullname" . }}:{{ .Values.ontologyKpAPI.service.port }}']
+  restartPolicy: Never
