@@ -95,6 +95,7 @@ ingress:
   enabled: false
   class: ""
   pathType: "ImplementationSpecific"
+  path: "/1.2"
   strider:
     host: "the strider host name"
     annotations:
