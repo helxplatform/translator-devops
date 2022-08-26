@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "strider.fullname" . }}-hpa-trapi-1-2
+  name: {{ include "strider.fullname" . }}-hpa-trapi-1-3
   labels:
     {{- include "strider.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "strider.fullname" . }}-trapi-1-2
+    name: {{ include "strider.fullname" . }}-trapi-1-3
   minReplicas: {{ .Values.strider.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.strider.autoscaling.maxReplicas }}
   metrics:
