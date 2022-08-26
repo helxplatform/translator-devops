@@ -53,4 +53,3 @@ spec:
   selector:
     {{- include "strider.selectorLabels" . | nindent 4 }}
     service-type: webserver
-    trapi: "1.3"
