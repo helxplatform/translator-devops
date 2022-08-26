@@ -4,7 +4,7 @@
 
 replicaCount: 1
 
-image:
+issueRouter:
   repository: ghcr.io/translatorsri/issuerouter
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.

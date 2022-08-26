@@ -17,14 +17,14 @@ spec:
         - name: {{ .Chart.Name }}
           envFrom:
             - configMapRef:
-              name: {{ include "issue-router.fullname" . }}-env-configmap
+                name: {{ include "issue-router.fullname" . }}-env-configmap
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.issueRouter.repository }}:{{ .Values.issueRouter.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.issueRouter.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
