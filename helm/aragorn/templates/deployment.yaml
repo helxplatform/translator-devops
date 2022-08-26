@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "aragorn.fullname" . }}-trapi1-2
+  name: {{ include "aragorn.fullname" . }}-root
   labels:
     app: {{ include "aragorn.fullname" . }}
-    trapi: "1.2"
+    app-name: "root-server"
   annotations:
     checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
 spec:
@@ -16,12 +16,12 @@ spec:
   selector:
     matchLabels:
       app: {{ include "aragorn.fullname" . }}
-      trapi: "1.2"
+      app-name: "root-server"
   template:
     metadata:
       labels:
         app: {{ include "aragorn.fullname" . }}
-        trapi: "1.2"
+        app-name: "root-server"
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
     spec:
