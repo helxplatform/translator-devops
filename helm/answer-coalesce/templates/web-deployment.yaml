@@ -1,23 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "answer-coalesce.fullname" . }}-trapi1-2
+  name: {{ include "answer-coalesce.fullname" . }}-web-server
   labels:
     {{- include "answer-coalesce.labels" . | nindent 4 }}
-    trapi: "1.2"
     app: webServer
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
-      trapi: "1.2"
       app: webServer
   template:
     metadata:
       labels:
         {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
-        trapi: "1.2"
         app: webServer
     spec:
       containers:
