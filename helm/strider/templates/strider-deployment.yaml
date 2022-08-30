@@ -1,24 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "strider.fullname" . }}-trapi1-2
+  name: {{ include "strider.fullname" . }}
   labels:
     {{- include "strider.labels" . | nindent 4 }}
     service-type: webserver
-    trapi: "1.2"
 spec:
   replicas: {{ .Values.strider.replicaCount }}
   selector:
     matchLabels:
       {{- include "strider.selectorLabels" . | nindent 6 }}
       service-type: webserver
-      trapi: "1.2"
   template:
     metadata:
       labels:
         {{- include "strider.selectorLabels" . | nindent 8 }}
         service-type: webserver
-        trapi: "1.2"
     spec:
       {{- with .Values.strider.securityContext }}
       securityContext:
@@ -61,7 +58,7 @@ spec:
             - name: "OPENAPI_SERVER_LOCATION"
               value: "{{ .Values.x_trapi.location.value }}"
             - name: "ROOT_PATH"
-              value: "/1.2"
+              value: "/1.3"
           command:
             - 'uvicorn'
           args:
@@ -70,7 +67,7 @@ spec:
             - "--port"
             - "{{ .Values.strider.container.port }}"
             - "--root-path"
-            - "/1.2"
+            - "/1.3"
             - "--workers"
             - "{{ .Values.strider.uvicornWorkerCount }}"
             - "strider.server:APP"

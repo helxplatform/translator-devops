@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "ontology-kp.fullname" . }}
+  labels:
+    {{- include "ontology-kp.labels" . | nindent 4 }}
+    app: webserver
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "ontology-kp.selectorLabels" . | nindent 6 }}
+      app: webserver
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "ontology-kp.selectorLabels" . | nindent 8 }}
+        app: webserver
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.ontologyKpAPI.image.repository }}:{{ .Values.ontologyKpAPI.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ontologyKpAPI.image.pullPolicy }}
+          env:
+          - name: JAVA_OPTS
+            value: "-Xmx4G"
+          - name: PORT
+            value: "8080"
+          - name: SPARQL_ENDPOINT
+            value: "http://{{ include "ontology-kp.fullname" . }}-sparql-service:{{ .Values.blazeGraph.service.port }}/blazegraph/sparql"
+          - name: MATURITY
+            value: "development"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.ontologyKpAPI.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ontology-kp.fullname" . }}-sparql
+  labels:
+    {{- include "ontology-kp.labels" . | nindent 4 }}
+    app: database
+spec:
+  serviceName: {{ include "ontology-kp.fullname" . }}-sparql-service
+  selector:
+    matchLabels:
+      {{- include "ontology-kp.selectorLabels" . | nindent 6 }}
+      app: database
+  template:
+    metadata:
+      labels:
+        {{- include "ontology-kp.selectorLabels" . | nindent 8 }}
+        app: database
+    spec:
+      {{- if .Values.blazeGraph.dataUrl }}
+      initContainers:
+        - name: {{ include "ontology-kp.fullname" . }}-sparql-seed
+          image: {{ .Values.blazeGraph.init.repository }}:{{ .Values.blazeGraph.init.tag }}
+          command:
+          - "/bin/bash"
+          - "-c"
+          - "cd /data && echo 'com.bigdata.journal.AbstractJournal.file=/data/blazegraph.jnl' >blazegraph.properties && curl -L -O '{{ .Values.blazeGraph.dataUrl }}' && gunzip ubergraph.jnl.gz && mv ubergraph.jnl blazegraph.jnl"
+          volumeMounts:
+          - mountPath: /data
+            name: {{ include "ontology-kp.fullname" . }}-data-volume
+          {{ with  .Values.blazeGraph.init.resources }}
+          resources:
+            {{ toYaml . | nindent 12 }}
+          {{ end }}
+      {{- end }}
+      {{- with .Values.blazeGraph.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.blazeGraph.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.blazeGraph.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-sparql-container
+          image: "{{ .Values.blazeGraph.image.repository }}:{{ .Values.blazeGraph.image.tag }}"
+          ports:
+            - name: sparql-port
+              containerPort: 8080
+              protocol: TCP
+          env:
+          - name: BLAZEGRAPH_MEMORY
+            value: {{ .Values.blazeGraph.blazeGraphMemory | quote }}
+          - name: BLAZEGRAPH_TIMEOUT
+            value: "{{ .Values.blazeGraph.blazeGraphTimeout }}"
+          - name: BLAZEGRAPH_READONLY
+            value: {{ .Values.blazeGraph.blazeGraphReadOnly | quote }}
+          resources:
+            {{- toYaml .Values.blazeGraph.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "ontology-kp.fullname" . }}-data-volume
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "ontology-kp.fullname" . }}-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.blazeGraph.dataStorageSize }}
