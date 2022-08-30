@@ -14,10 +14,10 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "/1.2.0(/|$)(.*)"
+          - path: "/1.3.0(/|$)(.*)"
             pathType: {{ .Values.ingress.pathType }}
             backend:
               service:
-                name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
+                name: {{ include "cam-kp-api.fullname" . }}-trapi-1-3-service
                 port:
                   number: {{ .Values.app.port }}
