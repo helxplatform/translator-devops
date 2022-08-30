@@ -116,7 +116,7 @@ app:
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
-      version: 1.2.0
+      version: 1.3.0
       operations:
         - lookup
         - overlay_connect_knodes
