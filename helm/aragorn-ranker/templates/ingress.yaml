@@ -36,18 +36,18 @@ spec:
     - host: {{ .Values.ingress.host | quote }}
       http:
         paths:
-          - path: "/1.2(/|$)(.*)"
+          - path: "{{.Values.ingress.path}}(/|$)(.*)"
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: "{{ .Values.ingress.pathType }}"
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-web-trapi-1-2
+                name: {{ $fullName }}-web-service
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}-web-trapi-1-2
+              serviceName: {{ $fullName }}-web-service
               servicePort: {{ $svcPort }}
               {{- end }}
 {{- end }}

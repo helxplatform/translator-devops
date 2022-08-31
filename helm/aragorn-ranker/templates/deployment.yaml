@@ -30,7 +30,7 @@ spec:
             - '--workers'
             - '4'
             - '--root-path'
-            - '/1.2'
+            - '{{.Values.ingress.path}}'
             - 'ranker.server:APP'
           envFrom:
             - configMapRef:

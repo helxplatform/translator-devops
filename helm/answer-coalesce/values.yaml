@@ -86,7 +86,7 @@ ingress:
   host: "hostname"
   class: ""
   pathType: "ImplementationSpecific"
-  path: "/1.2"
+  path: "/1.3"
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m

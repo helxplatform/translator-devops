@@ -26,6 +26,7 @@ ingress:
   class: ""
   enabled: true
   pathType: "ImplementationSpecific"
+  path: "/1.3"
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
