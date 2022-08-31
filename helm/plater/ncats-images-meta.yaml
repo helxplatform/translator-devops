@@ -1,6 +1,6 @@
 plater:
   image: "renciorg/plater-clustered"
-  version: "1.3.0-0"
+  version: "1.3.0-1"
 neo4j:
   image: "renciorg/neo4j-4.2.14-apoc-gds"
   version: "0.0.1"
