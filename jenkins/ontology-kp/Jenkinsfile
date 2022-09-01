@@ -144,7 +144,6 @@ pipeline {
                             git clone -b ontology-kp git@github.com:Sphinx-Automation/translator-ops.git
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             cp -R translator-ops/ops/sri/ontology-kp/deploy/* ./
-                            mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
                             mv ncats-dev-values.yaml ./values-ncats.yaml
                             /bin/bash deploy.sh
                             '''
