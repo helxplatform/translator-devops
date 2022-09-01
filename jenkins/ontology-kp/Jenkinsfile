@@ -140,11 +140,11 @@ pipeline {
                             cp $cryptpwd sri-git-crypt.key.pwd
                             # git crypt unlock the repo
                             gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                            cd helm/ontology-kp
                             git clone -b ontology-kp git@github.com:Sphinx-Automation/translator-ops.git
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            cp -R translator-ops/ops/sri/ontology-kp/deploy/* ./
-                            mv ncats-dev-values.yaml ./values-ncats.yaml
+                            cp -R translator-ops/ops/sri/ontology-kp/deploy/* helm/ontology-kp/
+                            cd helm/ontology-kp
+                            mv ncats-dev-values.yaml values-ncats.yaml
                             /bin/bash deploy.sh
                             '''
                         }
