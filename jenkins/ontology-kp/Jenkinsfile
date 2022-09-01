@@ -1,0 +1,157 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+        string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "ci"
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/ontology-kp/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+                script {
+                    def image_meta = readYaml file: 'helm/ontology-kp/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = image_meta.ontologyKpApi.image
+                    env.BUILD_VERSION = image_meta.ontologyKpApi.version
+                    env.ORIGINAL_REPO_BGINIT = image_meta.blazeGraphInit.image
+                    env.BUILD_VERSION_BGINIT = image_meta.blazeGraphInit.version
+                    env.ORIGINAL_REPO_BG = image_meta.blazeGraph.image
+                    env.BUILD_VERSION_BG = image_meta.blazeGraph.version
+                    currentBuild.displayName = image_meta.ontologyKpApi.version + "#" + image_meta.blazeGraphInit.version + "#" + image_meta.blazeGraph.version
+                }
+           }
+        }
+        stage('build') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/ontology-kp/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=translator-ontology-kp",
+                    "BUILD_VERSION=" +  (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
+                ]) {
+                    dir("helm/ontology-kp") {
+                        script {
+                            sh '''
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+                withEnv([
+                    "IMAGE_NAME=translator-odklite",
+                    "BUILD_VERSION_BGINIT=" +  (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_BGINIT)
+                ]) {
+                    dir("helm/ontology-kp") {
+                        script {
+                            sh '''
+                            docker pull $ORIGINAL_REPO_BGINIT:$BUILD_VERSION_BGINIT
+                            docker tag $ORIGINAL_REPO_BGINIT:$BUILD_VERSION_BGINIT 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_BGINIT
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_BGINIT")
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+                withEnv([
+                    "IMAGE_NAME=translator-blazegraph",
+                    "BUILD_VERSION_BG=" +  (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[2] : env.BUILD_VERSION_BG)
+                ]) {
+                    dir("helm/ontology-kp") {
+                        script {
+                            sh '''
+                            docker pull $ORIGINAL_REPO_BG:$BUILD_VERSION_BG
+                            docker tag $ORIGINAL_REPO_BG:$BUILD_VERSION_BG 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_BG
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_BG")
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                                image.push()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            when {
+                anyOf {
+                    changeset "helm/ontology-kp/*"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            steps {
+                sshagent (credentials: ['labshare-svc']) {
+                    withCredentials([
+                        file(
+                            credentialsId: 'sri-git-crypt.key.asc',
+                            variable: 'cryptasc'),
+                        file(
+                            credentialsId: 'sri-git-crypt.key.pwd',
+                            variable: 'cryptpwd'),
+                    ]){
+                        withAWS(credentials:'aws-ifx-deploy') {
+                            sh '''
+                            # copy secret files to current directory
+                            cp $cryptasc sri-git-crypt.key.asc
+                            cp $cryptpwd sri-git-crypt.key.pwd
+                            # git crypt unlock the repo
+                            gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
+                            cd helm/ontology-kp
+                            git clone -b ontology-kp git@github.com:Sphinx-Automation/translator-ops.git
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            cp -R translator-ops/ops/sri/ontology-kp/deploy/* ./
+                            mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
+                            mv ncats-dev-values.yaml ./values-ncats.yaml
+                            /bin/bash deploy.sh
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
