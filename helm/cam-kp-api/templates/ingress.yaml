@@ -6,10 +6,12 @@ metadata:
 
     {{ .Values.ingress.annotations | toYaml | nindent 4 }}
 spec:
+  {{- if .Values.ingress.tls.enabled }}
   tls:
     - hosts:
         - {{ .Values.ingress.host | quote }}
       secretName: {{ .Values.ingress.host }}-tls
+  {{- end }}
   rules:
     - host: {{ .Values.ingress.host }}
       http:
