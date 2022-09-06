@@ -15,7 +15,7 @@ ingress:
   pathType: ImplementationSpecific
   timeout: 7200 # 1hr
   tls:
-    enabled: false # We need a default to deploy this to RENCI
+    enabled: true # We need a default to deploy this to RENCI
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
