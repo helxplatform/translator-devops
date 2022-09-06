@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "aragorn.fullname" . }}-web-service-trapi-1-2
+  name: {{ include "aragorn.fullname" . }}-root-service
   labels:
     {{- include "aragorn.labels" . | nindent 4 }}
 spec:
@@ -13,7 +13,7 @@ spec:
       name: http
   selector:
     app: {{ include "aragorn.fullname" . }}
-    trapi: "1.2"
+    app-name: "root-server"
 ---
 apiVersion: v1
 kind: Service

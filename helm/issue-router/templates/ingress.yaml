@@ -1,9 +1,9 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "answer-coalesce.fullname" . -}}
-{{- $svcPort := .Values.ac.service.port -}}
+{{- $fullName := include "issue-router.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
 {{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class}}
   {{- end }}
 {{- end }}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -17,7 +17,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-ingress
   labels:
-    {{- include "answer-coalesce.labels" . | nindent 4 }}
+    {{- include "issue-router.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -36,7 +36,7 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "{{.Values.ingress.path}}(/|$)(.*)"
+          - path: "/"
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             pathType: "{{ .Values.ingress.pathType }}"
             {{- end }}
