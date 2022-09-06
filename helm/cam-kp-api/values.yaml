@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: "renciorg/cam-kp-api"
-  tag: "0.1.2-trapi-1.2"
+  tag: "0.2-trapi-1.3"
   pullPolicy: Always
 
 
@@ -14,6 +14,8 @@ ingress:
   class: ""
   pathType: ImplementationSpecific
   timeout: 7200 # 1hr
+  tls:
+    enabled: false # We need a default to deploy this to RENCI
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
