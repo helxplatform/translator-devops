@@ -19,6 +19,7 @@ data:
   PLATER_SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-plater-service"
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
   PLATER_TITLE: {{ .Release.Name }}
+  PLATER_VERSION: {{ .Values.image.plater.tag }}
   BL_VERSION: {{ .Values.app.bl_version }}
   WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
   NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"

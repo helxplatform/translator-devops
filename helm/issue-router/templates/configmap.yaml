@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "issue-router.fullname" . }}-env-configmap
+data:
+  GITHUB_URL: {{ .Values.issueRouter.env.github_url }}
+  SCREENSHOT_URL: {{ .Values.issueRouter.env.screenshot_url }}
+  TOKEN: {{ .Values.issueRouter.env.token }}
