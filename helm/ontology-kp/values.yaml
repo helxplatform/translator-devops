@@ -37,11 +37,11 @@ blazeGraph:
   blazeGraphMemory: 24G
   blazeGraphTimeout: "1200000"
   blazeGraphReadOnly: true
-  dataStorageSize: 100Gi
+  dataStorageSize: 150Gi
   dataUrl: "https://ubergraph.apps.renci.org/downloads/current/ubergraph.jnl.gz"
   resources:
     limits:
-      cpu: 6
+      cpu: 2
       memory: 32Gi
   nodeSelector: {}
   tolerations: []
