@@ -41,7 +41,7 @@ blazeGraph:
   dataUrl: "https://ubergraph.apps.renci.org/downloads/current/ubergraph.jnl.gz"
   resources:
     limits:
-      cpu: 6
+      cpu: 8
       memory: 32Gi
   nodeSelector: {}
   tolerations: []
