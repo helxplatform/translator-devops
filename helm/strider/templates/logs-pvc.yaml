@@ -4,7 +4,7 @@ metadata:
   name: {{ include "strider.fullname" . }}-logs-pvc
 spec:
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.strider.logsPVCSize }}
