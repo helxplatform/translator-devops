@@ -25,6 +25,7 @@ kpRegistry:
       cpu: 1000m
 
 strider:
+  strategy: Recreate
   replicaCount: 1
   logsPVCSize: 3Gi
   securityContext:
