@@ -107,7 +107,7 @@ pipeline {
                                 # git crypt unlock the repo
                                 gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
                                 cd helm/answer-coalesce
-                                git clone -b betty-sri git@github.com:Sphinx-Automation/translator-ops.git
+                                git clone git@github.com:Sphinx-Automation/translator-ops.git
                                 aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                                 cp -R translator-ops/ops/sri/answer-coalesce/deploy/* ./
                                 mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
