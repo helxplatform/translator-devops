@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sri-testing.fullname" . }}-ui
+  labels:
+    {{- include "sri-testing.labels" . | nindent 4 }}
+    app: ui
+spec:
+  selector:
+    matchLabels:
+      {{- include "sri-testing.selectorLabels" . | nindent 6 }}
+      app: ui
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sri-testing.selectorLabels" . | nindent 8 }}
+        app: ui
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/ui-config.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sri-testing.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: ui-config
+          configMap:
+            name: {{ include "sri-testing.fullname" . }}-ui-config
+            defaultMode: 0777
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+          command:
+          - npx
+          args:
+          - webpack-dev-server
+          - -p
+          - --inline
+          - --progress
+          - --config
+          - build/webpack.prod.conf.js
+          - --host
+          - "0.0.0.0"
+          - --port
+          - "1024"
+          - --no-hot
+          - --allowed-hosts
+          - {{ .Values.ingress.host }}
+          - --public
+          - "https://{{ .Values.ingress.host }}"
+          ports:
+            - name: http
+              containerPort: 1024
+              protocol: TCP
+#           livenessProbe:
+#             httpGet:
+#               path: /
+#               port: http
+#           readinessProbe:
+#             httpGet:
+#               path: /
+#               port: http
+          resources:
+            {{- toYaml .Values.ui.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /usr/src/app/.env
+              name: "ui-config"
+              subPath: "env"
+

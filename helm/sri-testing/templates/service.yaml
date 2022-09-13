@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "sri-testing.fullname" . }}
+  name: {{ include "sri-testing.fullname" . }}-api
   labels:
     {{- include "sri-testing.labels" . | nindent 4 }}
 spec:
@@ -13,3 +13,22 @@ spec:
       name: http
   selector:
     {{- include "sri-testing.selectorLabels" . | nindent 4 }}
+    app: api
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sri-testing.fullname" . }}-ui
+  labels:
+    {{- include "sri-testing.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "sri-testing.selectorLabels" . | nindent 4 }}
+    app: ui

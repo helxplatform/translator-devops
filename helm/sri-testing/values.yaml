@@ -3,12 +3,24 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
+ui:
+  image:
+    repository: ghcr.io/translatorsri/sri_testing-ui
+    pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.0.1"
+  resources:
+    limits:
+     memory: 4Gi
+     cpu: 500m
+
+
 
 image:
-  repository: ghcr.io/translatorsri/sri_testing
-  pullPolicy: IfNotPresent
+  repository: ghcr.io/translatorsri/sri_testing-api
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "v0.0.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -46,11 +58,8 @@ ingress:
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host:
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  pathType: ImplementationSpecific
+  host:
   tls:
    - secretName:
      hosts: []
