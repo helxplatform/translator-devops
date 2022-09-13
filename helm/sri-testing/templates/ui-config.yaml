@@ -5,7 +5,8 @@ metadata:
 data:
  env: |
     API_HOST='"{{ .Values.ingress.host }}"'  # quotation sic
-    API_PORT=443/api
+    API_PORT='"443/api"'
+    API_PROTOCOL='"https://"'
     isAxiosMock=false
     _FEATURE_RUN_TEST_BUTTON=false
     _FEATURE_RUN_TEST_SELECT=true
