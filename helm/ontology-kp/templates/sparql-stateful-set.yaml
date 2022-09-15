@@ -26,8 +26,8 @@ spec:
           - "-c"
           - "cd /data && echo 'com.bigdata.journal.AbstractJournal.file=/data/blazegraph.jnl' >blazegraph.properties && curl -L -O '{{ .Values.blazeGraph.dataUrl }}' && gunzip -f ubergraph.jnl.gz && mv ubergraph.jnl blazegraph.jnl"
           volumeMounts:
-          - mountPath: /data
-            name: {{ include "ontology-kp.fullname" . }}-data-volume
+            - mountPath: /data
+              name: {{ include "ontology-kp.fullname" . }}-data-volume
           {{ with  .Values.blazeGraph.init.resources }}
           resources:
             {{ toYaml . | nindent 12 }}
