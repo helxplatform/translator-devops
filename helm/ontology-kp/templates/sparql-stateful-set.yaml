@@ -62,8 +62,8 @@ spec:
           resources:
             {{- toYaml .Values.blazeGraph.resources | nindent 12 }}
           volumeMounts:
-            - mountPath: /data
-              name: {{ include "ontology-kp.fullname" . }}-data-volume
+          - mountPath: /data
+            name: {{ include "ontology-kp.fullname" . }}-data-volume
   volumeClaimTemplates:
     - metadata:
         name: {{ include "ontology-kp.fullname" . }}-data-volume
