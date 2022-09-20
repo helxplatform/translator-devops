@@ -1,5 +1,7 @@
 # Node Normalization Loader
 
+## Deploying to RENCI
+
 These Helm charts can be used to load a Babel compendium into a Redis instance
 for use in
 [Node Normalization](https://github.com/TranslatorSRI/NodeNormalization) (NodeNorm).
@@ -55,3 +57,17 @@ for use in
    ```shell
    $ helm uninstall -n translator-dev node-normalization-loader .
    ```
+
+## Deploying to NCATS ITRB
+
+- Before you deploy any of the node-normalization-loader helms to ITRB, you need to request
+  that the NCATS ITRB team reinstall the redis-r3-external helm.
+- For the NCATS ITRB CI instance, simply updating the values in values.yaml and publishing
+  to the `develop` branch for Jenkins should automatically load these changes into ITRB's
+  Redis instances.
+- For the NCATS ITRB Test and Prod instance, you need to push the changes to `test` and
+  `master` and then ask NCATS ITRB to (1) reinstall the redis-r3-external helm and
+  (2) re-run the NodeNorm loader from this repo. Since we use the same server information
+  for these loads, the existing NodeNorm instance will stop returning results when the
+  redis-r3-external helm is reinstalled and then will slowly start returning correct results
+  as the load continues.
