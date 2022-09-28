@@ -107,44 +107,46 @@ pipeline {
                 }
             }
             steps {
-                configFileProvider([
-                    configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
-                ]){
-                    withCredentials([
-                        file(
-                            credentialsId: 'sri-git-crypt.key.asc',
-                            variable: 'cryptasc'),
-                        file(
-                            credentialsId: 'sri-git-crypt.key.pwd',
-                            variable: 'cryptpwd'),
-                        sshUserPrivateKey(
-                            credentialsId: 'labshare-svc',
-                            keyFileVariable: 'password'),    
+                withCredentials(bindings:[sshUserPrivateKey(
+                    credentialsId: 'labshare-svc',
+                    keyFileVariable: 'PASSWORD')]) 
+                {
+                    configFileProvider([
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
-                        withEnv([
-                            "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
-                            "BUILD_VERSION_KP=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_KP)
-                        ]) {
-                            withAWS(credentials:'aws-ifx-deploy') {
-                                sh '''
-                                # copy secret files to current directory
-                                cp $cryptasc sri-git-crypt.key.asc
-                                cp $cryptpwd sri-git-crypt.key.pwd
-                                # git crypt unlock the repo
-                                gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                                cd helm/strider
-                                password-value=`cat password`
-                                git clone https://labshare-svc:$password-value@github.com/Sphinx-Automation/translator-ops.git
-                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cp -R translator-ops/ops/sri/strider/deploy/* ./
-                                mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
-                                mv ncats-dev-values.yaml ./values-ncats.yaml
-                                /bin/bash deploy.sh
-                                '''
+                        withCredentials([
+                            file(
+                                credentialsId: 'sri-git-crypt.key.asc',
+                                variable: 'cryptasc'),
+                            file(
+                                credentialsId: 'sri-git-crypt.key.pwd',
+                                variable: 'cryptpwd'),   
+                        ]){
+                            withEnv([
+                                "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                                "BUILD_VERSION_KP=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_KP)
+                            ]) {
+                                withAWS(credentials:'aws-ifx-deploy') {
+                                    sh '''
+                                    # copy secret files to current directory
+                                    cp $cryptasc sri-git-crypt.key.asc
+                                    cp $cryptpwd sri-git-crypt.key.pwd
+                                    # git crypt unlock the repo
+                                    gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
+                                    cd helm/strider
+                                    password=`cat PASSWORD`
+                                    git clone https://labshare-svc:$password@github.com/Sphinx-Automation/translator-ops.git
+                                    aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                                    cp -R translator-ops/ops/sri/strider/deploy/* ./
+                                    mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
+                                    mv ncats-dev-values.yaml ./values-ncats.yaml
+                                    /bin/bash deploy.sh
+                                    '''
+                                }
                             }
                         }
                     }
-                }              
+                }
             }
         }
     }
