@@ -107,7 +107,7 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['labshare-svc']) {
+                withCredentials ([gitUsernamePassword(credentialsId: 'labshare-svc']) {
                     configFileProvider([
                         configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
@@ -131,7 +131,7 @@ pipeline {
                                     # git crypt unlock the repo
                                     gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
                                     cd helm/strider
-                                    git clone -v https://github.com/Sphinx-Automation/translator-ops.git
+                                    git clone https://github.com/Sphinx-Automation/translator-ops.git
                                     aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                                     cp -R translator-ops/ops/sri/strider/deploy/* ./
                                     mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
