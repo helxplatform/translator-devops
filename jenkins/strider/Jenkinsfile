@@ -134,7 +134,7 @@ pipeline {
                                     # git crypt unlock the repo
                                     gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
                                     cd helm/strider
-                                    password=`cat PASSWORD`
+                                    password=`cat $PASSWORD`
                                     git clone https://labshare-svc:$password@github.com/Sphinx-Automation/translator-ops.git
                                     aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                                     cp -R translator-ops/ops/sri/strider/deploy/* ./
