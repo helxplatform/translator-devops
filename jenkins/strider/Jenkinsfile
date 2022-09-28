@@ -119,8 +119,7 @@ pipeline {
                             variable: 'cryptpwd'),
                         sshUserPrivateKey(
                             credentialsId: 'labshare-svc',
-                            keyFileVariable: 'password'),
-                        )    
+                            keyFileVariable: 'password'),    
                     ]){
                         withEnv([
                             "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
