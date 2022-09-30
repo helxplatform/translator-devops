@@ -73,7 +73,7 @@ pipeline {
                             docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
-                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
                                 image.push()
                             }
                         }
@@ -91,7 +91,7 @@ pipeline {
                             docker tag $ORIGINAL_REPO_KP:$BUILD_VERSION_KP 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_KP
                             '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_KP")
-                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:ifx-jenkins-ci') {
+                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
                                 image.push()
                             }
                         }
@@ -107,7 +107,8 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
+                sshagent (credentials: ['labshare-svc']) 
+                {
                     configFileProvider([
                         configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
@@ -117,7 +118,7 @@ pipeline {
                                 variable: 'cryptasc'),
                             file(
                                 credentialsId: 'sri-git-crypt.key.pwd',
-                                variable: 'cryptpwd'),
+                                variable: 'cryptpwd'),   
                         ]){
                             withEnv([
                                 "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
