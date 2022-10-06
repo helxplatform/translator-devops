@@ -26,7 +26,7 @@ scenarios:
           expect:
             - statusCode: 200
       - post:
-          url: /chemical-normalization/1.2/query
+          url: /chemical-normalization/1.3/query
           capture:
            - json: "$.message.knowledge_graph.edges[*]"
              as: kgEdges

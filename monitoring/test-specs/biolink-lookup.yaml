@@ -27,11 +27,11 @@ scenarios:
         expect:
         - statusCode: 200
     - get:
-        url: "/uri_lookup/RO:0002606"
+        url: "/uri_lookup/RO:0002606?version=latest"
         expect:
         - statusCode: 200
     - get:
-        url: "/bl/biological_process"
+        url: "/bl/biological_process?version=latest"
         expect:
         - statusCode: 200
     - get:

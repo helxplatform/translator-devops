@@ -72,6 +72,6 @@
 -t name-resolution.yaml -s http://name-resolution-sri-dev.apps.renci.org
 -t name-resolution.yaml -s https://name-resolution-sri.renci.org
 # Node Normalization
--t node-normalization.yaml -s https://nodenorm.ci.transltr.io/1.2
--t node-normalization.yaml -s https://nodenormalization-dev.apps.renci.org/1.2
+-t node-normalization.yaml -s https://nodenorm.ci.transltr.io
+-t node-normalization.yaml -s https://nodenormalization-dev.apps.renci.org
 -t node-normalization.yaml -s https://nodenormalization-sri.renci.org

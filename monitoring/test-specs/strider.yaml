@@ -20,13 +20,13 @@ scenarios:
   - flow:
       # test apidocs
       - get:
-          url: "/1.2/docs"
+          url: "/1.3/docs"
           trapi:
           - test: ok
           expect:
             - statusCode: 200
       - post:
-          url: /1.2/query
+          url: /1.3/query
           capture:
            - json: "$.message.knowledge_graph.edges[*]"
              as: kgEdges
