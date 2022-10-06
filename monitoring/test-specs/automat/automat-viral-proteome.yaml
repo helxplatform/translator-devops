@@ -20,13 +20,13 @@ scenarios:
   - flow:
       # test apidocs
       - get:
-          url: "/viral-proteome/1.2/openapi.json"
+          url: "/viral-proteome/1.3/openapi.json"
           trapi:
           - test: ok
           expect:
             - statusCode: 200
       - post:
-          url: /viral-proteome/1.2/query
+          url: /viral-proteome/1.3/query
           capture:
            - json: "$.message.knowledge_graph.edges[*]"
              as: kgEdges

@@ -20,13 +20,13 @@ scenarios:
   - flow:
       # test apidocs
       - get:
-          url: "/gwas-catalog/1.2/openapi.json"
+          url: "/gwas-catalog/1.3/openapi.json"
           trapi:
           - test: ok
           expect:
             - statusCode: 200
       - post:
-          url: /gwas-catalog/1.2/query
+          url: /gwas-catalog/1.3/query
           capture:
            - json: "$.message.knowledge_graph.edges[*]"
              as: kgEdges
