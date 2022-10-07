@@ -7,6 +7,10 @@ metadata:
     service-type: webserver
 spec:
   replicas: {{ .Values.strider.replicaCount }}
+  {{ if .Values.strider.strategy }}
+  strategy:
+    type: {{ .Values.strider.strategy }}
+  {{ end }}
   selector:
     matchLabels:
       {{- include "strider.selectorLabels" . | nindent 6 }}

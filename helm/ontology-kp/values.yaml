@@ -9,7 +9,7 @@ ontologyKpAPI:
     repository: renciorg/ontology-kp
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.4"
+    tag: "0.5"
   javaOpts: "-Xmx4G"
   x-trapiMaturity: "development"
   resources:
@@ -37,7 +37,7 @@ blazeGraph:
   blazeGraphMemory: 24G
   blazeGraphTimeout: "1200000"
   blazeGraphReadOnly: true
-  dataStorageSize: 100Gi
+  dataStorageSize: 150Gi
   dataUrl: "https://ubergraph.apps.renci.org/downloads/current/ubergraph.jnl.gz"
   resources:
     limits:

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "issue-router.fullname" . }}
+  labels:
+    {{- include "issue-router.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "issue-router.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "issue-router.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "issue-router.fullname" . }}-env-configmap
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.issueRouter.repository }}:{{ .Values.issueRouter.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.issueRouter.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

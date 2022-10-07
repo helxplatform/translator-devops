@@ -21,7 +21,7 @@ initresources:
 image:
   plater:
     repository: renciorg/plater-clustered
-    tag: "1.3.0-0"
+    tag: "1.3.0-1"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
@@ -116,7 +116,7 @@ app:
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
-      version: 1.2.0
+      version: 1.3.0
       operations:
         - lookup
         - overlay_connect_knodes

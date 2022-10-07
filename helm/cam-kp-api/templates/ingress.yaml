@@ -6,18 +6,20 @@ metadata:
 
     {{ .Values.ingress.annotations | toYaml | nindent 4 }}
 spec:
+  {{- if .Values.ingress.tls.enabled }}
   tls:
     - hosts:
         - {{ .Values.ingress.host | quote }}
       secretName: {{ .Values.ingress.host }}-tls
+  {{- end }}
   rules:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
-          - path: "/1.2.0(/|$)(.*)"
+          - path: "/1.3.0(/|$)(.*)"
             pathType: {{ .Values.ingress.pathType }}
             backend:
               service:
-                name: {{ include "cam-kp-api.fullname" . }}-trapi-1-2-service
+                name: {{ include "cam-kp-api.fullname" . }}-trapi-1-3-service
                 port:
                   number: {{ .Values.app.port }}
