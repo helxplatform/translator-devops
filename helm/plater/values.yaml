@@ -113,6 +113,7 @@ app:
       size: 20Mi
     service:
       type: ClusterIP
+    allowUpgrade: true
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
