@@ -29,7 +29,7 @@ for use in
    ```
 
 3. Once the compendium and conflation files are in place, you will need to modify the
-   `renci-exp-values-populated.yaml` file to:
+   `renci-exp-values-populated.yaml` and `values.yaml` file to:
    1. Update the URL for downloading the compendia and conflations.
    2. Update the list of files to the correct list of compendia and conflation files,
       including any splits you generated in the previous step.
