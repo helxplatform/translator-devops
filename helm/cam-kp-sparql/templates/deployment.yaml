@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cam-kp-sparql.fullname" . }}
+  labels:
+    {{- include "cam-kp-sparql.labels" . | nindent 4 }}
+    app: webserver
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cam-kp-sparql.selectorLabels" . | nindent 6 }}
+      app: webserver
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cam-kp-sparql.selectorLabels" . | nindent 8 }}
+        app: webserver
+    spec:
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.camKpSparql.image.repository }}:{{ .Values.camKpSparql.image.tag }}"
+          imagePullPolicy: {{ .Values.camKpSparql.image.pullPolicy }}
+          env:
+          - name: JAVA_OPTS
+            value: "-Xmx4G"
+          - name: PORT
+            value: "8080"
+          - name: SPARQL_ENDPOINT
+            value: "http://{{ include "cam-kp-sparql.fullname" . }}-sparql-service:{{ .Values.blazeGraph.service.port }}/blazegraph/sparql"
+          - name: MATURITY
+            value: "development"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.camKpSparql.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
