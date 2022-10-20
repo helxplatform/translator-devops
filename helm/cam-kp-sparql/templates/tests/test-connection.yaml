@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "cam-kp-sparql.fullname" . }}:{{ .Values.camKpSPARQL.service.port }}']
+      args: ['{{ include "cam-kp-sparql.fullname" . }}:{{ .Values.camKpSparql.service.port }}']
   restartPolicy: Never
