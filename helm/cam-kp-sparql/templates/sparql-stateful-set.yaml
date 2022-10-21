@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "cam-kp-sparql.fullname" . }}-sparql
+  name: {{ include "cam-kp-sparql.fullname" . }}
   labels:
     {{- include "cam-kp-sparql.labels" . | nindent 4 }}
     app: database
 spec:
-  serviceName: {{ include "cam-kp-sparql.fullname" . }}-sparql-service
+  serviceName: {{ include "cam-kp-sparql.fullname" . }}
   selector:
     matchLabels:
       {{- include "cam-kp-sparql.selectorLabels" . | nindent 6 }}
@@ -19,15 +19,15 @@ spec:
     spec:
       {{- if .Values.blazeGraph.dataUrl }}
       initContainers:
-        - name: {{ include "cam-kp-sparql.fullname" . }}-sparql-seed
+        - name: {{ include "cam-kp-sparql.fullname" . }}-seed
           image: {{ .Values.blazeGraph.init.repository }}:{{ .Values.blazeGraph.init.tag }}
           command:
           - "/bin/bash"
           - "-c"
-          - "cd /data && echo 'com.bigdata.journal.AbstractJournal.file=/data/blazegraph.jnl' >blazegraph.properties && curl -L -O '{{ .Values.blazeGraph.dataUrl }}' && gunzip -f ubergraph.jnl.gz && mv ubergraph.jnl blazegraph.jnl"
+          - "cd /data && echo 'com.bigdata.journal.AbstractJournal.file=/data/blazegraph.jnl' >blazegraph.properties && curl -L -O '{{ .Values.blazeGraph.dataUrl }}' && gunzip -f cam-db-reasoned.jnl.gz && mv cam-db-reasoned.jnl blazegraph.jnl"
           volumeMounts:
           - mountPath: /data
-            name: {{ include "cam-kp-sparql.fullname" . }}-data-volume
+            name: {{ include "cam-kp-sparql.fullname" . }}-data
           {{ with  .Values.blazeGraph.init.resources }}
           resources:
             {{ toYaml . | nindent 12 }}
@@ -46,7 +46,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}-sparql-container
+        - name: {{ .Chart.Name }}
           image: "{{ .Values.blazeGraph.image.repository }}:{{ .Values.blazeGraph.image.tag }}"
           ports:
             - name: sparql-port
@@ -63,10 +63,10 @@ spec:
             {{- toYaml .Values.blazeGraph.resources | nindent 12 }}
           volumeMounts:
             - mountPath: /data
-              name: {{ include "cam-kp-sparql.fullname" . }}-data-volume
+              name: {{ include "cam-kp-sparql.fullname" . }}-data
   volumeClaimTemplates:
     - metadata:
-        name: {{ include "cam-kp-sparql.fullname" . }}-data-volume
+        name: {{ include "cam-kp-sparql.fullname" . }}-data
       spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:

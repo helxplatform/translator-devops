@@ -5,23 +5,6 @@ metadata:
   labels:
     {{- include "cam-kp-sparql.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.camKpSparql.service.type }}
-  ports:
-    - port: {{ .Values.camKpSparql.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "cam-kp-sparql.selectorLabels" . | nindent 4 }}
-    app: webserver
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "cam-kp-sparql.fullname" . }}-sparql-service
-  labels:
-    {{- include "cam-kp-sparql.labels" . | nindent 4 }}
-spec:
   type: {{ .Values.blazeGraph.service.type }}
   {{- if .Values.blazeGraph.service.loadBalancerIP }}
   loadBalancerIP: {{ .Values.blazeGraph.service.loadBalancerIP }}
