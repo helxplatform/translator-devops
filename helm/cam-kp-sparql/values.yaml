@@ -22,7 +22,7 @@ blazeGraph:
   blazeGraphTimeout: "1200000"
   blazeGraphReadOnly: true
   dataStorageSize: 200Gi
-  dataUrl: "https://stars.renci.org/var/babel_outputs/cam-kp/2022oct18/cam-db-reasoned.jnl.gz"
+  dataUrl: "https://stars.renci.org/var/cam-kp/2022oct18/cam-db-reasoned.jnl.gz"
   resources:
     limits:
       cpu: 2
