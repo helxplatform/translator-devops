@@ -24,7 +24,7 @@ spec:
           command:
           - "/bin/bash"
           - "-c"
-          - "cd /data && echo 'com.bigdata.journal.AbstractJournal.file=/data/blazegraph.jnl' >blazegraph.properties && curl -L -O '{{ .Values.blazeGraph.dataUrl }}' && gunzip -f cam-db-reasoned.jnl.gz && mv cam-db-reasoned.jnl blazegraph.jnl"
+          - "cd /data && echo 'com.bigdata.journal.AbstractJournal.file=/data/blazegraph.jnl' >blazegraph.properties && curl -L -O '{{ .Values.blazeGraph.dataUrl }}' && md5sum cam-db-reasoned.jnl.gz && gunzip -f cam-db-reasoned.jnl.gz && mv cam-db-reasoned.jnl blazegraph.jnl"
           volumeMounts:
           - mountPath: /data
             name: {{ include "cam-kp-sparql.fullname" . }}-data
