@@ -62,15 +62,18 @@ securityContext: {}
 ingress:
   enabled: false
   className: ""
-  annotations: {}
-#     cert-manager.io/cluster-issuer: letsencrypt
-#     nginx.ingress.kubernetes.io/enable-cors: "true"
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/rewrite-target: /blazegraph/sparql$1
 #     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
   hosts:
     - host: chart-example.local
       paths:
-        - path: /
-          pathType: ImplementationSpecific
+        - pathType: Prefix
+          path: /sparql(.*)
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
