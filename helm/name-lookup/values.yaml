@@ -28,6 +28,7 @@ forceRun: false
 #     tag: latest
 
 solr:
+  storage: 130Gi
   service:
     port: 8983
     type: ClusterIP
