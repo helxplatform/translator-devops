@@ -39,10 +39,6 @@ spec:
             - name: "NO_PROXY"
               value: "{{ .Values.NO_PROXY}}"
             {{ end }}
-            - name: REDIS_HOST
-              value: "{{ include "strider.fullname" . }}-redis-service"
-            - name: REDIS_PORT
-              value: "{{ .Values.redis.port }}"
             - name: KPREGISTRY_URL
               {{- if .Values.kpRegistry.enabled }}
               value: "http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}"
@@ -51,8 +47,6 @@ spec:
               {{- end }}
             - name: OMNICORP_URL
               value: {{ .Values.strider.env.OMNICORP_URL }}
-            - name: REDIS_URL
-              value: "redis://{{ include "strider.fullname" . }}-redis-service:{{ .Values.redis.service.port }}"
             - name: OPENAPI_SERVER_URL
               value: https://{{ .Values.ingress.strider.host }}
             - name: NORMALIZER_URL
