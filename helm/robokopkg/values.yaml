@@ -31,7 +31,7 @@ neo4j:
   username: "neo4j"
   password: ""
   readOnly: "true"
-  queryTimeout: 600 # in seconds
+  queryTimeout:  # in seconds
   jvmOptions: "-Xss250m -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
   storage:
     size: 10Gi
