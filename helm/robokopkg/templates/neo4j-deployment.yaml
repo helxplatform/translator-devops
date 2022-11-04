@@ -89,8 +89,10 @@ spec:
             value: "{{ .Values.neo4j.readOnly }}"
           - name: NEO4J_dbms_jvm_additional
             value: "{{ .Values.neo4j.jvmOptions }}"
+          {{ if .Values.neo4j.queryTimeout }}
           - name: NEO4J_dbms_transaction_timeout
             value: "{{ .Values.neo4j.queryTimeout }}s"
+          {{ end }}
           - name: "NEO4J_dbms_threads_worker__count"
             value: "{{ .Values.neo4j.workerCount }}"
           - name: NEO4J_dbms_default__advertised__address
