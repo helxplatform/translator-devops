@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sri-testing.fullname" . }}
+  labels:
+    {{- include "sri-testing.labels" . | nindent 4 }}
+    app: api
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "sri-testing.selectorLabels" . | nindent 6 }}
+      app: api
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "sri-testing.selectorLabels" . | nindent 8 }}
+        app: api
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sri-testing.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "sri-testing.fullname" . }}-mongodb
+                key: mongodb-root-password
+          - name: MONGO_INITDB_HOST
+            value: {{ include "mongodb.fullname" . }}-mongodb
+          command:
+          - "uvicorn"
+          args:
+          - "api.main:app"
+          - "--proxy-headers"
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "8090"
+          - --root-path
+          - /api
+          ports:
+            - name: http
+              containerPort: 8090
+              protocol: TCP
+#           livenessProbe:
+#             httpGet:
+#               path: /docs
+#               port: http
+#           readinessProbe:
+#             httpGet:
+#               path: /docs
+#               port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
