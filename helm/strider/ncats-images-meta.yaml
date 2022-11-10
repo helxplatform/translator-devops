@@ -1,6 +1,6 @@
 strider:
   image: "ghcr.io/ranking-agent/strider"
-  version: "v4.0.2"
+  version: "v4.1.0"
 
 kpRegistry:
   image: "ghcr.io/ranking-agent/kp-registry"
