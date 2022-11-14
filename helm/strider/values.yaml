@@ -63,14 +63,14 @@ probes:
     enabled: false
     failureThreshold: 5
     successThreshold: 1
-    periodSeconds: 120
+    period: 120
     timeoutSeconds: 10
 
   kpRegistry:
-    path: "/kps"
+    path: "/docs"
     failureThreshold: 5
     successThreshold: 1
-    periodSeconds: 120
+    period: 120
     timeoutSeconds: 3
 
 

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "openapi-spec-aggregator.fullname" . }}-configmap
+  labels:
+    {{- include "openapi-spec-aggregator.labels" . | nindent 4 }}
+data:
+  servers.json: |-
+    {{ .Values.config.servers | toJson | indent 4 }}
+  infores-override.json: |-
+    {{ .Values.config.inforesOverride | toJson | indent 4 }}
