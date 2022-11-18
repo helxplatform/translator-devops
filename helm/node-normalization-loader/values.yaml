@@ -3,8 +3,8 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: "renciorg/r3_nodenorm"
-  tag: "latest"
+  repository: "containers.renci.org/translator-dev/r3_nodenorm"
+  tag: "2.0.9"
   pullPolicy: Always
 fullnameOverride: ""
 
