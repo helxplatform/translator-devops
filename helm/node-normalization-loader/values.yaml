@@ -11,7 +11,7 @@ fullnameOverride: ""
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022oct13/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022oct13-2/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
@@ -71,7 +71,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022oct13/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022oct13-2/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
