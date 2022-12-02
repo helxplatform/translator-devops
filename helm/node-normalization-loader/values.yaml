@@ -28,6 +28,7 @@ data:
     - Gene.txt.03
     - Gene.txt.04
     - GrossAnatomicalStructure.txt
+    - MacromolecularComplexMixin.txt
     - MolecularActivity.txt
     - MolecularMixture.txt
     - OrganismTaxon.txt
@@ -57,6 +58,7 @@ data:
     - Protein.txt.20
     - Protein.txt.21
     - Protein.txt.22
+    - Protein.txt.23
     - SmallMolecule.txt.00
     - SmallMolecule.txt.01
     - SmallMolecule.txt.02
