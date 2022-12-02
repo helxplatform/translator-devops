@@ -8,11 +8,11 @@ for use in
 
 1. Use the Helm chart in [../redis-r3-external](../redis-r3-external) to create a Redis
    deployment to use as a backend for a NodeNorm instance. We name the release based
-   on the Babel version being used. So, when installing the 2022sep13 version of Babel,
+   on the Babel version being used. So, when installing the 2022dec2 version of Babel to the RENCI translator-exp namespace,
    you might run:
 
    ```shell
-   $ helm install -n translator-dev -f renci-2022sep13-values-populated.yaml nn-redis-2022sep13 .
+   $ helm install -n translator-exp -f renci-exp-values-populated.yaml nn-redis-2022dec2 .
    ```
 
    (In some cases, installing this chart will fail with a
