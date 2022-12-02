@@ -42,20 +42,20 @@ for use in
 4. You're ready to start loading! You should run something like:
 
    ```shell
-   $ helm install -n translator-dev -f renci-exp-values-populated.yaml node-normalization-loader .
+   $ helm install -n translator-exp -f renci-exp-values-populated.yaml node-normalization-loader .
    ```
 
 5. This should start multiple jobs, each loading an individual file. You can track
    all their statuses on Kubernetes by running the following command:
 
    ```shell
-   $ for p in  $(kubectl -n translator-dev get pods | grep loader | awk '{print $1}' ) ; do kubectl -n translator-dev logs --tail=5 $p | head -n 1; done
+   $ for p in  $(kubectl -n translator-exp get pods | grep loader | awk '{print $1}' ) ; do kubectl -n translator-exp logs --tail=5 $p | head -n 1; done
    ```
 
 6. Once loading is complete, you can delete the loading nodes by running:
 
    ```shell
-   $ helm uninstall -n translator-dev node-normalization-loader .
+   $ helm uninstall -n translator-exp node-normalization-loader .
    ```
 
 ## Deploying to NCATS ITRB
