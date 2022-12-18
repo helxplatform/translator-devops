@@ -55,7 +55,7 @@ for use in
 6. Once loading is complete, you can delete the loading nodes by running:
 
    ```shell
-   $ helm uninstall -n translator-exp node-normalization-loader .
+   $ helm uninstall -n translator-exp node-normalization-loader
    ```
 
 ## Deploying to NCATS ITRB
