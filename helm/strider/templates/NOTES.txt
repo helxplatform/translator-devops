@@ -7,9 +7,5 @@ Installed {{ include "strider.fullname" . }}
 Browse to http://localhost:8081
 
 
-2. To access redis insights
-
-> export REDIS_INSIGHTS_PORT={{ .Values.redisInsights.service.port }} && kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "strider.fullname" . }}-redis-service 8081:$REDIS_INSIGHTS_PORT
-
 
 Browse to http://localhost:8081

@@ -49,45 +49,19 @@ spec:
             serviceName: {{ include "strider.fullname" . }}-web-service
             servicePort: {{ .Values.strider.service.port }}
             {{- end }}
----
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
-kind: Ingress
-metadata:
-  name: {{ include "strider.fullname" . }}-ingress-redis-insights
-  {{- with .Values.ingress.redisInsights.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
-  ingressClassName: {{ .Values.ingress.class }}
-  {{- end }}
-  {{- if .Values.ingress.tls.enabled }}
-  tls:
-  - hosts:
-      - {{ .Values.ingress.redisInsights.host | quote }}
-    secretName: {{ .Values.ingress.redisInsights.host }}-tls
-  {{- end }}
-  rules:
-  - host: {{ .Values.ingress.redisInsights.host }}
-    http:
-      paths:
-      - backend:
+        {{- if .Values.redisinsight.enabled }}
+        - path: "/redis-insight(/|$)(.*)"
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-          service:
-            name: {{ include "strider.fullname" . }}-redis-insights-service
-            port:
-              number: {{ .Values.redisInsights.service.port }}
-          {{- else }}
-          serviceName: {{ include "strider.fullname" . }}-redis-insights-service
-          servicePort: {{ .Values.redisInsights.service.port }}
+          pathType: "{{ .Values.ingress.pathType }}"
           {{- end }}
-        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-        pathType: "{{ .Values.ingress.pathType }}"
+          backend:
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            service:
+              name: {{ include "strider.fullname" . }}-redisinsight
+              port:
+                number: 80
+            {{- else }}
+            serviceName: {{ include "strider.fullname" . }}-redisinsight
+            servicePort: 80
+            {{- end }}
         {{- end }}
