@@ -49,8 +49,6 @@ spec:
             serviceName: {{ include "strider.fullname" . }}-web-service
             servicePort: {{ .Values.strider.service.port }}
             {{- end }}
-
-{{- if .Values.kpRegistry.enabled }}
 ---
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
@@ -61,8 +59,8 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ include "strider.fullname" . }}-ingress-kp
-  {{- with .Values.ingress.kpRegistry.annotations }}
+  name: {{ include "strider.fullname" . }}-ingress-redis-insights
+  {{- with .Values.ingress.redisInsights.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -73,24 +71,23 @@ spec:
   {{- if .Values.ingress.tls.enabled }}
   tls:
   - hosts:
-      - {{ .Values.ingress.kpRegistry.host | quote }}
-    secretName: {{ .Values.ingress.kpRegistry.host }}-tls
+      - {{ .Values.ingress.redisInsights.host | quote }}
+    secretName: {{ .Values.ingress.redisInsights.host }}-tls
   {{- end }}
   rules:
-  - host: {{ .Values.ingress.kpRegistry.host }}
+  - host: {{ .Values.ingress.redisInsights.host }}
     http:
       paths:
       - backend:
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
-            name: {{ include "strider.fullname" . }}-kp-service
+            name: {{ include "strider.fullname" . }}-redis-insights-service
             port:
-              number: {{ .Values.kpRegistry.service.port }}
+              number: {{ .Values.redisInsights.service.port }}
           {{- else }}
-          serviceName: {{ include "strider.fullname" . }}-kp-service
-          servicePort: {{ .Values.kpRegistry.service.port }}
+          serviceName: {{ include "strider.fullname" . }}-redis-insights-service
+          servicePort: {{ .Values.redisInsights.service.port }}
           {{- end }}
         {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
         pathType: "{{ .Values.ingress.pathType }}"
         {{- end }}
-  {{- end }}
