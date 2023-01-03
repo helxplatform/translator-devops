@@ -1,6 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "qgraph.fullname" . -}}
 {{- $svcPort := .Values.qgraph.service.port -}}
+{{- $pathType := .Values.ingress.pathType -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.frontend.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -28,26 +29,30 @@ spec:
   {{- end }}
   {{- if .Values.ingress.tls.enabled }}
   tls:
+  {{ range .Values.ingress.hosts }}
   - hosts:
-      - {{ .Values.ingress.host | quote }}
-    secretName: {{ .Values.ingress.host }}-tls
+      - {{ . | quote }}
+    secretName: {{ . }}-tls
+  {{ end }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.host }}
+  {{ range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
       http:
         paths:
         - path: "/(.*)"
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-          pathType: "{{ .Values.ingress.pathType }}"
+          pathType: "{{ $pathType }}"
           {{- end }}
           backend:
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             service:
               name: {{ $fullName }}-qgraph
               port:
-                number: {{ .Values.qgraph.service.port }}
+                number: {{ $svcPort }}
             {{- else }}
             serviceName: {{ $fullName }}-qgraph
-            servicePort: {{ .Values.qgraph.service.port }}
+            servicePort: {{ $svcPort }}
             {{- end }}
+  {{ end }}
 {{- end }}
