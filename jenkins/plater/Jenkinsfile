@@ -123,7 +123,6 @@ pipeline {
                             '''
                                 image.push()
                                 imageLatest.push()
-                        }
                     }
                 }
             }
@@ -162,6 +161,7 @@ pipeline {
                                 cp -R translator-ops/ops/sri/plater/deploy/* ./
                                 /bin/bash deploy.sh
                                 '''
+                            }
                         }
                     }
                 }
