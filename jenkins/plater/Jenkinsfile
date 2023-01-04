@@ -96,7 +96,9 @@ pipeline {
                             docker tag $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
                             '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
-                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
+                            sh '''
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
                                 image.push()
                             }
                         }
@@ -116,7 +118,9 @@ pipeline {
                             '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable")
                             def imageLatest = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest")
-                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
+                            sh '''
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
                                 image.push()
                                 imageLatest.push()
                             }
