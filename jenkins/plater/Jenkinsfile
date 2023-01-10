@@ -142,6 +142,7 @@ pipeline {
                 }
             }
             steps {
+                checkout scm
                 configFileProvider([
                     configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
@@ -149,7 +150,7 @@ pipeline {
                     "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
                     "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
                 ]) {
-                    sh '''                    
+                    sh '''
                         aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                         /bin/bash prepare.sh
                         '''
