@@ -33,7 +33,6 @@ spec:
           volumeMounts:
             - mountPath: {{ .Values.redis.dbPath }}
               name: {{ include "strider.fullname" . }}-redis-data-volume
-              subPath: data
           resources:
             {{ toYaml .Values.redis.resources | nindent 12 }}
 
