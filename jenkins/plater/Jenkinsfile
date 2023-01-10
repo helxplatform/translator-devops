@@ -132,6 +132,9 @@ pipeline {
             }
         }
         stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
             when {
                 anyOf {
                     changeset "helm/plater/*"
@@ -139,34 +142,17 @@ pipeline {
                 }
             }
             steps {
-                sshagent (credentials: ['labshare-svc']) {
-                    withCredentials([
-                        file(
-                            credentialsId: 'sri-git-crypt.key.asc',
-                            variable: 'cryptasc'),
-                        file(
-                            credentialsId: 'sri-git-crypt.key.pwd',
-                            variable: 'cryptpwd'),
+                configFileProvider([
+                    configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
-                        withEnv([
-                            "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
-                            "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
-                        ]) {
-                            withAWS(credentials:'aws-ifx-deploy') {
-                                sh '''
-                                # copy secret files to current directory
-                                cp $cryptasc sri-git-crypt.key.asc
-                                cp $cryptpwd sri-git-crypt.key.pwd
-                                # git crypt unlock the repo
-                                gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                                cd helm/plater
-                                git clone git@github.com:Sphinx-Automation/translator-ops.git
-                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cp -R translator-ops/ops/sri/plater/deploy/* ./
-                                /bin/bash deploy.sh
-                                '''
-                            }
-                        }
+                withEnv([
+                    "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                    "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
+                ]) {
+                    sh '''                    
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        '''
                     }
                 }
             }
