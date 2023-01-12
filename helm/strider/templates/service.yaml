@@ -1,22 +1,20 @@
-{{- if .Values.kpRegistry.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "strider.fullname" . }}-kp-service
+  name: {{ include "strider.fullname" . }}-redis-service
   labels:
     {{- include "strider.labels" . | nindent 4 }}
-    service-type: database
+    service-type: redis
 spec:
-  type: {{ .Values.kpRegistry.service.type }}
+  type: {{ .Values.redis.service.type }}
   ports:
-    - port: {{ .Values.kpRegistry.service.port }}
-      targetPort: 4983
+    - port: {{ .Values.redis.service.port }}
+      targetPort: 6379
       protocol: TCP
-      name: http
+      name: redis-port
   selector:
     {{- include "strider.selectorLabels" . | nindent 4 }}
-    service-type: database
-{{- end }}
+    service-type: redis
 ---
 apiVersion: v1
 kind: Service

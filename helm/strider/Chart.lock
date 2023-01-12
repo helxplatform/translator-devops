@@ -1,0 +1,6 @@
+dependencies:
+- name: redis-insight
+  repository: https://helxplatform.github.io/helm-charts/
+  version: 0.1.0
+digest: sha256:8364a58442765c52fac8c5995d529dcbca95497a707c4b0bec5900fac3066c72
+generated: "2022-12-21T10:10:16.5494347-05:00"
