@@ -62,19 +62,26 @@ redis:
     requests:
       memory: 10Gi
   args:
+    - --maxmemory
+    - '4gb'
+    - --maxmemory-policy
+    - 'volatile-lfu'
+    - --loglevel
+    - 'notice'
+    - --logfile
+    - '/data/strider_cache.log'
     - --save
     - ''
     - --stop-writes-on-bgsave-error
     - 'no'
-
-# redisInsights:
-#   image:
-#     tag: latest
-#     repository: redislabs/redisinsight
-#   service:
-#     port: 8001
-#     type: ClusterIP
-#   dbPath: /data
+    - --dbfilename
+    - 'strider_cache.rdb'
+    - --proto-max-bulk-len
+    - '1000mb'
+    - --activedefrag
+    - 'yes'
+    - --timeout
+    - '60'
 
 ingress:
   enabled: false
@@ -99,6 +106,7 @@ ingress:
 env:
   max_process_time: 3400
   redis_expiration: 604800
+  redis_host: strider-redis-service
 
 x_trapi:
   maturity:
