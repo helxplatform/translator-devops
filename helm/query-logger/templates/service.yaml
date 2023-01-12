@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "querylogger.fullname" . }}-querylogger
+  labels:
+    {{- include "querylogger.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.querylogger.service.type }}
+  ports:
+    - port: {{ .Values.querylogger.service.port }}
+      targetPort: {{ .Values.querylogger.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "querylogger.selectorLabels" . | nindent 4 }}
+    service-type: webserver

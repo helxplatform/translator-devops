@@ -3,55 +3,77 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: "renciorg/r3_nodenorm"
-  tag: "latest"
+  repository: "containers.renci.org/translator-dev/r3_nodenorm"
+  tag: "2.0.9"
   pullPolicy: Always
 fullnameOverride: ""
+
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: https://stars.renci.org/var/babel_outputs/2021-11-3/compendia/
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022dec2/compendia/"
     files:
-      - AnatomicalEntity.txt
-      - BiologicalProcess.txt
-      - Cell.txt
-      - CellularComponent.txt
-      - ChemicalEntity.txt
-      - ChemicalMixture.txt
-      - ComplexMolecularMixture.txt
-      - Disease.txt
-      - GeneFamily.txt
-      - Gene.txt
-      - GrossAnatomicalStructure.txt
-      - MolecularActivity.txt
-      - MolecularMixture.txt
-      - OrganismTaxon.txt
-      - Pathway.txt
-      - PhenotypicFeature.txt
-      - Polypeptide.txt
-      - Protein.txtaa
-      - Protein.txtab
-      - Protein.txtac
-      - Protein.txtad
-      - Protein.txtae
-      - Protein.txtaf
-      - Protein.txtag
-      - Protein.txtah
-      - Protein.txtai
-      - Protein.txtaj
-      - SmallMolecule.txtaa
-      - SmallMolecule.txtab
-      - SmallMolecule.txtac
-      - SmallMolecule.txtad
-      - SmallMolecule.txtae
-      - SmallMolecule.txtaf
-      - SmallMolecule.txtag
-      - SmallMolecule.txtah
-      - SmallMolecule.txtai
-      - SmallMolecule.txtaj
+    - AnatomicalEntity.txt
+    - BiologicalProcess.txt
+    - Cell.txt
+    - CellularComponent.txt
+    - ChemicalEntity.txt
+    - ChemicalMixture.txt
+    - ComplexMolecularMixture.txt
+    - Disease.txt
+    - GeneFamily.txt
+    - Gene.txt.00
+    - Gene.txt.01
+    - Gene.txt.02
+    - Gene.txt.03
+    - Gene.txt.04
+    - GrossAnatomicalStructure.txt
+    - MacromolecularComplexMixin.txt
+    - MolecularActivity.txt
+    - MolecularMixture.txt
+    - OrganismTaxon.txt
+    - Pathway.txt
+    - PhenotypicFeature.txt
+    - Polypeptide.txt
+    - Protein.txt.00
+    - Protein.txt.01
+    - Protein.txt.02
+    - Protein.txt.03
+    - Protein.txt.04
+    - Protein.txt.05
+    - Protein.txt.06
+    - Protein.txt.07
+    - Protein.txt.08
+    - Protein.txt.09
+    - Protein.txt.10
+    - Protein.txt.11
+    - Protein.txt.12
+    - Protein.txt.13
+    - Protein.txt.14
+    - Protein.txt.15
+    - Protein.txt.16
+    - Protein.txt.17
+    - Protein.txt.18
+    - Protein.txt.19
+    - Protein.txt.20
+    - Protein.txt.21
+    - Protein.txt.22
+    - Protein.txt.23
+    - SmallMolecule.txt.00
+    - SmallMolecule.txt.01
+    - SmallMolecule.txt.02
+    - SmallMolecule.txt.03
+    - SmallMolecule.txt.04
+    - SmallMolecule.txt.05
+    - SmallMolecule.txt.06
+    - SmallMolecule.txt.07
+    - SmallMolecule.txt.08
+    - SmallMolecule.txt.09
+    - SmallMolecule.txt.10
+    - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: https://stars.renci.org/var/babel_output/2021-11-3/conflation/
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022dec2/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
