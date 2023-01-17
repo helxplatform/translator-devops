@@ -63,7 +63,7 @@ redis:
       memory: 10Gi
   args:
     - --maxmemory
-    - '4gb'
+    - '10gb'
     - --maxmemory-policy
     - 'volatile-lfu'
     - --loglevel
