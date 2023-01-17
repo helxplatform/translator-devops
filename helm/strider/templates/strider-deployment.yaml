@@ -30,6 +30,9 @@ spec:
         - name: {{ .Chart.Name }}-webserver
           image: "{{ .Values.strider.image.repository }}:{{ .Values.strider.image.tag }}"
           imagePullPolicy: "{{ .Values.strider.image.imagePullPolicy }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "strider.fullname" . }}-configmap
           env:
             {{ if .Values.HTTPS_PROXY }}
             - name: "HTTPS_PROXY"
@@ -39,24 +42,6 @@ spec:
             - name: "NO_PROXY"
               value: "{{ .Values.NO_PROXY}}"
             {{ end }}
-            - name: KPREGISTRY_URL
-              {{- if .Values.kpRegistry.enabled }}
-              value: "http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}"
-              {{- else }}
-              value: "https://kp-registry.renci.org"
-              {{- end }}
-            - name: OMNICORP_URL
-              value: {{ .Values.strider.env.OMNICORP_URL }}
-            - name: OPENAPI_SERVER_URL
-              value: https://{{ .Values.ingress.strider.host }}
-            - name: NORMALIZER_URL
-              value: {{ .Values.strider.env.NORMALIZER_URL }}
-            - name: "OPENAPI_SERVER_MATURITY"
-              value: "{{ .Values.x_trapi.maturity.value }}"
-            - name: "OPENAPI_SERVER_LOCATION"
-              value: "{{ .Values.x_trapi.location.value }}"
-            - name: "ROOT_PATH"
-              value: "/1.3"
           command:
             - 'uvicorn'
           args:
@@ -65,7 +50,7 @@ spec:
             - "--port"
             - "{{ .Values.strider.container.port }}"
             - "--root-path"
-            - "/1.3"
+            - "{{ .Values.ingress.path }}"
             - "--workers"
             - "{{ .Values.strider.uvicornWorkerCount }}"
             - "strider.server:APP"
