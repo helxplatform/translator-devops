@@ -111,6 +111,9 @@ pipeline {
                     triggeredBy 'UserIdCause'
                 }
             }
+            environment {
+              APP = "strider"
+            }
             dir("helm/strider") {
                 steps {
                     configFileProvider([
@@ -119,7 +122,6 @@ pipeline {
                     withEnv([
                         "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
                         "BUILD_VERSION_KP=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_KP),
-                        "APP=" strider
                     ]) {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
