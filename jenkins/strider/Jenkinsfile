@@ -41,9 +41,7 @@ pipeline {
                         def imageMeta = readYaml file: 'helm/strider/ncats-images-meta.yaml'
                         env.ORIGINAL_REPO = imageMeta.strider.image
                         env.BUILD_VERSION = imageMeta.strider.version
-                        env.ORIGINAL_REPO_KP = imageMeta.kpRegistry.image
-                        env.BUILD_VERSION_KP = imageMeta.kpRegistry.version
-                        currentBuild.displayName = imageMeta.strider.version + "#" + imageMeta.kpRegistry.version
+                        currentBuild.displayName = imageMeta.strider.version
                     }
                 }
             }
@@ -63,7 +61,7 @@ pipeline {
             steps {
                 withEnv([
                     "IMAGE_NAME=translator-strider",
-                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
                 ]) {
                     dir("helm/strider") {
                         script {
@@ -76,26 +74,6 @@ pipeline {
                             docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
                                 image.push()
                             }
-                        }
-                    }
-                }
-                withEnv([
-                    "IMAGE_NAME=translator-kp-registry",
-                    "BUILD_VERSION_KP=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_KP)
-                ]) {
-                    dir("helm/strider") {
-                        script {
-
-                            sh '''
-                            docker pull $ORIGINAL_REPO_KP:$BUILD_VERSION_KP
-                            docker tag $ORIGINAL_REPO_KP:$BUILD_VERSION_KP 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_KP
-                            '''
-                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_KP")
-
-                            sh '''
-                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
-                            '''
-                                image.push()
                         }
                     }
                 }
