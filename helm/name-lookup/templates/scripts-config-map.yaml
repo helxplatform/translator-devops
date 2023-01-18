@@ -51,12 +51,6 @@ data:
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/config
     sleep 1
 
-    # Delete all existing data.
-    wget --post-data '{ "delete": {"query":"*:*"} }' \
-        --header='Content-Type:application/json' \
-        -O- "${SOLR_SERVER}/solr/${COLLECTION_NAME}/update?commit=true"
-    sleep 1
-
     # Restore data
     BACKUP_NAME="backup"
     CORE_NAME=${COLLECTION_NAME}_shard1_replica_n1
