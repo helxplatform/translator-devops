@@ -94,6 +94,7 @@ pipeline {
               APP = "strider"
             }
                 steps {
+                checkout scm
                 dir("helm/strider") {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
