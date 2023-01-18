@@ -114,8 +114,8 @@ pipeline {
             environment {
               APP = "strider"
             }
-            dir("helm/strider") {
                 steps {
+                dir("helm/strider") {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
