@@ -12,8 +12,8 @@ webServer:
   # container port
   port: 2433
   image:
-    repository: renciorg/name_lookup
-    tag: "1.0.2"
+    repository: ghcr.io/translatorsri/nameresolution
+    tag: "v1.2.0"
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2022dec2-2/solr/snapshot.backup.tar.gz"
 forceRun: false

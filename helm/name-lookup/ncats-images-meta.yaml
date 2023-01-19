@@ -1,6 +1,6 @@
 nameLookup:
-  image: "renciorg/name_lookup"
-  version: "1.0.2"
+  image: "ghcr.io/translatorsri/nameresolution"
+  version: "v1.2.0"
 solr:
   image: "solr"
   version: "8.11.1"
