@@ -24,7 +24,7 @@ web:
 busybox:
   image:
     repository: busybox
-    tag: latest
+    tag: 1.35
 redis:
   image:
     repository: redis
