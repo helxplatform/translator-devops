@@ -1,5 +1,5 @@
 {{- if .Values.web.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: "{{- include "node-normalization-webserver.fullname" . }}-subpath-hpa"
@@ -17,16 +17,20 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.web.autoscaling.targetCPU }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.autoscaling.targetCPU }}
     {{- end }}
     {{- if .Values.web.autoscaling.targetMemory }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.web.autoscaling.targetMemory }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.autoscaling.targetMemory }}
     {{- end }}
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: "{{- include "node-normalization-webserver.fullname" . }}-root-hpa"
@@ -44,12 +48,16 @@ spec:
     - type: Resource
       resource:
         name: cpu
-        targetAverageUtilization: {{ .Values.web.autoscaling.targetCPU }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.autoscaling.targetCPU }}
     {{- end }}
     {{- if .Values.web.autoscaling.targetMemory }}
     - type: Resource
       resource:
         name: memory
-        targetAverageUtilization: {{ .Values.web.autoscaling.targetMemory }}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.web.autoscaling.targetMemory }}
     {{- end }}
 {{- end }}

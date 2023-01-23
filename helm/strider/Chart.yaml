@@ -23,7 +23,7 @@ version: 0.1.0
 appVersion: 1.16.0
 
 dependencies:
-- condition: redis-insight.enabled
+- condition: redisinsight.enabled
   name: redis-insight
   repository: 'https://helxplatform.github.io/helm-charts/'
   version: 0.1.0

@@ -1,4 +1,4 @@
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ include "api-watchdog.fullname" . }}-cronjob
@@ -8,6 +8,7 @@ spec:
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
+      backoffLimit: 0 # don't retry
       template:
         spec:
           containers:
@@ -24,5 +25,7 @@ spec:
               value: {{ .Values.env.MAILGUN_API_TOKEN }}
             - name: MAILGUN_FROM
               value: {{ .Values.env.MAILGUN_FROM }}
+            resources:
+              {{ toYaml .Values.resources | nindent 14 }}
 
-          restartPolicy: OnFailure
+          restartPolicy: Never
