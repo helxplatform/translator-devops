@@ -27,7 +27,6 @@ pipeline {
                 allOf {
                     expression {
                         return !params.BUILD_VERSION
-                        return !params.BUILD_VERSION_KP
                     }
                     anyOf {
                         changeset "helm/strider/*"
@@ -93,22 +92,26 @@ pipeline {
             environment {
               APP = "strider"
             }
-                steps {
+            steps {
                 checkout scm
                 dir("helm/strider") {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
                     withEnv([
-                        "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
-                        "BUILD_VERSION_KP=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_KP)
+                        "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
                     ]) {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-
                             /bin/bash prepare.sh
                            '''
                         }
+                    }
+                }
+                post {
+                    always {
+                        echo " Clean up the workspace in deploy node!"
+                        cleanWs()
                     }
                 }
             }
