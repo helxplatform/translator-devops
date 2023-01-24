@@ -104,19 +104,19 @@ pipeline {
                     ]) {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            /bin/bash prepare.sh
-                            /bin/bash deploy.sh
+                            /bin/bash prepare.sh  ## Copying Sceret from AWS Sceret Manager && git crypt unlock the repo
+                            /bin/bash deploy.sh   ## Execute the helm charts
                            '''
                         }
                     }
                 }
             }
-          /**  post {
+            post {
                 always {
                     echo " Clean up the workspace in deploy node!"
                     cleanWs()
                 }
-            }**/
+            }
         }
     }
 }
