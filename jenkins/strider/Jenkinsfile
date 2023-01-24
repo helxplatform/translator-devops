@@ -96,7 +96,8 @@ pipeline {
                 checkout scm
                 dir("helm/strider") {
                     configFileProvider([
-                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
                     withEnv([
                         "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
