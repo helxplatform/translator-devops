@@ -104,17 +104,18 @@ pipeline {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             /bin/bash prepare.sh
+                            /bin/bash deploy.sh
                            '''
                         }
                     }
                 }
             }
-            post {
+          /**  post {
                 always {
                     echo " Clean up the workspace in deploy node!"
                     cleanWs()
                 }
-            }
+            }**/
         }
     }
 }
