@@ -3,9 +3,15 @@ id-id:
   auth:
     enabled: true
   master:
+    persistence:
+      size: 100Gi
     resources:
+      limits:
+        cpu: 1500m
+        memory: 80Gi
       requests:
-        memory: #
+        cpu: 200m
+        memory: 50Gi
     readinessProbe:
       enabled: false
     livenessProbe:
@@ -13,7 +19,6 @@ id-id:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
 
   cluster:
     slaveCount: 0
@@ -22,17 +27,22 @@ id-categories:
   auth:
     enabled: true
   master:
+    persistence:
+      size: 150Gi
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 50Gi
+      requests:
+        cpu: 500m
+        memory: 25Gi
     readinessProbe:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
 
   cluster:
     slaveCount: 0
@@ -41,17 +51,22 @@ id-eq-id:
   auth:
     enabled: true
   master:
+    persistence:
+      size: 200Gi
+    resources:
+      limits:
+        cpu: 3000m
+        memory: 90Gi
+      requests:
+        cpu: 500m
+        memory: 50Gi
     readinessProbe:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #200Gi
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -59,6 +74,15 @@ semantic-count:
   auth:
     enabled: true
   master:
+    persistence:
+      size: 1Gi
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 100Mi
     readinessProbe:
       enabled: false
     livenessProbe:
@@ -69,7 +93,6 @@ semantic-count:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -77,17 +100,22 @@ conflation-db:
   auth:
     enabled: true
   master:
+    persistence:
+      size: 20Gi
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 6Gi
+      requests:
+        cpu: 250m
+        memory: 3Gi
     readinessProbe:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -95,6 +123,15 @@ info-content:
   auth:
     enabled: true
   master:
+    persistence:
+      size: 1Gi
+    resources:
+      limits:
+        cpu: 150m
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 100Mi
     readinessProbe:
       enabled: false
     livenessProbe:
@@ -105,6 +142,5 @@ info-content:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
