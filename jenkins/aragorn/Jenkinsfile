@@ -107,6 +107,7 @@ pipeline {
                 }
             }
             steps {
+                checkout scm
                 script {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
@@ -125,6 +126,12 @@ pipeline {
                             '''
                         }
                     }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
                 }
             }
         }
