@@ -13,7 +13,6 @@ id-id:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
 
   cluster:
     slaveCount: 0
@@ -32,7 +31,6 @@ id-categories:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
 
   cluster:
     slaveCount: 0
@@ -51,7 +49,6 @@ id-eq-id:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -69,7 +66,6 @@ semantic-count:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -87,7 +83,6 @@ conflation-db:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
 
@@ -105,6 +100,5 @@ info-content:
     extraFlags:
     - "--save 60 10000"
     - "--appendonly no"
-    - "--stop-writes-on-bgsave-error no"
   cluster:
     slaveCount: 0
