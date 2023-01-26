@@ -73,9 +73,9 @@ pipeline {
                             sh '''
                             docker pull $ORIGINAL_REPO:$BUILD_VERSION
                             docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
-                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
                             '''
-                            docker.image(env.IMAGE_NAME).push("${BUILD_VERSION}")
+                            docker.image(${IMAGE_NAME}).push("${BUILD_VERSION}")
                         }
                     }
                 }
@@ -90,7 +90,7 @@ pipeline {
                             docker tag $ORIGINAL_REPO_MQ:$BUILD_VERSION_MQ 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_MQ
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
                             '''
-                            docker.image(env.IMAGE_NAME).push("${BUILD_VERSION_MQ}")
+                            docker.image(${IMAGE_NAME}).push("${BUILD_VERSION_MQ}")
                         }
                     }
                 }
