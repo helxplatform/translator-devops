@@ -119,7 +119,6 @@ pipeline {
                             /bin/bash prepare.sh
                             # git crypt unlock the repo
                             gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                            cd helm/aragorn
                             cp -R translator-ops/ops/sri/aragorn/deploy/* ./
                             mv ncats-dev-values.yaml ./values-ncats.yaml
                             /bin/bash deploy.sh
