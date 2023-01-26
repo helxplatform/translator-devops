@@ -65,38 +65,32 @@ pipeline {
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-aragorn",
+                    "IMAGE_NAME=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-aragorn",
                     "BUILD_VERSION=" +  (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
                 ]) {
                     dir("helm/aragorn") {
                         script {
                             sh '''
                             docker pull $ORIGINAL_REPO:$BUILD_VERSION
-                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
-                            '''
-                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
-                            sh '''
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION $IMAGE_NAME
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
                             '''
-                            image.push()
+                            docker.image(env.IMAGE_NAME).push("${BUILD_VERSION}")
                         }
                     }
                 }
                 withEnv([
-                    "IMAGE_NAME=translator-aragorn-rabbitmq",
+                    "IMAGE_NAME=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-aragorn-rabbitmq",
                     "BUILD_VERSION_MQ=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_MQ)
                 ]) {
                     dir("helm/aragorn") {
                         script {
                             sh '''
                             docker pull $ORIGINAL_REPO_MQ:$BUILD_VERSION_MQ
-                            docker tag $ORIGINAL_REPO_MQ:$BUILD_VERSION_MQ 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION_MQ
-                            '''
-                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
-                            sh '''
+                            docker tag $ORIGINAL_REPO_MQ:$BUILD_VERSION_MQ $IMAGE_NAME
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
                             '''
-                            image.push()
+                            docker.image(env.IMAGE_NAME).push("${BUILD_VERSION_MQ}")
                         }
                     }
                 }
