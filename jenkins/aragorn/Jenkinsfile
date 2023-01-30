@@ -120,7 +120,6 @@ pipeline {
                             "BUILD_VERSION_MQ=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_MQ)
                         ]) {
                             sh '''
-                            echo ${BUILD_VERSION_ARAGORN}
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             /bin/bash prepare.sh
                             mv ncats-dev-values.yaml ./values-ncats.yaml
