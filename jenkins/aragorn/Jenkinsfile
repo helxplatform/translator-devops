@@ -116,7 +116,7 @@ pipeline {
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){    
                         withEnv([
-                            "BUILD_VERSION_ARAGORN=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                            "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
                             "BUILD_VERSION_MQ=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_MQ)
                         ]) {
                             sh '''
