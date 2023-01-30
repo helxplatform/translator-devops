@@ -102,13 +102,16 @@ pipeline {
             }
             when {
                 anyOf {
-                    changeset "helm/aragorn/*"
+                    changeset "helm/strider/*"
                     triggeredBy 'UserIdCause'
                 }
             }
+            environment {
+              APP = "aragorn"
+            }
             steps {
                 checkout scm
-                script {
+                dir("helm/aragorn") {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){    
@@ -118,9 +121,6 @@ pipeline {
                         ]) {
                             sh '''
                             /bin/bash prepare.sh
-                            # git crypt unlock the repo
-                            gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                            cp -R translator-ops/ops/sri/aragorn/deploy/* ./
                             mv ncats-dev-values.yaml ./values-ncats.yaml
                             /bin/bash deploy.sh
                             '''
