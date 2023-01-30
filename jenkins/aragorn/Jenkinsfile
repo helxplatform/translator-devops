@@ -102,7 +102,7 @@ pipeline {
             }
             when {
                 anyOf {
-                    changeset "helm/strider/*"
+                    changeset "helm/aragorn/*"
                     triggeredBy 'UserIdCause'
                 }
             }
@@ -116,10 +116,12 @@ pipeline {
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){    
                         withEnv([
-                            "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                            "BUILD_VERSION_ARAGORN=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
                             "BUILD_VERSION_MQ=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_MQ)
                         ]) {
                             sh '''
+                            echo ${BUILD_VERSION_ARAGORN}
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             /bin/bash prepare.sh
                             mv ncats-dev-values.yaml ./values-ncats.yaml
                             /bin/bash deploy.sh
