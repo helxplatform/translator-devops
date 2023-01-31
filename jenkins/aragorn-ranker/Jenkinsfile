@@ -88,6 +88,9 @@ pipeline {
                     triggeredBy 'UserIdCause'
                 }
             }
+            environment {
+              APP = "aragorn-ranker"
+            }
             steps {
                 checkout scm
                 dir("helm/aragorn") {
