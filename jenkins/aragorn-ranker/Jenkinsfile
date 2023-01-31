@@ -93,7 +93,7 @@ pipeline {
             }
             steps {
                 checkout scm
-                dir("helm/aragorn") {
+                dir("helm/aragorn-ranker") {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){    
