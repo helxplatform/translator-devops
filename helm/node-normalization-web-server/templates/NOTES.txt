@@ -1,4 +1,4 @@
 1. Several RENCI services depend on NodeNorm running with a particular service
-   name, so please don't change either the release name (`nn-web-server`) or
+   name, so please don't change either the release name (`nn-web`) or
    the namespace without checking with Yaphet or whoever is running Aragorn and
    other RENCI Translator services.
