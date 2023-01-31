@@ -62,14 +62,14 @@ pipeline {
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-aragorn-ranker",
+                    "IMAGE_NAME=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-aragorn-ranker",
                     "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
                 ]) {
                     dir("helm/aragorn-ranker") {
                         script {
                             sh '''
                             docker pull $ORIGINAL_REPO:$BUILD_VERSION
-                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION $IMAGE_NAME
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
                             '''
                             docker.image(env.IMAGE_NAME).push("${BUILD_VERSION}")
