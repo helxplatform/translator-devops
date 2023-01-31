@@ -9,6 +9,9 @@ blazeGraph:
     repository: obolibrary/odklite
     tag: v1.3.1
     resources:
+      requests:
+        cpu: 2
+        memory: 32Gi
       limits:
         cpu: 2
         memory: 32Gi
@@ -23,6 +26,9 @@ blazeGraph:
   blazeGraphReadOnly: true
   dataStorageSize: 200Gi
   resources:
+    requests:
+      cpu: 2
+      memory: 64Gi
     limits:
       cpu: 2
       memory: 64Gi
