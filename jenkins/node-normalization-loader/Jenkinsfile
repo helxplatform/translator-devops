@@ -99,6 +99,7 @@ pipeline {
                             /bin/bash prepare.sh
                             mv ncats-dev-values.yaml values-ncats.yaml
                             ls
+                            pwd
                             deploy.sh
                             ''' 
                         }
