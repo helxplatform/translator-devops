@@ -20,8 +20,8 @@ initresources:
 
 image:
   plater:
-    repository: renciorg/plater-clustered
-    tag: "v1.3.0-11"
+    repository: ghcr.io/translatorsri/plater-clustered
+    tag: "v1.3.0-12-test-metadata"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
@@ -146,6 +146,10 @@ skipAttributes:
   - provided_by
   - knowledge_source
 dataUrl: ""
+metadataUrl: ""
+metaKGUrl: ""
+testingDataUrl: ""
+
 datasetDesc:
   version: ''
   description: ''
