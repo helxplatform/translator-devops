@@ -96,10 +96,9 @@ pipeline {
                         ]){ 
                             sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            /bin/bash clean_dbs.sh
                             /bin/bash prepare.sh
                             mv ncats-dev-values.yaml values-ncats.yaml
-                            ls
-                            pwd
                             deploy.sh
                             ''' 
                         }
