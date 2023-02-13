@@ -92,6 +92,7 @@ pipeline {
                     checkout scm
                     dir("helm/node-normalization-loader") {
                         configFileProvider([
+                            configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh'),
                             configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                         ]){ 
                             sh '''
