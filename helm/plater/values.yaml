@@ -8,7 +8,7 @@ replicaCount: 1
 busybox:
   image:
     repository: busybox
-    tag: latest
+    tag: "1.35"
 
 initresources:
   requests:
@@ -21,7 +21,7 @@ initresources:
 image:
   plater:
     repository: ghcr.io/translatorsri/plater-clustered
-    tag: "v1.3.0-12-metadata-testing-2"
+    tag: "v1.3.0-12-metadata-3"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
