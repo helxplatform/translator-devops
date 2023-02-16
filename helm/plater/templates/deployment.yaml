@@ -20,6 +20,20 @@ spec:
         checksum/envconfig: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
     spec:
       initContainers:
+        - name: {{ include "plater.fullname" . }}-metadata-download-container
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          command:
+            - './download_metadata.sh'
+          envFrom:
+            - configMapRef:
+                name: {{ include "plater.fullname" . }}-env-configmap
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-config-files
+              mountPath: /download_metadata.sh
+              subPath: download_metadata.sh
+            - name: {{ include "plater.fullname" . }}-config-files
+              mountPath: /home/plater/Plater/PLATER/metadata
+              subPath: plater-metadata/
         - name: {{ include "plater.fullname" . }}-init-container
           image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           command:
@@ -56,9 +70,9 @@ spec:
             - configMapRef:
                 name: {{ include "plater.fullname" . }}-env-configmap
           volumeMounts:
-            - mountPath: /home/plater/Plater/about.json
+            - mountPath: /home/plater/Plater/PLATER/metadata
               name: {{ include "plater.fullname" . }}-config-files
-              subPath: dataset-desc.json
+              subPath: plater-metadata/
             - mountPath: /home/plater/Plater/PLATER/openapi-config.yaml
               name: {{ include "plater.fullname" . }}-config-files
               subPath: openapi-config.yaml
@@ -70,4 +84,5 @@ spec:
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777
+
 

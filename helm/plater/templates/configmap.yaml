@@ -19,6 +19,21 @@ data:
     set -x
     wget -O /data/db.dump ${NEO4J_DATA_URL}
     touch /data/done
+  download_metadata.sh: |-
+    #!/bin/bash
+    set -x
+    if [-z ${PLATER_METADATA_URL}]
+    then
+        wget -O /home/plater/Plater/PLATER/metadata/metadata.json ${PLATER_METADATA_URL}
+    fi
+    if [-z ${PLATER_METAKG_URL}]
+    then
+        wget -O /home/plater/Plater/PLATER/metadata/meta_knowledge_graph.json ${PLATER_METAKG_URL}
+    fi
+    if [-z ${PLATER_TEST_DATA_URL}]
+    then
+        wget -O /home/plater/Plater/PLATER/metadata/sri_testing_data.json ${PLATER_TEST_DATA_URL}
+    fi
   seed_db.sh: |-
     #!/bin/bash
     set -x
