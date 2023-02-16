@@ -31,7 +31,7 @@ spec:
             - name: {{ include "plater.fullname" . }}-config-files
               mountPath: /download_metadata.sh
               subPath: download_metadata.sh
-            - name: {{ include "plater.fullname" . }}-config-files
+            - name: {{ include "plater.fullname" . }}-metadata-pvc
               mountPath: /home/plater/Plater/PLATER/metadata
               subPath: plater-metadata/
         - name: {{ include "plater.fullname" . }}-init-container
@@ -71,7 +71,7 @@ spec:
                 name: {{ include "plater.fullname" . }}-env-configmap
           volumeMounts:
             - mountPath: /home/plater/Plater/PLATER/metadata
-              name: {{ include "plater.fullname" . }}-config-files
+              name: {{ include "plater.fullname" . }}-metadata-pvc
               subPath: plater-metadata/
             - mountPath: /home/plater/Plater/PLATER/openapi-config.yaml
               name: {{ include "plater.fullname" . }}-config-files
@@ -84,5 +84,5 @@ spec:
           configMap:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777
-
+        - name: {{ include "plater.fullname" . }}-metadata-pvc
 
