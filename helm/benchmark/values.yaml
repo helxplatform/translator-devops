@@ -55,13 +55,14 @@ job:
   podAdditionalTemplate:
     tty: true
     stdin: true
-  runConfigs:
-  - benchmark: "treats"
-    target: "arax"
-    schedule: "* * * * *"
-  - benchmark: "treats"
-    target: "aragorn"
-    schedule: "* * * * *"
+  runConfigs: []
+    # add new jobs as such , disabling it waiting for new image, for ARS based benchmark changes.
+#   - benchmark: "treats"
+#     target: "arax"
+#     schedule: "* * * * *"
+#   - benchmark: "treats"
+#     target: "aragorn"
+#     schedule: "* * * * *"
 
 
 
