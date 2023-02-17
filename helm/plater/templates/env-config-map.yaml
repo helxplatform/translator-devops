@@ -31,3 +31,8 @@ data:
   MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
   LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
   PUBLIC_URL: "{{ .Values.app.public_url }}"
+  {{ if .Values.app.otel.enabled }}
+  OTEL_ENABLED: "TRUE"
+  JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
+  JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
+  {{ end }}
