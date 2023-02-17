@@ -1,0 +1,75 @@
+# Source: benchmark/templates/job.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "benchmark-treats-arax"
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: "benchmark-treats-arax"
+        spec:
+          containers:
+            - name: job-container
+              image: "ghcr.io/translatorsri/benchmarks:latest"
+              command:
+              - "/bin/sh"
+              args: []
+              tty: true
+              stdin: true
+              resources:
+                  limits:
+                    cpu: 3
+                    memory: 5Gi
+                  requests:
+                    cpu: 3
+                    memory: 5Gi
+              volumeMounts:
+              - mountPath: /data/
+                subPath: treats/arax
+                name: benchmark-data-pvc
+          restartPolicy: Never
+          volumes:
+          - name: benchmark-data-pvc
+            persistentVolumeClaim:
+              claimName: benchmark-data-pvc
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "benchmark-treats-aragorn"
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: "benchmark-treats-aragorn"
+        spec:
+          containers:
+            - name: job-container
+              image: "ghcr.io/translatorsri/benchmarks:latest"
+              command:
+              - "/bin/sh"
+              args: []
+              tty: true
+              stdin: true
+              resources:
+                  limits:
+                    cpu: 3
+                    memory: 5Gi
+                  requests:
+                    cpu: 3
+                    memory: 5Gi
+              volumeMounts:
+              - mountPath: /data/
+                subPath: treats/aragorn
+                name: benchmark-data-pvc
+          restartPolicy: Never
+          volumes:
+          - name: benchmark-data-pvc
+            persistentVolumeClaim:
+              claimName: benchmark-data-pvc

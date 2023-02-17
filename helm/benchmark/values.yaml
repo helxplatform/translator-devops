@@ -1,0 +1,118 @@
+# Default values for benchmark.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: bitnami/nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "1.23"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+#   capabilities:
+#     drop:
+#     - ALL
+#   readOnlyRootFilesystem: true
+#   runAsNonRoot: true
+#   runAsUser: 1000
+
+
+job:
+  image:
+   repository: ghcr.io/translatorsri/benchmarks
+   tag: latest
+  resources:
+   limits:
+    cpu: 3
+    memory: 5Gi
+   requests:
+    cpu: 3
+    memory: 5Gi
+  restartPolicy: Never
+  commands:
+    - /bin/bash
+  args: []
+  podAdditionalTemplate:
+    tty: true
+    stdin: true
+  runConfigs:
+  - benchmark: "treats"
+    target: "arax"
+    schedule: "* * * * *"
+  - benchmark: "treats"
+    target: "aragorn"
+    schedule: "* * * * *"
+
+
+
+storage:
+  size: 5Gi
+  className: snapshots
+
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: True
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    # IMPORTANT! Disable buffering or else downloading a large file could make Sterling's
+    # ingress controller run out of RAM
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+  hosts:
+    - host:  translator-benchmark.apps.renci.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: translator-benchmark.apps.renci.org-tls
+     hosts:
+       -  translator-benchmark.apps.renci.org
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 100m
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 1Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
