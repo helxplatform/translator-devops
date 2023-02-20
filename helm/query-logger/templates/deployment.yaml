@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "querylogger.fullname" . }}-querylogger
+  labels:
+    {{- include "querylogger.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  selector:
+    matchLabels:
+      {{- include "querylogger.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "querylogger.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-querylogger
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.querylogger.repository }}:{{ .Values.querylogger.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.querylogger.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.querylogger.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.querylogger.resources | nindent 12 }}

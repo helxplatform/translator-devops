@@ -5,11 +5,3 @@ Installed {{ include "strider.fullname" . }}
 > export STRIDER_PORT={{ .Values.strider.service.port }} && kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "strider.fullname" . }}-strider-service 8081:$STRIDER_PORT
 
 Browse to http://localhost:8081
-
-
-2. To access kp service
-
-> export KP_SERVICE_PORT={{ .Values.kpRegistry.service.port }} && kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "strider.fullname" . }}-kp-service 8081:$KP_SERVICE_PORT
-
-
-Browse to http://localhost:8081

@@ -1,0 +1,20 @@
+# The default NetworkPolicy allows pods in translator-dev to be accessed
+# from translator-exp. To allow the reverse (a pod in translator-dev to
+# access pods in translator-exp) you need to allow this network policy.
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: nn-web-server-allow-ingress-from-translator-dev
+spec:
+  podSelector:
+    matchLabels:
+      release: nn-redis-2022dec2 
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: translator-dev
+  policyTypes:
+    - Ingress
+

@@ -1,10 +1,9 @@
-{{- if .Values.kpRegistry.enabled }}
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: {{ include "strider.fullname" . }}-update-kp-registry
 spec:
-  schedule: "{{ .Values.kpRegistry.updateCronInterval }}"
+  schedule: "{{ .Values.strider.updateCronInterval }}"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 3
   jobTemplate:
@@ -17,8 +16,7 @@ spec:
             imagePullPolicy: IfNotPresent
             command:
             - wget
-            - "http://{{ include "strider.fullname" . }}-kp-service:{{ .Values.kpRegistry.service.port }}/refresh"
+            - "http://{{ include "strider.fullname" . }}-web-service:{{ .Values.strider.service.port }}/refresh"
             - --post-data
             - ""
           restartPolicy: OnFailure
-  {{- end }}
