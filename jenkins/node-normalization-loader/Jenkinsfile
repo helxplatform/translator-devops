@@ -44,7 +44,7 @@ pipeline {
                 }
             }
         }
-        stage('build') {
+        stage('Build') {
             when {
                 allOf {
                     expression {
@@ -74,6 +74,16 @@ pipeline {
                 }
             }
         }
+        stage('Clean Redis DBs') {
+            agent {
+                label 'translator && ci && management'
+            }
+            configFileProvider([
+                configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh')
+            ]){ 
+                sh '/bin/bash clean_dbs.sh'
+            }
+        }
         stage('Deploy') {
             agent {
                 label 'translator && ci && deploy'
@@ -92,12 +102,10 @@ pipeline {
                     checkout scm
                     dir("helm/node-normalization-loader") {
                         configFileProvider([
-                            configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh'),
                             configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                         ]){ 
                             sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            /bin/bash clean_dbs.sh
                             /bin/bash prepare.sh
                             mv ncats-dev-values.yaml values-ncats.yaml
                             /bin/bash deploy.sh
