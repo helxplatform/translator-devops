@@ -76,7 +76,7 @@ pipeline {
         }
         stage('Clean Redis DBs') {
             agent {
-                label 'translator && ci && management'
+                label 'translator && ci && mgt'
             }
             steps {
                 configFileProvider([
