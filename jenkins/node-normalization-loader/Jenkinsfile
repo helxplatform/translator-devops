@@ -78,10 +78,12 @@ pipeline {
             agent {
                 label 'translator && ci && management'
             }
-            configFileProvider([
-                configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh')
-            ]){ 
-                sh '/bin/bash clean_dbs.sh'
+            steps {
+                configFileProvider([
+                    configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh')
+                ]){ 
+                    sh '/bin/bash clean_dbs.sh'
+                }
             }
         }
         stage('Deploy') {
