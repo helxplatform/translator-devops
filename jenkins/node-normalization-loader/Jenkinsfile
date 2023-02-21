@@ -44,7 +44,7 @@ pipeline {
                 }
             }
         }
-        stage('build') {
+        stage('Build') {
             when {
                 allOf {
                     expression {
@@ -74,6 +74,18 @@ pipeline {
                 }
             }
         }
+        stage('Clean Redis DBs') {
+            agent {
+                label 'translator && ci && mgt'
+            }
+            steps {
+                configFileProvider([
+                    configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh')
+                ]){ 
+                    sh '/bin/bash clean_dbs.sh'
+                }
+            }
+        }
         stage('Deploy') {
             agent {
                 label 'translator && ci && deploy'
@@ -97,7 +109,7 @@ pipeline {
                             sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             /bin/bash prepare.sh
-                            mv ncats-dev-values.yaml ./values-ncats.yaml
+                            mv ncats-dev-values.yaml values-ncats.yaml
                             /bin/bash deploy.sh
                             ''' 
                         }
