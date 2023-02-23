@@ -1,0 +1,4 @@
+dataUrl: https://stars.renci.org/var/plater/bl-2.1/icees_kg_02_08_23.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-2.1/icees-kg/2_8_23/icees-kg.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-2.1/icees-kg/2_8_23/meta_kg.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-2.1/icees-kg/2_8_23/sri_testing_data.json
