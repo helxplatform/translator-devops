@@ -85,6 +85,12 @@ pipeline {
                     sh '/bin/bash clean_dbs.sh'
                 }
             }
+            post {
+                always {
+                    echo " Clean up the workspace in management node!"
+                    cleanWs()
+                }
+            }
         }
         stage('Deploy') {
             agent {
