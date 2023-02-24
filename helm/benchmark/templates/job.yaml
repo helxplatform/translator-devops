@@ -1,0 +1,54 @@
+{{- $fullName := include "benchmark.fullname" . -}}
+{{- $image := .Values.job.image.repository }}
+{{- $imageTag := .Values.job.image.tag }}
+{{- $restartPolicy := .Values.job.restartPolicy }}
+{{- $resources := .Values.job.resources }}
+{{- $configmap :=  include (print $.Template.BasePath "/benchmark-config-map.yaml") . }}
+{{ range $jobConfig := .Values.job.runConfigs }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: "{{ $fullName }}-{{ $jobConfig.benchmark }}-{{ $jobConfig.target }}"
+  annotations:
+   checksum/config: {{ $configmap | sha256sum }}
+spec:
+  schedule: {{ $jobConfig.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: "{{ $fullName }}-{{ $jobConfig.benchmark }}-{{ $jobConfig.target }}"
+        spec:
+          containers:
+            - name: job-container
+              image: "{{ $image }}:{{ $imageTag }}"
+              command:
+              - "/bin/sh"
+              args: []
+              env:
+              - name: BENCHMARK_NAME
+                value: {{ $jobConfig.benchmark }}
+              - name: TARGET
+                value: {{ $jobConfig.target }}
+              resources:
+                {{- toYaml $resources | nindent 18 }}
+              tty: true
+              stdin: true
+              volumeMounts:
+              - mountPath: /data/
+                subPath: {{ $jobConfig.benchmark }}/{{ $jobConfig.target }}
+                name: {{  $fullName  }}-data-pvc
+              - mountPath: /runner.sh
+                name: scripts-config-map
+                subPath: "runner.sh"
+          restartPolicy: {{ $restartPolicy }}
+          volumes:
+          - name: {{  $fullName }}-data-pvc
+            persistentVolumeClaim:
+              claimName: {{  $fullName }}-data-pvc
+          - name: scripts-config-map
+            configMap:
+             name: "{{ $fullName }}-benchmark-scripts"
+             defaultMode: 0777
+---
+{{ end }}
