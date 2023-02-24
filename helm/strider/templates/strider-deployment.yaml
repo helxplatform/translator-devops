@@ -43,16 +43,16 @@ spec:
               value: "{{ .Values.NO_PROXY}}"
             {{ end }}
           command:
-            - 'uvicorn'
+            - 'gunicorn'
           args:
-            - "--host"
-            - "0.0.0.0"
-            - "--port"
-            - "{{ .Values.strider.container.port }}"
-            - "--root-path"
-            - "{{ .Values.ingress.path }}"
-            - "--workers"
+            - "-b"
+            - "0.0.0.0:{{ .Values.strider.container.port }}"
+            - "-k"
+            - "uvicorn_custom.SubPathWorker"
+            - "-w"
             - "{{ .Values.strider.uvicornWorkerCount }}"
+            - "--timeout"
+            - "{{ .Values.strider.workerTimeout }}"
             - "strider.server:APP"
           ports:
             - name: http
@@ -78,6 +78,9 @@ spec:
             subPath: strider_health.sh
           - name: {{ include "strider.fullname" . }}-logs-pvc
             mountPath: /app/logs/
+          - name: {{ include "strider.fullname" . }}-gunicorn-conf
+            mountPath: /app/uvicorn_custom.py
+            subPath: uvicorn_custom.py
       volumes:
       - name: {{ include "strider.fullname" . }}-health-scripts
         configMap:
@@ -86,3 +89,8 @@ spec:
       - name: {{ include "strider.fullname" . }}-logs-pvc
         persistentVolumeClaim:
           claimName: {{ include "strider.fullname" . }}-logs-pvc
+      - name: {{ include "strider.fullname" . }}-gunicorn-conf
+        configMap:
+          name: {{ include "strider.fullname" . }}-gunicorn-conf
+          defaultMode: 0777
+
