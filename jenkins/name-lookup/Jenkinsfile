@@ -5,7 +5,7 @@ pipeline {
         disableConcurrentBuilds()
     }
     agent {
-        node { label 'translator && aws && build' }
+        node { label 'translator && aws && build && sri' }
     }
     parameters {
         string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
@@ -62,63 +62,54 @@ pipeline {
             }
             steps {
                 withEnv([
-                    "IMAGE_NAME=translator-name-lookup",
+                    "IMAGE_NAME=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-name-lookup",
                     "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
                 ]) {
                     dir("helm/name-lookup") {
                         script {
-
                             sh '''
                             docker pull $ORIGINAL_REPO:$BUILD_VERSION
-                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION $IMAGE_NAME
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
                             '''
-                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
-                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
-                                image.push()
-                            }
+                            docker.image(env.IMAGE_NAME).push("${BUILD_VERSION}")
                         }
                     }
                 }
             }
-        }
+        }    
         stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
             when {
                 anyOf {
                     changeset "helm/name-lookup/*"
                     triggeredBy 'UserIdCause'
                 }
             }
+            environment {
+              APP = "name-lookup"
+            }
             steps {
-                sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
+                checkout scm
+                dir("helm/name-lookup"){
                     configFileProvider([
-                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
-                        withCredentials([
-                            file(
-                                credentialsId: 'sri-git-crypt.key.asc',
-                                variable: 'cryptasc'),
-                            file(
-                                credentialsId: 'sri-git-crypt.key.pwd',
-                                variable: 'cryptpwd'),
-                        ]){
-                            withAWS(credentials:'aws-ifx-deploy') {
-                                sh '''
-                                # copy secret files to current directory
-                                cp $cryptasc sri-git-crypt.key.asc
-                                cp $cryptpwd sri-git-crypt.key.pwd
-                                # git crypt unlock the repo
-                                gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                                cd helm/name-lookup
-                                git clone git@github.com:Sphinx-Automation/translator-ops.git 
-                                aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                                cp -R translator-ops/ops/sri/name-lookup/deploy/* ./
-                                mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
-                                mv ncats-dev-values.yaml ./values-ncats.yaml
-                                /bin/bash deploy.sh
-                                '''
-                            }
-                        }
+                        sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        mv ncats-dev-values.yaml ./values-ncats.yaml
+                        /bin/bash deploy.sh
+                        '''
                     }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
                 }
             }
         }

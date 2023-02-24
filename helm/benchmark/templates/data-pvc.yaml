@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{  include "benchmark.fullname" . }}-data-pvc
+spec:
+  accessModes:
+  # Needed if running 2 replicas of nginx
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+  # https://wiki.renci.org/index.php?title=Kubernetes_Cloud/Sterling#Persistent_Storage
+  {{ with .Values.storage.className }}
+  storageClassName: {{ . }}
+  {{ end }}

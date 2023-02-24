@@ -1,0 +1,4 @@
+dataUrl: https://stars.renci.org/var/plater/bl-3.1.2/Biolink_Automat/bcfdc39184d7ac6f/graph_bcfdc39184d7ac6f.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-3.1.2/Biolink_Automat/bcfdc39184d7ac6f/Biolink_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-3.1.2/Biolink_Automat/bcfdc39184d7ac6f/meta_kg.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-3.1.2/Biolink_Automat/bcfdc39184d7ac6f/sri_testing_data.json

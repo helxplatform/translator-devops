@@ -7,8 +7,8 @@ image:
   tag: latest
 
 external_services:
-  NORMALIZER_URL: "https://nodenormalization-sri.renci.org"
-  SERVICES_MATURITY: "production"
+  NORMALIZER_URL: ""
+  SERVICES_MATURITY: ""
 
 nameOverride: ""
 fullnameOverride: ""

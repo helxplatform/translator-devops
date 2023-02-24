@@ -68,7 +68,7 @@ spec:
           - name: NEO4J_dbms_memory_pagecache_size
             value: "{{ .Values.app.neo4j.pageCacheSize }}"
           - name: NEO4J_dbms_read__only
-            value: {{ .Values.app.neo4j.readOnly }}
+            value: "{{ .Values.app.neo4j.readOnly }}"
           - name: NEO4J_dbms_security_procedures_unrestricted
             value: "apoc.*"
           - name: NEO4J_dbms_jvm_additional
