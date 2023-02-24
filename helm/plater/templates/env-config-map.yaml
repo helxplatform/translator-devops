@@ -20,6 +20,9 @@ data:
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
   PLATER_TITLE: {{ .Release.Name }}
   PLATER_VERSION: {{ .Values.image.plater.tag }}
+  PLATER_METADATA_URL: "{{ .Values.metadataUrl }}"
+  PLATER_METAKG_URL: "{{ .Values.metaKGUrl }}"
+  PLATER_TEST_DATA_URL: "{{ .Values.testingDataUrl }}"
   BL_VERSION: {{ .Values.app.bl_version }}
   WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
   NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"
@@ -28,3 +31,8 @@ data:
   MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
   LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
   PUBLIC_URL: "{{ .Values.app.public_url }}"
+  {{ if .Values.app.otel.enabled }}
+  OTEL_ENABLED: "TRUE"
+  JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
+  JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
+  {{ end }}

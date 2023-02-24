@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{  include "benchmark.fullname" . }}-benchmark-scripts
+  name: {{  include "benchmark.fullname" . }}-benchmark-scripts
+data:
+  runner.sh: |-
+    export CURRENT_DIR=$(date +"%Y-%m-%d_%H-%M-%S")
+    export RESULTS_DIR=/data/${CURRENT_DIR}
+    mkdir -p $RESULTS_DIR
+    # benchmarks_fetch ${BENCHMARK_NAME} ${TARGET} ${RESULTS_DIR}
+    for d in ${RESULTS_DIR}/*/ ; do
+      export PLOTS_DIR=$d/plots
+      mkdir -p ${PLOTS_DIR}
+      benchmarks_eval ${BENCHMARK_NAME} ${d} --json ${d}/evaluation.json --plots_dir ${PLOTS_DIR}
+    done
