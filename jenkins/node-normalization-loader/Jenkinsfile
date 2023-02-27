@@ -11,6 +11,7 @@ pipeline {
         string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
         string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
         string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+        choice(name: 'CLEAN_REDIS', choices: ['yes','no'], description: 'Is clearing Redis DBs required?')
     }
    
     environment {
@@ -78,11 +79,20 @@ pipeline {
             agent {
                 label 'translator && ci && mgt'
             }
+            when {
+                expression { params.CLEAN_REDIS == 'yes' }
+            }
             steps {
                 configFileProvider([
                     configFile(fileId: 'clean_dbs.sh', targetLocation: 'clean_dbs.sh')
                 ]){ 
                     sh '/bin/bash clean_dbs.sh'
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in management node!"
+                    cleanWs()
                 }
             }
         }
