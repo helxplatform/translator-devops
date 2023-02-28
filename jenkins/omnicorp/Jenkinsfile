@@ -102,14 +102,13 @@ pipeline {
                     /bin/bash prepare.sh
                     /bin/bash deploy.sh  
                    '''
-                        
-                    }
                 }
             }
             post {
                 always {
                     echo " Clean up the workspace in deploy node!"
                     cleanWs()
+                }
             }
         }
     }
