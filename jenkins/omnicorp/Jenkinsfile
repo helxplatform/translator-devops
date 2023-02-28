@@ -71,8 +71,8 @@ pipeline {
                             '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
                             sh '''
-                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
-                            '''
+                                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                               '''
                                 image.push()
                         }
                     }
@@ -94,15 +94,17 @@ pipeline {
             }
             steps {
                 checkout scm
-                configFileProvider([
-                    configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
-                    configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
-                ]){
-                sh '''
-                    aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                    /bin/bash prepare.sh
-                    /bin/bash deploy.sh  
-                   '''
+                dir("helm/omnicorp") {
+                    configFileProvider([
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
+                    ]){
+                    sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        /bin/bash deploy.sh  
+                       '''
+                    }
                 }
             }
             post {
