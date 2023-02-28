@@ -93,6 +93,7 @@ pipeline {
                 APP = "omnicorp"
             }
             steps {
+                checkout scm
                 configFileProvider([
                     configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
                     configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
