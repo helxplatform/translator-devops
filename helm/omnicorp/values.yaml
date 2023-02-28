@@ -9,7 +9,7 @@ fullnameOverride: ""
 busybox:
   image:
    repository: busybox
-   tag: latest
+   tag: 1.35
 
 replicaCount: 1
 
