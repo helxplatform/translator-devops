@@ -66,9 +66,9 @@ pipeline {
                     dir("helm/omnicorp") {
                         script {
                             sh '''
-                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
-                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
-                            '''
+                                docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                                docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                               '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
                             sh '''
                                 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
