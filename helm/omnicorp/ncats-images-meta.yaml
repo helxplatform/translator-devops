@@ -9,4 +9,4 @@ postgres:
   version: "9.6.23"
 busybox:
   image: "busybox"
-  version: "stable"
+  version: "1.35"

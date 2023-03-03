@@ -24,6 +24,7 @@ strider:
     port: 5781
   uvicornWorkerCount: 6
   updateCronInterval: "0 */6 * * *"
+  workerTimeout: 400
 
   autoscaling:
     enabled: true

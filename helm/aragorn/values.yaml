@@ -51,6 +51,7 @@ app:
   debugTiming: "True"
   multistrider_batch_size: 75
   maximum_multistrider_rules: 75
+  workerTimeout: 600
   resources:
     requests:
       memory: 2Gi
