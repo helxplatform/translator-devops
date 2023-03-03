@@ -108,6 +108,8 @@ env:
   max_process_time: 3400
   redis_expiration: 604800
   redis_host: strider-redis-service
+  jaeger_enabled: "False"
+  jaeger_port: 6831
 
 x_trapi:
   maturity:
