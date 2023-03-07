@@ -69,56 +69,51 @@ pipeline {
                         script {
 
                             sh '''
-                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
-                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
-                            '''
+                                docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                                docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                               '''
                             def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
-                            docker.withRegistry('https://853771734544.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:aws-ifx-deploy') {
+                            sh '''
+                                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                               '''
                                 image.push()
-                            }
                         }
                     }
                 }
             }
         }
         stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
             when {
                 anyOf {
                     changeset "helm/automat/*"
                     triggeredBy 'UserIdCause'
                 }
             }
+            environment {
+                APP = "automat"
+            }
             steps {
-            sshagent (credentials: ['591e3ed1-5873-4e3e-89a6-2be4ea5d3583']) {
-                configFileProvider([
-                    configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
-                ]){
-                    withCredentials([
-                        file(
-                            credentialsId: 'sri-git-crypt.key.asc',
-                            variable: 'cryptasc'),
-                        file(
-                            credentialsId: 'sri-git-crypt.key.pwd',
-                            variable: 'cryptpwd'),
+                checkout scm
+                dir("helm/automat") {
+                    configFileProvider([
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
+                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
                     ]){
-                        withAWS(credentials:'aws-ifx-deploy') {
-                            sh '''
-                            # copy secret files to current directory
-                            cp $cryptasc sri-git-crypt.key.asc
-                            cp $cryptpwd sri-git-crypt.key.pwd
-                            # git crypt unlock the repo
-                            gpg --pinentry-mode=loopback --passphrase-file sri-git-crypt.key.pwd --decrypt sri-git-crypt.key.asc | git-crypt unlock -
-                            cd helm/automat
-                            git clone git@github.com:Sphinx-Automation/translator-ops.git
-                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                            cp -R translator-ops/ops/sri/automat/deploy/* ./
-                            mv ../../values-ncats.yaml ./jenkins-values-ncats.yaml
-                            mv ncats-dev-values.yaml ./values-ncats.yaml
-                            /bin/bash deploy.sh
-                            '''
-                            }
-                        }
+                    sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        /bin/bash deploy.sh  
+                       '''
                     }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
                 }
             }
         }
