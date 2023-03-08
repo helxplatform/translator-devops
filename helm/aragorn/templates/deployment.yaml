@@ -31,7 +31,7 @@ spec:
         runAsGroup: 3000
       containers:
         - name: {{ .Chart.Name }}-web-container
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           envFrom:
             - configMapRef:
                 name: {{ include "aragorn.fullname" . }}-configmap
