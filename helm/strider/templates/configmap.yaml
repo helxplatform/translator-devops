@@ -18,3 +18,4 @@ data:
   JAEGER_HOST: {{ .Values.env.jaeger_host }}
   JAEGER_PORT: "{{ .Values.env.jaeger_port }}"
   JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"
+  OTEL_SERVICE_NAME: "{{ .Values.env.service_name }}"

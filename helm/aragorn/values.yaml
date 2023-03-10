@@ -57,7 +57,7 @@ app:
       memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 3Gi
+      memory: 5Gi
       cpu: 1000m
   logLevel: "trace"
   queueStorageSize: 10Gi
@@ -74,6 +74,13 @@ sub_processes:
   ranker_url: "ranker"
   node_norm_url: "nn"
   robokop_kg_url: "robokopkg"
+
+otel:
+  # disable otel by default
+  enabled: false
+  jaeger_host: "jaeger-otel-agent"
+  jaeger_port: "6831"
+  service_name: "ARAGORN"
 
 rbtmq:
   resources:

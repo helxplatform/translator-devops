@@ -110,6 +110,7 @@ env:
   redis_host: strider-redis-service
   jaeger_enabled: "False"
   jaeger_port: 6831
+  service_name: STRIDER
 
 x_trapi:
   maturity:
