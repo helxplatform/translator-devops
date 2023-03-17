@@ -15,3 +15,7 @@ data:
   REDIS_PASSWORD: {{ .Values.env.redis_password }}
   REDIS_HOST: {{ .Values.env.redis_host }}
   REDIS_PORT: "{{ .Values.redis.service.port }}"
+  JAEGER_HOST: {{ .Values.env.jaeger_host }}
+  JAEGER_PORT: "{{ .Values.env.jaeger_port }}"
+  JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"
+  OTEL_SERVICE_NAME: "{{ .Values.env.service_name }}"
