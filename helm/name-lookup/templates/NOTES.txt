@@ -1,1 +1,3 @@
-
+If there are data changes please set .Values.dataUrl.
+Once Restore job finishes please issue helm upgrade with --set dataUrl to empty string to disable init containers.
+This will ensure that the init container doesn't cleanup the data dir if / when the solr pod restarts.

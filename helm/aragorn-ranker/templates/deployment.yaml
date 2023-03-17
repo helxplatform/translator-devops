@@ -17,20 +17,21 @@ spec:
         trapi: "1.3"
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/gunicorn-config-map.yaml") . | sha256sum }}
     spec:
       containers:
         - name: {{ .Chart.Name }}-web-container
           command:
-            - 'uvicorn'
+            - 'gunicorn'
           args:
-            - "--host"
-            - "0.0.0.0"
-            - "--port"
-            - "{{ .Values.app.port}}"
-            - '--workers'
-            - '4'
-            - '--root-path'
-            - '{{.Values.ingress.path}}'
+            - "-b"
+            - "0.0.0.0:{{ .Values.app.port}}"
+            - "-w"
+            - "4"
+            - "-k"
+            - "ranker.uvicorn_custom.SubPathWorker"
+            - "--timeout"
+            - "{{ .Values.app.workerTimeout }}"
             - 'ranker.server:APP'
           envFrom:
             - configMapRef:
@@ -43,4 +44,13 @@ spec:
             protocol: TCP
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /repo/aragorn-ranker/ranker/uvicorn_custom.py
+            name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
+            subPath: uvicorn_custom.py
+      volumes:
+      - name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
+        configMap:
+          name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
+          defaultMode: 0777
       restartPolicy: Always

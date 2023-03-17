@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
+data:
+  uvicorn_custom.py: |-
+    from uvicorn.workers import UvicornWorker
+    class SubPathWorker(UvicornWorker):
+       CONFIG_KWARGS = {"root_path": "{{ .Values.ingress.path }}" }

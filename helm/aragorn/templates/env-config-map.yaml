@@ -24,3 +24,9 @@ data:
   NODENORM_URL: "{{ .Values.sub_processes.node_norm_url }}"
   ROBOKOPKG_URL: "{{ .Values.sub_processes.robokop_kg_url }}"
   ROBOKOP_CYPHER_ENDPOINT: "{{ .Values.sub_processes.robokop_cypher_url }}"
+  {{ if .Values.otel.enabled }}
+  JAEGER_HOST: {{ .Values.otel.jaeger_host }}
+  JAEGER_PORT: "{{ .Values.otel.jaeger_port }}"
+  JAEGER_ENABLED: "True"
+  OTEL_SERVICE_NAME: "{{ .Values.otel.service_name }}"
+  {{ end }}

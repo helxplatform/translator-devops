@@ -36,6 +36,9 @@ web:
 app:
   port: 4321
   debugTiming: "True"
+  # time to wait for a gunicorn worker before restarting it, useful if the worker is on a blocking op
+  # , and not able to respond to the process manager
+  workerTimeout: 600
   resources:
    requests:
      memory: 5Gi
