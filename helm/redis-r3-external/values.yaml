@@ -140,7 +140,7 @@ info-content:
       requests:
         memory: #
     extraFlags:
-    - "--save 60 10000"
+    - "--save 300 100000"
     - "--appendonly no"
   cluster:
     slaveCount: 0
