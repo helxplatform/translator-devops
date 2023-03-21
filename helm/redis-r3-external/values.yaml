@@ -8,10 +8,10 @@ id-id:
     resources:
       limits:
         cpu: 1500m
-        memory: 80Gi
+        memory: 150Gi
       requests:
         cpu: 200m
-        memory: 50Gi
+        memory: 100Gi
     readinessProbe:
       enabled: false
     livenessProbe:
