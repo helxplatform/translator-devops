@@ -1,0 +1,12 @@
+jaeger-collector:
+  repository: jaegertracing/jaeger-agent
+  tag: latest
+jaeger-agent:
+  repository: jaegertracing/jaeger-collector
+  tag: latest
+jaeger-query:
+  repository: jaegertracing/jaeger-query
+  tag: latest
+jaeger-cassandra-schema:
+  repository: jaegertracing/jaeger-cassandra-schema
+  tag: latest
