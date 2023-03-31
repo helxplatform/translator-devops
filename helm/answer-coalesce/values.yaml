@@ -66,8 +66,7 @@ redis:
 
 dataUrl: ""
 
-nodenorm:
-  url: "hostname"
+
 
   # adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
