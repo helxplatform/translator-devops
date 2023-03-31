@@ -21,18 +21,18 @@ blazeGraph:
   service:
     type: ClusterIP
     port: 80
-  blazeGraphMemory: 60G
+  blazeGraphMemory: 120G
   blazeGraphTimeout: "1200000"
   blazeGraphReadOnly: true
   dataStorageSize: 200Gi
   resources:
     requests:
       cpu: 8
-      memory: 64Gi
+      memory: 128Gi
       ephemeral-storage: 1Gi
     limits:
       cpu: 8
-      memory: 64Gi
+      memory: 128Gi
       ephemeral-storage: 1Gi
   nodeSelector: {}
   tolerations: []
