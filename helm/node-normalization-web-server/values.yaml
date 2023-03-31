@@ -21,19 +21,22 @@ web:
   # exra Args for uvicorn
   extraArgs:
     - "--workers"
-    - "1"
+    - "16"
+    - "--timeout"
+    - "300"
   autoscaling:
     enabled: true
-    minReplicas: 7
-    maxReplicas: 10
+    # high availability low mem and cpu pods.
+    minReplicas: 20
+    maxReplicas: 20
     # 80 % utilization
     targetCPU: 50
     targetMemory: 80
   # readiness and liveness probe will start if startup succeeds
+  # well bmt costs startup time so... high threshold here.
   startupProbe:
     enabled: true
     config:
-      initialDelaySeconds: 10
       periodSeconds: 1
       timeoutSeconds: 1
       successThreshold: 1
@@ -43,20 +46,21 @@ web:
   readinessProbe:
     enabled: true
     config:
-      initialDelaySeconds: 1
-      periodSeconds: 1600
+      periodSeconds: 1
       timeoutSeconds: 1
+      # to make sure that if a worker got booted
+      # we need to be sure before we start routing to that pod.
       successThreshold: 1
       failureThreshold: 1
   # if liveliness prob fails pod is restarted
   livenessProbe:
     enabled: true
     config:
-      initialDelaySeconds: 1
-      periodSeconds: 1600 # five minutes
+      periodSeconds: 5 # five seconds
       timeoutSeconds: 30
       successThreshold: 1
-      failureThreshold: 5
+      # if a pod fails twice on /docs we boot it.
+      failureThreshold: 2
 resources:
   limits:
     memory: 5Gi
@@ -73,7 +77,10 @@ ingress:
   annotations:
     # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: 256m
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    nginx.org/proxy-connect-timeout: 300s
+    nginx.org/proxy-read-timeout: 300s
+    nginx.org/proxy-send-timeout: 300s
   pathType: "Prefix"
   tls: []
 #   - hosts:
