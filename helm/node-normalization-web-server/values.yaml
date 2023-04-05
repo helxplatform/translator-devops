@@ -64,7 +64,7 @@ web:
 resources:
   limits:
     memory: 5Gi
-    cpu: 1500m
+#     cpu: 1500m
   requests:
     memory: 5Gi
     cpu: 500m
