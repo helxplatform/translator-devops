@@ -8,8 +8,7 @@ data:
     "redis_host": "{{ include "answer-coalesce.fullname" . }}-redis-service",
     "redis_port": {{ .Values.redis.service.port }},
     "redis_password": "",
-    "test_mode": 0,
-    "node_normalization_url": "{{ .Values.node_norm.url }}"
+    "test_mode": 0
     }
   seed_db.sh: |-
     #!/bin/sh

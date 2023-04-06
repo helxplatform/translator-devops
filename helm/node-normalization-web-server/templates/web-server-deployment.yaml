@@ -1,99 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{- include "node-normalization-webserver.fullname" . }}-sub-path-server"
-  labels:
-    {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
-    service-type: "webserver"
-    path: "{{.Values.ingress.trapiVersion}}"
-spec:
-  selector:
-    matchLabels:
-      {{- include "node-normalization-webserver.selectorLabels" . | nindent 6 }}
-      service-type: "webserver"
-      path: "{{.Values.ingress.trapiVersion}}"
-  template:
-    metadata:
-      annotations:
-        checksum/config: {{ .Values.redis_backend_config | toString | sha256sum  }}
-      labels:
-        {{- include "node-normalization-webserver.selectorLabels" . | nindent 8 }}
-        service-type: "webserver"
-        path: "{{.Values.ingress.trapiVersion}}"
-    spec:
-      {{- with .Values.web.securityContext }}
-      securityContext:
-        {{ . | toYaml | nindent 8 }}
-      {{- end }}
-      containers:
-        - name: webserver-container
-          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          volumeMounts:
-            - mountPath: {{ .Values.web.configPath }}
-              name: "webserver-config"
-              subPath: "redis_config.yaml"
-          env:
-            - name: "SERVER_ROOT"
-              value: "{{ .Values.web.serverHostName }}"
-            - name: "MATURITY_VALUE"
-              value: "{{ .Values.x_trapi.maturity.value }}"
-            - name: "LOCATION_VALUE"
-              value: "{{ .Values.x_trapi.location.value }}"
-          command:
-            - 'uvicorn'
-          args:
-            - "--host"
-            - "0.0.0.0"
-            - "--port"
-            - "{{ .Values.web.port }}"
-            {{ with .Values.web.extraArgs }}
-              {{ . | toYaml | nindent 12 }}
-            {{ end }}
-            - '--root-path'
-            - "/{{.Values.ingress.trapiVersion}}"
-            - 'node_normalizer.server:app'
-          resources:
-            {{ .Values.resources | toYaml | nindent 12 }}
-          {{ if .Values.web.startupProbe.enabled }}
-          startupProbe:
-            httpGet:
-             path: /docs
-             port: {{ .Values.web.port }}
-           {{ with .Values.web.startupProbe.config }}
-            {{ . | toYaml | nindent 12 }}
-           {{ end }}
-          {{ end }}
-          {{ if .Values.web.readinessProbe.enabled }}
-          readinessProbe:
-            httpGet:
-              path: /docs
-              port: {{ .Values.web.port }}
-           {{ with .Values.web.readinessProbe.config }}
-            {{ . | toYaml | nindent 12 }}
-           {{ end }}
-          {{ end}}
-          {{ if .Values.web.livenessProbe.enabled }}
-          livenessProbe:
-            httpGet:
-              path: /docs
-              port: {{ .Values.web.port }}
-           {{ with .Values.web.livenessProbe.config }}
-            {{ . | toYaml | nindent 12 }}
-           {{ end }}
-          {{ end}}
-
-      restartPolicy: Always
-      volumes:
-        - name: webserver-config
-          configMap:
-            name: "{{- include "node-normalization-webserver.fullname" . }}-webserver-config"
-            defaultMode: 0777
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
   name: "{{- include "node-normalization-webserver.fullname" . }}-root-server"
   labels:
     {{- include "node-normalization-webserver.selectorLabels" . | nindent 4 }}
@@ -134,12 +41,12 @@ spec:
             - name: "LOCATION_VALUE"
               value: "{{ .Values.x_trapi.location.value }}"
           command:
-            - 'uvicorn'
+            - 'gunicorn'
           args:
-            - "--host"
-            - "0.0.0.0"
-            - "--port"
-            - "{{ .Values.web.port }}"
+            - "-b"
+            - "0.0.0.0:{{ .Values.web.port }}"
+            - "-k"
+            - "uvicorn.workers.UvicornWorker"
             {{ with .Values.web.extraArgs }}
               {{ . | toYaml | nindent 12 }}
             {{ end }}
