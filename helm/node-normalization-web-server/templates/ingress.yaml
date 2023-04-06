@@ -49,11 +49,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path
+                name: {{ include "node-normalization-webserver.fullname" . }}-service-root
                 port:
                   number: {{ .Values.web.port }}
               {{- else }}
-              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-sub-path
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-root
               servicePort: {{ .Values.web.port }}
               {{- end }}
 ---
