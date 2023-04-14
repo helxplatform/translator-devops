@@ -92,7 +92,7 @@ redis:
     resources:
       limits:
         cpu: 1
-        memory: 20Gi
+        memory: 40Gi
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
