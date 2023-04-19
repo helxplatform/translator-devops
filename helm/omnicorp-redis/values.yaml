@@ -92,7 +92,21 @@ redis:
     resources:
       limits:
         cpu: 1
-        memory: 20Gi
+        memory: 55Gi
+    readinessProbe:
+      enabled: true
+      # to make it available ASAP
+      periodSeconds: 1
+      # spans 25 mins (150 * 10 secs)
+      failureThreshold: 1
+    livenessProbe:
+      # Liveliness probes can be off, since
+      # With big cache data to load or sync , redis is alive but
+      # responds with LOADING message. to avoid cyclic restarts
+      # keeping this off
+      enabled: false
+    persistence:
+      size: 30Gi
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
