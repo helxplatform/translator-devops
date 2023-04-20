@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "jaeger.fullname" . }}-ingress
   annotations:
-    {{ .Values.itrb.ingress.annotation | toYaml | nindent 4}}
+    {{ .Values.itrb.ingress.annotations | toYaml | nindent 4}}
 spec:
   rules:
     - host: {{ .Values.itrb.ingress.host }}
