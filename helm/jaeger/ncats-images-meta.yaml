@@ -1,7 +1,7 @@
-jaeger-collector:
+jaeger-agent:
   repository: jaegertracing/jaeger-agent
   tag: "1.39.0"
-jaeger-agent:
+jaeger-collector:
   repository: jaegertracing/jaeger-collector
   tag: "1.39.0"
 jaeger-query:
