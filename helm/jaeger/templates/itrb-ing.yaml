@@ -14,6 +14,13 @@ spec:
           pathType: ImplementationSpecific
           backend:
             service:
+              name: ssl-redirect
+              port:
+                name: use-annotation
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
               name: "{{ include "jaeger.fullname" . }}-otel-query"
               port:
                 number: 80
