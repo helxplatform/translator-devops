@@ -21,7 +21,7 @@ spec:
           pathType: ImplementationSpecific
           backend:
             service:
-              name: {{ include "jaeger.query.name" . }}
+              name: "{{ include "jaeger.fullname" . }}-query"
               port:
                 number: 80
 {{ end }}
