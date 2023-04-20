@@ -1,0 +1,128 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build && sri' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+        string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "ci"
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/jaeger/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+                script {
+                    BUILD_VERSION_GENERATED = VersionNumber(
+                        versionNumberString: 'v${BUILD_YEAR, XX}.${BUILD_MONTH, XX}${BUILD_DAY, XX}.${BUILDS_TODAY}',
+                        projectStartDate:    '1970-01-01',
+                        skipFailedBuilds:    true)
+                    currentBuild.displayName = BUILD_VERSION_GENERATED
+                    env.BUILD_VERSION = BUILD_VERSION_GENERATED
+                    env.BUILD = 'true'
+                }
+            }
+        }
+        stage('Build') {
+            when {
+                anyOf {
+                    changeset "helm/jaeger/*"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME_AGENT=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-jaeger-agent",
+                    "IMAGE_NAME_COLLECTOR=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-jaeger-collector",
+                    "IMAGE_NAME_QUERY=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-jaeger-query",
+                    "IMAGE_NAME_SCHEMA=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-jaeger-cassandra-schema",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                ]) {
+                    script {
+                        def imageMeta = readYaml file: 'helm/jaeger/ncats-images-meta.yaml'
+                        env.JAEGER_AGENT = imageMeta['jaeger-agent'].repository
+                        env.JAEGER_COLLECTOR = imageMeta['jaeger-collector'].repository
+                        env.JAEGER_QUERY = imageMeta['jaeger-query'].repository
+                        env.JAEGER_CASSANDRA_SCHEMA = imageMeta['jaeger-cassandra-schema'].repository
+                        sh '''
+                            docker pull $JAEGER_AGENT
+                            docker tag $JAEGER_AGENT $IMAGE_NAME_AGENT
+                            docker pull $JAEGER_COLLECTOR
+                            docker tag $JAEGER_COLLECTOR $IMAGE_NAME_COLLECTOR
+                            docker pull $JAEGER_QUERY
+                            docker tag $JAEGER_QUERY $IMAGE_NAME_QUERY
+                            docker pull $JAEGER_CASSANDRA_SCHEMA
+                            docker tag $JAEGER_CASSANDRA_SCHEMA $IMAGE_NAME_SCHEMA
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                        '''
+                        docker.image(env.IMAGE_NAME_AGENT).push("${BUILD_VERSION}")
+                        docker.image(env.IMAGE_NAME_COLLECTOR).push("${BUILD_VERSION}")
+                        docker.image(env.IMAGE_NAME_QUERY).push("${BUILD_VERSION}")
+                        docker.image(env.IMAGE_NAME_SCHEMA).push("${BUILD_VERSION}")
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
+            when {
+                anyOf {
+                    changeset "helm/jaeger/*"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            environment {
+              APP = "jaeger"
+            }
+            steps {
+                checkout scm
+                dir("helm/jaeger/") {
+                    configFileProvider([
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
+                    ]){
+                        sh '''
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            /bin/bash prepare.sh
+                            mv ncats-dev-values.yaml values-ncats.yaml
+                            /bin/bash deploy.sh
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
+        }
+    }
+}
