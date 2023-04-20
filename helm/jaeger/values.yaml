@@ -87,3 +87,7 @@ jaeger:
         memory: 4Gi
   ## End spark job
   tag: ""
+
+itrb:
+  ingress:
+    enabled: false

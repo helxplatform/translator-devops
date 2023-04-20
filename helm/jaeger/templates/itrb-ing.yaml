@@ -1,0 +1,27 @@
+{{ if .Values.itrb.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "jaeger.fullname" . }}-ingress
+  annotations:
+    {{ .Values.itrb.ingress.annotation | toYaml | nindent 4}}
+spec:
+  rules:
+    - host: {{ .Values.itrb.ingress.host }}
+      http:
+        paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: ssl-redirect
+              port:
+                name: use-annotation
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: {{ include "jaeger.query.name" . }}
+              port:
+                number: 80
+{{ end }}
