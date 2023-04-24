@@ -10,14 +10,14 @@ spec:
     - host: {{ .Values.itrb.ingress.host }}
       http:
         paths:
-        - path: /
+        - path: /*
           pathType: ImplementationSpecific
           backend:
             service:
               name: ssl-redirect
               port:
                 name: use-annotation
-        - path: /
+        - path: /*
           pathType: ImplementationSpecific
           backend:
             service:
