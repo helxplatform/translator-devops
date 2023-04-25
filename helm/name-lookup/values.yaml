@@ -13,9 +13,9 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: "v1.2.0"
+    tag: "change-docker-to-use-current-code"
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2022dec2-2/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023apr24/solr/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
@@ -43,6 +43,7 @@ solr:
       memory: "5Gi"
     limits:
       memory: "5Gi"
+  storage: 400Gi
 
   initresources:
     requests:
