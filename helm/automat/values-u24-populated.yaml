@@ -1,0 +1,38 @@
+# Default values for automat.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: renciorg/automat
+  tag: "2.1"
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+    # Provide host name
+  host: "automat-u24.apps.renci.org"
+  # provide ingress class
+  class: ""
+  annotations:
+#    nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+   nginx.ingress.kubernetes.io/enable-cors: "true"
+   cert-manager.io/cluster-issuer: letsencrypt
+   nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+   nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+   nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+   nginx.ingress.kubernetes.io/send-timeout: "86400"
+   nginx.ingress.kubernetes.io/service-upstream: 'true'
+   nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+   nginx.ingress.kubernetes.io/proxy-body-size: 512m
+  pathType: ImplementationSpecific
+  tls:
+    hosts:
+    - host: "automat-u24.apps.renci.org"
+      secretName: "automat-u24.apps.renci.org-tls"
+app:
+  port: 8080
