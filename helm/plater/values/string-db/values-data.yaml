@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-3.1.2/STRING-DB_Automat/d8dc32327c2ca7ea/graph_d8dc32327c2ca7ea.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-3.1.2/STRING-DB_Automat/d8dc32327c2ca7ea/STRING-DB_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-3.1.2/STRING-DB_Automat/d8dc32327c2ca7ea/meta_kg.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-3.1.2/STRING-DB_Automat/d8dc32327c2ca7ea/sri_testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-3.2.1/STRING-DB_Automat/5f825f8481bc10fe/graph_5f825f8481bc10fe.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-3.2.1/STRING-DB_Automat/5f825f8481bc10fe/STRING-DB_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-3.2.1/STRING-DB_Automat/5f825f8481bc10fe/meta_kg.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-3.2.1/STRING-DB_Automat/5f825f8481bc10fe/sri_testing_data.json
