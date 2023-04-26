@@ -43,7 +43,10 @@ solr:
       memory: "5Gi"
     limits:
       memory: "5Gi"
-  storage: 400Gi
+  # As of 2023-apr-25, we need 128G to store the
+  # backup + uncompressed backup + Solr database
+  # So 200Gi should be enough for the time being.
+  storage: 200Gi
 
   initresources:
     requests:
