@@ -13,10 +13,9 @@ busybox:
 initresources:
   requests:
     memory: 5Gi
-    cpu: 1000m
+    cpu: 100m
   limits:
     memory: 10Gi
-    cpu: 1000m
 
 image:
   plater:
@@ -91,10 +90,9 @@ app:
     resources:
       requests:
         memory: 1Gi
-        cpu: 250m
+        cpu: 100m
       limits:
         memory: 3Gi
-        cpu: 2000m
 
   port: 8080
   automatAddress: http://automat
@@ -118,6 +116,11 @@ app:
     service:
       type: ClusterIP
     allowUpgrade: true
+    resources:
+      requests:
+        cpu: 100m
+      limits:
+        ephemeral-storage: 256Mi
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
