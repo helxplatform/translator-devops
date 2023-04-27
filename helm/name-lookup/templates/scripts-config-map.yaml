@@ -104,8 +104,7 @@ data:
                         "name": "types",
                         "type": "string",
                         "stored": "true",
-                        "multiValued": "true",
-                        "docValues": "true"
+                        "multiValued": "true"
                     }
                 ]
             }' \
