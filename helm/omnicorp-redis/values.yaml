@@ -89,6 +89,8 @@ redis:
     extraFlags:
     - "--loadmodule"
     - "/usr/lib/redis/modules/redisgraph.so"
+    - "--save 60 10000"
+    - "--appendonly no"
     resources:
       limits:
         cpu: 4
@@ -106,12 +108,12 @@ redis:
       # keeping this off
       enabled: false
     persistence:
-      size: 30Gi
+      size: 60Gi
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
   commonConfiguration: |-
     # Enable AOF https://redis.io/topics/persistence#append-only-file
-    appendonly yes
+    appendonly no
     # Disable RDB persistence, AOF persistence already enabled.
     save ""
