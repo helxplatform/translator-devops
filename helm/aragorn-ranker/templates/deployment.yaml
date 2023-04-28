@@ -48,6 +48,30 @@ spec:
           - mountPath: /repo/aragorn-ranker/ranker/uvicorn_custom.py
             name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
             subPath: uvicorn_custom.py
+          env:
+          - name: CACHE_PASSWORD
+          {{- if and .Values.redis.enabled .Values.redis.auth.enabled }}
+            {{- if .Values.redis.auth.password }}
+            value: {{ .Values.redis.auth.password }}
+            {{- else }}
+            valueFrom:
+              secretKeyRef:
+                {{- if .Values.redis.auth.existingSecret }}
+                name: {{ .Values.redis.auth.existingSecret }}
+                key: {{ .Values.redis.auth.existingSecretPasswordKey }}
+                {{- else }}
+                name: {{ include "tranql.redis.auth.secretName" .}}
+                key: {{ include "tranql.redis.auth.secretPasswordKey" . }}
+                {{- end }}
+            {{- end }}
+          {{- else if .Values.existingRedis.password }}
+            value: {{ .Values.existingRedis.password }}
+          {{- else if .Values.existingRedis.secret }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.existingRedis.secret }}
+                key: {{ .Values.existingRedis.secretPasswordKey }}
+          {{- end }}
       volumes:
       - name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
         configMap:
