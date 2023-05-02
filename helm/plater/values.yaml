@@ -78,7 +78,7 @@ service:
 app:
   otel:
     enabled: "True"
-    jaegerHost: "jaeger-otel-agent.translator-exp"
+    jaegerHost: "jaeger-otel-agent"
     jaegerPort: "6831"
   gunicorn:
     worker_timeout: 3600
