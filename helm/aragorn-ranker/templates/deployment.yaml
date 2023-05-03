@@ -50,28 +50,14 @@ spec:
             subPath: uvicorn_custom.py
           env:
           - name: CACHE_PASSWORD
-          {{- if and .Values.redis.enabled .Values.redis.auth.enabled }}
-            {{- if .Values.redis.auth.password }}
-            value: {{ .Values.redis.auth.password }}
+            {{- if .Values.omnicorpRedisGraph.auth.password }}
+            value: {{ .Values.omnicorpRedisGraph.auth.password }}
             {{- else }}
             valueFrom:
               secretKeyRef:
-                {{- if .Values.redis.auth.existingSecret }}
-                name: {{ .Values.redis.auth.existingSecret }}
-                key: {{ .Values.redis.auth.existingSecretPasswordKey }}
-                {{- else }}
-                name: {{ include "tranql.redis.auth.secretName" .}}
-                key: {{ include "tranql.redis.auth.secretPasswordKey" . }}
-                {{- end }}
+                name: {{ .Values.omnicorpRedisGraph.auth.secret }}
+                key: {{ .Values.omnicorpRedisGraph.auth.secretPasswordKey }}
             {{- end }}
-          {{- else if .Values.existingRedis.password }}
-            value: {{ .Values.existingRedis.password }}
-          {{- else if .Values.existingRedis.secret }}
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.existingRedis.secret }}
-                key: {{ .Values.existingRedis.secretPasswordKey }}
-          {{- end }}
       volumes:
       - name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
         configMap:

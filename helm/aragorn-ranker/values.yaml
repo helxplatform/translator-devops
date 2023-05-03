@@ -51,9 +51,13 @@ app:
 omnicorpCache:
   port: 5678
 
-existingRedis:
-  secret: omnicorp-redis
-  secretPasswordKey: redis-password
+omnicorpRedisGraph:
+  host: "omnicorp-redis-master"
+  port: "6379"
+  auth:
+    password: ""
+    secret: omnicorp-redis
+    secretPasswordKey: redis-password
 
 answercoalesce:
   fullServiceName: ac_cache-host
