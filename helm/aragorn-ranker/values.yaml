@@ -51,16 +51,13 @@ app:
 omnicorpCache:
   port: 5678
 
-omnicorpPostgres:
-  dbName: db_name
-  dbUser: db_user
-  port: 1234
-
-secrets:
-  omnicorpHost: omnicorp_HOST
-  omnicorpPassword: "somePW"
-  omnicorpCacheHost: omnicorpCache_HOST
-  omnicorpCachePassword: "somePW"
+omnicorpRedisGraph:
+  host: "omnicorp-redis-master"
+  port: "6379"
+  auth:
+    password: ""
+    secret: omnicorp-redis
+    secretPasswordKey: redis-password
 
 answercoalesce:
   fullServiceName: ac_cache-host
