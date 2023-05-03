@@ -55,6 +55,8 @@ omnicorpRedisGraph:
   host: "omnicorp-redis-master"
   port: "6379"
   auth:
+    # if password is provided secret will be ignored
+    # used for when omnicorpgraph is in another namespace
     password: ""
     secret: omnicorp-redis
     secretPasswordKey: redis-password
