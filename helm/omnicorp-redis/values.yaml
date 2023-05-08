@@ -89,6 +89,8 @@ redis:
     extraFlags:
     - "--loadmodule"
     - "/usr/lib/redis/modules/redisgraph.so"
+    - "OMP_THREAD_COUNT"
+    - "256"
     - "--save 60 10000"
     - "--appendonly no"
     resources:
