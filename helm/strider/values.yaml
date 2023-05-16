@@ -88,7 +88,7 @@ ingress:
   enabled: false
   class: ""
   pathType: "ImplementationSpecific"
-  path: "/1.3"
+  path: "/1.4"
   strider:
     host: "the strider host name"
     annotations:
