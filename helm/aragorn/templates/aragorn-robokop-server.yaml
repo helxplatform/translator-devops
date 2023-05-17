@@ -26,6 +26,20 @@ spec:
         runAsUser: 1001
         fsGroup: 2000
         runAsGroup: 3000
+      initContainers:
+       - name: {{ .Chart.Name }}-init-sqlite
+         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+         imagePullPolicy: Always
+         envFrom:
+           - configMapRef:
+               name: {{ include "aragorn.fullname" . }}-configmap
+         command:
+           - "python"
+         args:
+           - "/repo/aragorn/src/process_db.py"
+         volumeMounts:
+           - name: {{ include "aragorn.fullname" . }}-sqlite-store
+             mountPath: {{ .Values.app.sqliteStoragePath }}
       containers:
         - name: {{ .Chart.Name }}-web-server
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -65,6 +79,8 @@ spec:
             - name: {{ include "aragorn.fullname" . }}-gunicorn-conf
               mountPath: /repo/aragorn/uvicorn_custom.py
               subPath: uvicorn_custom_robokop.py
+            - name: {{ include "aragorn.fullname" . }}-sqlite-store
+              mountPath: {{ .Values.app.sqliteStoragePath }}
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
       volumes:
@@ -72,6 +88,14 @@ spec:
         configMap:
           name: {{ include "aragorn.fullname" . }}-gunicorn-conf
           defaultMode: 0777
+      - name: {{ include "aragorn.fullname" . }}-sqlite-store
+        ephemeral:
+          volumeClaimTemplate:
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              resources:
+                requests:
+                  storage: {{ .Values.app.sqliteStorageSize }}
   volumeClaimTemplates:
     - metadata:
         name: {{ include "aragorn.fullname" . }}-logs
