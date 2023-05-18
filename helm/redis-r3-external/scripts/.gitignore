@@ -1,3 +1,6 @@
+# Ignore any log files we generate.
+*.log
+
 # Ignore any RDB files we generate in this directory.
 *.rdb
 *.rdb.gz
