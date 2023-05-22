@@ -112,6 +112,7 @@ env:
   jaeger_host: jaeger-otel-agent
   service_name: "STRIDER"
   jaeger_port: 6831
+  kp_trapi_version: "1.4.0"
 
 x_trapi:
   maturity:
