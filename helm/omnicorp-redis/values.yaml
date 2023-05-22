@@ -14,14 +14,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
 
 podAnnotations: {}
 
@@ -96,7 +88,7 @@ redis:
     resources:
       limits:
         cpu: 4
-        memory: 120Gi
+        memory: 50Gi
     readinessProbe:
       enabled: true
       # to make it available ASAP
@@ -109,6 +101,22 @@ redis:
       # responds with LOADING message. to avoid cyclic restarts
       # keeping this off
       enabled: false
+    initContainers:
+    - name: download-bckp
+      image: "busybox:1.35"
+      command:
+        - 'wget'
+      args:
+        - '-O'
+        - '/data/dump.rdb'
+        - 'https://stars.renci.org/var/omnicorp/redis/omnicorp.rdb'
+      volumeMounts:
+      - name: redis-data
+        mountPath: '/data/'
+      resources:
+        limit:
+          cpu: 20
+          memory: 7Gi
     persistence:
       size: 60Gi
   replica:
