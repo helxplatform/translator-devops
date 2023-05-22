@@ -10,7 +10,6 @@ image:
 
 web:
   serverHostName: "serverHostName"
-  callbackHostName: "callbackHostName"
 
 deploymentStrategy: Recreate
 
