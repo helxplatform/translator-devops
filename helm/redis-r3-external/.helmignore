@@ -1,3 +1,7 @@
+# We use scripts/ to hold some scripts that are only needed for testing;
+# this should not be included in the Helm.
+/scripts/
+
 # Patterns to ignore when building packages.
 # This supports shell glob matching, relative path matching, and
 # negation (prefixed with !). Only one pattern per line.
