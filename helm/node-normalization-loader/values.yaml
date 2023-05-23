@@ -28,7 +28,7 @@ data:
     - Gene.txt.03
     - Gene.txt.04
     - GrossAnatomicalStructure.txt
-    - MacromolecularComplexMixin.txt
+    - MacromolecularComplex.txt
     - MolecularActivity.txt
     - MolecularMixture.txt
     - OrganismTaxon.txt
