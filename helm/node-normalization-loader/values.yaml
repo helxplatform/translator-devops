@@ -3,8 +3,8 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: "containers.renci.org/translator/r3_nodenorm"
-  tag: "2.0.9"
+  repository: "ghcr.io/translatorsri/nodenormalization"
+  tag: "add-github-docker-action"
   pullPolicy: Always
 fullnameOverride: ""
 
