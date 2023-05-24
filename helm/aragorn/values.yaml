@@ -10,7 +10,6 @@ image:
 
 web:
   serverHostName: "serverHostName"
-  callbackHostName: "callbackHostName"
 
 deploymentStrategy: Recreate
 
@@ -61,6 +60,8 @@ app:
       cpu: 1000m
   logLevel: "trace"
   queueStorageSize: 10Gi
+  sqliteStoragePath: "/repo/aragorn/data"
+  sqliteStorageSize: 100Mi
 
 x_trapi:
   maturity:
