@@ -189,5 +189,6 @@ config:
     "https://automat.ci.transltr.io/sri-reference-kg/1.3/openapi.json",
     "https://automat.test.transltr.io/sri-reference-kg/1.3/openapi.json",
     "https://automat.transltr.io/sri-reference-kg/1.3/openapi.json",
-    "https://automat.renci.org/sri-reference-kg/1.3/openapi.json"
+    "https://automat.renci.org/sri-reference-kg/1.3/openapi.json",
+    "https://automat.renci.org/cam-kp/1.3/openapi.json"
   ]

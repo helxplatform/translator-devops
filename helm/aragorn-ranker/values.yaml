@@ -48,8 +48,6 @@ app:
      cpu: 1000m
 
 
-omnicorpCache:
-  port: 5678
 
 omnicorpRedisGraph:
   host: "omnicorp-redis-master"

@@ -20,8 +20,8 @@ initresources:
 
 image:
   plater:
-    repository: ghcr.io/translatorsri/plater-clustered
-    tag: "v1.3.0-13"
+    repository:  ghcr.io/translatorsri/plater-clustered
+    tag: "v1.4.0-0-rc"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
@@ -78,7 +78,7 @@ service:
 app:
   otel:
     enabled: "True"
-    jaegerHost: "jaeger-otel-agent.translator-exp"
+    jaegerHost: "jaeger-otel-agent"
     jaegerPort: "6831"
   gunicorn:
     worker_timeout: 3600
@@ -121,7 +121,7 @@ app:
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
-      version: 1.3.0
+      version: 1.4.0
       operations:
         - lookup
         - overlay_connect_knodes
