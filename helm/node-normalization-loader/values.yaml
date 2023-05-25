@@ -11,7 +11,7 @@ fullnameOverride: ""
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022dec2/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023may18/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
@@ -28,7 +28,7 @@ data:
     - Gene.txt.03
     - Gene.txt.04
     - GrossAnatomicalStructure.txt
-    - MacromolecularComplexMixin.txt
+    - MacromolecularComplex.txt
     - MolecularActivity.txt
     - MolecularMixture.txt
     - OrganismTaxon.txt
@@ -59,6 +59,8 @@ data:
     - Protein.txt.21
     - Protein.txt.22
     - Protein.txt.23
+    - Protein.txt.24
+    - Protein.txt.25
     - SmallMolecule.txt.00
     - SmallMolecule.txt.01
     - SmallMolecule.txt.02
@@ -73,7 +75,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022dec2/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023may18/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
