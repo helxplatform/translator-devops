@@ -1,21 +1,21 @@
 dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.7.4
+  version: 16.13.2
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.7.4
+  version: 16.13.2
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.7.4
+  version: 16.13.2
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.7.4
+  version: 16.13.2
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.7.4
+  version: 16.13.2
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.7.4
-digest: sha256:b3fc2e52861ddeab0552d7b5b2072bfc0b924b793d02446b077c8c2968b44abe
-generated: "2021-11-04T08:54:36.696493529-04:00"
+  version: 16.13.2
+digest: sha256:2844796bf1a1765389463111a5e6069eae0f7362e9074d717bb1277951b06731
+generated: "2023-05-29T16:17:36.174476-04:00"
