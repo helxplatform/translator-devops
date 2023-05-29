@@ -17,7 +17,7 @@ id-id:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save ''"
+    - "--save 300 1000000"
     - "--appendonly no"
 
   cluster:
@@ -41,7 +41,7 @@ id-categories:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save ''"
+    - "--save 300 1000000"
     - "--appendonly no"
 
   cluster:
@@ -65,7 +65,7 @@ id-eq-id:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save ''"
+    - "--save 300 1000000"
     - "--appendonly no"
   cluster:
     slaveCount: 0
@@ -91,7 +91,7 @@ semantic-count:
       requests:
         memory: #
     extraFlags:
-    - "--save ''"
+    - "--save 300 1000000"
     - "--appendonly no"
   cluster:
     slaveCount: 0
@@ -114,7 +114,7 @@ conflation-db:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save ''"
+    - "--save 300 1000000"
     - "--appendonly no"
   cluster:
     slaveCount: 0
@@ -140,7 +140,7 @@ info-content:
       requests:
         memory: #
     extraFlags:
-    - "--save ''"
+    - "--save 300 1000000"
     - "--appendonly no"
   cluster:
     slaveCount: 0
