@@ -19,3 +19,4 @@ data:
   JAEGER_PORT: "{{ .Values.env.jaeger_port }}"
   JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"
   OTEL_SERVICE_NAME: "{{ .Values.env.service_name }}"
+  KP_TRAPI_VERSION: "{{ .Values.env.kp_trapi_version }}"
