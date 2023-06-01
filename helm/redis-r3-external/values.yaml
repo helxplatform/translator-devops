@@ -14,6 +14,8 @@ id-id:
         memory: 50Gi
     readinessProbe:
       enabled: false
+    startupProbe:
+      enabled: false
     livenessProbe:
       enabled: false
     extraFlags:
@@ -37,6 +39,8 @@ id-categories:
         cpu: 500m
         memory: 25Gi
     readinessProbe:
+      enabled: false
+    startupProbe:
       enabled: false
     livenessProbe:
       enabled: false
@@ -62,6 +66,8 @@ id-eq-id:
         memory: 50Gi
     readinessProbe:
       enabled: false
+    startupProbe:
+      enabled: false
     livenessProbe:
       enabled: false
     extraFlags:
@@ -84,6 +90,8 @@ semantic-count:
         cpu: 50m
         memory: 100Mi
     readinessProbe:
+      enabled: false
+    startupProbe:
       enabled: false
     livenessProbe:
       enabled: false
@@ -111,6 +119,8 @@ conflation-db:
         memory: 3Gi
     readinessProbe:
       enabled: false
+    startupProbe:
+      enabled: false
     livenessProbe:
       enabled: false
     extraFlags:
@@ -133,6 +143,8 @@ info-content:
         cpu: 50m
         memory: 100Mi
     readinessProbe:
+      enabled: false
+    startupProbe:
       enabled: false
     livenessProbe:
       enabled: false
