@@ -20,8 +20,8 @@ id-id:
     - "--save 300 1000000"
     - "--appendonly no"
 
-  cluster:
-    slaveCount: 0
+  replica:
+    replicaCount: 0
 
 id-categories:
   auth:
@@ -44,8 +44,8 @@ id-categories:
     - "--save 300 1000000"
     - "--appendonly no"
 
-  cluster:
-    slaveCount: 0
+  replica:
+    replicaCount: 0
 
 id-eq-id:
   auth:
@@ -67,8 +67,8 @@ id-eq-id:
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
-  cluster:
-    slaveCount: 0
+  replica:
+    replicaCount: 0
 
 semantic-count:
   auth:
@@ -93,8 +93,8 @@ semantic-count:
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
-  cluster:
-    slaveCount: 0
+  replica:
+    replicaCount: 0
 
 conflation-db:
   auth:
@@ -116,8 +116,8 @@ conflation-db:
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
-  cluster:
-    slaveCount: 0
+  replica:
+    replicaCount: 0
 
 info-content:
   auth:
@@ -142,5 +142,5 @@ info-content:
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
-  cluster:
-    slaveCount: 0
+  replica:
+    replicaCount: 0
