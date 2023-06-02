@@ -15,7 +15,7 @@ webServer:
     repository: ghcr.io/translatorsri/nameresolution
     tag: "change-docker-to-use-current-code"
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2023apr24/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023may18/solr/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
@@ -43,10 +43,10 @@ solr:
       memory: "5Gi"
     limits:
       memory: "5Gi"
-  # As of 2023-apr-25, we need 128G to store the
+  # As of Babel 2023may18, we need 128G to store the
   # backup + uncompressed backup + Solr database
-  # So 200Gi should be enough for the time being.
-  storage: 200Gi
+  # So 500Gi should be enough for the time being.
+  storage: 500Gi
 
   initresources:
     requests:
