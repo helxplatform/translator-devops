@@ -10,7 +10,7 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt
 
     # uncomment this line to expose to the public internet
-    # nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
   name: {{ .Chart.Name }}
 spec:
   tls:

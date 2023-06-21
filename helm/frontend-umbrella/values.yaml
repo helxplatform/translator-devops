@@ -1,5 +1,5 @@
 ingress:
-  host: robokop-frontend.apps.renci.org
+  host: robokop.renci.org
   paths:
   - path: /api-docs(?:\/|$)(.*)
     pathType: Prefix
@@ -38,7 +38,7 @@ qgraph:
     repository: ghcr.io/robokopu24/qgraph
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v1.0.13"
+    tag: "v1.1.0"
     service:
       type: ClusterIP
       port: 7080
