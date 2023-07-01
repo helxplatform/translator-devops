@@ -97,7 +97,7 @@ data:
                     },
                     {
                         "name": "preferred_name",
-                        "type": "string",
+                        "type": "LowerTextField",
                         "stored": "true"
                     },
                     {
@@ -105,6 +105,11 @@ data:
                         "type": "string",
                         "stored": "true",
                         "multiValued": "true"
+                    },
+                    {
+                        "name": "shortest_name_length",
+                        "type": "pint",
+                        "stored": true
                     }
                 ]
             }' \
