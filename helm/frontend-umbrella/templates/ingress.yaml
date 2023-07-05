@@ -11,6 +11,18 @@ metadata:
 
     # uncomment this line to expose to the public internet
     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+
+    # keep these so complex queries don't timeout
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      keepalive_timeout 86400;
+    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/send-timeout: "86400"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
   name: {{ .Chart.Name }}
 spec:
   tls:
