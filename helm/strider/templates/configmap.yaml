@@ -20,3 +20,5 @@ data:
   JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"
   OTEL_SERVICE_NAME: "{{ .Values.env.service_name }}"
   KP_TRAPI_VERSION: "{{ .Values.env.kp_trapi_version }}"
+  KP_TIMEOUT: "{{ .Values.env.kp_timeout }}"
+  INFORMATION_CONTENT_THRESHOLD: "{{ .Values.env.information_content_threshold }}"
