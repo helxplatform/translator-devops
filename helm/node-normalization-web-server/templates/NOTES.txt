@@ -2,3 +2,8 @@
    name, so please don't change either the release name (`nn-web`) or
    the namespace without checking with Yaphet or whoever is running Aragorn and
    other RENCI Translator services.
+2. The RENCI exp instance should be called `nn-exp` and should be hosted at
+   https://nodenormalization-dev.apps.renci.org/docs.
+3. The RENCI test instance (`nn-test`) is reserved for one-off testing. If
+   you see it, please check on Slack whether anyone is using it before
+   deleting it!
