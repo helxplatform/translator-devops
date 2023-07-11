@@ -113,6 +113,8 @@ env:
   service_name: "STRIDER"
   jaeger_port: 6831
   kp_trapi_version: "1.4.0"
+  kp_timeout: 10
+  information_content_threshold: 75
 
 x_trapi:
   maturity:
