@@ -87,7 +87,7 @@ data:
                     {
                         "name":"names",
                         "type":"LowerTextField",
-                        "stored":true,
+                        "stored": true,
                         "multiValued": true
                     },
                     {
@@ -97,14 +97,14 @@ data:
                     },
                     {
                         "name": "preferred_name",
-                        "type": "LowerTextField",
-                        "stored": "true"
+                        "type": "string",
+                        "stored": true
                     },
                     {
                         "name": "types",
                         "type": "string",
-                        "stored": "true",
-                        "multiValued": "true"
+                        "stored": true,
+                        "multiValued": true
                     },
                     {
                         "name": "shortest_name_length",
