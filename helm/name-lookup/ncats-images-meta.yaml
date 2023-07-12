@@ -1,10 +1,10 @@
 nameLookup:
-  image: "ghcr.io/translatorsri/nameresolution"
-  version: "v1.2.0"
+  image: ghcr.io/translatorsri/nameresolution
+  version: v1.3.3
 solr:
-  image: "solr"
-  version: "8.11.1"
+  image: solr
+  version: 9.1.0
 
 busyBox:
-  image: "busybox"
-  version: "stable"
+  image: busybox
+  version: stable
