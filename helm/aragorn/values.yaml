@@ -56,7 +56,7 @@ app:
       memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 5Gi
+      memory: 20Gi
       cpu: 1000m
   logLevel: "trace"
   queueStorageSize: 10Gi
