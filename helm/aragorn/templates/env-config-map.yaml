@@ -24,6 +24,7 @@ data:
   NODENORM_URL: "{{ .Values.sub_processes.node_norm_url }}"
   ROBOKOPKG_URL: "{{ .Values.sub_processes.robokop_kg_url }}"
   ROBOKOP_CYPHER_ENDPOINT: "{{ .Values.sub_processes.robokop_cypher_url }}"
+  PROCESS_DB_PATH: "{{ .Values.app.sqliteStoragePath }}"
   {{ if .Values.otel.enabled }}
   JAEGER_HOST: {{ .Values.otel.jaeger_host }}
   JAEGER_PORT: "{{ .Values.otel.jaeger_port }}"

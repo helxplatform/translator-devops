@@ -1,0 +1,12 @@
+jaeger-agent:
+  repository: jaegertracing/jaeger-agent
+  tag: "1.39.0"
+jaeger-collector:
+  repository: jaegertracing/jaeger-collector
+  tag: "1.39.0"
+jaeger-query:
+  repository: jaegertracing/jaeger-query
+  tag: "1.39.0"
+jaeger-cassandra-schema:
+  repository: jaegertracing/jaeger-cassandra-schema
+  tag: "1.39.0"

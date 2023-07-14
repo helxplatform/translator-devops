@@ -34,11 +34,11 @@ app:
   port: 4321
   resources:
     requests:
-      memory: 500Mi
-      cpu: 400m
+      memory: 1000Mi
+      cpu: 800m
     limits:
       memory: 1000Mi
-      cpu: 500m
+      cpu: 800m
 
 x_trapi:
   maturity:
