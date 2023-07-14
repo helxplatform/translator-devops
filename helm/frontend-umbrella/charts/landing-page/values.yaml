@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/robokopu24/robokopu24.github.io
-  tag: latest
+  repository: ghcr.io/robokopu24/landing-page
+  tag: v2.0.7
 
 # NEXT_PUBLIC_RECAPTCHA_KEY is provided in .env.production file
 # env:
