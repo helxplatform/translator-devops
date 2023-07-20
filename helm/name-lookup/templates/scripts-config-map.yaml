@@ -166,7 +166,7 @@ data:
 
     # Delete the blocklist terms from the Solr database.
     {{ if .Values.blocklist.url }}
-    CURIE_LIST=$(xargs -I{lin} echo \"{lin}\" < ${BLOCKLIST_DIR}/blocklist.txt)
+    CURIE_LIST=$(xargs -I{lin} echo \\\"{lin}\\\" < ${BLOCKLIST_DIR}/blocklist.txt)
     echo CURIEs on the Blocklist: ${CURIE_LIST}.
     SOLR_DELETE="{
       'delete': {
@@ -174,7 +174,7 @@ data:
       }}"
     echo SOLR delete query: ${SOLR_DELETE}
 
-    wget --post-data ${SOLR_DELETE} \
+    wget --post-data "${SOLR_DELETE}" \
     --header='Content-Type:application/json' \
     -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update
 
