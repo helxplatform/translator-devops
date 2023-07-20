@@ -148,5 +148,15 @@ data:
         --header='Content-Type:application/json' \
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
+
+    # Blocklist time! If a blocklist.url is specified, we first retrieve it using wget, then delete all those CURIEs
+    # using
+    {{ if .Values.blocklist.url }}
+      wget -d \
+        -O ${SOLR_SERVER}/blocklist.txt \
+        {{ if .Values.blocklist.github_personal_access_token_secret}}--header "Authorization: Token $GITHUB_PERSONAL_ACCESS_TOKEN" \{{ end }}
+        {{ .Values.blocklist.url }}
+      sleep 1
+    {{ end }}
  
     exit 0
