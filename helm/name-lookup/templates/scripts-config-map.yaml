@@ -29,6 +29,9 @@ data:
         -O ${BLOCKLIST_DIR}/blocklist.txt \
         {{ if .Values.blocklist.github_personal_access_token_secret}}--header "Authorization: Token $GITHUB_PERSONAL_ACCESS_TOKEN" \{{ end }}
         {{ .Values.blocklist.url }}
+
+      CURIE_LIST=$(xargs -I{lin} echo \"{lin}\" < ${BLOCKLIST_DIR}/blocklist.txt)
+      echo CURIEs on the Blocklist: ${CURIE_LIST}.
     {{ end }}
 
     # Turn on xtrace and set up config variables.
