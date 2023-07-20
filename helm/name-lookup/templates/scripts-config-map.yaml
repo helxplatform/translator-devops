@@ -21,8 +21,28 @@ data:
     #!/bin/sh
     set -xa
     COLLECTION_NAME="name_lookup"
+    BLOCKLIST_DIR="/var/blocklist"
 
     SOLR_SERVER=http://{{ include "name-lookup.fullname" . }}-solr-svc:{{ .Values.solr.service.port }}
+
+    # Blocklist time! If a blocklist.url is specified, we first retrieve it using wget, then delete all those CURIEs
+    # using
+    {{ if .Values.blocklist.url }}
+      wget \
+        -O ${BLOCKLIST_DIR}/blocklist.txt \
+        {{ if .Values.blocklist.github_personal_access_token_secret}}--header "Authorization: Token $GITHUB_PERSONAL_ACCESS_TOKEN" \{{ end }}
+        {{ .Values.blocklist.url }}
+
+    CURIE_LIST = $(xargs -I{lin} echo \"{lin}\" < ${BLOCKLIST_DIR}/blocklist.txt)
+    echo CURIE list is: ${CURIE_LIST}.
+    SOLR_DELETE = "{
+      'delete': {
+        'query': 'curie:(${CURIE_LIST})'
+      }}"
+    echo SOLR_DELETE is: ${SOLR_DELETE}
+
+      sleep 1
+    {{ end }}
 
     # liveliness check
 
@@ -148,15 +168,5 @@ data:
         --header='Content-Type:application/json' \
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
-
-    # Blocklist time! If a blocklist.url is specified, we first retrieve it using wget, then delete all those CURIEs
-    # using
-    {{ if .Values.blocklist.url }}
-      wget -d \
-        -O ${SOLR_SERVER}/blocklist.txt \
-        {{ if .Values.blocklist.github_personal_access_token_secret}}--header "Authorization: Token $GITHUB_PERSONAL_ACCESS_TOKEN" \{{ end }}
-        {{ .Values.blocklist.url }}
-      sleep 1
-    {{ end }}
  
     exit 0

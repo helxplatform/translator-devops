@@ -13,6 +13,16 @@ spec:
           configMap:
             name: {{ include "name-lookup.fullname" . }}-configmap
             defaultMode: 0777
+        {{ if .Values.blocklist.storage }}
+        - name: {{ include "name-lookup.fullname" . }}-blocklist
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: {{ .Values.blocklist.storage }}
+        {{ end }}
       restartPolicy: OnFailure
       containers:
         - name: restore-container
@@ -31,7 +41,11 @@ spec:
                 optional: true
           {{ end }}
           volumeMounts:
-            - mountPath:  /restore.sh
+            - mountPath: /restore.sh
               name: {{ include "name-lookup.fullname" . }}-configmap
               subPath: "restore.sh"
+            {{ if .Values.blocklist.storage }}
+            - mountPath: /var/blocklist
+              name: {{ include "name-lookup.fullname" . }}-blocklist
+            {{ end }}
 {{ end }}
