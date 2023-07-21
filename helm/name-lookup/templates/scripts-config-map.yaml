@@ -176,7 +176,7 @@ data:
 
     wget --post-data "${SOLR_DELETE}" \
     --header='Content-Type:application/json' \
-    -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update
+    -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update?commit=true
 
     sleep 1
     {{ end }}
