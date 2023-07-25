@@ -79,8 +79,9 @@ in your pod. Two configuration variables control this:
 - `blocklist.url`: Should be the URL of the Blocklist file, such as
   https://api.github.com/repos/NCATSTranslator/Blocklists/contents/main/blocklist.yaml?ref=main
 - `blocklist.github_personal_access_token_secret`: if a GitHub personal access
-  token is needed, you can store it in a [Kubernetes secret] with the key `github_personal_access_token`,
-  and then set this configuration variable to the name of the secret.
+  token is needed, you can store it in a [Kubernetes secret] with the key specified in
+  `blocklist.github_personal_access_token_key`, and then set this configuration variable
+  to the name of the secret.
 
 The easiest way to create the Kubernetes secret for the GitHub personal access token
 is by using `kubectl`:
