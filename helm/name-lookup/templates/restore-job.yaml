@@ -37,7 +37,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.blocklist.github_personal_access_token_secret }}
-                key: github_personal_access_token
+                key: {{ .Values.blocklist.github_personal_access_token_key }}
                 optional: true
           {{ end }}
           volumeMounts:
