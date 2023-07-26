@@ -44,7 +44,7 @@ spec:
             - mountPath: /restore.sh
               name: {{ include "name-lookup.fullname" . }}-configmap
               subPath: "restore.sh"
-            {{ if .Values.blocklist.storage }}
+            {{ if and .Values.blocklist.url .Values.blocklist.storage }}
             - mountPath: /var/blocklist
               name: {{ include "name-lookup.fullname" . }}-blocklist
             {{ end }}
