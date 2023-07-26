@@ -69,6 +69,7 @@ ingress:
 
 blocklist:
   # The URL from where to download the blocklist. This should be a simple text file, where each line contains a CURIE.
+  # (If this field is blank, all blocklist functionality will be turned off.)
   url: https://raw.githubusercontent.com/NCATSTranslator/Blocklists/add-scripts/output/blocklist.txt
   # If a GitHub Personal Access Token is necessary to download the above file, it should be stored in a Kubernetes
   # secret with the specified key. To create this in Kubernetes, run:
