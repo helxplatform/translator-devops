@@ -13,7 +13,7 @@ spec:
           configMap:
             name: {{ include "name-lookup.fullname" . }}-configmap
             defaultMode: 0777
-        {{ if .Values.blocklist.storage }}
+        {{ if and .Values.blocklist.url .Values.blocklist.storage }}
         - name: {{ include "name-lookup.fullname" . }}-blocklist
           ephemeral:
             volumeClaimTemplate:
@@ -32,7 +32,7 @@ spec:
           stdin: true
           tty: true
           env:
-          {{ if .Values.blocklist.github_personal_access_token_secret }}
+          {{ if and .Values.blocklist.url .Values.blocklist.github_personal_access_token_secret }}
           - name: GITHUB_PERSONAL_ACCESS_TOKEN
             valueFrom:
               secretKeyRef:
