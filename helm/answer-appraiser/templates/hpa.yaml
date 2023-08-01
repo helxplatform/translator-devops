@@ -1,0 +1,28 @@
+{{- if .Values.appraiser.autoscaling.enabled }}
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "answer-appraiser.fullname" . }}
+  labels:
+    {{- include "answer-appraiser.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "answer-appraiser.fullname" . }}
+  minReplicas: {{ .Values.appraiser.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.appraiser.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.appraiser.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.appraiser.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.appraiser.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.appraiser.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
