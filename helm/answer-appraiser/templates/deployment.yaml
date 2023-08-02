@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "answer-appraiser.fullname" . }}
+  labels:
+    {{- include "answer-appraiser.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.appraiser.autoscaling.enabled }}
+  replicas: {{ .Values.appraiser.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "answer-appraiser.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "answer-appraiser.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.appraiser.image.repository }}:{{ .Values.appraiser.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.appraiser.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "answer-appraiser.fullname" . }}-configmap
+          ports:
+            - name: http
+              containerPort: {{ .Values.appraiser.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: answer-appraiser-logs-vol
+              mountPath: /app/logs
+          readinessProbe:
+            httpGet:
+              path: /redis_ready
+              port: {{ .Values.appraiser.service.port }}
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /docs
+              port: {{ .Valuse.appraiser.service.port }}
+            failureThreshold: 3
+            periodSeconds: 10
+      volumes:
+        - name: answer-appraiser-logs-vol
+          persistentVolumeClaim:
+            claimName: {{ include "answer-appraiser.fullname" . }}-logs-pvc
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

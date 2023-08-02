@@ -82,26 +82,71 @@ data:
         --header='Content-Type:application/json' \
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
+    # exactish type taken from https://stackoverflow.com/a/29105025/27310
+    wget --post-data '{
+              "add-field-type" : {
+                  "name": "exactish",
+                  "class": "solr.TextField",
+                  "analyzer": {
+                      "tokenizer": {
+                          "class": "solr.KeywordTokenizerFactory"
+                      },
+                      "filters": [{
+                          "class": "solr.LowerCaseFilterFactory"
+                      }]
+                  }
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    sleep 1
     wget --post-data '{
                 "add-field": [
                     {
-                        "name":"name",
+                        "name":"names",
                         "type":"LowerTextField",
-                        "stored":true
-                    },
-                    {
-                        "name":"length",
-                        "type":"plong",
-                        "stored":true
+                        "stored": true,
+                        "multiValued": true
                     },
                     {
                         "name":"curie",
                         "type":"string",
                         "stored":true
+                    },
+                    {
+                        "name": "preferred_name",
+                        "type": "LowerTextField",
+                        "stored": true
+                    },
+                    {
+                        "name": "preferred_name_exactish",
+                        "type": "exactish",
+                        "indexed": true,
+                        "stored": false,
+                        "multiValued": false
+                    },
+                    {
+                        "name": "types",
+                        "type": "string",
+                        "stored": true,
+                        "multiValued": true
+                    },
+                    {
+                        "name": "shortest_name_length",
+                        "type": "pint",
+                        "stored": true
                     }
                 ]
             }' \
           --header='Content-Type:application/json' \
           -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
+    wget --post-data '{
+              "add-copy-field" : {
+                "source": "preferred_name",
+                "dest": "preferred_name_exactish"
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    sleep 1
+ 
     exit 0
