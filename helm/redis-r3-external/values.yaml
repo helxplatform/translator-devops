@@ -156,3 +156,31 @@ info-content:
     - "--appendonly no"
   replica:
     replicaCount: 0
+
+chemical-drug-db:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 20Gi
+    resources:
+      limits:
+        cpu: 150m
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+  replica:
+    replicaCount: 0
