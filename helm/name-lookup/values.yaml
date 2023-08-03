@@ -34,15 +34,19 @@ solr:
     type: ClusterIP
   # container port
   port: 8983
-  heap_mem: "-Xms58G -Xmx58G"
+  heap_mem: "-Xms180G -Xmx180G"
+  gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
   image:
     repository: solr
-    tag: 9.1
+    tag: "9.1"
   resources:
     requests:
-      memory: "64Gi"
+      memory: "300Gi"
+      cpu: 1000m
     limits:
       memory: "64Gi"
+      memory: "300Gi"
+      cpu: 2000m
   # As of Babel 2023may18, we need 128G to store the
   # backup + uncompressed backup + Solr database
   # So 500Gi should be enough for the time being.
