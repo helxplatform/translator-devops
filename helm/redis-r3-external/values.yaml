@@ -162,7 +162,7 @@ chemical-drug-db:
     enabled: true
   master:
     persistence:
-      size: 20Gi
+      size: 50Gi
     resources:
       limits:
         cpu: 150m
