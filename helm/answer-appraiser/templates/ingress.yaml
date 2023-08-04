@@ -28,7 +28,7 @@ spec:
   {{- end }}
   {{- if .Values.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range .Values.ingress.tls.enabled }}
     - hosts:
         {{- range .hosts }}
         - {{ . | quote }}
