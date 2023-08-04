@@ -16,7 +16,7 @@ data:
     wget -nv -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL
     cd $DATA_DIR
     tar -xf $DATA_DIR/$BACKUP_ZIP -C $DATA_DIR
-  #    rm $BACKUP_ZIP
+    rm $DATA_DIR/$BACKUP_ZIP
   restore.sh: |-
     #!/bin/sh
 

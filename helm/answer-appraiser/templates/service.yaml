@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "answer-appraiser.fullname" . }}
+  labels:
+    {{- include "answer-appraiser.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.appraiser.service.type }}
+  ports:
+    - port: {{ .Values.appraiser.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "answer-appraiser.selectorLabels" . | nindent 4 }}
