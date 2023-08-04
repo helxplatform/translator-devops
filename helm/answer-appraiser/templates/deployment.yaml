@@ -51,7 +51,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /docs
-              port: {{ .Valuse.appraiser.service.port }}
+              port: {{ .Values.appraiser.service.port }}
             failureThreshold: 3
             periodSeconds: 10
       volumes:
