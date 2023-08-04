@@ -21,7 +21,7 @@ forceRun: false
 busybox:
   image:
     repository: busybox
-    tag: stable
+    tag: "1.35"
 
 # busybox:
 #   image:
