@@ -149,6 +149,14 @@ data:
                         "name": "shortest_name_length",
                         "type": "pint",
                         "stored": true
+                    },
+                    {
+                        "name": "curie_suffix",
+                        "type": "plong",
+                        "docValues": true,
+                        "stored": true,
+                        "required": false,
+                        "sortMissingLast": true
                     }
                 ]
             }' \
