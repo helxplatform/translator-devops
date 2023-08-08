@@ -162,14 +162,14 @@ chemical-drug-db:
     enabled: true
   master:
     persistence:
-      size: 50Gi
+      size: 1Gi
     resources:
       limits:
         cpu: 150m
         memory: 1Gi
       requests:
         cpu: 50m
-        memory: 100Mi
+        memory: 1Gi
     readinessProbe:
       enabled: false
     startupProbe:
