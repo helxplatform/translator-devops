@@ -8,7 +8,7 @@
 
 image:
   repository: ghcr.io/translatorsri/nodenormalization
-  tag: v2.2.1
+  tag: chem_conflate
   pullPolicy: Always
 
 web:
