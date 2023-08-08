@@ -60,10 +60,10 @@ id-eq-id:
     resources:
       limits:
         cpu: 3000m
-        memory: 100Gi
+        memory: 200Gi
       requests:
         cpu: 500m
-        memory: 90Gi
+        memory: 200Gi
     readinessProbe:
       enabled: false
     startupProbe:
