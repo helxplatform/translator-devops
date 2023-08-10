@@ -39,13 +39,16 @@ spec:
           volumeMounts:
             - name: answer-appraiser-logs-vol
               mountPath: /app/logs
-          startupProbe:
+          readinessProbe:
             httpGet:
               path: /redis_ready
-              port: 9096
+              port: {{ .Values.appraiser.service.port }}
+            initialDelaySeconds: 300
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
             failureThreshold: 10
-            periodSeconds: 60
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /redis_ready
               port: {{ .Values.appraiser.service.port }}
