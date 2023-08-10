@@ -43,6 +43,12 @@ spec:
             httpGet:
               path: /redis_ready
               port: {{ .Values.appraiser.service.port }}
+            failureThreshold: 10
+            periodSeconds: 60
+          startupProbe:
+            httpGet:
+              path: /redis_ready
+              port: {{ .Values.appraiser.service.port }}
             initialDelaySeconds: 300
             periodSeconds: 30
             timeoutSeconds: 5
