@@ -6,7 +6,7 @@ appraiser:
   replicaCount: 1
   logsPVCSize: 3Gi
   image:
-    tag: v0.2.3
+    tag: v0.3.0
     repository: ghcr.io/translatorsri/answer-appraiser
     imagePullPolicy: Always
   service:
