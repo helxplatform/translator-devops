@@ -41,9 +41,9 @@ spec:
               mountPath: /app/logs
           startupProbe:
             httpGet:
-              path: /docs
+              path: /redis_ready
               port: 9096
-            failureThreshold: 6
+            failureThreshold: 10
             periodSeconds: 60
           readinessProbe:
             httpGet:
