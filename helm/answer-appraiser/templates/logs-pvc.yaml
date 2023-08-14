@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "aragorn.fullname" . }}-queue-files-pvc
+  name: {{ include "answer-appraiser.fullname" . }}-logs-pvc
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.queue_files.storageSize }}
+      storage: {{ .Values.appraiser.logsPVCSize }}
