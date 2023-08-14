@@ -13,15 +13,15 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: "v1.2.0"
+    tag: v1.2.0
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2022dec2-2/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023apr24/solr/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
   image:
     repository: busybox
-    tag: stable
+    tag: "1.35"
 
 # busybox:
 #   image:
@@ -34,22 +34,26 @@ solr:
     type: ClusterIP
   # container port
   port: 8983
-  heap_mem: "-Xms4000m -Xmx4000m"
+  heap_mem: "-Xms58G -Xmx58G"
   image:
     repository: solr
-    tag: latest
+    tag: 9.1
   resources:
     requests:
-      memory: "5Gi"
+      memory: "64Gi"
     limits:
-      memory: "5Gi"
+      memory: "64Gi"
+  # As of Babel 2023jul13, we need 130G to store the
+  # uncompressed backup + 131G Solr database
+  # So 300Gi should be enough for the time being.
+  storage: 300Gi
 
   initresources:
     requests:
-      memory: 5Gi
+      memory: 32Gi
       cpu: 1000m
     limits:
-      memory: 10Gi
+      memory: 64Gi
       cpu: 1000m
 
 nameOverride: ""
