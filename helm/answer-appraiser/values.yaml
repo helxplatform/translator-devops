@@ -5,8 +5,10 @@
 appraiser:
   replicaCount: 1
   logsPVCSize: 3Gi
+  workerCount: 6
+  workerTimeout: 400
   image:
-    tag: v0.3.1
+    tag: v0.3.2
     repository: ghcr.io/translatorsri/answer-appraiser
     imagePullPolicy: Always
   service:
@@ -93,7 +95,8 @@ ingress:
   pathType: "ImplementationSpecific"
   path: "/"
   host: answerappraiser.apps.renci.org
-  tls: []
+  tls:
+    enabled: false
 
 x_trapi:
   maturity:
