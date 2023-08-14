@@ -32,13 +32,13 @@ spec:
           stdin: true
           tty: true
           env:
-          {{ if and .Values.blocklist.url .Values.blocklist.github_personal_access_token_secret }}
+          {{ if and .Values.blocklist.url .Values.blocklist.secrets.github_personal_access_token }}
           - name: GITHUB_PERSONAL_ACCESS_TOKEN
             valueFrom:
               secretKeyRef:
-                name: {{ .Values.blocklist.github_personal_access_token_secret }}
-                key: {{ .Values.blocklist.github_personal_access_token_key }}
-                optional: true
+                name: {{ include "name-lookup.fullname" . }}-secrets
+                key: github_personal_access_token
+                optional: false
           {{ end }}
           volumeMounts:
             - mountPath: /restore.sh
