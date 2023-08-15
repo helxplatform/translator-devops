@@ -74,27 +74,12 @@ complete, the restore script will use the blocklist to remove CURIEs
 that may be problematic for any number of reasons.
 
 If the blocklist is in a private GitHub repository, you will also need
-to create a [GitHub Personal Access Token] and include that as a [Kubernetes secret]
-in your pod. Two configuration variables control this:
-- `blocklist.url`: Should be the URL of the Blocklist file, such as
-  https://api.github.com/repos/NCATSTranslator/Blocklists/contents/main/blocklist.yaml?ref=main
-- `blocklist.github_personal_access_token_secret`: if a GitHub personal access
-  token is needed, you can store it in a [Kubernetes secret] with the key specified in
-  `blocklist.github_personal_access_token_key`, and then set this configuration variable
-  to the name of the secret.
-
-The easiest way to create the Kubernetes secret for the GitHub personal access token
-is by using `kubectl`:
-
-```shell
-$ kubectl -n $NAMESPACE create secret generic $SECRET_NAME --from-literal=github_personal_access_token=github_pat_...
-```
-
-You can then confirm that this has been set correctly by running:
-
-```shell
-$ kubectl -n $NAMESPACE describe secret/$SECRET_NAME
-```
+to create a [GitHub Personal Access Token] and include that in one of
+the encrypted values-populated files in this directory -- look at 
+`values-populated.yaml` for an example of what this looks like. The Personal
+Access Token should be stored in `blocklist.secrets.github_personal_access_token`.
+The Helm chart will create a Kubernetes Opaque Secret for this token and load
+it into the restore job as an environmental variable.
 
 [GitHub Personal Access Token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token
 [Kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret
