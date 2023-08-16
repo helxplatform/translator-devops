@@ -95,6 +95,18 @@ spec:
               resources:
                 requests:
                   storage: {{ .Values.app.sqliteStorageSize }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: {{ include "aragorn.fullname" . }}-logs
@@ -102,7 +114,7 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 5Gi
+            storage: {{ .Values.app.logStorageSize }}
     - metadata:
         name: {{ include "aragorn.fullname" . }}-queue-files
       spec:

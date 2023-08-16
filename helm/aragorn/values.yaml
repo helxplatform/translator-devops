@@ -39,12 +39,6 @@ ingress:
   tls:
     enabled: false
 
-logs:
-  storageSize: 5Gi
-
-queue_files:
-  storageSize: 20Gi
-
 app:
   port: 4321
   debugTiming: "True"
@@ -56,12 +50,16 @@ app:
       memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 20Gi
+      memory: 15Gi
       cpu: 1000m
   logLevel: "trace"
+  logStorageSize: 5Gi
   queueStorageSize: 10Gi
   sqliteStoragePath: "/repo/aragorn/data"
   sqliteStorageSize: 100Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 x_trapi:
   maturity:
@@ -86,9 +84,9 @@ otel:
 rbtmq:
   resources:
     limits:
-      memory: 5Gi
-    requests:
       memory: 1Gi
+    requests:
+      memory: 300M
   image:
     repository: renciorg/aragorn-rbtmq
     tag: 0.0.1
@@ -96,7 +94,7 @@ rbtmq:
     createPV: false
     createPVC: false
     pvName: "pv-rbtmq"
-    size: 5Gi
+    size: 1Gi
   secrets:
     amqpPort: 5672
     webPort: 15672
@@ -104,3 +102,67 @@ rbtmq:
     queuePassword: "fakepw"
     queueAdminPassword: "fakeadminpw"
     queueHost: "fakehost"
+
+### REDIS config
+
+redis:
+  # full option here (https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml)
+  architecture: standalone
+  db: 0
+  port: 6379
+  host: aragorn-redis-master
+  auth:
+    password: password
+  image:
+    repository: redis
+    tag: "7.0.12"
+  master:
+    resources:
+      limits:
+        cpu: 2
+        memory: 60Gi
+    readinessProbe:
+      enabled: true
+      # to make it available ASAP
+      periodSeconds: 1
+      # spans 25 mins (150 * 10 secs)
+      failureThreshold: 1
+    livenessProbe:
+      # Liveliness probes can be off, since
+      # With big cache data to load or sync , redis is alive but
+      # responds with LOADING message. to avoid cyclic restarts
+      # keeping this off
+      enabled: false
+    initContainers:
+    - name: download-db
+      image: "busybox:1.35"
+      command:
+        - 'wget'
+      args:
+        - '-O'
+        - '/data/dump.rdb'
+        - 'https://stars.renci.org/var/aragorn/cache.rdb'
+      volumeMounts:
+      - name: redis-data
+        mountPath: '/data/'
+      resources:
+        limits:
+          cpu: 2
+          memory: 60Gi
+    persistence:
+      size: 60Gi
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+  replica:
+    replicaCount: 0
+  # anything that goes into redis.conf file
+  commonConfiguration: |-
+    # Enable AOF https://redis.io/topics/persistence#append-only-file
+    appendonly no
+    # Disable RDB persistence, AOF persistence already enabled.
+    save ""
+    maxmemory 60gb
+    maxmemory-policy allkeys-lfu
+    loglevel notice
+    logfile /data/aragorn_cache.log
