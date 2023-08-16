@@ -9,10 +9,13 @@ data:
   QUEUE_USER: "{{ .Values.rbtmq.secrets.queueUser }}"
   QUEUE_PW: "{{ .Values.rbtmq.secrets.queuePassword }}"
   QUEUE_ADMIN_PW: "{{ .Values.rbtmq.secrets.queueAdminPassword }}"
+  CACHE_HOST: "{{ .Values.redis.host }}"
+  CACHE_PORT: "{{ .Values.redis.port }}"
+  CACHE_DB: "{{ .Values.redis.db }}"
+  CACHE_PASSWORD: "{{ .Values.redis.auth.password }}"
   WEB_HOST: 0.0.0.0
   WEB_PORT: {{ .Values.app.port | quote}}
   SERVER_ROOT: "{{ .Values.web.serverHostName }}"
-  CALLBACK_HOST: "{{ .Values.web.callbackHostName }}"
   DEBUG_TIMING: "{{ .Values.app.debugTiming }}"
   MULTISTRIDER_BATCH_SIZE: "{{ .Values.app.multistrider_batch_size }}"
   MAXIMUM_MULTISTRIDER_RULES: "{{ .Values.app.maximum_multistrider_rules }}"
