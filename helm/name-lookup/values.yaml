@@ -40,9 +40,9 @@ solr:
     tag: 9.1
   resources:
     requests:
-      memory: "64Gi"
+      memory: "5Gi"
     limits:
-      memory: "64Gi"
+      memory: "5Gi"
   # As of Babel 2023jul13, we need 130G to store the
   # uncompressed backup + 131G Solr database
   # So 300Gi should be enough for the time being.
@@ -50,10 +50,10 @@ solr:
 
   initresources:
     requests:
-      memory: 32Gi
+      memory: 5Gi
       cpu: 1000m
     limits:
-      memory: 64Gi
+      memory: 10Gi
       cpu: 1000m
 
 nameOverride: ""
