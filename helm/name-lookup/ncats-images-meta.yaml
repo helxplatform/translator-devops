@@ -3,7 +3,7 @@ nameLookup:
   version: v1.3.4
 solr:
   image: solr
-  version: 9.1.0
+  version: "9.1"
 
 busyBox:
   image: busybox
