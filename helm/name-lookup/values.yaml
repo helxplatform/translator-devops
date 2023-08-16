@@ -79,6 +79,12 @@ solr:
       memory: 5Gi
       cpu: 2000m
 
+# You can control the nodeSelector/affinity/tolerations settings for all pods with the following settings.
+app:
+  nodeSelector:
+  affinity:
+  tolerations:
+
 nameOverride: ""
 fullnameOverride: ""
 
