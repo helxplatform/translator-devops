@@ -19,9 +19,24 @@ data:
     rm $DATA_DIR/$BACKUP_ZIP
   restore.sh: |-
     #!/bin/sh
+
+    BLOCKLIST_DIR="/var/blocklist"
+
+    # Download the Blocklist file. We do this before turning on xtrace (`set -xa`) so that we don't record
+    # the GitHub authorization token in the Kubernetes logs.
+    {{ if .Values.blocklist.url }}
+      wget \
+        -O ${BLOCKLIST_DIR}/blocklist.txt \
+        {{ if .Values.blocklist.secrets.github_personal_access_token}}--header "Authorization: Token $GITHUB_PERSONAL_ACCESS_TOKEN" \{{ end }}
+        {{ .Values.blocklist.url }}
+
+      CURIE_LIST=$(xargs -I{lin} echo \"{lin}\" < ${BLOCKLIST_DIR}/blocklist.txt)
+      echo CURIEs on the Blocklist: ${CURIE_LIST}.
+    {{ end }}
+
+    # Turn on xtrace and set up config variables.
     set -xa
     COLLECTION_NAME="name_lookup"
-
     SOLR_SERVER=http://{{ include "name-lookup.fullname" . }}-solr-svc:{{ .Values.solr.service.port }}
 
     # liveliness check
@@ -134,6 +149,14 @@ data:
                         "name": "shortest_name_length",
                         "type": "pint",
                         "stored": true
+                    },
+                    {
+                        "name": "curie_suffix",
+                        "type": "plong",
+                        "docValues": true,
+                        "stored": true,
+                        "required": false,
+                        "sortMissingLast": true
                     }
                 ]
             }' \
@@ -148,5 +171,22 @@ data:
         --header='Content-Type:application/json' \
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
+
+    # Delete the blocklist terms from the Solr database.
+    {{ if .Values.blocklist.url }}
+    CURIE_LIST=$(xargs -I{lin} echo \\\"{lin}\\\" < ${BLOCKLIST_DIR}/blocklist.txt)
+    echo CURIEs on the Blocklist: ${CURIE_LIST}.
+    SOLR_DELETE="{
+      'delete': {
+        'query': 'curie:(${CURIE_LIST})'
+      }}"
+    echo SOLR delete query: ${SOLR_DELETE}
+
+    wget --post-data "${SOLR_DELETE}" \
+    --header='Content-Type:application/json' \
+    -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update?commit=true
+
+    sleep 1
+    {{ end }}
  
     exit 0
