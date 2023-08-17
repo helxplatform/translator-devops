@@ -12,4 +12,16 @@ spec:
       image: busybox
       command: ['wget']
       args: ['{{ include "name-lookup.fullname" . }}-web-svc:{{ .Values.webServer.service.port }}/apidocs']
+  {{- with .Values.app.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.app.affinity }}
+  affinity:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+  {{- with .Values.app.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
   restartPolicy: Never
