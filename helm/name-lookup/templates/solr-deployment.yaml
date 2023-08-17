@@ -69,15 +69,15 @@ spec:
           volumeMounts:
             - mountPath: /var/solr/data
               name: {{ include "name-lookup.fullname" . }}-solr-data-vol
-      {{- with .Values.app.nodeSelector }}
+      {{- with .Values.solr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.app.affinity }}
+      {{- with .Values.solr.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.app.tolerations }}
+      {{- with .Values.solr.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
