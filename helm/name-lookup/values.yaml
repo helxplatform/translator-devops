@@ -57,6 +57,11 @@ solr:
       memory: "64Gi"
     limits:
       memory: "64Gi"
+    # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
+    # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
+    nodeSelector:
+    affinity:
+    tolerations:
 
   heap_mem: "-Xms58G -Xmx58G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
@@ -78,6 +83,12 @@ solr:
     limits:
       memory: 5Gi
       cpu: 2000m
+
+# You can control the nodeSelector/affinity/tolerations settings for all pods (web, restore, backup) except Solr with the following settings.
+app:
+  nodeSelector:
+  affinity:
+  tolerations:
 
 nameOverride: ""
 fullnameOverride: ""
