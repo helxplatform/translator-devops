@@ -113,6 +113,9 @@ blocklist:
   # ephemeral storage limit!
   storage: 100Mi
 
+# Conflation is configured as a long list of pipe-delimited value in the format: [conflation name]|[conflation URL]
+conflation: DrugChemical|https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/conflation/DrugChemical.txt
+
 x_trapi:
   maturity:
     value: "maturity"

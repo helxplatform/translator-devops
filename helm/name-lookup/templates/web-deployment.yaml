@@ -32,6 +32,8 @@ spec:
             value: "{{ .Values.x_trapi.maturity.value }}"
           - name: "LOCATION_VALUE"
             value: "{{ .Values.x_trapi.location.value }}"
+          - name: "CONFLATION"
+            value: "{{ .Values.conflation }}"
           ports:
             - name: http
               containerPort: {{ .Values.webServer.port }}
