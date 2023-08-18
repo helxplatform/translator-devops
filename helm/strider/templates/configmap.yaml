@@ -7,7 +7,6 @@ data:
   OPENAPI_SERVER_MATURITY: {{ .Values.x_trapi.maturity.value }}
   OPENAPI_SERVER_LOCATION: {{ .Values.x_trapi.location.value }}
   ROOT_PATH: {{ .Values.ingress.path }}
-  OMNICORP_URL: {{ .Values.env.omnicorp }}
   NORMALIZER_URL: {{ .Values.env.nodenorm }}
   BIOLINK_URL: {{ .Values.env.biolink }}
   MAX_PROCESS_TIME: "{{ .Values.env.max_process_time }}"

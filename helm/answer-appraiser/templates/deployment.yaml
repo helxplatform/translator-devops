@@ -36,10 +36,28 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          command:
+            - 'gunicorn'
+          args:
+            - "-b"
+            - "0.0.0.0:{{ .Values.appraiser.service.port }}"
+            - "-k"
+            - "uvicorn.workers.UvicornWorker"
+            - "-w"
+            - "{{ .Values.appraiser.workerCount }}"
+            - "--timeout"
+            - "{{ .Values.appraiser.workerTimeout }}"
+            - "app.server:APP"
           volumeMounts:
             - name: answer-appraiser-logs-vol
               mountPath: /app/logs
           readinessProbe:
+            httpGet:
+              path: /redis_ready
+              port: {{ .Values.appraiser.service.port }}
+            failureThreshold: 10
+            periodSeconds: 60
+          startupProbe:
             httpGet:
               path: /redis_ready
               port: {{ .Values.appraiser.service.port }}
@@ -53,7 +71,7 @@ spec:
               path: /docs
               port: {{ .Values.appraiser.service.port }}
             failureThreshold: 3
-            periodSeconds: 10
+            periodSeconds: 30
       volumes:
         - name: answer-appraiser-logs-vol
           persistentVolumeClaim:
