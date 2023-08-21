@@ -121,9 +121,9 @@ redis:
     resources:
       limits:
         cpu: 8
-        memory: 59Gi
+        memory: 58Gi
       requests:
-        memory: 59Gi
+        memory: 58Gi
         cpu: 8
     readinessProbe:
       enabled: true
