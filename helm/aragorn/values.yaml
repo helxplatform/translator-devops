@@ -121,9 +121,9 @@ redis:
     resources:
       limits:
         cpu: 8
-        memory: 57Gi
+        memory: 59Gi
       requests:
-        memory: 57Gi
+        memory: 59Gi
         cpu: 8
     readinessProbe:
       enabled: true
@@ -150,7 +150,7 @@ redis:
       - name: redis-data
         mountPath: '/data/'
     persistence:
-      size: 57Gi
+      size: 60Gi
     nodeSelector: {}
     tolerations:
       - key: "transltr"
