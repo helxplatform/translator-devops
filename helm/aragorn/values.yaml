@@ -152,8 +152,21 @@ redis:
     persistence:
       size: 60Gi
     nodeSelector: {}
-    tolerations: []
-    affinity: {}
+    tolerations:
+      - key: "transltr"
+        value: "managed-app"
+        operator: "Equal"
+        effect: "NoSchedule"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: application
+              operator: In
+              values:
+              - "managed-app"
+    
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
