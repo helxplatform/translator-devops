@@ -121,6 +121,8 @@ pipeline {
                         ]) {
                             sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            helm delete $APP -n sri 
+                            kubectl delete pvc redis-data-aragorn-redis-master-0 -n sri 
                             /bin/bash prepare.sh
                             mv ncats-dev-values.yaml ./values-ncats.yaml
                             /bin/bash deploy.sh
