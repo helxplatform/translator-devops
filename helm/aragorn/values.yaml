@@ -120,7 +120,7 @@ redis:
     resources:
       limits:
         cpu: 2
-        memory: 60Gi
+        memory: 30Gi
     readinessProbe:
       enabled: true
       # to make it available ASAP
@@ -148,9 +148,9 @@ redis:
       resources:
         limits:
           cpu: 2
-          memory: 60Gi
+          memory: 30Gi
     persistence:
-      size: 60Gi
+      size: 30Gi
     nodeSelector: {}
     tolerations:
       - key: "transltr"
