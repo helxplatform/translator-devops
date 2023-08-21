@@ -116,7 +116,6 @@ redis:
   image:
     repository: redis
     tag: "7.0.12"
-  replicaCount: 2
   master:
     resources:
       limits:
