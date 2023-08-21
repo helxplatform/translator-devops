@@ -116,13 +116,14 @@ redis:
   image:
     repository: redis
     tag: "7.0.12"
+  replicaCount: 2
   master:
     resources:
       limits:
         cpu: 8
-        memory: 60Gi
+        memory: 57Gi
       requests:
-        memory: 30Gi
+        memory: 57Gi
         cpu: 8
     readinessProbe:
       enabled: true
@@ -149,7 +150,7 @@ redis:
       - name: redis-data
         mountPath: '/data/'
     persistence:
-      size: 60Gi
+      size: 57Gi
     nodeSelector: {}
     tolerations:
       - key: "transltr"
