@@ -119,8 +119,11 @@ redis:
   master:
     resources:
       limits:
-        cpu: 2
+        cpu: 8
+        memory: 60Gi
+      requests:
         memory: 30Gi
+        cpu: 8
     readinessProbe:
       enabled: true
       # to make it available ASAP
@@ -145,12 +148,8 @@ redis:
       volumeMounts:
       - name: redis-data
         mountPath: '/data/'
-      resources:
-        limits:
-          cpu: 2
-          memory: 30Gi
     persistence:
-      size: 30Gi
+      size: 60Gi
     nodeSelector: {}
     tolerations:
       - key: "transltr"
