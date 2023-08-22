@@ -148,8 +148,8 @@ redis:
       volumeMounts:
       - name: redis-data
         mountPath: '/data/'
-    persistence: ""
-     # size: 60Gi
+    persistence:
+      size: 60Gi
     nodeSelector: {}
     tolerations: []
     affinity: {}
