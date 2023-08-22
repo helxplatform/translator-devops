@@ -117,10 +117,6 @@ redis:
     repository: redis
     tag: "7.0.12"
   master:
-    resources:
-      limits:
-        cpu: 2
-        memory: 60Gi
     readinessProbe:
       enabled: true
       # to make it available ASAP
@@ -145,10 +141,6 @@ redis:
       volumeMounts:
       - name: redis-data
         mountPath: '/data/'
-      resources:
-        limits:
-          cpu: 2
-          memory: 60Gi
     persistence:
       size: 60Gi
     nodeSelector: {}
