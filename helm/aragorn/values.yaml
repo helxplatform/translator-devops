@@ -117,13 +117,13 @@ redis:
     repository: redis
     tag: "7.0.12"
   master:
-    resources:
-      limits:
-        cpu: 8
-        memory: 58Gi
-      requests:
-        memory: 58Gi
-        cpu: 8
+    #resources:
+    #  limits:
+    #    cpu: 8
+     #   memory: 58Gi
+    #  requests:
+     #   memory: 58Gi
+     #   cpu: 8
     readinessProbe:
       enabled: true
       # to make it available ASAP
@@ -148,24 +148,11 @@ redis:
       volumeMounts:
       - name: redis-data
         mountPath: '/data/'
-    persistence:
-      size: 60Gi
+    persistence: ""
+     # size: 60Gi
     nodeSelector: {}
-    tolerations:
-      - key: "transltr"
-        value: "managed-app"
-        operator: "Equal"
-        effect: "NoSchedule"
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: application
-              operator: In
-              values:
-              - "managed-app"
-    
+    tolerations: []
+    affinity: {}
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
