@@ -117,13 +117,6 @@ redis:
     repository: redis
     tag: "7.0.12"
   master:
-    #resources:
-    #  limits:
-    #    cpu: 8
-     #   memory: 58Gi
-    #  requests:
-     #   memory: 58Gi
-     #   cpu: 8
     readinessProbe:
       enabled: true
       # to make it available ASAP
