@@ -1,0 +1,93 @@
+jaeger:
+  fullnameOverride: ""
+  nameOverride: ""
+  # Agent
+  agent:
+    image: jaegertracing/jaeger-agent
+    pullPolicy: IfNotPresent
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 256m
+        memory: 128Mi
+  cassandra:
+    persistence:
+      enabled: true
+    resources:
+      limits:
+        cpu: 2
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 4Gi
+  ## End Agent
+
+  ## Collector
+  collector:
+    image: jaegertracing/jaeger-collector
+    pullPolicy: IfNotPresent
+    replicaCount: 1
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
+  ## End collector
+
+
+  # Data store
+  provisionDataStore:
+    cassandra: true
+    elasticsearch: false
+    kafka: false
+  # End data store
+
+  ## UI
+  query:
+    image: jaegertracing/jaeger-query
+    ingress:
+      enabled: false
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 256m
+        memory: 128Mi
+  # END UI
+
+  # Schema
+  schema:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 256m
+        memory: 128Mi
+  ## END Schema
+
+  ## Storage
+  storage:
+    cassandra:
+      password: "change-me"
+      user: user
+
+  ## End storage
+  ## Spark Job
+  spark:
+    enabled: true
+    resources:
+      limits:
+        cpu: 2
+        memory: 4Gi
+  ## End spark job
+  tag: ""
+
+itrb:
+  ingress:
+    enabled: false

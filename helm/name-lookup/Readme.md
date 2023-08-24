@@ -66,5 +66,20 @@ To dry run your chart install:
 $ helm install -f <values_file> --dry-run --debug myrelease .
 ```
 
+## Blocklist
 
- 
+Name Resolver/Name Lookup is set up to use a blocklist as a YAML file
+from a GitHub repository. Once Solr database restoration is
+complete, the restore script will use the blocklist to remove CURIEs
+that may be problematic for any number of reasons.
+
+If the blocklist is in a private GitHub repository, you will also need
+to create a [GitHub Personal Access Token] and include that in one of
+the encrypted values-populated files in this directory -- look at 
+`values-populated.yaml` for an example of what this looks like. The Personal
+Access Token should be stored in `blocklist.secrets.github_personal_access_token`.
+The Helm chart will create a Kubernetes Opaque Secret for this token and load
+it into the restore job as an environmental variable.
+
+[GitHub Personal Access Token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token
+[Kubernetes secret]: https://kubernetes.io/docs/concepts/configuration/secret/#creating-a-secret

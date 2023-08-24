@@ -2,6 +2,10 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+nodeSelector: {}
+affinity: {}
+tolerations: []
+
 image:
   repository: ghcr.io/ncatstranslator/workflow-runner:latest
   tag: latest
@@ -34,11 +38,11 @@ app:
   port: 4321
   resources:
     requests:
-      memory: 500Mi
-      cpu: 400m
+      memory: 1000Mi
+      cpu: 800m
     limits:
       memory: 1000Mi
-      cpu: 500m
+      cpu: 800m
 
 x_trapi:
   maturity:

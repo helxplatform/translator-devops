@@ -16,12 +16,27 @@ data:
     wget -nv -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL
     cd $DATA_DIR
     tar -xf $DATA_DIR/$BACKUP_ZIP -C $DATA_DIR
-  #    rm $BACKUP_ZIP
+    rm $DATA_DIR/$BACKUP_ZIP
   restore.sh: |-
     #!/bin/sh
+
+    BLOCKLIST_DIR="/var/blocklist"
+
+    # Download the Blocklist file. We do this before turning on xtrace (`set -xa`) so that we don't record
+    # the GitHub authorization token in the Kubernetes logs.
+    {{ if .Values.blocklist.url }}
+      wget \
+        -O ${BLOCKLIST_DIR}/blocklist.txt \
+        {{ if .Values.blocklist.secrets.github_personal_access_token}}--header "Authorization: Token $GITHUB_PERSONAL_ACCESS_TOKEN" \{{ end }}
+        {{ .Values.blocklist.url }}
+
+      CURIE_LIST=$(xargs -I{lin} echo \"{lin}\" < ${BLOCKLIST_DIR}/blocklist.txt)
+      echo CURIEs on the Blocklist: ${CURIE_LIST}.
+    {{ end }}
+
+    # Turn on xtrace and set up config variables.
     set -xa
     COLLECTION_NAME="name_lookup"
-
     SOLR_SERVER=http://{{ include "name-lookup.fullname" . }}-solr-svc:{{ .Values.solr.service.port }}
 
     # liveliness check
@@ -82,26 +97,96 @@ data:
         --header='Content-Type:application/json' \
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
+    # exactish type taken from https://stackoverflow.com/a/29105025/27310
+    wget --post-data '{
+              "add-field-type" : {
+                  "name": "exactish",
+                  "class": "solr.TextField",
+                  "analyzer": {
+                      "tokenizer": {
+                          "class": "solr.KeywordTokenizerFactory"
+                      },
+                      "filters": [{
+                          "class": "solr.LowerCaseFilterFactory"
+                      }]
+                  }
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    sleep 1
     wget --post-data '{
                 "add-field": [
                     {
-                        "name":"name",
+                        "name":"names",
                         "type":"LowerTextField",
-                        "stored":true
-                    },
-                    {
-                        "name":"length",
-                        "type":"plong",
-                        "stored":true
+                        "stored": true,
+                        "multiValued": true
                     },
                     {
                         "name":"curie",
                         "type":"string",
                         "stored":true
+                    },
+                    {
+                        "name": "preferred_name",
+                        "type": "LowerTextField",
+                        "stored": true
+                    },
+                    {
+                        "name": "preferred_name_exactish",
+                        "type": "exactish",
+                        "indexed": true,
+                        "stored": false,
+                        "multiValued": false
+                    },
+                    {
+                        "name": "types",
+                        "type": "string",
+                        "stored": true,
+                        "multiValued": true
+                    },
+                    {
+                        "name": "shortest_name_length",
+                        "type": "pint",
+                        "stored": true
+                    },
+                    {
+                        "name": "curie_suffix",
+                        "type": "plong",
+                        "docValues": true,
+                        "stored": true,
+                        "required": false,
+                        "sortMissingLast": true
                     }
                 ]
             }' \
           --header='Content-Type:application/json' \
           -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
     sleep 1
+    wget --post-data '{
+              "add-copy-field" : {
+                "source": "preferred_name",
+                "dest": "preferred_name_exactish"
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    sleep 1
+
+    # Delete the blocklist terms from the Solr database.
+    {{ if .Values.blocklist.url }}
+    CURIE_LIST=$(xargs -I{lin} echo \\\"{lin}\\\" < ${BLOCKLIST_DIR}/blocklist.txt)
+    echo CURIEs on the Blocklist: ${CURIE_LIST}.
+    SOLR_DELETE="{
+      'delete': {
+        'query': 'curie:(${CURIE_LIST})'
+      }}"
+    echo SOLR delete query: ${SOLR_DELETE}
+
+    wget --post-data "${SOLR_DELETE}" \
+    --header='Content-Type:application/json' \
+    -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update?commit=true
+
+    sleep 1
+    {{ end }}
+ 
     exit 0

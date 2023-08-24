@@ -1,0 +1,113 @@
+# Default values for answer-appraiser.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+appraiser:
+  replicaCount: 1
+  logsPVCSize: 3Gi
+  workerCount: 6
+  workerTimeout: 400
+  image:
+    tag: latest
+    repository: ghcr.io/translatorsri/answer-appraiser
+    imagePullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 9096
+  autoscaling:
+    enabled: false
+
+redis:
+  # full option here (https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml)
+  architecture: standalone
+  auth:
+    password: supersecretpassword
+  image:
+    repository: redis
+    tag: "7.0.12"
+  master:
+    resources:
+      limits:
+        cpu: 2
+        memory: 20Gi
+    readinessProbe:
+      enabled: true
+      # to make it available ASAP
+      periodSeconds: 1
+      # spans 25 mins (150 * 10 secs)
+      failureThreshold: 1
+    livenessProbe:
+      # Liveliness probes can be off, since
+      # With big cache data to load or sync , redis is alive but
+      # responds with LOADING message. to avoid cyclic restarts
+      # keeping this off
+      enabled: false
+    initContainers:
+    - name: download-db
+      image: "busybox:1.35"
+      command:
+        - 'wget'
+      args:
+        - '-O'
+        - '/data/dump.rdb'
+        - 'https://stars.renci.org/var/answer_appraiser/answer_appraiser_cache.rdb'
+      volumeMounts:
+      - name: redis-data
+        mountPath: '/data/'
+      resources:
+        limits:
+          cpu: 2
+          memory: 20Gi
+    persistence:
+      size: 20Gi
+  replica:
+    replicaCount: 0
+  # anything that goes into redis.conf file
+  commonConfiguration: |-
+    # Enable AOF https://redis.io/topics/persistence#append-only-file
+    appendonly no
+    # Disable RDB persistence, AOF persistence already enabled.
+    save ""
+    maxmemory 20gb
+    maxmemory-policy noeviction
+    loglevel notice
+    logfile /data/answer_appraiser_cache.log
+
+env:
+  trapi_version: 1.4.0
+  redis_host: answer-appraiser-redis-master
+  redis_port: 6379
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      keepalive_timeout 86400;
+    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/send-timeout: "86400"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+  pathType: "ImplementationSpecific"
+  path: "/"
+  host: answerappraiser.apps.renci.org
+  tls:
+    enabled: false
+
+x_trapi:
+  maturity:
+    value: "development"
+  location:
+    value: "RENCI"
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 5Gi
+  requests:
+    cpu: 1000m
+    memory: 2Gi

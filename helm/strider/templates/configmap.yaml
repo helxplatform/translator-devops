@@ -7,7 +7,6 @@ data:
   OPENAPI_SERVER_MATURITY: {{ .Values.x_trapi.maturity.value }}
   OPENAPI_SERVER_LOCATION: {{ .Values.x_trapi.location.value }}
   ROOT_PATH: {{ .Values.ingress.path }}
-  OMNICORP_URL: {{ .Values.env.omnicorp }}
   NORMALIZER_URL: {{ .Values.env.nodenorm }}
   BIOLINK_URL: {{ .Values.env.biolink }}
   MAX_PROCESS_TIME: "{{ .Values.env.max_process_time }}"
@@ -19,3 +18,6 @@ data:
   JAEGER_PORT: "{{ .Values.env.jaeger_port }}"
   JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"
   OTEL_SERVICE_NAME: "{{ .Values.env.service_name }}"
+  KP_TRAPI_VERSION: "{{ .Values.env.kp_trapi_version }}"
+  KP_TIMEOUT: "{{ .Values.env.kp_timeout }}"
+  INFORMATION_CONTENT_THRESHOLD: "{{ .Values.env.information_content_threshold }}"

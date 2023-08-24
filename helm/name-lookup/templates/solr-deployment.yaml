@@ -69,6 +69,18 @@ spec:
           volumeMounts:
             - mountPath: /var/solr/data
               name: {{ include "name-lookup.fullname" . }}-solr-data-vol
+      {{- with .Values.solr.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.solr.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.solr.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 
   volumeClaimTemplates:
     - metadata:
@@ -77,4 +89,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 100Gi
+            storage: {{ .Values.solr.storage }}

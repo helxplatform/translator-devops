@@ -13,15 +13,15 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: "v1.2.0"
+    tag: v1.3.4
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2022dec2-2/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023jul13/solr/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
   image:
     repository: busybox
-    tag: stable
+    tag: "1.35"
 
 # busybox:
 #   image:
@@ -34,23 +34,61 @@ solr:
     type: ClusterIP
   # container port
   port: 8983
-  heap_mem: "-Xms4000m -Xmx4000m"
   image:
     repository: solr
-    tag: latest
+    tag: 9.1
   resources:
+    # We tried increasing this to 200Gi. It looks like Solr used the following
+    # amounts of memory (as per Sterling Grafana):
+    #   - Memory Usage (WSS): 13Gi
+    #   - Memory Usage (RSS): 11Gi
+    #   - Memory Usage (Cache): 111Gi
+    #
+    # I think the "cache" here refers to the OS-level page cache, which makes
+    # sense, as the Solr indexes occupy around 127Gi.
+    #
+    # Therefore, I suspect that Solr needs about 32-64Gi to load its indexes
+    # and other important content, but will use other memory if it is available
+    # to cache content. We'll set this to 64Gi for now, but we should try
+    # bombarding these instances with queries to check how valuable increasing
+    # the memory to Solr helps with performance.
+    # 
     requests:
-      memory: "5Gi"
+      memory: "64Gi"
     limits:
-      memory: "5Gi"
+      memory: "64Gi"
+    # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
+    # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
+    nodeSelector:
+    affinity:
+    tolerations:
 
+  heap_mem: "-Xms58G -Xmx58G"
+  gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
+
+  # As of Babel 2023jul13, we need 130G to store the
+  # uncompressed backup + 131G Solr database
+  # So 300Gi should be enough for the time being.
+  storage: 300Gi
+
+  # As far as I know, initresources are only used by the download
+  # pod that downloads the Solr backup, which is network-bound,
+  # not CPU or memory bound. This used to be 32Gi, but I'm going
+  # to reduce it to 1-5Gi. Please increase this if it looks like
+  # it'll be helpful.
   initresources:
     requests:
-      memory: 5Gi
+      memory: 1Gi
       cpu: 1000m
     limits:
-      memory: 10Gi
-      cpu: 1000m
+      memory: 5Gi
+      cpu: 2000m
+
+# You can control the nodeSelector/affinity/tolerations settings for all pods (web, restore, backup) except Solr with the following settings.
+app:
+  nodeSelector:
+  affinity:
+  tolerations:
 
 nameOverride: ""
 fullnameOverride: ""
@@ -62,6 +100,18 @@ ingress:
   pathType: "ImplementationSpecific"
   host:
   class:
+
+blocklist:
+  # The URL from where to download the blocklist. This should be a simple text file, where each line contains a CURIE.
+  # (If this field is blank, all blocklist functionality will be turned off.)
+  url:
+  # If a GitHub Personal Access Token is necessary to download the above file, it should be set
+  # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also
+  # set this on Kubernetes by running:
+  #   kubectl -n $NAMESPACE create secret generic {{name-lookup.fullname}}-secrets --from-literal=github_personal_access_token=github_pat_...
+  # The storage necessary to store the blocklist file. This is currently an ephemeral volume, so make sure it fits in the
+  # ephemeral storage limit!
+  storage: 100Mi
 
 x_trapi:
   maturity:

@@ -4,17 +4,17 @@ metadata:
   name: {{ include "aragorn-ranker.fullname" . }}
   labels:
     app: {{ include "aragorn-ranker.name" . }}
-    trapi: "1.3"
+    trapi: "1.4"
 spec:
   selector:
     matchLabels:
       app: {{ include "aragorn-ranker.name" . }}
-      trapi: "1.3"
+      trapi: "1.4"
   template:
     metadata:
       labels:
         app: {{ include "aragorn-ranker.name" . }}
-        trapi: "1.3"
+        trapi: "1.4"
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/env-config-map.yaml") . | sha256sum }}
         checksum/config: {{ include (print $.Template.BasePath "/gunicorn-config-map.yaml") . | sha256sum }}
@@ -48,6 +48,16 @@ spec:
           - mountPath: /repo/aragorn-ranker/ranker/uvicorn_custom.py
             name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
             subPath: uvicorn_custom.py
+          env:
+          - name: CACHE_PASSWORD
+            {{- if .Values.omnicorpRedisGraph.auth.password }}
+            value: {{ .Values.omnicorpRedisGraph.auth.password }}
+            {{- else }}
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.omnicorpRedisGraph.auth.secret }}
+                key: {{ .Values.omnicorpRedisGraph.auth.secretPasswordKey }}
+            {{- end }}
       volumes:
       - name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
         configMap:

@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: renci/icees-api-server
   pullPolicy: Always
-  tag: "0.5.0"
+  tag: "0.5.1"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -23,10 +23,10 @@ service:
   resources:
     requests:
       cpu: "2"
-      memory: 8Gi
+      memory: "8Gi"
     limits:
-      memory: "10Gi"
-      cpu: "4"
+      memory: "8Gi"
+      cpu: "2"
 
 redis:
   port: "6379"
@@ -72,3 +72,7 @@ ingress:
     # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 256m 
+    # timeout in seconds
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"

@@ -13,6 +13,16 @@ spec:
           configMap:
             name: {{ include "name-lookup.fullname" . }}-configmap
             defaultMode: 0777
+        {{ if and .Values.blocklist.url .Values.blocklist.storage }}
+        - name: {{ include "name-lookup.fullname" . }}-blocklist
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: {{ .Values.blocklist.storage }}
+        {{ end }}
       restartPolicy: OnFailure
       containers:
         - name: restore-container
@@ -21,8 +31,33 @@ spec:
             - /restore.sh
           stdin: true
           tty: true
+          env:
+          {{ if and .Values.blocklist.url .Values.blocklist.secrets.github_personal_access_token }}
+          - name: GITHUB_PERSONAL_ACCESS_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "name-lookup.fullname" . }}-secrets
+                key: github_personal_access_token
+                optional: false
+          {{ end }}
           volumeMounts:
-            - mountPath:  /restore.sh
+            - mountPath: /restore.sh
               name: {{ include "name-lookup.fullname" . }}-configmap
               subPath: "restore.sh"
+            {{ if and .Values.blocklist.url .Values.blocklist.storage }}
+            - mountPath: /var/blocklist
+              name: {{ include "name-lookup.fullname" . }}-blocklist
+            {{ end }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{ end }}
