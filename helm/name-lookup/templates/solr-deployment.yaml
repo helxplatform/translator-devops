@@ -87,7 +87,7 @@ spec:
         name: {{ include "name-lookup.fullname" . }}-solr-data-vol
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: nfs-client
+        storageClass: nfs-client
         resources:
           requests:
             storage: {{ .Values.solr.storage }}
