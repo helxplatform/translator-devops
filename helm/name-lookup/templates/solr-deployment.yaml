@@ -86,15 +86,15 @@ spec:
     - metadata:
         name: {{ include "name-lookup.fullname" . }}-solr-data-vol
       spec:
-        accessModes: [ {{ .Values.persistence.accessMode | quote }} ]
-        {{- if .Values.persistence.storageClass }}
-        {{- if (eq "-" .Values.persistence.storageClass) }}
+        accessModes: [ {{ .Values.solr.persistence.accessMode | quote }} ]
+        {{- if .Values.solr.persistence.storageClass }}
+        {{- if (eq "-" .Values.solr.persistence.storageClass) }}
         storageClassName: ""
         {{- else }}
-        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        storageClassName: {{ .Values.solr.persistence.storageClass | quote }}
         {{- end }}
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.persistence.size | quote }}
+            storage: {{ .Values.solr.persistence.size | quote }}
   {{- end }}
