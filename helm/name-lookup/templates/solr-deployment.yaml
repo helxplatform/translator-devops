@@ -86,8 +86,15 @@ spec:
     - metadata:
         name: {{ include "name-lookup.fullname" . }}-solr-data-vol
       spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClass: nfs-client
+        accessModes: [ {{ .Values.persistence.accessMode | quote }} ]
+        {{- if .Values.persistence.storageClass }}
+        {{- if (eq "-" .Values.persistence.storageClass) }}
+        storageClassName: ""
+        {{- else }}
+        storageClassName: {{ .Values.persistence.storageClass | quote }}
+        {{- end }}
+        {{- end }}
         resources:
           requests:
-            storage: {{ .Values.solr.storage }}
+            storage: {{ .Values.persistence.size | quote }}
+  {{- end }}
