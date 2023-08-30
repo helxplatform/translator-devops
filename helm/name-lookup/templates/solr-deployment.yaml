@@ -81,20 +81,12 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  {{- if .Values.solr.persistence.enabled }}
   volumeClaimTemplates:
     - metadata:
         name: {{ include "name-lookup.fullname" . }}-solr-data-vol
       spec:
-        accessModes: [ {{ .Values.solr.persistence.accessMode | quote }} ]
-        {{- if .Values.solr.persistence.storageClass }}
-        {{- if (eq "-" .Values.solr.persistence.storageClass) }}
-        storageClassName: ""
-        {{- else }}
-        storageClassName: {{ .Values.solr.persistence.storageClass | quote }}
-        {{- end }}
-        {{- end }}
+        accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: {{ .Values.solr.persistence.size | quote }}
-  {{- end }}
+            storage: {{ .Values.solr.storage }}
+            
