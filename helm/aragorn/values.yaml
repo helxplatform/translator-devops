@@ -117,13 +117,13 @@ redis:
     type: ClusterIP
   resources:
     limits:
-      memory: 60Gi
+      memory: 58Gi
     requests:
-      memory: 60Gi
-  storageSize: 60Gi
+      memory: 58Gi
+  storageSize: 58Gi
   args:
     - --maxmemory
-    - '60gb'
+    - '58gb'
     - --maxmemory-policy
     - 'allkeys-lfu'
     - --loglevel
