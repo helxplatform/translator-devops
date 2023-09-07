@@ -140,3 +140,6 @@ redis:
     - 'yes'
     - --timeout
     - '60'
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
