@@ -120,6 +120,7 @@ redis:
       memory: 60Gi
     requests:
       memory: 60Gi
+  storageSize: 60Gi
   args:
     - --maxmemory
     - '60gb'
