@@ -120,7 +120,9 @@ redis:
       memory: 58Gi
     requests:
       memory: 58Gi
-  storageSize: 58Gi
+  persistence:
+    storageClass: ""
+    size: 58Gi
   args:
     - --maxmemory
     - '58gb'
