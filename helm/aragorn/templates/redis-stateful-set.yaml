@@ -52,6 +52,7 @@ spec:
     - metadata:
         name: {{ include "aragorn.fullname" . }}-redis-data-volume
       spec:
+        storageClassName: nfs-client
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
