@@ -52,8 +52,8 @@ spec:
     - metadata:
         name: {{ include "aragorn.fullname" . }}-redis-data-volume
       spec:
-        storageClassName: nfs-client
+        storageClassName: {{ .Values.redis.persistence.storageClass }}
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: {{ .Values.redis.storageSize }}
+            storage: {{ .Values.redis.persistence.size }}
