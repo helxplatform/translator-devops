@@ -52,3 +52,21 @@ spec:
     app: {{ include "aragorn.fullname" . }}
     app-name: aragorn
     {{- include "aragorn.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "aragorn.fullname" . }}-redis-service
+  labels:
+    {{- include "aragorn.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: 6379
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "aragorn.selectorLabels" . | nindent 4 }}
+    service-type: redis
