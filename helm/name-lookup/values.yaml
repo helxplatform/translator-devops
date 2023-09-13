@@ -13,9 +13,9 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.3.4
+    tag: v1.3.6
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2023jul13/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/solr/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
@@ -52,11 +52,11 @@ solr:
     # to cache content. We'll set this to 64Gi for now, but we should try
     # bombarding these instances with queries to check how valuable increasing
     # the memory to Solr helps with performance.
-    # 
+    #
     requests:
-      memory: "64Gi"
+      memory: "58Gi"
     limits:
-      memory: "64Gi"
+      memory: "58Gi"
     # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
     # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
     nodeSelector:

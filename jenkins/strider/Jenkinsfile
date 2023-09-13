@@ -96,8 +96,7 @@ pipeline {
                 checkout scm
                 dir("helm/strider") {
                     configFileProvider([
-                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
-                        configFile(fileId: 'values-ci.yaml', targetLocation: 'values-ncats.yaml')
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
                     withEnv([
                         "BUILD_VERSION_STRIDER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
@@ -105,7 +104,8 @@ pipeline {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             /bin/bash prepare.sh
-                            /bin/bash deploy.sh  
+                            mv ncats-dev-values.yaml ./values-ncats.yaml
+                            /bin/bash deploy.sh
                            '''
                         }
                     }
