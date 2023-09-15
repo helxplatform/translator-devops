@@ -1,0 +1,186 @@
+
+id-id:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 100Gi
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 100Gi
+      requests:
+        cpu: 200m
+        memory: 80Gi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+
+  replica:
+    replicaCount: 0
+
+id-categories:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 150Gi
+    resources:
+      limits:
+        cpu: 1500m
+        memory: 50Gi
+      requests:
+        cpu: 500m
+        memory: 25Gi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+
+  replica:
+    replicaCount: 0
+
+id-eq-id:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 200Gi
+    resources:
+      limits:
+        cpu: 3000m
+        memory: 150Gi
+      requests:
+        cpu: 500m
+        memory: 150Gi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+  replica:
+    replicaCount: 0
+
+semantic-count:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 1Gi
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+  replica:
+    replicaCount: 0
+
+conflation-db:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 20Gi
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 6Gi
+      requests:
+        cpu: 250m
+        memory: 3Gi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+  replica:
+    replicaCount: 0
+
+info-content:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 1Gi
+    resources:
+      limits:
+        cpu: 150m
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 100Mi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+  replica:
+    replicaCount: 0
+
+chemical-drug-db:
+  auth:
+    enabled: true
+  master:
+    persistence:
+      size: 1Gi
+    resources:
+      limits:
+        cpu: 150m
+        memory: 1Gi
+      requests:
+        cpu: 50m
+        memory: 1Gi
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    livenessProbe:
+      enabled: false
+    resources:
+      requests:
+        memory: #
+    extraFlags:
+    - "--save 300 1000000"
+    - "--appendonly no"
+  replica:
+    replicaCount: 0

@@ -1,0 +1,1 @@
+backup-nn-redis.sh filter=git-crypt diff=git-crypt 
