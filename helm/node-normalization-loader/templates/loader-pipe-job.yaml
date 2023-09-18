@@ -1,0 +1,56 @@
+{{- if eq .Values.mode "restore" }}
+{{- $fullName := include "node-normalization-loader.fullname" . -}}
+{{- $image := .Values.image.repository }}
+{{- $imageTag := .Values.image.tag }}
+{{- $pullPolicy := .Values.image.pullPolicy }}
+{{- $codeDir := .Values.codeDir }}
+{{- $resources := .Values.resources }}
+{{- $securityContext := .Values.securityContext }}
+{{- range $dbName, $dbConf := .Values.redis_backend_config }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ $fullName }}-pipe-job-{{ $dbName }}"
+spec:
+  template:
+    metadata:
+      name: "{{ $fullName }}-pipe-job-{{ $dbName }}"
+    spec:
+      containers:
+        - name: loader-container
+          image: "{{ $image }}:{{ $imageTag }}"
+          imagePullPolicy: {{ $pullPolicy }}
+          command:
+            - {{ $codeDir }}/run_loader.sh "{{ $dbConf.restoreURL }}"
+          args:
+            - {{ $dbName }}
+          volumeMounts:
+            - mountPath:  {{ $codeDir }}/run_loader.sh
+              name: "loader-config"
+              subPath: "run_loader_compendia.sh"
+            - mountPath: /data
+              name: "data-dir"
+            - mountPath: {{ $codeDir }}/redis_config.yaml
+              name: "loader-config"
+              subPath: "redis_config.yaml"
+            - mountPath: {{ $codeDir }}/config.json
+              name: "loader-config"
+              subPath: "config-compendia{{ $dbName }}.json"
+          resources:
+            {{ $resources | toYaml | nindent 12 }}
+      restartPolicy: OnFailure
+      {{ with $securityContext }}
+      securityContext:
+        {{ $securityContext | toYaml | nindent 8 }}
+      {{ end }}
+      volumes:
+        - name: loader-config
+          configMap:
+            name: "{{ $fullName }}-loader-config"
+            defaultMode: 0777
+        - name: data-dir
+          persistentVolumeClaim:
+            claimName: "{{ $fullName }}-compendia-{{ $dbName }}-pvc"
+---
+{{ end }}
+{{- end }}
