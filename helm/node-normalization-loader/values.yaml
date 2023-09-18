@@ -2,6 +2,11 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# There are two node-normalization-loader modes:
+# 1. `load` (default): Use the loader to load a set of backend Redis servers with Babel compendium/conflation JSONL files.
+# 2. `restore`: Use the loader-pipe-job to load the database backups into the backend Redis databases.
+mode: load
+
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
   tag: "chem_conflate"
