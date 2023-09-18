@@ -16,6 +16,9 @@ NodeNorm needs to be deployable in three (!) different ways:
 
 ## Managing the Bitnami Redis images
 
+We use the [Bitnami Redis package for Helm](https://artifacthub.io/packages/helm/bitnami/redis) to set up
+a local set of Redis databases.
+
 You can update the versions of the Bitname Redis images in Chart.lock as per Chart.yaml by running:
 
 ```shell
