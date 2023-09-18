@@ -1,6 +1,11 @@
 # Node Normalization Loader
 
-## Deploying to RENCI
+The Node Normalization loader is capable of loading data into a Redis instance
+in two ways:
+1. By loading Babel compendium JSONL files
+2. By loading an existing Redis database backup (RDB) file
+
+## Loading Babel compendium JSONL files
 
 These Helm charts can be used to load a Babel compendium into a Redis instance
 for use in
@@ -58,16 +63,15 @@ for use in
    $ helm uninstall -n translator-exp node-normalization-loader
    ```
 
-## Deploying to NCATS ITRB
+## By loading an existing Redis database backup (RDB) file
 
-- Before you deploy any of the node-normalization-loader helms to ITRB, you need to request
-  that the NCATS ITRB team reinstall the redis-r3-external helm.
-- For the NCATS ITRB CI instance, simply updating the values in values.yaml and publishing
-  to the `develop` branch for Jenkins should automatically load these changes into ITRB's
-  Redis instances.
-- For the NCATS ITRB Test and Prod instance, you need to push the changes to `test` and
-  `master` and then ask NCATS ITRB to (1) reinstall the redis-r3-external helm and
-  (2) re-run the NodeNorm loader from this repo. Since we use the same server information
-  for these loads, the existing NodeNorm instance will stop returning results when the
-  redis-r3-external helm is reinstalled and then will slowly start returning correct results
-  as the load continues.
+Once you have loaded the Redis databases, you can save their contents into an RDB file and use that to
+start new Redis instances. The procedure for doing that is:
+
+1. Create RDB files containing all the data in _all_ the Redis databases. The backup scripts in
+   [../redis-r3-external/scripts](../redis-r3-external/scripts) should help you to do that.
+
+2. Set up a new set of redis-r3-external databases to hold this data. (On ITRB, you will need to
+   manually wipe the Redis cluster that is being used.)
+
+3. 
