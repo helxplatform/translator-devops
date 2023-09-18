@@ -14,11 +14,16 @@ NodeNorm needs to be deployable in three (!) different ways:
    3. Report the number of keys in the database.
    4. Complete with status "Succeeded".
 
-#### Installation
+## Managing the Bitnami Redis images
 
-1. 
-    ```shell
-    $ cd redis-r3-external
-    $ helm dependency build 
-    ```
-2. Update 
+You can update the versions of the Bitname Redis images in Chart.lock as per Chart.yaml by running:
+
+```shell
+$ helm dependency update
+```
+
+And then rebuild the `charts/` directory from Chart.lock by running:
+
+```shell
+$ helm dependency build
+```

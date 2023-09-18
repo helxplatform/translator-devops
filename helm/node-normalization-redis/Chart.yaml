@@ -1,6 +1,6 @@
 apiVersion: v2
-name: redis-r3-external
-description: Redis Chart wrapper
+name: node-normalization-redis
+description: Node Normalization Redis Cluster/Loader
 
 # A chart can be either an 'application' or a 'library' chart.
 #
