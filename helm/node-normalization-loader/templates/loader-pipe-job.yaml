@@ -1,41 +1,37 @@
 {{- if eq .Values.mode "restore" }}
 {{- $fullName := include "node-normalization-loader.fullname" . -}}
-{{- $image := .Values.image.repository }}
-{{- $imageTag := .Values.image.tag }}
-{{- $pullPolicy := .Values.image.pullPolicy }}
 {{- $codeDir := .Values.codeDir }}
+{{- $dataDir := .Values.restore.dataDir }}
 {{- $resources := .Values.resources }}
 {{- $securityContext := .Values.securityContext }}
+{{- $repository := .Values.restore.repository }}
+{{- $tag := .Values.restore.tag }}
+{{- $pullPolicy := .Values.restore.pullPolicy }}
 {{- range $dbName, $dbConf := .Values.redis_backend_config }}
+{{- range $index, $host := $dbConf.hosts }}
+{{- $hostName := $host.host_name }}
+{{- $port := $host.port }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ $fullName }}-pipe-job-{{ $dbName }}"
+  name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $hostName }}-{{ $port }}"
 spec:
   template:
     metadata:
-      name: "{{ $fullName }}-pipe-job-{{ $dbName }}"
+      name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $hostName }}-{{ $port }}"
     spec:
       containers:
         - name: loader-container
-          image: "{{ $image }}:{{ $imageTag }}"
+          image: "{{ $repository }}:{{ $tag }}"
           imagePullPolicy: {{ $pullPolicy }}
           command:
-            - {{ $codeDir }}/run_loader.sh "{{ $dbConf.restoreURL }}"
-          args:
-            - {{ $dbName }}
+            - {{ $codeDir }}/run_pipe.sh
           volumeMounts:
-            - mountPath:  {{ $codeDir }}/run_loader.sh
+            - mountPath:  {{ $codeDir }}/run_pipe.sh
               name: "loader-config"
-              subPath: "run_loader_compendia.sh"
-            - mountPath: /data
+              subPath: "run_pipe.sh"
+            - mountPath: {{ $dataDir }}
               name: "data-dir"
-            - mountPath: {{ $codeDir }}/redis_config.yaml
-              name: "loader-config"
-              subPath: "redis_config.yaml"
-            - mountPath: {{ $codeDir }}/config.json
-              name: "loader-config"
-              subPath: "config-compendia{{ $dbName }}.json"
           resources:
             {{ $resources | toYaml | nindent 12 }}
       restartPolicy: OnFailure
@@ -50,7 +46,28 @@ spec:
             defaultMode: 0777
         - name: data-dir
           persistentVolumeClaim:
-            claimName: "{{ $fullName }}-compendia-{{ $dbName }}-pvc"
+            claimName: "{{ $fullName }}-compendia-{{ $dbName }}-{{ $hostName }}-{{ $port }}-pvc"
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ $fullName }}-loader-config"
+data:
+  run_pipe.sh: |-
+    #!/bin/bash
+    set -x
+
+    # Download the archive file.
+    wget -nv -P "{{ $dataDir }}/{{ $dbName }}.rdb.gz" "{{ $dbConf.restoreURL }}"
+
+    # Unzip the archive file.
+    gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
+
+    # Restore the file into the specified database.
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | pv | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe
+
+    echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
+---
+{{ end }}
 {{ end }}
 {{- end }}

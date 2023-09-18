@@ -13,6 +13,14 @@ image:
   pullPolicy: Always
 fullnameOverride: ""
 
+# Settings to use for a restore job.
+restore:
+  repository: "redis"
+  tag: "7-alpine"
+  pullPolicy: Always
+  dataDir: "/data"
+  dataSize: 50G
+
 data:
   compendia:
     storageSize: 10G
