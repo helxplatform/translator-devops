@@ -23,7 +23,9 @@ version: 0.1.0
 # It is recommended to use it with quotes.
 appVersion: "1.17.0"
 
-
+# I remember trying to use the latest version of Redis and loading failing for some reason, so I
+# reverted back to 16.13.2. At some point we should try upgrading to the latest again.
+#   -- Gaurav Vaidya, 2023sep18
 dependencies:
   - name: redis
     version: "16.13.2"
