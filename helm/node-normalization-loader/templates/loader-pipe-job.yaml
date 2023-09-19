@@ -8,6 +8,7 @@
 {{- $tag := .Values.restore.tag }}
 {{- $pullPolicy := .Values.restore.pullPolicy }}
 {{- range $dbName, $dbConf := .Values.redis_backend_config }}
+{{- $dataStorageSize := $dbConf.storageSize }}
 {{- range $index, $host := $dbConf.hosts }}
 {{- $hostName := $host.host_name }}
 {{- $port := $host.port }}
@@ -46,7 +47,7 @@ spec:
             defaultMode: 0777
         - name: data-dir
           persistentVolumeClaim:
-            claimName: "{{ $fullName }}-compendia-{{ $dbName }}-{{ $hostName }}-{{ $port }}-pvc"
+            claimName: "{{ $fullName }}-loader-pipe-{{ $dbName }}-{{ $hostName }}-{{ $port }}-pvc"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -81,6 +82,17 @@ data:
 
     # Go into a sleep loop so we can examine this pod.
     while true; do sleep 5; done
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{ $fullName }}-loader-pipe-{{ $dbName }}-{{ $hostName }}-{{ $port }}-pvc"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $dataStorageSize }}
 ---
 {{ end }}
 {{ end }}
