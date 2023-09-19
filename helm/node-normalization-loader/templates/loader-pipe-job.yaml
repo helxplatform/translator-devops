@@ -83,7 +83,7 @@ metadata:
 data:
   run_pipe.sh: |-
     #!/bin/bash
-    set -x
+    set -v -x -e
 
     # Eventually we should build a Docker image for this restore script, but during development this is good enough for now.
     apt-get update
@@ -101,8 +101,7 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
-    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | pv > "{{ $dataDir }}/output.rdp"
-    # | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | pv > "{{ $dataDir }}/output.rdp" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe
 
     # Report success.
     echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
