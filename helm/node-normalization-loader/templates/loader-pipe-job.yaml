@@ -101,13 +101,10 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
-    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | pv > "{{ $dataDir }}/output.rdp" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | pv | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe
 
     # Report success.
     echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
-
-    # Go into a sleep loop so we can examine this pod.
-    while true; do sleep 5; done
 ---
 apiVersion: v1
 kind: Secret
