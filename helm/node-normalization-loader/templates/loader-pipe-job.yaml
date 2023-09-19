@@ -47,10 +47,15 @@ spec:
           resources:
             {{ $resources | toYaml | nindent 12 }}
       restartPolicy: OnFailure
+      {{- if false }}
+      # Ordinarily we would use the security context to set the username to 1000,
+      # but we need to run as root so that we can test this without deploying a Docker image.
+      # TODO: take this out before submitting for review.
       {{ with $securityContext }}
       securityContext:
         {{ $securityContext | toYaml | nindent 8 }}
       {{ end }}
+      {{- end }}
       volumes:
         - name: loader-config
           configMap:
