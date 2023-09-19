@@ -31,6 +31,13 @@ spec:
             - /bin/bash
           args:
             - {{ $codeDir }}/run_pipe.sh
+          env:
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-secrets"
+                  key: redis_password
+                  optional: false
           volumeMounts:
             - mountPath:  {{ $codeDir }}/run_pipe.sh
               name: "loader-config"
@@ -97,6 +104,14 @@ data:
 
     # Go into a sleep loop so we can examine this pod.
     while true; do sleep 5; done
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-secrets"
+type: Opaque
+stringData:
+  redis_password: "{{ $dbConf.password }}"
 ---
 {{ end }}
 {{ end }}
