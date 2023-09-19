@@ -8,6 +8,7 @@
 {{- $tag := .Values.restore.tag }}
 {{- $pullPolicy := .Values.restore.pullPolicy }}
 {{- range $dbName, $dbConf := .Values.redis_backend_config }}
+{{- $dbKubeName := $dbName | replace "_" "-"}}
 {{- $dataStorageSize := $dbConf.storageSize }}
 {{- range $index, $host := $dbConf.hosts }}
 {{- $hostName := $host.host_name }}
@@ -15,17 +16,19 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $index }}"
+  name: "{{ $fullName }}-pipe-job-{{ $dbKubeName }}-{{ $index }}"
 spec:
   template:
     metadata:
-      name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $index }}"
+      name: "{{ $fullName }}-pipe-job-{{ $dbKubeName }}-{{ $index }}"
     spec:
       containers:
         - name: loader-container
           image: "{{ $repository }}:{{ $tag }}"
           imagePullPolicy: {{ $pullPolicy }}
           command:
+            - /bin/bash
+          args:
             - {{ $codeDir }}/run_pipe.sh
           volumeMounts:
             - mountPath:  {{ $codeDir }}/run_pipe.sh
@@ -43,16 +46,16 @@ spec:
       volumes:
         - name: loader-config
           configMap:
-            name: "{{ $fullName }}-loader-config"
+            name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-config"
             defaultMode: 0777
         - name: data-dir
           persistentVolumeClaim:
-            claimName: "{{ $fullName }}-{{ $dbName }}-{{ $index }}-loader-pvc"
+            claimName: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-loader-pvc"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: "{{ $fullName }}-{{ $dbName }}-{{ $index }}-loader-pvc"
+  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-loader-pvc"
 spec:
   accessModes:
     - ReadWriteOnce
@@ -63,7 +66,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ $fullName }}-loader-config"
+  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-config"
 data:
   run_pipe.sh: |-
     #!/bin/bash
