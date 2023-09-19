@@ -14,6 +14,7 @@
 {{- range $index, $host := $dbConf.hosts }}
 {{- $hostName := $host.host_name }}
 {{- $port := $host.port }}
+{{- $sslEnabled := $dbConf.ssl_enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -101,7 +102,7 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
-    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe {{- if $sslEnabled -}}--tls{{- end }}
 
     # Report success.
     echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
