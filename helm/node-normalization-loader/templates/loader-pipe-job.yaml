@@ -15,11 +15,11 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $hostName }}-{{ $port }}"
+  name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $index }}"
 spec:
   template:
     metadata:
-      name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $hostName }}-{{ $port }}"
+      name: "{{ $fullName }}-pipe-job-{{ $dbName }}-{{ $index }}"
     spec:
       containers:
         - name: loader-container
@@ -47,7 +47,18 @@ spec:
             defaultMode: 0777
         - name: data-dir
           persistentVolumeClaim:
-            claimName: "{{ $fullName }}-loader-pipe-{{ $dbName }}-{{ $hostName }}-{{ $port }}-pvc"
+            claimName: "{{ $fullName }}-{{ $dbName }}-{{ $index }}-loader-pvc"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{ $fullName }}-{{ $dbName }}-{{ $index }}-loader-pvc"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $dataStorageSize }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -82,17 +93,6 @@ data:
 
     # Go into a sleep loop so we can examine this pod.
     while true; do sleep 5; done
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: "{{ $fullName }}-loader-pipe-{{ $dbName }}-{{ $hostName }}-{{ $port }}-pvc"
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: {{ $dataStorageSize }}
 ---
 {{ end }}
 {{ end }}
