@@ -114,5 +114,7 @@ securityContext:
 resources:
   limits:
     memory: 10Gi
+    ephemeral-storage: 2Gi
   requests:
     memory: 10Gi
+    ephemeral-storage: 2Gi
