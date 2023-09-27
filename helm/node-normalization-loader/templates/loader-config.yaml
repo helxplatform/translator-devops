@@ -63,9 +63,8 @@ data:
     echo "FINISHED"
 
   redis_config.yaml: |
-    redis_backend_config:
-      {{- range $key, $v := .Values.redis_backend_config }}
-      {{ $key | replace "\"" "" }}:
-        {{ $v.connectionDetails | toYaml | nindent 8 }}
-      {{- end }}
+    {{- range $key, $v := .Values.redis_backend_config }}
+    {{ $key | replace "\"" "" }}:
+      {{ $v.connectionDetails | toYaml | nindent 6 }}
+    {{- end }}
 {{- end }}
