@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: docker.io/jrichardson97/kg-summarizer
+  repository: ghcr.io/robokopu24/kg-summarizer
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1693338537"
+  tag: "v0.0.1"
 
 imagePullSecrets: []
 nameOverride: ""
