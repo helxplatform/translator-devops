@@ -10,6 +10,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v0.0.5"
 
+refreshInterval: "1 * * * *"
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
