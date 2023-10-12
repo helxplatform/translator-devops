@@ -36,13 +36,15 @@ ingress:
 
 app:
   port: 4321
+  workerCount: 3
+  workerTimeout: 400
   resources:
     requests:
-      memory: 1000Mi
-      cpu: 800m
+      memory: 3Gi
+      cpu: 1000m
     limits:
-      memory: 1000Mi
-      cpu: 800m
+      memory: 5Gi
+      cpu: 2000m
 
 x_trapi:
   maturity:
