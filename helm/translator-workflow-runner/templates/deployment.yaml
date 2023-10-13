@@ -33,6 +33,18 @@ spec:
           - containerPort: {{ .Values.app.port }}
             name: http
             protocol: TCP
+          command:
+            - 'gunicorn'
+          args:
+            - "-b"
+            - "0.0.0.0:{{ .Values.app.port }}"
+            - "-k"
+            - "uvicorn.workers.UvicornWorker"
+            - "-w"
+            - "{{ .Values.app.workerCount }}"
+            - "--timeout"
+            - "{{ .Values.app.workerTimeout }}"
+            - "app.server:APP"
           resources:
             {{- toYaml .Values.app.resources | nindent 12 }}
       restartPolicy: Always

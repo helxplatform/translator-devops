@@ -71,8 +71,6 @@ redis:
     - 'notice'
     - --logfile
     - '/data/strider_cache.log'
-    - --save
-    - ''
     - --stop-writes-on-bgsave-error
     - 'no'
     - --dbfilename

@@ -200,4 +200,7 @@ config:
       "https://translator-workflow-runner.ci.transltr.io/openapi.json",
       "https://translator-workflow-runner.test.transltr.io/openapi.json",
       "https://translator-workflow-runner.transltr.io/openapi.json",
+      "https://answerappraiser.ci.transltr.io/openapi.json",
+      "https://answerappraiser.test.transltr.io/openapi.json",
+      "https://answerappraiser.transltr.io/openapi.json",
     ]
