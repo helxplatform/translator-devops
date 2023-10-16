@@ -28,8 +28,14 @@ pipeline {
         }
         stage('Build Version') {
             when {
-                expression {
-                    return !params.BUILD_VERSION
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/answer-appraiser/*"
+                        triggeredBy 'UserIdCause'
+                    }
                 }
             }
             steps{
@@ -89,7 +95,8 @@ pipeline {
                         sh '''
                         aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_BLUE_CLUSTER_NAME}
                         /bin/bash prepare.sh
-                        /bin/bash helm/answer-appraiser/deploy.sh
+                        cd helm/answer-appraiser
+                        /bin/bash deploy.sh
                         '''
                     }
                 }
