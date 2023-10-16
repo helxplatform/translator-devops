@@ -89,8 +89,6 @@ pipeline {
                         sh '''
                         aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_BLUE_CLUSTER_NAME}
                         /bin/bash prepare.sh
-                        cd helm/answer-appraiser
-                        cp ncats-dev-values.yaml values-ncats.yaml
                         /bin/bash deploy.sh
                         '''
                     }
