@@ -64,10 +64,6 @@ redis:
     replicaCount: 0
   # anything that goes into redis.conf file
   commonConfiguration: |-
-    # Enable AOF https://redis.io/topics/persistence#append-only-file
-    appendonly no
-    # Disable RDB persistence, AOF persistence already enabled.
-    save ""
     maxmemory 20gb
     maxmemory-policy noeviction
     loglevel notice
@@ -106,8 +102,8 @@ x_trapi:
 
 resources:
   limits:
-    cpu: 1000m
-    memory: 5Gi
+    cpu: 3000m
+    memory: 20Gi
   requests:
     cpu: 1000m
-    memory: 2Gi
+    memory: 10Gi

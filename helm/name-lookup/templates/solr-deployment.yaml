@@ -81,7 +81,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-
   volumeClaimTemplates:
     - metadata:
         name: {{ include "name-lookup.fullname" . }}-solr-data-vol
@@ -90,3 +89,4 @@ spec:
         resources:
           requests:
             storage: {{ .Values.solr.storage }}
+            
