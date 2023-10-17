@@ -21,7 +21,7 @@ spec:
     spec:
       initContainers:
         - name: {{ include "plater.fullname" . }}-metadata-download-container
-          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          image: "{{ .Values.bash.image.repository }}:{{ .Values.bash.image.tag }}"
           command:
             - './download_metadata.sh'
           envFrom:
