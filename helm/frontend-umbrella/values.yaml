@@ -28,11 +28,11 @@ qgraph:
   env:
     # robokache: http://qgraph-robokache
     strider: https://strider.renci.org/1.3
-    aragorn: https://aragorn.renci.org/aragorn
-    robokop_ara: https://aragorn.renci.org/robokop
-    node_normalizer: https://nodenormalization-sri.renci.org
+    aragorn: http://aragorn-aragorn-service:8080
+    robokop_ara: http://aragorn-aragorn-robokop-service:8080
+    node_normalizer: http://nn-web-node-normalization-web-service-root.translator-dev:8080
     name_resolver: https://name-resolution-sri.renci.org
-    biolink: https://raw.githubusercontent.com/biolink/biolink-model/v3.4.3/biolink-model.yaml
+    biolink: https://raw.githubusercontent.com/biolink/biolink-model/v3.5.4/biolink-model.yaml
 
   qgraph:
     repository: ghcr.io/robokopu24/qgraph
