@@ -13,7 +13,7 @@ busybox:
 bash:
   image:
     repository: bash
-    tag: "latest"
+    tag: "5.2.15"
 
 initresources:
   requests:
