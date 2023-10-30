@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kg-summarizer.fullname" . }}-app-config
+  labels:
+    {{- include "kg-summarizer.labels" . | nindent 4 }}
+data:
+  env-file: |-
+    OPENAI_API_KEY={{ .Values.app.config.openAIKey }}
+    OPENAI_ORGANIZATION_ID={{ .Values.app.config.openAIOrgID }}
