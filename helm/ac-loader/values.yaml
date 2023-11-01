@@ -5,14 +5,14 @@
 replicaCount: 1
 
 
-dataFiles:
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/backlinks.txt
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/category_count.txt
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/database_build_notes.txt
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/links.txt
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/nodelabels.txt
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/nodenames.txt
-- https://stars.renci.org/var/answer_coalesce/input_files_10_30/prov.txt
+dataFiles: []
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/backlinks.txt
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/category_count.txt
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/database_build_notes.txt
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/links.txt
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/nodelabels.txt
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/nodenames.txt
+# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/prov.txt
 
 
 AC:
@@ -22,7 +22,10 @@ AC:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "v.0.2.4.9-alpha"
   storageSize: 120Gi
-  resources: {}
+  resources: 
+    limits:
+      memory: 40Gi
+      cpu: 1
 
 
 redis:
@@ -34,11 +37,11 @@ redis:
   storageSize: 120Gi
   resources:
     limits:
-      memory: 70Gi
+      memory: 140Gi
       cpu: 3
   args:
     - --maxmemory
-    - '70gb'
+    - '140gb'
     - --loglevel
     - 'notice'
     - --logfile
