@@ -37,11 +37,11 @@ redis:
   storageSize: 120Gi
   resources:
     limits:
-      memory: 140Gi
+      memory: 190Gi
       cpu: 3
   args:
     - --maxmemory
-    - '140gb'
+    - '190gb'
     - --loglevel
     - 'notice'
     - --logfile
