@@ -20,7 +20,7 @@ AC:
     repository: "ghcr.io/ranking-agent/answercoalesce"
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v.0.2.4.9-alpha"
+    tag: "v.0.2.4.8-alpha"
   storageSize: 120Gi
   resources: 
     limits:
