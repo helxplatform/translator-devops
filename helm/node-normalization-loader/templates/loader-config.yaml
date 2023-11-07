@@ -65,6 +65,6 @@ data:
   redis_config.yaml: |
     {{- range $key, $v := .Values.redis_backend_config }}
     {{ $key | replace "\"" "" }}:
-      {{ $v.connectionDetails | toYaml | nindent 6 }}
+      {{- $v.hosts | first | toYaml | nindent 6 }}
     {{- end }}
 {{- end }}
