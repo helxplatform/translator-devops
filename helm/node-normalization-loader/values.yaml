@@ -9,7 +9,7 @@ mode: load
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "chem_conflate"
+  tag: "v2.3.0"
   pullPolicy: Always
 fullnameOverride: ""
 
