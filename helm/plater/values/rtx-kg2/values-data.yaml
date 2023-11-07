@@ -1,0 +1,4 @@
+dataUrl: https://stars.renci.org/var/plater/RTX-KG2/2.8.6/graph.db.dump
+metadataUrl: https://stars.renci.org/var/plater/RTX-KG2/2.8.6/RTX-KG2.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/RTX-KG2/2.8.6/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/RTX-KG2/2.8.6/testing_data.json
