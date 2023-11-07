@@ -24,7 +24,7 @@ restore:
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023nov5/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
@@ -41,6 +41,7 @@ data:
     - Gene.txt.02
     - Gene.txt.03
     - Gene.txt.04
+    - Gene.txt.05
     - GrossAnatomicalStructure.txt
     - MacromolecularComplex.txt
     - MolecularActivity.txt
@@ -89,7 +90,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023nov5/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
