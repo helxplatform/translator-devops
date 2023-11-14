@@ -74,4 +74,13 @@ start new Redis instances. The procedure for doing that is:
 2. Set up a new set of redis-r3-external databases to hold this data. (On ITRB, you will need to
    manually wipe the Redis cluster that is being used.)
 
-3. 
+3. Confirm that the NodeNormalization loader version in `./values.yaml` is updated to the latest version.
+
+4. For the values file specific to your release (e.g. `renci-dev-values-populated.yaml`), set `mode` to
+   `restore` and update the `restoreURL`s to the latest version.
+
+5. VERY IMPORTANT: remember to update the `host_name` -- otherwise the jobs will overwrite your previous database!
+
+5. Start the loader jobs
+   (`helm install -n translator-dev -f values-populated.yaml -f renci-dev-values-populated.yaml nn-loader .`). This
+   should create one job for every database.
