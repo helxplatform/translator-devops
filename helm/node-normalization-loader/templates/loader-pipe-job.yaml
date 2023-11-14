@@ -95,6 +95,9 @@ data:
     source "{{ $dataDir }}/venv/bin/activate"
     pip install rdbtools python-lzf
 
+    # Delete everything in the dataDir.
+    rm -rf "{{ $dataDir }}"
+
     # Download the archive file.
     wget -nv -O "{{ $dataDir }}/{{ $dbName }}.rdb.gz" "{{ $dbConf.restoreURL }}"
 
