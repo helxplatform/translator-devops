@@ -16,6 +16,7 @@
 {{- $hostName := $host.host_name }}
 {{- $port := $host.port }}
 {{- $sslEnabled := $connectionDetails.ssl_enabled }}
+{{- $redisPassword := $connectionDetails.password }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -118,7 +119,7 @@ metadata:
   name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-secrets"
 type: Opaque
 stringData:
-  redis_password: "{{ $dbConf.password }}"
+  redis_password: "{{ $redisPassword }}"
 ---
 {{ end }}
 {{ end }}
