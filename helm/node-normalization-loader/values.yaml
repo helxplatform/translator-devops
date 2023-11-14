@@ -16,7 +16,7 @@ fullnameOverride: ""
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "d92f4dd6e3cf0f7faef15637760ce9a8ec1791235a617e313f26a6ced44457cc"
+  tag: "add-nn-loader-docker"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
