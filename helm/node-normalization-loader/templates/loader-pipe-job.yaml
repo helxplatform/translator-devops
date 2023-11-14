@@ -11,10 +11,11 @@
 {{- range $dbName, $dbConf := .Values.redis_backend_config }}
 {{- $dbKubeName := $dbName | replace "_" "-"}}
 {{- $dataStorageSize := $dbConf.storageSize }}
-{{- range $index, $host := $dbConf.hosts }}
+{{- $connectionDetails := $dbConf.connectionDetails }}
+{{- range $index, $host := $connectionDetails.hosts }}
 {{- $hostName := $host.host_name }}
 {{- $port := $host.port }}
-{{- $sslEnabled := $dbConf.ssl_enabled }}
+{{- $sslEnabled := $connectionDetails.ssl_enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
