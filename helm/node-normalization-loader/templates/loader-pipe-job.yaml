@@ -96,7 +96,8 @@ data:
     pip install rdbtools python-lzf
 
     # Delete everything in the dataDir.
-    rm -rf "{{ $dataDir }}"
+    rm -f "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
+    rm -f "{{ $dataDir }}/{{ $dbName }}.rdb"
 
     # Download the archive file.
     wget -nv -O "{{ $dataDir }}/{{ $dbName }}.rdb.gz" "{{ $dbConf.restoreURL }}"
