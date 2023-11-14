@@ -88,15 +88,6 @@ data:
     #!/bin/bash
     set -v -x -e
 
-    # Eventually we should build a Docker image for this restore script, but during development this is good enough for now.
-    apt-get update
-    apt-get install -y wget python3 python3-venv python3-pip
-
-    # We have to handle pip separately.
-    python3 -m venv "{{ $dataDir }}/venv"
-    source "{{ $dataDir }}/venv/bin/activate"
-    pip install rdbtools python-lzf
-
     # Delete everything in the dataDir.
     rm -f "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
     rm -f "{{ $dataDir }}/{{ $dbName }}.rdb"
