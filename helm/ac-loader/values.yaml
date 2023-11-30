@@ -5,14 +5,13 @@
 replicaCount: 1
 
 
-dataFiles: []
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/backlinks.txt
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/category_count.txt
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/database_build_notes.txt
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/links.txt
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/nodelabels.txt
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/nodenames.txt
-# - https://stars.renci.org/var/answer_coalesce/input_files_10_30/prov.txt
+dataFiles:
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/links.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/nodelabels.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/backlinks.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/nodenames.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/prov.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/category_count.txt
 
 
 AC:
@@ -20,11 +19,11 @@ AC:
     repository: "ghcr.io/ranking-agent/answercoalesce"
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v.0.2.4.8-alpha"
-  storageSize: 120Gi
+    tag: "v0.2.4.8-alpha"
+  storageSize: 180Gi
   resources: 
     limits:
-      memory: 40Gi
+      memory: 60Gi
       cpu: 1
 
 
@@ -34,14 +33,14 @@ redis:
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
     tag: "6.2.6"
-  storageSize: 120Gi
+  storageSize: 230Gi
   resources:
     limits:
-      memory: 190Gi
+      memory: 220Gi
       cpu: 3
   args:
     - --maxmemory
-    - '190gb'
+    - '220gb'
     - --loglevel
     - 'notice'
     - --logfile
