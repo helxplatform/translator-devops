@@ -25,6 +25,14 @@ spec:
       securityContext:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: webserver-container
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
