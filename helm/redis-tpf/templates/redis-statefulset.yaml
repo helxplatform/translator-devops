@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "redis-tpf.fullname" . }}-redis
+  labels:
+    {{- include "redis-tpf.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  serviceName: {{ include "redis-tpf.fullname" . }}-redis
+  selector:
+    matchLabels:
+      {{- include "redis-tpf.selectorLabels" . | nindent 6 }}
+      service-type: redis
+  template:
+    metadata:
+      labels:
+        {{- include "redis-tpf.selectorLabels" . | nindent 8 }}
+        service-type: redis
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-redis-container
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          ports:
+            - name: redis
+              containerPort: {{ .Values.redis.service.port }}
+              protocol: TCP
+          args:
+            - --requirepass
+            - {{ .Values.redis.password }}
+            {{- range .Values.redis.args }}
+            - {{ . | quote }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: {{ .Values.redis.dbPath }}
+              name: {{ include "redis-tpf.fullname" . }}-redis-data-volume
+          resources:
+            {{ toYaml .Values.redis.resources | nindent 12 }}
+      {{- with .Values.redis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "redis-tpf.fullname" . }}-redis-data-volume
+      spec:
+        storageClassName: {{ .Values.redis.persistence.storageClass }}
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.redis.persistence.size }}
