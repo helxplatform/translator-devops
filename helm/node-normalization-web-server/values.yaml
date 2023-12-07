@@ -73,7 +73,7 @@ ingress:
   class:
   # same as web.serverHostName
   hostName: #####
-  trapiVersion: "1.4"
+  trapiVersion: "1.3"
   annotations:
     # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
