@@ -101,3 +101,8 @@ x_trapi:
     value: "maturity"
   location:
     value: "location"
+
+app:
+  affinity: {}
+  tolerations: {}
+  nodeSelector: {}
