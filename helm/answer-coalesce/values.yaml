@@ -63,21 +63,8 @@ redis:
     pvcName:
     size:
     class:
-  affinity:
-  # this ensures pod only runs on node with label application=managed-app
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: application
-            operator: In
-            values:
-            - "managed-app"
-  tolerations:
-    - key: "transltr"
-      value: "managed-app"
-      operator: "Equal"
-      effect: "NoSchedule"
+  affinity: {}
+  tolerations: {}
   nodeSelector: {}
 
 dataUrl: ""
