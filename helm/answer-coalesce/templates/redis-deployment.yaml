@@ -67,15 +67,3 @@ spec:
         resources:
           requests:
             storage: 25Gi
-      {{- with .Values.app.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.app.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.app.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }} 
