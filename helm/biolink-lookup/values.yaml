@@ -26,6 +26,9 @@ app:
     requests:
       memory: 500Mi
       cpu: 250m
+  affinity: {} 
+  tolerations: {}
+  nodeSelector: {}
 
 HTTPS_PROXY:
 
