@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cqs.fullname" . }}-db-service
+  labels:
+    {{- include "cqs.labels" . | nindent 4 }}
+    type: dbms
+spec:
+  selector:
+    {{- include "cqs.selectorLabels" . | nindent 4 }}
+    type: dbms
+  type: ClusterIP
+  ports:
+    - name: postgres-port
+      port: {{ .Values.postgres.port }}
+      targetPort: postgres-port
+      protocol: TCP
