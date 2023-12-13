@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "answer-coalesce-test.fullname" . }}-redis-server
+  labels:
+    {{- include "answer-coalesce-test.labels" . | nindent 4 }}
+    app: database
+spec:
+  serviceName: {{ include "answer-coalesce-test.fullname" . }}-redis-service
+  selector:
+    matchLabels:
+      {{- include "answer-coalesce-test.selectorLabels" . | nindent 6 }}
+      app: database
+  template:
+    metadata:
+      labels:
+        {{- include "answer-coalesce-test.selectorLabels" . | nindent 8 }}
+        app: database
+    spec:
+    {{- if .Values.dataUrl }}
+      initContainers:
+        - name: {{ include "answer-coalesce-test.fullname" . }}-redis-seed-container
+          image: {{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}
+          command:
+            - '/seed_db.sh'
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "answer-coalesce-test.fullname" . }}-redis-data-volume
+              subPath: data
+            - name: {{ include "answer-coalesce-test.fullname" . }}-seed-script
+              mountPath: /seed_db.sh
+              subPath: seed_db.sh
+          resources:
+            {{- toYaml .Values.redis.initresources | nindent 12 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-redis-container
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          ports:
+            - name: http
+              containerPort: {{ .Values.redis.containerPort }}
+              protocol: TCP
+        {{- if .Values.redis.args }}
+          args:
+            {{- range .Values.redis.args }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- end }}
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "answer-coalesce-test.fullname" . }}-redis-data-volume
+              subPath: data
+      volumes:
+      {{- if .Values.dataUrl}}
+      - name: {{ include "answer-coalesce-test.fullname" . }}-seed-script
+        configMap:
+          name: {{ include "answer-coalesce-test.fullname" . }}-redis-config
+          defaultMode: 0777
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "answer-coalesce-test.fullname" . }}-redis-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.redis.storageSize }}

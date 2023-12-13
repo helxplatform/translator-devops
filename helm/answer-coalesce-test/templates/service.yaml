@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "answer-coalesce-test.fullname" . }}-web-service
+  labels:
+    {{- include "answer-coalesce-test.labels" . | nindent 4 }}
+    app: webServer
+spec:
+  type: {{ .Values.ac.service.type }}
+  ports:
+    - port: {{ .Values.ac.service.port }}
+      targetPort: {{ .Values.ac.containerPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "answer-coalesce-test.selectorLabels" . | nindent 4 }}
+    app: webServer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "answer-coalesce-test.fullname" . }}-redis-service
+  labels:
+    {{- include "answer-coalesce-test.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.redis.service.type }}
+  {{- if .Values.redis.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.redis.service.loadBalancerIP }}
+  {{- end}}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.containerPort }}
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "answer-coalesce-test.selectorLabels" . | nindent 4 }}
+    app: database
