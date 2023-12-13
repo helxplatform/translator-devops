@@ -60,10 +60,12 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-app:
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
 
 
 ### REDIS config
