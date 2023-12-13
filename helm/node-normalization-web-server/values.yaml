@@ -17,6 +17,8 @@ web:
     type: ClusterIP
   serverHostName: "http(s)://#####"
   securityContext: {}
+  affinity: {}
+  tolerations: {}
   configPath: "/code/redis_config.yaml"
   # exra Args for uvicorn
   extraArgs:
