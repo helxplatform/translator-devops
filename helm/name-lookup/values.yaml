@@ -86,6 +86,11 @@ solr:
 
 # You can control the nodeSelector/affinity/tolerations settings for all pods (web, restore, backup) except Solr with the following settings.
 app:
+  serverName: "infores:sri-name-resolver"
+  otel:
+    enabled: false
+    jaegerHost:
+    jaegerPort:
   nodeSelector:
   affinity:
   tolerations:
