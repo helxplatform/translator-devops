@@ -35,7 +35,18 @@ spec:
               name: {{ include "strider.fullname" . }}-redis-data-volume
           resources:
             {{ toYaml .Values.redis.resources | nindent 12 }}
-
+      {{- with .Values.redis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: {{ include "strider.fullname" . }}-redis-data-volume

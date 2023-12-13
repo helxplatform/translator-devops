@@ -81,6 +81,9 @@ redis:
     - 'yes'
     - --timeout
     - '60'
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []  
 
 ingress:
   enabled: false
@@ -127,3 +130,4 @@ app:
   nodeSelector: {}
   affinity: {}
   tolerations: []
+
