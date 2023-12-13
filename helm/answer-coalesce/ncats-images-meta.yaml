@@ -1,6 +1,6 @@
 ac:
   image: ghcr.io/ranking-agent/answercoalesce
-  version: v2.3.0z_trapi14
+  version: v2.4.0z_trapi14
 busyBox:
   image: "busybox"
   version: "stable"
