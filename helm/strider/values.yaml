@@ -122,3 +122,8 @@ x_trapi:
 
 redisinsight:
   enabled: false
+
+app:
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
