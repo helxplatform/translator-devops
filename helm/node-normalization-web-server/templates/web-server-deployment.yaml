@@ -48,6 +48,14 @@ spec:
               value: "{{ .Values.x_trapi.maturity.value }}"
             - name: "LOCATION_VALUE"
               value: "{{ .Values.x_trapi.location.value }}"
+            - name: OTEL_ENABLED
+              value: "{{ .Values.web.otel.enabled }}"
+            - name: SERVER_NAME
+              value: "{{ .Values.web.serverName }}"
+            - name: JAEGER_HOST
+              value: "{{ .Values.web.otel.jaegerHost }}"
+            - name: JAEGER_PORT
+              value: "{{ .Values.web.otel.jaegerPort }}"
           command:
             - 'gunicorn'
           args:

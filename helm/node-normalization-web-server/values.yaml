@@ -16,6 +16,11 @@ web:
   service:
     type: ClusterIP
   serverHostName: "http(s)://#####"
+  serverName: "infores:sri-node-normalizer"
+  otel:
+    enabled: false
+    jaegerHost:
+    jaegerPort:
   securityContext: {}
   affinity: {}
   tolerations: {}
