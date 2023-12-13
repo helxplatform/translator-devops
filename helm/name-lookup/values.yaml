@@ -13,7 +13,7 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.3.6
+    tag: otel-instrumentation
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/solr/snapshot.backup.tar.gz"
 forceRun: false
