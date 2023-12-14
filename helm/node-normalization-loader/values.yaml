@@ -24,8 +24,8 @@ restore:
 
 # node affinity and tolerations settings.
 app:
-  affinity:
-  tolerations:
+  affinity: {}
+  tolerations: {}
 
 data:
   compendia:
