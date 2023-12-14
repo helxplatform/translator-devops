@@ -22,6 +22,11 @@ restore:
   dataSize: 50G
   ephemeralStorage: 1G
 
+# node affinity and tolerations settings.
+app:
+  affinity:
+  tolerations:
+
 data:
   compendia:
     storageSize: 10G
