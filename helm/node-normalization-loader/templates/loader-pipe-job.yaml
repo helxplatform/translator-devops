@@ -1,0 +1,123 @@
+{{- if eq .Values.mode "restore" }}
+{{- $fullName := include "node-normalization-loader.fullname" . -}}
+{{- $codeDir := .Values.codeDir }}
+{{- $dataDir := .Values.restore.dataDir }}
+{{- $resources := .Values.resources }}
+{{- $securityContext := .Values.securityContext }}
+{{- $repository := .Values.restore.repository }}
+{{- $tag := .Values.restore.tag }}
+{{- $pullPolicy := .Values.restore.pullPolicy }}
+{{- $ephemeralStorage := .Values.restore.ephemeralStorage }}
+{{- range $dbName, $dbConf := .Values.redis_backend_config }}
+{{- $dbKubeName := $dbName | replace "_" "-"}}
+{{- $dataStorageSize := $dbConf.storageSize }}
+{{- $connectionDetails := $dbConf.connectionDetails }}
+{{- range $index, $host := $connectionDetails.hosts }}
+{{- $hostName := $host.host_name }}
+{{- $port := $host.port }}
+{{- $sslEnabled := $connectionDetails.ssl_enabled }}
+{{- $redisPassword := $connectionDetails.password }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ $fullName }}-pipe-job-{{ $dbKubeName }}-{{ $index }}"
+spec:
+  template:
+    metadata:
+      name: "{{ $fullName }}-pipe-job-{{ $dbKubeName }}-{{ $index }}"
+    spec:
+      containers:
+        - name: loader-container
+          image: "{{ $repository }}:{{ $tag }}"
+          imagePullPolicy: {{ $pullPolicy }}
+          command:
+            - /bin/bash
+          args:
+            - {{ $codeDir }}/run_pipe.sh
+          env:
+            - name: REDISCLI_AUTH
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-secrets"
+                  key: redis_password
+                  optional: false
+          volumeMounts:
+            - mountPath:  {{ $codeDir }}/run_pipe.sh
+              name: "loader-config"
+              subPath: "run_pipe.sh"
+            - mountPath: {{ $dataDir }}
+              name: "data-dir"
+          resources:
+            {{ $resources | toYaml | nindent 12 }}
+      restartPolicy: OnFailure
+      {{ with $securityContext }}
+      securityContext:
+        {{ $securityContext | toYaml | nindent 8 }}
+      {{ end }}
+      {{- with $.Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: loader-config
+          configMap:
+            name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-config"
+            defaultMode: 0777
+        - name: data-dir
+          persistentVolumeClaim:
+            claimName: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-loader-pvc"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-loader-pvc"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ $dataStorageSize }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-config"
+data:
+  run_pipe.sh: |-
+    #!/bin/bash
+    set -v -x -e
+
+    # Delete everything in the dataDir.
+    rm -f "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
+    rm -f "{{ $dataDir }}/{{ $dbName }}.rdb"
+
+    # Download the archive file.
+    wget -nv -O "{{ $dataDir }}/{{ $dbName }}.rdb.gz" "{{ $dbConf.restoreURL }}"
+
+    # Unzip the archive file.
+    gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
+
+    # Restore the file into the specified database.
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe {{- if $sslEnabled -}}--tls{{- end }}
+
+    # Start a BGSAVE so the database is backed up to disk and ready to be loaded from if necessary.
+    redis-cli -h {{ $hostName }} -p {{ $port }} {{- if $sslEnabled -}}--tls{{- end }} BGSAVE
+
+    # Report success.
+    echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ $fullName }}-{{ $dbKubeName }}-{{ $index }}-secrets"
+type: Opaque
+stringData:
+  redis_password: "{{ $redisPassword }}"
+---
+{{ end }}
+{{ end }}
+{{- end }}
