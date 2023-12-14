@@ -9,14 +9,14 @@ mode: load
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.0"
+  tag: "v2.3.3"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "add-nn-loader-docker"
+  tag: "v2.3.3"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
