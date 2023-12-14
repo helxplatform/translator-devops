@@ -102,10 +102,10 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
-    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe {{- if $sslEnabled -}}--tls{{- end }}
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }}
 
     # Start a BGSAVE so the database is backed up to disk and ready to be loaded from if necessary.
-    redis-cli -h {{ $hostName }} -p {{ $port }} {{- if $sslEnabled -}}--tls{{- end }} BGSAVE
+    redis-cli -h {{ $hostName }} -p {{ $port }} {{ if $sslEnabled -}}--tls{{ end }} BGSAVE
 
     # Report success.
     echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
