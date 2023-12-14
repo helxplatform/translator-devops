@@ -5,18 +5,18 @@
 # There are two node-normalization-loader modes:
 # 1. `load` (default): Use the loader to load a set of backend Redis servers with Babel compendium/conflation JSONL files.
 # 2. `restore`: Use the loader-pipe-job to load the database backups into the backend Redis databases.
-mode: load
+mode: restore
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.3"
+  tag: "v2.3.4"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "v2.3.3"
+  tag: "v2.3.4"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
