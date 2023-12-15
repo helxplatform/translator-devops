@@ -90,7 +90,9 @@ metadata:
 data:
   run_pipe.sh: |-
     #!/bin/bash
-    set -v -x -e
+    # TODO: turn `-e` back on: to preserve logs with error messages, we want to permasleep once
+    # the job is done, but with `-e` we exit out instead.
+    set -v -x
 
     # Delete everything in the dataDir.
     rm -f "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
@@ -103,15 +105,19 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
-    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h {{ $hostName }} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 
+    # But surpress MOVED messages
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h {{ $hostName }} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
 
     {{ if not $isCluster }}
     # Start a BGSAVE so the database is backed up to disk and ready to be loaded from if necessary.
     redis-cli -h {{ $hostName }} -p {{ $port }} {{ if $sslEnabled -}}--tls{{ end }} {{ if $isCluster }}-c{{end}} BGSAVE
     {{- end }}
 
+    # Don't exit until we've had a chance to look at the logs
+    sleep 86400
+
     # Report success.
-    echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
+    # echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
 ---
 apiVersion: v1
 kind: Secret
