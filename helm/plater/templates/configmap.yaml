@@ -19,20 +19,50 @@ data:
     set -x
     wget -O /data/db.dump ${NEO4J_DATA_URL}
     touch /data/done
+  health_check.sh: |-
+    #!/usr/bin/env bash
+    response=$(wget --server-response "${PUBLIC_URL}/openapi.json" 2>&1 | awk '/^  HTTP/{print $2}')
+    until [ "$response" = "200" ]; do
+        response=$(wget --server-response "${PUBLIC_URL}/openapi.json" 2>&1 | awk '/^  HTTP/{print $2}') >&2
+        echo "  -- App is unavailable - sleeping"
+        sleep 3
+    done
   download_metadata.sh: |-
-    #!/bin/sh
-    set -x
-    if [[ "${PLATER_METADATA_URL}" ]]
-    then
-        wget -O /home/plater/Plater/PLATER/metadata/metadata.json "${PLATER_METADATA_URL}"
-    fi
-    if [[ "${PLATER_METAKG_URL}" ]]
-    then
-        wget -O /home/plater/Plater/PLATER/metadata/meta_knowledge_graph.json "${PLATER_METAKG_URL}"
-    fi
-    if [[ "${PLATER_TEST_DATA_URL}" ]]
-    then
-        wget -O /home/plater/Plater/PLATER/metadata/sri_testing_data.json "${PLATER_TEST_DATA_URL}"
+    #!/usr/bin/env bash
+    LOCAL_DESTINATION="/home/plater/Plater/PLATER/metadata"
+    MAX_ATTEMPTS=3
+    TIMEOUT=3
+    TIMEOUT_MULTIPLIER=2
+    ATTEMPT=1
+    RC=0
+    
+    function download() {
+      CMD="wget -O $LOCAL_DESTINATION/$1 $2"
+      echo "RUNNING: $CMD"
+      $CMD
+      return $?
+    }
+    
+    while (( ATTEMPT <= MAX_ATTEMPTS )); do
+    
+      download metadata.json ${PLATER_METADATA_URL} && \
+        download meta_knowledge_graph.json ${PLATER_METAKG_URL} && \
+        download sri_testing_data.json ${PLATER_TEST_DATA_URL}
+      RC=$?
+      if [[ $RC == 0 ]]; then
+        break;
+      fi
+    
+      echo "Failure! Retrying in $TIMEOUT.." 1>&2
+      sleep $TIMEOUT
+      ATTEMPT=$(( ATTEMPT + 1 ))
+      TIMEOUT=$(( TIMEOUT * TIMEOUT_MULTIPLIER * ATTEMPT ))
+    
+    done
+    
+    if [[ $RC != 0 ]]; then
+      echo "Failed!" 1>&2
+      exit $RC
     fi
   seed_db.sh: |-
     #!/bin/bash
