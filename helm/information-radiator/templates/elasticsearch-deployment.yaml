@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
+    kompose.version: 1.31.2 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: elasticsearch
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: elasticsearch
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
+        kompose.version: 1.31.2 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/infra: "true"
+        io.kompose.service: elasticsearch
+    spec:
+      containers:
+        - env:
+            - name: ES_JAVA_OPTS
+              value: -Xmx1024m -Xms512m
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            - name: bootstrap.memory_lock
+              value: "true"
+          image: 'elasticsearch:'
+          name: elasticsearch
+          resources: {}
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: esdata-volume
+            - mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              name: elasticsearch-claim1
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: esdata-volume
+          persistentVolumeClaim:
+            claimName: esdata-volume
+        - name: elasticsearch-claim1
+          persistentVolumeClaim:
+            claimName: elasticsearch-claim1
+            readOnly: true
+status: {}

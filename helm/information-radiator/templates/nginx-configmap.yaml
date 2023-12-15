@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: {{ .Values.informationradiator.nginxConf | indent 4}}
+  config.d: {{ .Values.informationradiator.confD | indent 4 }}
+  ssl.crt: {{ .Values.ssl.cert }}
+  ssl.key: {{ .Values.ssl.key }}

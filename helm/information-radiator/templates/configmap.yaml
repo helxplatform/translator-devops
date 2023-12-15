@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "informationradiator.fullname" . }}-configmap
+data:
+  ZEBRUNNER_HOST: http://localhost:8081
+
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_PASSWORD: rabbitmq-password
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_USERNAME: rabbitmq-user
+
+  CRYPTO_SALT: TDkxalR4T3EySGI0T0YyMitScmkxWDlsUXlPV2R4OEZ1b2kyL1VJeFVHST0=
+  TOKEN_SIGNING_SECRET: AUwMLdWFBtUHVgvjFfMmAEadXqZ6HA4dKCiCmjgCXxaZ4ZO8od
+
+  THUMBNAIL_HEIGTH: "90"
+  THUMBNAIL_HIGHER_QUALITY: "true"
+
+  POSTGRES_IAM_PASSWORD: iam-changeit
+  POSTGRES_IAM_USER: postgres
+
+  POSTGRES_DB_PASSWORD: db-changeit
+  POSTGRES_DB_USER: postgres
+
+  ADMINISTRATOR_GROUP: Super admins
+  ADMINISTRATOR_PASSWORD: changeit
+  ADMINISTRATOR_USERNAME: admin
+  DATABASE_PASSWORD: iam-changeit
+  DATABASE_URL: jdbc:postgresql://iam-db:5432/postgres
+  DATABASE_USERNAME: postgres
+  OWNER_GROUP: Admins
+
+  MAILING_HOST: smtp.gmail.com
+  MAILING_PASSWORD: changeit
+  MAILING_PORT: "587"
+  MAILING_SENDER_EMAIL: changeit
+  MAILING_SENDER_NAME: changeit
+  MAILING_TEMPLATES_DIRECTORY: templates
+  MAILING_USERNAME: changeit
+
+  RABBITMQ_DEFAULT_PASS: rabbitmq-password
+  RABBITMQ_DEFAULT_USER: rabbitmq-user
+  RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbitmq_management load_definitions "/rabbit-definitions"
+
+  API_CONTEXT_PATH: reporting-service
+  API_HOST: http://localhost:8081
+  DATABASE_PASSWORD: db-changeit
+  DATABASE_POOL_SIZE: "50"
+  DATABASE_STATE_MANAGEMENT_ENABLED: "true"
+  DATABASE_URL: jdbc:postgresql://postgres:5432/postgres
+  DATABASE_USERNAME: postgres
+  DEBUG_ENABLED: "false"
+  DEBUG_PORT: "5005"
+  DEBUG_SUSPEND_STARTUP: "false"
+  ES_PASSWORD: ""
+  ES_URIS: elasticsearch:9200
+  ES_USERNAME: ""
+  GITHUB_CLIENT_ID: ""
+  GITHUB_CLIENT_SECRET: ""
+  GITHUB_HOST: github.com
+  IAM_HOST: iam-service
+  IAM_PORT: "8080"
+  JENKINS_ENABLED: "false"
+  JENKINS_FOLDER: ""
+  JENKINS_JOB_URL_VISIBILITY: "true"
+  JENKINS_PASSWORD: changeit
+  JENKINS_URL: ""
+  JENKINS_USER: admin
+  MULTITENANT: "false"
+  RABBITMQ_STOMP_HOST: rabbitmq
+  RABBITMQ_STOMP_PORT: "61613"
+  REDIS_HOST: redis
+  REDIS_PASSWORD: MdXVvJgDdz9Hnau7
+  REDIS_PORT: "6379"
+  TEMPLATES_DIRECTORY: templates
+  TWITTER_CONSUMER_KEY: ""
+  TWITTER_CONSUMER_SECRET: ""
+  TWITTER_ENABLED: "false"
+  USE_ARTIFACT_PROXY: "false"
+  WEB_HOST: http://localhost:8081
+
+  SERVER_URL: http://localhost:8081/reporting-service

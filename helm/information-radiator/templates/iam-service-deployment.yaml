@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
+    kompose.version: 1.31.2 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: iam-service
+  name: iam-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: iam-service
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
+        kompose.version: 1.31.2 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/infra: "true"
+        io.kompose.service: iam-service
+    spec:
+      containers:
+        - env:
+            - name: ADMINISTRATOR_GROUP
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMINISTRATOR_GROUP
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: ADMINISTRATOR_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMINISTRATOR_PASSWORD
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: ADMINISTRATOR_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMINISTRATOR_USERNAME
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: CRYPTO_SALT
+              valueFrom:
+                configMapKeyRef:
+                  key: CRYPTO_SALT
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-secrets-env
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_PASSWORD
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_URL
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: DATABASE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_USERNAME
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: OWNER_GROUP
+              valueFrom:
+                configMapKeyRef:
+                  key: OWNER_GROUP
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-iam-service-variables-env
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_HOST
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_PASSWORD
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_PORT
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_USERNAME
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
+            - name: TOKEN_SIGNING_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: TOKEN_SIGNING_SECRET
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-secrets-env
+            - name: ZEBRUNNER_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: ZEBRUNNER_HOST
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-hosts-env
+          image: 'zebrunner/iam-service:'
+          name: iam-service
+          resources: {}
+      restartPolicy: Always
+status: {}

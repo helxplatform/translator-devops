@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service-type: {{ include "information-radiator.fullname" . }}-proxy
+  name: {{ include "information-radiator.fullname" . }}-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service-type: {{ include "information-radiator.fullname" . }}-proxy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service-type: {{ include "information-radiator.fullname" . }}-proxy
+    spec:
+      containers:
+        - image: 'nginx:latest'
+          name: {{ include "information-radiator.fullname" . }}-proxy
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources: {}
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: {{ include "information-radiator.fullname" . }}-proxy-claim0
+              readOnly: true
+            - mountPath: /etc/nginx/ssl
+              name: {{ include "information-radiator.fullname" . }}-proxy-claim1
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: {{ include "information-radiator.fullname" . }}-proxy-claim0
+          persistentVolumeClaim:
+            claimName: {{ include "information-radiator.fullname" . }}-proxy-claim0
+            readOnly: true
+        - name: {{ include "information-radiator.fullname" . }}-proxy-claim1
+          persistentVolumeClaim:
+            claimName: {{ include "information-radiator.fullname" . }}-proxy-claim1
+            readOnly: true
+status: {}

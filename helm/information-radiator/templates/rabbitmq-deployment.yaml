@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
+    kompose.version: 1.31.2 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: rabbitmq
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
+        kompose.version: 1.31.2 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/infra: "true"
+        io.kompose.service: rabbitmq
+    spec:
+      containers:
+        - env:
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_DEFAULT_PASS
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-rabbitmq-variables-env
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_DEFAULT_USER
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-rabbitmq-variables-env
+            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              valueFrom:
+                configMapKeyRef:
+                  key: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-rabbitmq-variables-env
+          image: 'rabbitmq:'
+          name: rabbitmq
+          resources: {}
+          volumeMounts:
+            - mountPath: /rabbit-definitions
+              name: rabbitmq-claim0
+              readOnly: true
+            - mountPath: /etc/rabbitmq/enabled_plugins
+              name: rabbitmq-claim1
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: rabbitmq-claim0
+          persistentVolumeClaim:
+            claimName: rabbitmq-claim0
+            readOnly: true
+        - name: rabbitmq-claim1
+          persistentVolumeClaim:
+            claimName: rabbitmq-claim1
+            readOnly: true
+status: {}
