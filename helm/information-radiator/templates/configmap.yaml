@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "informationradiator.fullname" . }}-configmap
+  name: {{ include "information-radiator.fullname" . }}-configmap
 data:
   ZEBRUNNER_HOST: http://localhost:8081
 
