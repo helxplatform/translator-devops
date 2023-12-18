@@ -32,6 +32,14 @@ spec:
             value: "{{ .Values.x_trapi.maturity.value }}"
           - name: "LOCATION_VALUE"
             value: "{{ .Values.x_trapi.location.value }}"
+          - name: "OTEL_ENABLED"
+            value: "{{ .Values.app.otel.enabled }}"
+          - name: "SERVER_NAME"
+            value: "{{ .Values.app.serverName }}"
+          - name: "JAEGER_HOST"
+            value: "{{ .Values.app.otel.jaegerHost }}"
+          - name: "JAEGER_PORT"
+            value: "{{ .Values.app.otel.jaegerPort }}"
           ports:
             - name: http
               containerPort: {{ .Values.webServer.port }}

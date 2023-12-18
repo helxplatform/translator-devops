@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "ac-loader.fullname" . }}-redis
+  labels:
+    app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: redis
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+  selector:
+    {{- include "ac-loader.selectorLabels" . | nindent 4 }}
+    app: redis
