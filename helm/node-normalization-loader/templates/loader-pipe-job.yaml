@@ -112,7 +112,7 @@ data:
     {{- end }}
 
     # Report success.
-    echo "Finished trying to restore {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
+    echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
 ---
 apiVersion: v1
 kind: Secret
