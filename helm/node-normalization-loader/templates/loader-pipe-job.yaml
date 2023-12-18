@@ -16,6 +16,7 @@
 {{- $hostName := $host.host_name }}
 {{- $port := $host.port }}
 {{- $sslEnabled := $connectionDetails.ssl_enabled }}
+{{- $isCluster := $connectionDetails.is_cluster }}
 {{- $redisPassword := $connectionDetails.password }}
 apiVersion: batch/v1
 kind: Job
@@ -102,10 +103,13 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
-    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli -h {{ $hostName }} -p {{ $port }} --pipe {{- if $sslEnabled -}}--tls{{- end }}
+    # But suppress MOVED messages, which -- with the `-c` option -- should be redundant.
+    rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h {{ $hostName }} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
 
+    {{ if not $isCluster }}
     # Start a BGSAVE so the database is backed up to disk and ready to be loaded from if necessary.
-    redis-cli -h {{ $hostName }} -p {{ $port }} {{- if $sslEnabled -}}--tls{{- end }} BGSAVE
+    redis-cli -h {{ $hostName }} -p {{ $port }} {{ if $sslEnabled -}}--tls{{ end }} {{ if $isCluster }}-c{{end}} BGSAVE
+    {{- end }}
 
     # Report success.
     echo "Completed restoring {{ $dbConf.restoreURL }} into {{ $dbName }} at {{ $hostName }}:{{ $port }}."
