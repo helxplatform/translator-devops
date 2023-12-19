@@ -26,7 +26,7 @@ initresources:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v1.4.2"
+    tag: "v1.4.2-2"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
