@@ -104,6 +104,10 @@ spec:
           livenessProbe:
 {{ toYaml .Values.neo4j.livenessProbe | indent 12 }}
       restartPolicy: Always
+    {{ with .Values.neo4j.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 }}
+    {{ end }}
     {{ with .Values.neo4j.affinity }}
       affinity:
         {{ toYaml . | nindent 8 }}

@@ -11,7 +11,8 @@ data:
   QUEUE_ADMIN_PW: "{{ .Values.rbtmq.secrets.queueAdminPassword }}"
   CACHE_HOST: "{{ include "aragorn.fullname" . }}-redis-service"
   CACHE_PORT: "{{ .Values.redis.service.port }}"
-  CACHE_DB: "{{ .Values.redis.db }}"
+  CREATIVE_CACHE_DB: "{{ .Values.redis.creative_db }}"
+  LOOKUP_CACHE_DB: "{{ .Values.redis.lookup_db }}"
   CACHE_PASSWORD: "{{ .Values.redis.password }}"
   WEB_HOST: 0.0.0.0
   WEB_PORT: {{ .Values.app.port | quote}}

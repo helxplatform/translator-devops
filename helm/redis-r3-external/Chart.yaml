@@ -26,27 +26,31 @@ appVersion: "1.17.0"
 
 dependencies:
   - name: redis
-    version: "12.7.4"
+    version: "16.13.2"
     repository: "https://charts.bitnami.com/bitnami"
     alias: id-id
   - name: redis
-    version: "12.7.4"
+    version: "16.13.2"
     repository: "https://charts.bitnami.com/bitnami"
     alias: id-eq-id
   - name: redis
-    version: "12.7.4"
+    version: "16.13.2"
     repository: "https://charts.bitnami.com/bitnami"
     alias: id-categories
   - name: redis
-    version: "12.7.4"
+    version: "16.13.2"
     repository: "https://charts.bitnami.com/bitnami"
     alias:  conflation-db
   - name: redis
-    version: "12.7.4"
+    version: "16.13.2"
     repository: "https://charts.bitnami.com/bitnami"
     alias: semantic-count
   - name: redis
-    version: "12.7.4"
+    version: "16.13.2"
     repository: "https://charts.bitnami.com/bitnami"
     alias: info-content
     condition: info-content.enabled
+  - name: redis
+    version: "16.13.2"
+    repository: "https://charts.bitnami.com/bitnami"
+    alias: chemical-drug-db

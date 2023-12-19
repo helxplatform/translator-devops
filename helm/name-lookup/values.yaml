@@ -13,9 +13,9 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.3.6
+    tag: v1.3.9
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023nov5/solr/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
@@ -69,7 +69,7 @@ solr:
   # As of Babel 2023jul13, we need 130G to store the
   # uncompressed backup + 131G Solr database
   # So 300Gi should be enough for the time being.
-  storage: 300Gi
+  storage: 400Gi
 
   # As far as I know, initresources are only used by the download
   # pod that downloads the Solr backup, which is network-bound,
@@ -86,6 +86,11 @@ solr:
 
 # You can control the nodeSelector/affinity/tolerations settings for all pods (web, restore, backup) except Solr with the following settings.
 app:
+  serverName: "infores:sri-name-resolver"
+  otel:
+    enabled: false
+    jaegerHost:
+    jaegerPort:
   nodeSelector:
   affinity:
   tolerations:
