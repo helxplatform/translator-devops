@@ -63,6 +63,10 @@ redis:
     pvcName:
     size:
     class:
+  affinity: {}
+  tolerations: {}
+  nodeSelector: {}
+  storageSize: 25Gi
 
 dataUrl: ""
 
@@ -98,3 +102,8 @@ x_trapi:
     value: "maturity"
   location:
     value: "location"
+
+app:
+  affinity: {}
+  tolerations: {}
+  nodeSelector: {}
