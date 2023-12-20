@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-3.2.1/DrugCentral_Automat/40591a308833c43a/graph_40591a308833c43a.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-3.2.1/DrugCentral_Automat/40591a308833c43a/DrugCentral_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-3.2.1/DrugCentral_Automat/40591a308833c43a/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-3.2.1/DrugCentral_Automat/40591a308833c43a/sri_testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-3.5.4/DrugCentral_Automat/25acfc0e82d4f8c5/graph_25acfc0e82d4f8c5.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-3.5.4/DrugCentral_Automat/25acfc0e82d4f8c5/DrugCentral_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-3.5.4/DrugCentral_Automat/25acfc0e82d4f8c5/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-3.5.4/DrugCentral_Automat/25acfc0e82d4f8c5/testing_data.json

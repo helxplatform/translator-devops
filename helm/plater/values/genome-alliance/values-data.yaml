@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-3.2.1/GenomeAllianceOrthologs_Automat/1791887a08de4654/graph_1791887a08de4654.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-3.2.1/GenomeAllianceOrthologs_Automat/1791887a08de4654/GenomeAllianceOrthologs_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-3.2.1/GenomeAllianceOrthologs_Automat/1791887a08de4654/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-3.2.1/GenomeAllianceOrthologs_Automat/1791887a08de4654/sri_testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-3.5.4/GenomeAllianceOrthologs_Automat/52b222baedc80328/graph_52b222baedc80328.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-3.5.4/GenomeAllianceOrthologs_Automat/52b222baedc80328/GenomeAllianceOrthologs_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-3.5.4/GenomeAllianceOrthologs_Automat/52b222baedc80328/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-3.5.4/GenomeAllianceOrthologs_Automat/52b222baedc80328/testing_data.json

@@ -47,6 +47,8 @@ spec:
             - name: {{ include "plater.fullname" . }}-scripts
               mountPath: /seed_db.sh
               subPath: seed_db.sh
+          resources:
+            {{- toYaml .Values.initresources | nindent 12 }}
       {{- end }}
       containers:
         - image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
