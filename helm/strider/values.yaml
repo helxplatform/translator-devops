@@ -81,6 +81,9 @@ redis:
     - 'yes'
     - --timeout
     - '60'
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []  
 
 ingress:
   enabled: false
@@ -122,3 +125,9 @@ x_trapi:
 
 redisinsight:
   enabled: false
+
+app:
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+

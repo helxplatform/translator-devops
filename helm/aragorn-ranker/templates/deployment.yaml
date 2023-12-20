@@ -64,3 +64,15 @@ spec:
           name: {{ include "aragorn-ranker.fullname" . }}-gunicorn-conf
           defaultMode: 0777
       restartPolicy: Always
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}      
