@@ -25,6 +25,14 @@ spec:
       securityContext:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
+      {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: webserver-container
           image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
@@ -40,6 +48,14 @@ spec:
               value: "{{ .Values.x_trapi.maturity.value }}"
             - name: "LOCATION_VALUE"
               value: "{{ .Values.x_trapi.location.value }}"
+            - name: OTEL_ENABLED
+              value: "{{ .Values.web.otel.enabled }}"
+            - name: SERVER_NAME
+              value: "{{ .Values.web.serverName }}"
+            - name: JAEGER_HOST
+              value: "{{ .Values.web.otel.jaegerHost }}"
+            - name: JAEGER_PORT
+              value: "{{ .Values.web.otel.jaegerPort }}"
           command:
             - 'gunicorn'
           args:

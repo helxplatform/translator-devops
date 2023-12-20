@@ -21,4 +21,4 @@ version: 0.4.0
 # 
 # NameRes versions are based on the version of the NameRes Docker image concatenated with the
 # Babel release date.
-appVersion: 1.3.6_2023aug3_with_drugs
+appVersion: 1.3.11_2023nov5

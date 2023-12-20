@@ -1,3 +1,4 @@
+{{- if eq .Values.mode "load" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -62,4 +63,9 @@ data:
     echo "FINISHED"
 
   redis_config.yaml: |
-    {{ .Values.redis_backend_config | toYaml | nindent 4 }}
+    {{- range $key, $v := .Values.redis_backend_config }}
+    {{ $key | replace "\"" "" }}:
+      {{- $redis_config := omit $v "restoreURL" "storageSize" }}
+      {{- $redis_config | toYaml | nindent 6 }}
+    {{- end }}
+{{- end }}

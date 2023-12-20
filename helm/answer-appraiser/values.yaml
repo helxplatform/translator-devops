@@ -90,7 +90,7 @@ ingress:
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
   pathType: "ImplementationSpecific"
   path: "/"
-  host: answerappraiser.apps.renci.org
+  host: answerappraiser.renci.org
   tls:
     enabled: false
 

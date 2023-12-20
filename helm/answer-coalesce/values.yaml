@@ -66,6 +66,7 @@ redis:
   affinity: {}
   tolerations: {}
   nodeSelector: {}
+  storageSize: 25Gi
 
 dataUrl: ""
 
