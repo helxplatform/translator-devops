@@ -58,11 +58,7 @@ redis:
   seedDB: false
   createPV: false
   createPVC: false
-  storage:
-    pvName:
-    pvcName:
-    size:
-    class:
+  storageSize: 25Gi
 
 dataUrl: ""
 
