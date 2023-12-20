@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-logstash
-  name: logstash
+  name: {{ include "information-radiator.fullname" . }}-logstash
 spec:
   replicas: 1
   selector:
@@ -21,7 +21,7 @@ spec:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
           image: 'logstash:{{ .Values.logstash.tag }}'
-          name: logstash
+          name: {{ include "information-radiator.fullname" . }}-logstash
           resources: {}
           volumeMounts:
             - mountPath: /usr/share/logstash/pipeline/logstash.conf

@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service-type: information-radiator-ui
-  name: reporting-ui
+    service-type: {{ include "information-radiator.fullname" . }}-ui
+  name: {{ include "information-radiator.fullname" . }}-reporting-ui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service-type: information-radiator-ui
+      service-type: {{ include "information-radiator.fullname" . }}-ui
   template:
     metadata:
       labels:
-        service-type: information-radiator-ui
+        service-type: {{ include "information-radiator.fullname" . }}-ui
     spec:
       containers:
         - env:
@@ -22,7 +22,7 @@ spec:
                   key: SERVER_URL
                   name: configmap
           image: 'zebrunner/reporting-ui:{{ .Values.ui.tag }}'
-          name: reporting-ui
+          name: {{ include "information-radiator.fullname" . }}-reporting-ui
           resources: {}
       restartPolicy: Always
 status: {}

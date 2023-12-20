@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-redis
-  name: redis
+  name: {{ include "information-radiator.fullname" . }}-redis
 spec:
   replicas: 1
   selector:
@@ -13,12 +13,7 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-        kompose.version: 1.31.2 (HEAD)
-      creationTimestamp: null
       labels:
-        io.kompose.network/infra: "true"
         service-type: {{ include "information-radiator.fullname" . }}-redis
     spec:
       containers:

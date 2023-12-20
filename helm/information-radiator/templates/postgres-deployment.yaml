@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-postgres
-  name: postgres
+  name: {{ include "information-radiator.fullname" . }}-postgres
 spec:
   replicas: 1
   selector:
@@ -27,7 +27,7 @@ spec:
             - name: POSTGRES_USER
               value: {{ .Values.postgres.user }}
           image: 'qaprosoft/postgres:latest'
-          name: postgres
+          name: {{ include "information-radiator.fullname" . }}-postgres
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data

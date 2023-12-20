@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-elasticsearch
-  name: elasticsearch
+  name: {{ include "information-radiator.fullname" . }}-elasticsearch
 spec:
   replicas: 1
   selector:
@@ -17,7 +17,7 @@ spec:
         service-type: {{ include "information-radiator.fullname" . }}-elasticsearch
     spec:
       containers:
-        - name: elasticsearch
+        - name: {{ include "information-radiator.fullname" . }}-elasticsearch
           image: 'elasticsearch:latest'
           env:
             - name: ES_JAVA_OPTS

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-iam-db
-  name: iam-db
+  name: {{ include "information-radiator.fullname" . }}-iam-db
 spec:
   replicas: 1
   selector:
@@ -23,7 +23,7 @@ spec:
             - name: POSTGRES_USER
               value: {{ .Values.postgres.user }}
           image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
-          name: iam-db
+          name: {{ include "information-radiator.fullname" . }}-iam-db
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data

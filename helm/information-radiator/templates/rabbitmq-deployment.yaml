@@ -2,23 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    io.kompose.service: rabbitmq
-  name: rabbitmq
+    service-type: {{ include "information-radiator.fullname" . }}-rabbitmq
+  name: {{ include "information-radiator.fullname" . }}-rabbitmq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: rabbitmq
+      service-type: {{ include "information-radiator.fullname" . }}-rabbitmq
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        io.kompose.service: rabbitmq
+        service-type: {{ include "information-radiator.fullname" . }}-rabbitmq
     spec:
       containers:
         - image: 'rabbitmq:latest'
-          name: rabbitmq
+          name: {{ include "information-radiator.fullname" . }}-rabbitmq
           env:
             - name: RABBITMQ_DEFAULT_PASS
               value: {{ .Values.rabbitmq.password }}

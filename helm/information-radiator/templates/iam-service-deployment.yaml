@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-iam-service
-  name: iam-service
+  name: {{ include "information-radiator.fullname" . }}-iam-service
 spec:
   replicas: 1
   selector:
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - image: 'zebrunner/iam-service:{{ .Values.iam_service.tag }}'
-          name: iam-service
+          name: {{ include "information-radiator.fullname" . }}-iam-service
           envFrom:
           - configMapRef:
             name: {{ include "information-radiator.fullname" . }}-configmap

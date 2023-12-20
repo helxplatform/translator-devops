@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   labels:
     service-type: {{ include "information-radiator.fullname" . }}-reporting-service
-  name: reporting-service
+  name: {{ include "information-radiator.fullname" . }}-reporting-service
 spec:
   replicas: 1
   selector:
