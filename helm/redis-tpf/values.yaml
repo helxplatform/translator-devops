@@ -41,7 +41,7 @@ tpfServer:
     repository: containers.renci.org/translator/redis-tpf
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v0.0.0.3"
+    tag: "v0.0.0.4"
 
   imagePullSecrets: []
   nameOverride: ""
