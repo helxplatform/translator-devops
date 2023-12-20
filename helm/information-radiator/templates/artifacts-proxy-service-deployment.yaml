@@ -14,39 +14,11 @@ spec:
         service-type: artifacts-proxy-service
     spec:
       containers:
-        - env:
-            - name: RABBITMQ_HOST
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_HOST
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
-            - name: RABBITMQ_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_PASSWORD
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
-            - name: RABBITMQ_PORT
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_PORT
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
-            - name: RABBITMQ_USERNAME
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_USERNAME
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-_common-rabbitmq-env
-            - name: THUMBNAIL_HEIGTH
-              valueFrom:
-                configMapKeyRef:
-                  key: THUMBNAIL_HEIGTH
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-artifacts-proxy-service-variables-env
-            - name: THUMBNAIL_HIGHER_QUALITY
-              valueFrom:
-                configMapKeyRef:
-                  key: THUMBNAIL_HIGHER_QUALITY
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-artifacts-proxy-service-variables-env
-          image: 'zebrunner/artifacts-proxy-service:'
+        - image: 'zebrunner/artifacts-proxy-service:latest'
           name: artifacts-proxy-service
+          envFrom:
+          - configMapRef:
+            name: {{ include "information-radiator.fullname" . }}-configmap
           resources: {}
       restartPolicy: Always
 status: {}

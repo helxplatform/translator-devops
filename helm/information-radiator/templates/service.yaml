@@ -1,0 +1,163 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service-type: {{ include "information-radiator.fullname" . }}-proxy-service
+  name: {{ include "information-radiator.fullname" . }}-proxy-service
+spec:
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 80
+  selector:
+    service-type: {{ include "information-radiator.fullname" . }}-proxy-service
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-redis-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: 6379
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-reporting-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: reporting
+spec:
+  type: {{ .Values.reportingService.service.type }}
+  ports:
+    - port: {{ .Values.reportingService.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: reporting-service-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: reporting-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-artifacts-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: artifacts
+spec:
+  type: {{ .Values.artifacts.service.type }}
+  ports:
+    - port: {{ .Values.artifacts.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: artifacts-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: artifacts
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-elasticsearch-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: elasticsearch
+spec:
+  type: {{ .Values.elasticsearch.service.type }}
+  ports:
+    - port: {{ .Values.elasticsearch.service.port }}
+      targetPort: 9200
+      protocol: TCP
+      name: elasticsearch-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: elasticsearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-rabbitmq-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: rabbitmq
+spec:
+  type: {{ .Values.rabbitmq.service.type }}
+  ports:
+    - port: {{ .Values.rabbitmq.service.port }}
+      targetPort: 15672
+      protocol: TCP
+      name: rabbitmq-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: rabbitmq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-logstash-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: logstash
+spec:
+  type: {{ .Values.logstash.service.type }}
+  ports:
+    - port: {{ .Values.logstash.service.port_1 }}
+      targetPort: 5044
+      protocol: TCP
+      name: logstash-port-1
+    - port: {{ .Values.logstash.service.port_2 }}
+      targetPort: 9600
+      protocol: TCP
+      name: logstash-port-2
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: logstash
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-iam-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: iam-service
+spec:
+  type: {{ .Values.iam_service.service.type }}
+  ports:
+    - port: {{ .Values.iam_service.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: iam-service-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: iam-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-iam-db-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: iam-db-service
+spec:
+  type: {{ .Values.iam_db_service.service.type }}
+  ports:
+    - port: {{ .Values.iam_db_service.service.port }}
+      targetPort: 5432
+      protocol: TCP
+      name: iam-db-service-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: iam-db-service

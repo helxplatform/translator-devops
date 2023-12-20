@@ -6,9 +6,9 @@ data:
   ZEBRUNNER_HOST: http://localhost:8081
 
   RABBITMQ_HOST: rabbitmq
-  RABBITMQ_PASSWORD: rabbitmq-password
+  RABBITMQ_PASSWORD: {{ .Values.rabbitmq.password }}
   RABBITMQ_PORT: "5672"
-  RABBITMQ_USERNAME: rabbitmq-user
+  RABBITMQ_USERNAME: {{ .Values.rabbitmq.user }}
 
   CRYPTO_SALT: TDkxalR4T3EySGI0T0YyMitScmkxWDlsUXlPV2R4OEZ1b2kyL1VJeFVHST0=
   TOKEN_SIGNING_SECRET: AUwMLdWFBtUHVgvjFfMmAEadXqZ6HA4dKCiCmjgCXxaZ4ZO8od
@@ -16,7 +16,7 @@ data:
   THUMBNAIL_HEIGTH: "90"
   THUMBNAIL_HIGHER_QUALITY: "true"
 
-  POSTGRES_IAM_PASSWORD: iam-changeit
+  POSTGRES_IAM_PASSWORD: muTiPdaFmbHAiK707pWTcgBpg6NXBAsAP4djGZQins7eQbPH
   POSTGRES_IAM_USER: postgres
 
   POSTGRES_DB_PASSWORD: db-changeit
@@ -25,7 +25,7 @@ data:
   ADMINISTRATOR_GROUP: Super admins
   ADMINISTRATOR_PASSWORD: changeit
   ADMINISTRATOR_USERNAME: admin
-  DATABASE_PASSWORD: iam-changeit
+  DATABASE_PASSWORD: muTiPdaFmbHAiK707pWTcgBpg6NXBAsAP4djGZQins7eQbPH
   DATABASE_URL: jdbc:postgresql://iam-db:5432/postgres
   DATABASE_USERNAME: postgres
   OWNER_GROUP: Admins
@@ -37,10 +37,6 @@ data:
   MAILING_SENDER_NAME: changeit
   MAILING_TEMPLATES_DIRECTORY: templates
   MAILING_USERNAME: changeit
-
-  RABBITMQ_DEFAULT_PASS: rabbitmq-password
-  RABBITMQ_DEFAULT_USER: rabbitmq-user
-  RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: -rabbitmq_management load_definitions "/rabbit-definitions"
 
   API_CONTEXT_PATH: reporting-service
   API_HOST: http://localhost:8081

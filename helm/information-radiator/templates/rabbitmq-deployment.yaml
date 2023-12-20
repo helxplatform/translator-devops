@@ -1,10 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-    kompose.version: 1.31.2 (HEAD)
-  creationTimestamp: null
   labels:
     io.kompose.service: rabbitmq
   name: rabbitmq
@@ -17,49 +13,55 @@ spec:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-        kompose.version: 1.31.2 (HEAD)
-      creationTimestamp: null
       labels:
-        io.kompose.network/infra: "true"
         io.kompose.service: rabbitmq
     spec:
       containers:
-        - env:
-            - name: RABBITMQ_DEFAULT_PASS
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_DEFAULT_PASS
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-rabbitmq-variables-env
-            - name: RABBITMQ_DEFAULT_USER
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_DEFAULT_USER
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-rabbitmq-variables-env
-            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
-              valueFrom:
-                configMapKeyRef:
-                  key: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-rabbitmq-variables-env
-          image: 'rabbitmq:'
+        - image: 'rabbitmq:latest'
           name: rabbitmq
+          env:
+            - name: RABBITMQ_DEFAULT_PASS
+              value: {{ .Values.rabbitmq.password }}
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.rabbitmq.user }}
+            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              value: {{ .Values.rabbitmq.erl_args }}
           resources: {}
           volumeMounts:
-            - mountPath: /rabbit-definitions
-              name: rabbitmq-claim0
-              readOnly: true
+            - mountPath: /rabbit-definitions/001-general-definition.json
+              name: rabbitmq-configmap
+              subPath: 001-general-definition.json
+            - mountPath: /rabbit-definitions/002-email-send-definition.json
+              name: rabbitmq-configmap
+              subPath: 002-email-send-definition.json
+            - mountPath: /rabbit-definitions/003-user-saved-definition.json
+              name: rabbitmq-configmap
+              subPath: 003-user-saved-definition.json
+            - mountPath: /rabbit-definitions/004-test-run-screenshot-definition.json
+              name: rabbitmq-configmap
+              subPath: 004-test-run-screenshot-definition.json
+            - mountPath: /rabbit-definitions/005-test-run-artifact-definition.json
+              name: rabbitmq-configmap
+              subPath: 005-test-run-artifact-definition.json
+            - mountPath: /rabbit-definitions/006-test-run-log-definition.json
+              name: rabbitmq-configmap
+              subPath: 006-test-run-log-definition.json
+            - mountPath: /rabbit-definitions/007-integration-saved-definition.json
+              name: rabbitmq-configmap
+              subPath: 007-integration-saved-definition.json
+            - mountPath: /rabbit-definitions/008-integration-reinit-definition.json
+              name: rabbitmq-configmap
+              subPath: 008-integration-reinit-definition.json
+            - mountPath: /rabbit-definitions/016-user-deleted-definition.json
+              name: rabbitmq-configmap
+              subPath: 016-user-deleted-definition.json
             - mountPath: /etc/rabbitmq/enabled_plugins
-              name: rabbitmq-claim1
-              readOnly: true
+              name: rabbitmq-configmap
+              subPath: enabled_plugins
       restartPolicy: Always
       volumes:
-        - name: rabbitmq-claim0
-          persistentVolumeClaim:
-            claimName: rabbitmq-claim0
-            readOnly: true
-        - name: rabbitmq-claim1
-          persistentVolumeClaim:
-            claimName: rabbitmq-claim1
-            readOnly: true
+        - name: rabbitmq-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-rabbitmq-configmap
+            defaultMode: 0777
 status: {}

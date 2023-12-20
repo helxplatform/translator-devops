@@ -1,59 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-    kompose.version: 1.31.2 (HEAD)
-  creationTimestamp: null
   labels:
-    io.kompose.service: logstash
+    service-type: {{ include "information-radiator.fullname" . }}-logstash
   name: logstash
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: logstash
+      service-type: {{ include "information-radiator.fullname" . }}-logstash
   strategy:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-        kompose.version: 1.31.2 (HEAD)
-      creationTimestamp: null
       labels:
-        io.kompose.network/infra: "true"
-        io.kompose.service: logstash
+        service-type: {{ include "information-radiator.fullname" . }}-logstash
     spec:
       containers:
         - env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
-          image: 'logstash:'
+          image: 'logstash:{{ .Values.logstash.tag }}'
           name: logstash
           resources: {}
           volumeMounts:
             - mountPath: /usr/share/logstash/pipeline/logstash.conf
-              name: logstash-claim0
-              readOnly: true
+              name: logstash-config
+              subPath: logstash.conf
             - mountPath: /mapping.json
-              name: logstash-claim1
-              readOnly: true
+              name: logstash-config
+              subPath: mapping.json
             - mountPath: /test-run-data-template.json
-              name: logstash-claim2
-              readOnly: true
+              name: logstash-config
+              subPath: test-run-data-template.json
       restartPolicy: Always
       volumes:
-        - name: logstash-claim0
-          persistentVolumeClaim:
-            claimName: logstash-claim0
-            readOnly: true
-        - name: logstash-claim1
-          persistentVolumeClaim:
-            claimName: logstash-claim1
-            readOnly: true
-        - name: logstash-claim2
-          persistentVolumeClaim:
-            claimName: logstash-claim2
-            readOnly: true
+        - name: logstash-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-logstash-configmap
+            defaultMode: 0777
 status: {}

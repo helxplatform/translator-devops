@@ -1,0 +1,291 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-rabbitmq-configmap
+data:
+  enabled_plugins: |-
+    [rabbitmq_management,rabbitmq_prometheus,rabbitmq_recent_history_exchange,rabbitmq_stomp,rabbitmq_web_stomp].
+  001-general-definition.json: |-
+    {
+      "users": [
+        {
+          "name": "admin",
+          "password": "py44LI3uonU4tHXGRidGk8m4oPwlnsHE65HS92Jk2cAEV5t5",
+          "tags": "administrator"
+        }
+      ],
+      "vhosts": [
+        {
+          "name": "/"
+        }
+      ],
+      "permissions": [
+        {
+          "user": "admin",
+          "vhost": "/",
+          "configure": ".*",
+          "write": ".*",
+          "read": ".*"
+        }
+      ],
+      "parameters": [
+      ],
+      "global_parameters": [
+        {
+          "name": "cluster_name",
+          "value": "rabbit@dd5b9008bd58"
+        }
+      ],
+      "policies": [
+      ]
+    }
+  002-email-send-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "email",
+          "type": "direct",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "email.send.ms",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "email",
+          "destination": "email.send.ms",
+          "destination_type": "queue",
+          "routing_key": "send",
+          "arguments": {}
+        }
+      ]
+    }
+
+  003-user-saved-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "user.saved",
+          "type": "fanout",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "user.saved.reporting",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "user.saved",
+          "destination": "user.saved.reporting",
+          "destination_type": "queue",
+          "routing_key": "",
+          "arguments": {}
+        }
+      ]
+    }
+  004-test-run-screenshot-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "reporting.test-run-screenshot",
+          "type": "fanout",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "reporting.test-run-screenshot.save-in-logs",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "reporting.test-run-screenshot",
+          "destination": "reporting.test-run-screenshot.save-in-logs",
+          "destination_type": "queue",
+          "routing_key": "",
+          "arguments": {}
+        }
+      ]
+    }
+  005-test-run-artifact-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "reporting.test-run-artifact",
+          "type": "direct",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "reporting.test-run-artifact.save-reference.reporting",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "reporting.test-run-artifact",
+          "destination": "reporting.test-run-artifact.save-reference.reporting",
+          "destination_type": "queue",
+          "routing_key": "save-reference",
+          "arguments": {}
+        }
+      ]
+    }
+
+  006-test-run-log-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "reporting.test-run-log",
+          "type": "direct",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "reporting.test-run-log.save",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "reporting.test-run-log",
+          "destination": "reporting.test-run-log.save",
+          "destination_type": "queue",
+          "routing_key": "save",
+          "arguments": {}
+        }
+      ]
+    }
+
+  007-integration-saved-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "integration.saved",
+          "type": "fanout",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "integration.saved.iam",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "integration.saved",
+          "destination": "integration.saved.iam",
+          "destination_type": "queue",
+          "routing_key": "",
+          "arguments": {}
+        }
+      ]
+    }
+
+  008-integration-reinit-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "integration.reinit",
+          "type": "fanout",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ]
+    }
+
+  016-user-deleted-definition.json: |-
+    {
+      "exchanges": [
+        {
+          "vhost": "/",
+          "name": "user.deleted",
+          "type": "fanout",
+          "durable": true,
+          "auto_delete": false,
+          "internal": false,
+          "arguments": {}
+        }
+      ],
+      "queues": [
+        {
+          "vhost": "/",
+          "name": "user.deleted.reporting",
+          "durable": true,
+          "auto_delete": false,
+          "arguments": {}
+        }
+      ],
+      "bindings": [
+        {
+          "vhost": "/",
+          "source": "user.deleted",
+          "destination": "user.deleted.reporting",
+          "destination_type": "queue",
+          "routing_key": "",
+          "arguments": {}
+        }
+      ]
+    }

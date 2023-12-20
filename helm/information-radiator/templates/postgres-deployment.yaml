@@ -1,29 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-    kompose.version: 1.31.2 (HEAD)
-  creationTimestamp: null
   labels:
-    io.kompose.service: postgres
+    service-type: {{ include "information-radiator.fullname" . }}-postgres
   name: postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: postgres
+      service-type: {{ include "information-radiator.fullname" . }}-postgres
   strategy:
     type: Recreate
   template:
     metadata:
-      annotations:
-        kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-        kompose.version: 1.31.2 (HEAD)
-      creationTimestamp: null
       labels:
-        io.kompose.network/infra: "true"
-        io.kompose.service: postgres
+        service-type: {{ include "information-radiator.fullname" . }}-postgres
     spec:
       containers:
         - args:
@@ -32,29 +23,21 @@ spec:
             - max_connections=200
           env:
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                configMapKeyRef:
-                  key: POSTGRES_PASSWORD
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-postgres-variables-env
+              value: {{ .Values.postgres.password }}
             - name: POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  key: POSTGRES_USER
-                  name: Users-mwang-CoVar-translator-sri-testing-community-edition-reporting-configuration-postgres-variables-env
-          image: 'qaprosoft/postgres:'
+              value: {{ .Values.postgres.user }}
+          image: 'qaprosoft/postgres:latest'
           name: postgres
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: pgdata-volume
-            - mountPath: /docker-entrypoint-initdb.d
-              name: postgres-claim1
+            - mountPath: "/docker-entrypoint-initdb.d"
+              name: "postgres-config"
       restartPolicy: Always
       volumes:
-        - name: pgdata-volume
-          persistentVolumeClaim:
-            claimName: pgdata-volume
-        - name: postgres-claim1
-          persistentVolumeClaim:
-            claimName: postgres-claim1
+        - name: postgres-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-postgres-configmap
+            defaultMode: 0777
 status: {}

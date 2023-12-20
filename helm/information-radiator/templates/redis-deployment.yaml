@@ -1,18 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kompose.cmd: kompose --file ../reporting/docker-compose.yml convert
-    kompose.version: 1.31.2 (HEAD)
-  creationTimestamp: null
   labels:
-    io.kompose.service: redis
+    service-type: {{ include "information-radiator.fullname" . }}-redis
   name: redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: redis
+      service-type: {{ include "information-radiator.fullname" . }}-redis
   strategy:
     type: Recreate
   template:
@@ -23,23 +19,14 @@ spec:
       creationTimestamp: null
       labels:
         io.kompose.network/infra: "true"
-        io.kompose.service: redis
+        service-type: {{ include "information-radiator.fullname" . }}-redis
     spec:
       containers:
-        - args:
-            - redis-server
-            - /usr/local/etc/redis/redis.conf
-          image: 'redis:'
-          name: redis
+        - name: {{ include "information-radiator.fullname" . }}-redis
+          image: 'redis:latest'
+          args:
+            - --requirepass
+            - MdXVvJgDdz9Hnau7
           resources: {}
-          volumeMounts:
-            - mountPath: /usr/local/etc/redis/redis.conf
-              name: redis-claim0
-              readOnly: true
       restartPolicy: Always
-      volumes:
-        - name: redis-claim0
-          persistentVolumeClaim:
-            claimName: redis-claim0
-            readOnly: true
 status: {}
