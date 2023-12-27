@@ -45,6 +45,10 @@ app:
   log_level: "info,rocket=debug,launch=debug"
   workflow_runner_url: "fillthisin"
   response_url: "fillthisin"
+  affinity: {} 
+  tolerations: {}
+  nodeSelector: {}
+
 postgres:
   image:
     repository: "postgres"
