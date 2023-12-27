@@ -1,3 +1,3 @@
-strider:
+cqs:
   image: "ghcr.io/translatorsri/cqs"
   version: "0.2.6"
