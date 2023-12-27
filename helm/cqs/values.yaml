@@ -70,3 +70,6 @@ postgres:
   dbName: "fillthisin"
   server: "fillthisin"
   port: 5432
+  affinity: {} 
+  tolerations: {}
+  nodeSelector: {}
