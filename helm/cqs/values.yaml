@@ -46,7 +46,7 @@ app:
   workflow_runner_url: "fillthisin"
   response_url: "fillthisin"
   affinity: {} 
-  tolerations: {}
+  tolerations: []
   nodeSelector: {}
 
 postgres:
@@ -71,5 +71,5 @@ postgres:
   server: "fillthisin"
   port: 5432
   affinity: {} 
-  tolerations: {}
+  tolerations: []
   nodeSelector: {}
