@@ -17,23 +17,23 @@ data:
     http {
 
         upstream reporting-ui-server {
-            server reporting-ui:80;
+            server {{ include "information-radiator.fullname" . }}-reporting-ui:80;
         }
 
         upstream reporting-service-server {
-            server reporting-service:8080;
+            server {{ include "information-radiator.fullname" . }}-reporting-service:8080;
         }
 
         upstream iam-service-server {
-            server iam-service:8080;
+            server {{ include "information-radiator.fullname" . }}-iam-service:8080;
         }
 
         upstream artifacts-proxy-service-server {
-            server artifacts-proxy-service:8080;
+            server {{ include "information-radiator.fullname" . }}-artifacts-proxy:8080;
         }
 
         upstream rabbitmq-server {
-            server rabbitmq:15672;
+            server {{ include "information-radiator.fullname" . }}-rabbitmq:15672;
         }
 
         server {
@@ -135,7 +135,7 @@ data:
               proxy_set_header User-Agent "custom_secret_value";
               rewrite ^/(.*)$ /zebrunner/$1 break;
               proxy_buffering off;
-              proxy_pass http://minio:9000;
+              proxy_pass http://{{ include "information-radiator.fullname" . }}-minio-storage:9000;
             }
 
         }
@@ -153,15 +153,15 @@ data:
     stream {
 
         upstream rabbitmq-server {
-            server rabbitmq:5672;
+            server {{ include "information-radiator.fullname" . }}-rabbitmq:5672;
         }
 
         upstream redis {
-            server redis:6379;
+            server {{ include "information-radiator.fullname" . }}-redis:6379;
         }
 
         upstream postgres {
-            server postgres:5432;
+            server {{ include "information-radiator.fullname" . }}-postgres:5432;
         }
 
         server {

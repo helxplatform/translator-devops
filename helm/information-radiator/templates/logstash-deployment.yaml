@@ -2,27 +2,29 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service-type: {{ include "information-radiator.fullname" . }}-logstash
+    service-type: logstash
   name: {{ include "information-radiator.fullname" . }}-logstash
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service-type: {{ include "information-radiator.fullname" . }}-logstash
+      service-type: logstash
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        service-type: {{ include "information-radiator.fullname" . }}-logstash
+        service-type: logstash
     spec:
       containers:
-        - env:
+        - name: {{ include "information-radiator.fullname" . }}-logstash
+          image: 'logstash:{{ .Values.logstash.tag }}'
+          env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
-          image: 'logstash:{{ .Values.logstash.tag }}'
-          name: {{ include "information-radiator.fullname" . }}-logstash
-          resources: {}
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.logstash.resources | nindent 12 }}
+          {{ end }}
           volumeMounts:
             - mountPath: /usr/share/logstash/pipeline/logstash.conf
               name: logstash-config

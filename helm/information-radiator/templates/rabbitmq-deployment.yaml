@@ -2,23 +2,20 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service-type: {{ include "information-radiator.fullname" . }}-rabbitmq
+    service-type: rabbitmq
   name: {{ include "information-radiator.fullname" . }}-rabbitmq
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      service-type: {{ include "information-radiator.fullname" . }}-rabbitmq
-  strategy:
-    type: Recreate
+      service-type: rabbitmq
   template:
     metadata:
       labels:
-        service-type: {{ include "information-radiator.fullname" . }}-rabbitmq
+        service-type: rabbitmq
     spec:
       containers:
-        - image: 'rabbitmq:latest'
-          name: {{ include "information-radiator.fullname" . }}-rabbitmq
+        - name: {{ include "information-radiator.fullname" . }}-rabbitmq
+          image: 'rabbitmq:{{ .Values.rabbitmq.tag }}'
           env:
             - name: RABBITMQ_DEFAULT_PASS
               value: {{ .Values.rabbitmq.password }}
@@ -26,7 +23,16 @@ spec:
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
               value: {{ .Values.rabbitmq.erl_args }}
-          resources: {}
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.rabbitmq.resources | nindent 12 }}
+          {{ end }}
+          ports:
+            - name: webport
+              containerPort: {{ .Values.rabbitmq.service.web_port }}
+              protocol: TCP
+            - name: amqpport
+              containerPort: {{ .Values.rabbitmq.service.amqp_port }}
+              protocol: TCP
           volumeMounts:
             - mountPath: /rabbit-definitions/001-general-definition.json
               name: rabbitmq-configmap
@@ -60,8 +66,7 @@ spec:
               subPath: enabled_plugins
       restartPolicy: Always
       volumes:
-        - name: rabbitmq-config
+        - name: rabbitmq-configmap
           configMap:
             name: {{ include "information-radiator.fullname" . }}-rabbitmq-configmap
             defaultMode: 0777
-status: {}

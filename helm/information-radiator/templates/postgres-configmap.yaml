@@ -3,58 +3,21 @@ kind: ConfigMap
 metadata:
   name: {{ include "information-radiator.fullname" . }}-postgres-configmap
 data:
-  {{- range $path, $_ :=  .Files.Glob  "postgres_init/**.sql" }}    
-  {{ $path | trimPrefix "postgres_init/" }}: |- 
-{{ $.Files.Get $path | indent 4 }}
-  {{ end }}
-  db-mng-structure.sql: |-
-    SET SCHEMA 'management';
-
-    CREATE TABLE TENANCIES (
-    ID SERIAL,
-    NAME VARCHAR(255) NOT NULL,
-    MODIFIED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (id)
-    );
-    CREATE UNIQUE INDEX tenancy_name_unique ON tenancies (name);
-
-
-    CREATE TABLE WIDGET_TEMPLATES (
-    ID SERIAL,
-    NAME VARCHAR(255) NOT NULL,
-    DESCRIPTION VARCHAR(255) NOT NULL,
-    TYPE VARCHAR(20)  NOT NULL,
-    SQL TEXT NULL,
-    CHART_CONFIG TEXT NULL,
-    PARAMS_CONFIG TEXT NULL,
-    LEGEND_CONFIG TEXT NULL,
-    PARAMS_CONFIG_SAMPLE TEXT NULL,
-    HIDDEN BOOLEAN NOT NULL DEFAULT FALSE,
-    MODIFIED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      PRIMARY KEY (id)
-    );
-    CREATE INDEX WIDGET_TEMPLATES_NAME_UNIQUE ON WIDGET_TEMPLATES (NAME);
-
-  db-reporting-database.sql: |-
-    CREATE SCHEMA IF NOT EXISTS zafira;
-    CREATE SCHEMA IF NOT EXISTS management;
-
-  db-views-cron.sql: |-
-    SELECT cron.schedule ('0 0 1 * *', $$REFRESH MATERIALIZED VIEW CONCURRENTLY zafira.YEAR_MATERIALIZED$$);
-    SELECT cron.schedule ('10 0 1 1 *', $$REFRESH MATERIALIZED VIEW CONCURRENTLY zafira.TOTAL_MATERIALIZED$$);
-  init.sh: |-
+  zafira-init.sh: |-
     #!/bin/bash
-    if [[ $(psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -tAc "SELECT 1 FROM pg_namespace WHERE nspname = 'zafira'") == '1' ]]; then
+    if [[ $(psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -tAc "SELECT 1 FROM pg_namespace WHERE nspname = 'zafira'") == '1' ]]; then
       echo "Schema already exists"
       exit 1
     fi
 
-    psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/db-reporting-database.sql
-    psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/db-mng-structure.sql
-    psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/db-mng-data.sql
-    psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/db-views-cron.sql
+    echo "Running db-reporting-database.sql"
+    psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/sql/db-reporting-database.sql
+    echo "Running db-mng-structure.sql"
+    psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/sql/db-mng-structure.sql
+    echo "Running db-mng-data.sql"
+    psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/sql/db-mng-data.sql
+    echo "Running db-views-cron.sql"
+    psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/sql/db-views-cron.sql
 
   db-mng-data.sql: |-
     SET SCHEMA 'management';
@@ -3677,3 +3640,41 @@ data:
       "RUN": [],
       "USER": []
     }', false);
+
+  db-mng-structure.sql: |-
+    SET SCHEMA 'management';
+
+    CREATE TABLE TENANCIES (
+    ID SERIAL,
+    NAME VARCHAR(255) NOT NULL,
+    MODIFIED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id)
+    );
+    CREATE UNIQUE INDEX tenancy_name_unique ON tenancies (name);
+
+
+    CREATE TABLE WIDGET_TEMPLATES (
+    ID SERIAL,
+    NAME VARCHAR(255) NOT NULL,
+    DESCRIPTION VARCHAR(255) NOT NULL,
+    TYPE VARCHAR(20)  NOT NULL,
+    SQL TEXT NULL,
+    CHART_CONFIG TEXT NULL,
+    PARAMS_CONFIG TEXT NULL,
+    LEGEND_CONFIG TEXT NULL,
+    PARAMS_CONFIG_SAMPLE TEXT NULL,
+    HIDDEN BOOLEAN NOT NULL DEFAULT FALSE,
+    MODIFIED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CREATED_AT TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (id)
+    );
+    CREATE INDEX WIDGET_TEMPLATES_NAME_UNIQUE ON WIDGET_TEMPLATES (NAME);
+  
+  db-reporting-database.sql: |-
+    CREATE SCHEMA IF NOT EXISTS zafira;
+    CREATE SCHEMA IF NOT EXISTS management;
+
+  db-views-cron.sql: |-
+    SELECT cron.schedule ('0 0 1 * *', $$REFRESH MATERIALIZED VIEW CONCURRENTLY zafira.YEAR_MATERIALIZED$$);
+    SELECT cron.schedule ('10 0 1 1 *', $$REFRESH MATERIALIZED VIEW CONCURRENTLY zafira.TOTAL_MATERIALIZED$$);

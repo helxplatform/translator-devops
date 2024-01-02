@@ -2,22 +2,26 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service-type: {{ include "information-radiator.fullname" . }}-postgres
+    service-type: postgres
   name: {{ include "information-radiator.fullname" . }}-postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service-type: {{ include "information-radiator.fullname" . }}-postgres
-  strategy:
-    type: Recreate
+      service-type: postgres
   template:
     metadata:
       labels:
-        service-type: {{ include "information-radiator.fullname" . }}-postgres
+        service-type: postgres
     spec:
       containers:
-        - args:
+        - name: {{ include "information-radiator.fullname" . }}-postgres
+          image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
+          ports:
+            - name: http
+              containerPort: {{ .Values.postgres.service.port }}
+              protocol: TCP
+          args:
             - postgres
             - -c
             - max_connections=200
@@ -26,18 +30,28 @@ spec:
               value: {{ .Values.postgres.password }}
             - name: POSTGRES_USER
               value: {{ .Values.postgres.user }}
-          image: 'qaprosoft/postgres:latest'
-          name: {{ include "information-radiator.fullname" . }}-postgres
-          resources: {}
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ end }}
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: pgdata-volume
-            - mountPath: "/docker-entrypoint-initdb.d"
+            - mountPath: "/docker-entrypoint-initdb.d/zafira-init.sh"
               name: "postgres-config"
+              subPath: zafira-init.sh
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-mng-data.sql"
+              name: "postgres-config"
+              subPath: db-mng-data.sql
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-mng-structure.sql"
+              name: "postgres-config"
+              subPath: db-mng-structure.sql
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-reporting-database.sql"
+              name: "postgres-config"
+              subPath: db-reporting-database.sql
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-views-cron.sql"
+              name: "postgres-config"
+              subPath: db-views-cron.sql
       restartPolicy: Always
       volumes:
         - name: postgres-config
           configMap:
             name: {{ include "information-radiator.fullname" . }}-postgres-configmap
             defaultMode: 0777
-status: {}

@@ -2,41 +2,44 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service-type: {{ include "information-radiator.fullname" . }}-iam-db
+    service-type: iam-db
   name: {{ include "information-radiator.fullname" . }}-iam-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service-type: {{ include "information-radiator.fullname" . }}-iam-db
+      service-type: iam-db
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        service-type: {{ include "information-radiator.fullname" . }}-iam-db
+        service-type: iam-db
     spec:
       containers:
-        - env:
-            - name: POSTGRES_PASSWORD
-              value: {{ .Values.postgres.password }}
-            - name: POSTGRES_USER
-              value: {{ .Values.postgres.user }}
+        - name: {{ include "information-radiator.fullname" . }}-iam-db
           image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
-          name: {{ include "information-radiator.fullname" . }}-iam-db
-          resources: {}
+          envFrom:
+          - configMapRef:
+              name: {{ include "information-radiator.fullname" . }}-iam-configmap
+          ports:
+            - name: postgres-http
+              containerPort: {{ .Values.iam_db_service.service.port }}
+              protocol: TCP
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ end }}
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: iam-db-volume
-            - mountPath: /docker-entrypoint-initdb.d
-              name: iam-db-config
+            - mountPath: "/docker-entrypoint-initdb.d/iam-db-init.sh"
+              name: iam-config
+              subPath: iam-db-init.sh
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-iam-database.sql"
+              name: iam-config
+              subPath: db-iam-database.sql
       restartPolicy: Always
       volumes:
-        - name: iam-db-volume
-          persistentVolumeClaim:
-            claimName: iam-db-volume
-        - name: iam-db-config
+        - name: iam-config
           configMap:
-            name: {{ include "information-radiator.fullname" . }}-iam-db-configmap
+            name: {{ include "information-radiator.fullname" . }}-iam-configmap
             defaultMode: 0777
 status: {}

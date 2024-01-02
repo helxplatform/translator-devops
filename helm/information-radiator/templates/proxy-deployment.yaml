@@ -2,35 +2,35 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    service-type: {{ include "information-radiator.fullname" . }}-proxy
+    service-type: proxy
   name: {{ include "information-radiator.fullname" . }}-proxy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service-type: {{ include "information-radiator.fullname" . }}-proxy
-  strategy:
-    type: Recreate
+      service-type: proxy
   template:
     metadata:
       labels:
-        service-type: {{ include "information-radiator.fullname" . }}-proxy
+        service-type: proxy
     spec:
       containers:
-        - image: 'nginx:{{ .Values.nginx.tag }}'
-          name: {{ include "information-radiator.fullname" . }}-proxy
+        - name: {{ include "information-radiator.fullname" . }}-proxy
+          image: 'nginx:{{ .Values.nginx.tag }}'
           ports:
             - containerPort: 80
               protocol: TCP
-          resources: {}
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ end }}
           volumeMounts:
             - mountPath: "/etc/nginx/nginx.conf"
               name: "nginx-config"
               subPath: "nginx.conf"
-            - mountPath: "/etc/nginx/ssl"
+            - mountPath: "/etc/nginx/ssl/ssl.crt"
               name: "nginx-config"
               subPath: "ssl.crt"
-            - mountPath: "/etc/nginx/ssl"
+            - mountPath: "/etc/nginx/ssl/ssl.key"
               name: "nginx-config"
               subPath: "ssl.key"
       volumes:
