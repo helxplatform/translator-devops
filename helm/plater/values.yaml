@@ -70,21 +70,8 @@ neo4j:
         - bash
         - -c
         - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
-  affinity:
-    # this ensures pod only runs on node with label application=managed-app
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: application
-            operator: In
-            values:
-            - "managed-app"
-  tolerations:
-    - key: "transltr"
-      value: "managed-app"
-      operator: "Equal"
-      effect: "NoSchedule"
+  affinity: {}
+  tolerations: []
   nodeSelector: {}
 
 
