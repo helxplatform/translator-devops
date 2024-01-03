@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "information-radiator.labels" . | nindent 8 }}
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
         service-type: redis
     spec:
       containers:

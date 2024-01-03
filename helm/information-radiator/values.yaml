@@ -158,6 +158,7 @@ rabbitmq:
     type: ClusterIP
     web_port: 15672
     amqp_port: 5672
+    stomp_port: 61613
   password: changeit
   user: changeit
   erl_args: changeit
@@ -178,6 +179,13 @@ postgres:
     port: 5432
   password: changeit
   user: changeit
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500M
+    requests:
+      cpu: 400m
+      memory: 400M
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious

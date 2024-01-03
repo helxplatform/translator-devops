@@ -2,18 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: iam-db
   name: {{ include "information-radiator.fullname" . }}-iam-db
 spec:
   replicas: 1
   selector:
     matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: iam-db
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
         service-type: iam-db
     spec:
       containers:

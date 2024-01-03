@@ -2,18 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: reporting-service
   name: {{ include "information-radiator.fullname" . }}-reporting-service
 spec:
   replicas: 1
   selector:
     matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: reporting-service
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
         service-type: reporting-service
     spec:
       containers:
@@ -21,7 +24,7 @@ spec:
           image: 'zebrunner/reporting-service:{{ .Values.reporting_service.tag }}'
           envFrom:
           - configMapRef:
-              name: {{ include "information-radiator.fullname" . }}-configmap
+              name: {{ include "information-radiator.fullname" . }}-reporting-service-configmap
           {{ if .Values.resources }}
           resources: {{ toYaml .Values.reporting_service.resources | nindent 12 }}
           {{ end }}

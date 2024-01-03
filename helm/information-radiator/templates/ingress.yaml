@@ -39,10 +39,10 @@ spec:
           backend:
             {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
             service:
-              name: {{ include "information-radiator.fullname" . }}-proxy-service
+              name: {{ include "information-radiator.fullname" . }}-proxy
               port:
                 number: {{ .Values.nginx.service.port }}
             {{- else }}
-            serviceName: {{ include "information-radiator.fullname" . }}-proxy-service
+            serviceName: {{ include "information-radiator.fullname" . }}-proxy
             servicePort: {{ .Values.nginx.service.port }}
             {{- end }}

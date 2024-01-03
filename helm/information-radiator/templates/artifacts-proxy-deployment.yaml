@@ -3,14 +3,17 @@ kind: Deployment
 metadata:
   name: {{ include "information-radiator.fullname" . }}-artifacts-proxy
   labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: artifacts-proxy
 spec:
   selector:
     matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: artifacts-proxy
   template:
     metadata:
       labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
         service-type: artifacts-proxy
     spec:
       containers:
@@ -18,7 +21,7 @@ spec:
           name: {{ include "information-radiator.fullname" . }}-artifacts-proxy
           envFrom:
           - configMapRef:
-              name: {{ include "information-radiator.fullname" . }}-configmap
+              name: {{ include "information-radiator.fullname" . }}-artifacts-proxy-configmap
           {{ if .Values.resources }}
           resources: {{ toYaml .Values.artifacts.resources | nindent 12 }}
           {{ end }}

@@ -5,11 +5,12 @@ metadata:
 data:
   iam-db-init.sh: |-
     #!/bin/bash
-    if [[ $(psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -tAc "SELECT 1 FROM pg_namespace WHERE nspname = 'zafira'") == '1' ]]; then
+    if [[ $(psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -tAc "SELECT 1 FROM pg_namespace WHERE nspname = 'zafira'") == '1' ]]; then
       echo "Schema already exists"
       exit 1
     fi
-    psql -h localhost -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/sql/db-iam-database.sql
+    echo "Running db-iam-database.sql"
+    psql -v ON_ERROR_STOP=1 --username $POSTGRES_USER -f /docker-entrypoint-initdb.d/sql/db-iam-database.sql
 
   db-iam-database.sql: |-
     CREATE SCHEMA IF NOT EXISTS zafira;
@@ -32,3 +33,6 @@ data:
   RABBITMQ_PASSWORD: {{ .Values.rabbitmq.password }}
 
   ZEBRUNNER_HOST: http://{{ include "information-radiator.fullname" . }}-proxy:80
+
+  TOKEN_SIGNING_SECRET: AUwMLdWFBtUHVgvjFfMmAEadXqZ6HA4dKCiCmjgCXxaZ4ZO8od
+  CRYPTO_SALT: TDkxalR4T3EySGI0T0YyMitScmkxWDlsUXlPV2R4OEZ1b2kyL1VJeFVHST0=

@@ -2,16 +2,19 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: proxy
   name: {{ include "information-radiator.fullname" . }}-proxy
 spec:
   replicas: 1
   selector:
     matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: proxy
   template:
     metadata:
       labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
         service-type: proxy
     spec:
       containers:

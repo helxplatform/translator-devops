@@ -2,18 +2,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: elasticsearch
   name: {{ include "information-radiator.fullname" . }}-elasticsearch
 spec:
   replicas: 1
   selector:
     matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: elasticsearch
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
         service-type: elasticsearch
     spec:
       containers:
