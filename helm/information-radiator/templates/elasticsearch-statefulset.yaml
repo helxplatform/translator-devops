@@ -1,18 +1,15 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: elasticsearch
   name: {{ include "information-radiator.fullname" . }}-elasticsearch
 spec:
-  replicas: 1
   selector:
     matchLabels:
       {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: elasticsearch
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -36,10 +33,20 @@ spec:
             - mountPath: "/usr/share/elasticsearch/config/elasticsearch.yml"
               name: "elasticsearch-config"
               subPath: "elasticsearch.yml"
+            - mountPath: "/usr/share/elasticsearch/data"
+              name: {{ include "information-radiator.fullname" . }}-elasticsearch-volume
       restartPolicy: Always
       volumes:
         - name: elasticsearch-config
           configMap:
             name: {{ include "information-radiator.fullname" . }}-elasticsearch-configmap
             defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-elasticsearch-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi
 status: {}

@@ -5,14 +5,14 @@ metadata:
 data:
   RABBITMQ_HOST: {{ include "information-radiator.fullname" . }}-rabbitmq
   RABBITMQ_PASSWORD: {{ .Values.rabbitmq.password }}
-  RABBITMQ_PORT: "{{ .Values.rabbitmq.service.port }}"
+  RABBITMQ_PORT: "{{ .Values.rabbitmq.service.amqp_port }}"
   RABBITMQ_USERNAME: {{ .Values.rabbitmq.user }}
 
   THUMBNAIL_HEIGTH: "90"
   THUMBNAIL_HIGHER_QUALITY: "true"
 
   S3_REGION: "us-east-1"
-  S3_ENDPOINT: http://minio:9000
-  S3_SECRET: J33dNyeTDj
+  S3_ENDPOINT: http://{{ include "information-radiator.fullname" . }}-minio-storage:{{ .Values.minio.service.port }}
+  S3_SECRET: {{ .Values.minio.secret_key }}
   S3_BUCKET: zebrunner
-  S3_ACCESS_KEY_ID: zebrunner
+  S3_ACCESS_KEY_ID: {{ .Values.minio.access_key }}

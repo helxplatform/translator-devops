@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     {{- include "information-radiator.labels" . | nindent 4 }}
@@ -25,11 +25,18 @@ spec:
               value: {{ .Values.minio.access_key }}
             - name: MINIO_SECRET_KEY
               value: {{ .Values.minio.secret_key }}
-          {{ if .Values.resources }}
-          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ if .Values.minio.resources }}
+          resources: {{ toYaml .Values.minio.resources | nindent 12 }}
           {{ end }}
-          command:
-            - "server"
           args:
+            - "server"
             - "/data"
       restartPolicy: Always
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-minio-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi

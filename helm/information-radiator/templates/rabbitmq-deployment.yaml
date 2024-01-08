@@ -26,7 +26,7 @@ spec:
               value: {{ .Values.rabbitmq.user }}
             - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
               value: {{ .Values.rabbitmq.erl_args }}
-          {{ if .Values.resources }}
+          {{ if .Values.rabbitmq.resources }}
           resources: {{ toYaml .Values.rabbitmq.resources | nindent 12 }}
           {{ end }}
           ports:

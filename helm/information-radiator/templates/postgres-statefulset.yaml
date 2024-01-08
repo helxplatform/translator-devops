@@ -1,12 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: postgres
   name: {{ include "information-radiator.fullname" . }}-postgres
 spec:
-  replicas: 1
   selector:
     matchLabels:
       {{- include "information-radiator.selectorLabels" . | nindent 6 }}
@@ -52,9 +51,19 @@ spec:
             - mountPath: "/docker-entrypoint-initdb.d/sql/db-views-cron.sql"
               name: "postgres-config"
               subPath: db-views-cron.sql
+            - mountPath: "/var/lib/postgresql/data"
+              name: {{ include "information-radiator.fullname" . }}-postgres-volume
       restartPolicy: Always
       volumes:
         - name: postgres-config
           configMap:
             name: {{ include "information-radiator.fullname" . }}-postgres-configmap
             defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-postgres-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

@@ -71,11 +71,11 @@ reporting_service:
     port: 8080
   resources:
     limits:
-      cpu: 500m
-      memory: 500M
+      cpu: 1000m
+      memory: 1Gi
     requests:
-      cpu: 400m
-      memory: 400M
+      cpu: 800m
+      memory: 800M
 
 iam_service:
   tag: 1.15.0
@@ -117,6 +117,13 @@ minio:
     port: 9000
   access_key: changeit
   secret_key: changeit
+  resources:
+    limits:
+      cpu: 500m
+      memory: 500M
+    requests:
+      cpu: 400m
+      memory: 400M
 
 artifacts:
   tag: 1.8.0
@@ -142,8 +149,8 @@ elasticsearch:
   tag: 7.16.3
   service:
     type: ClusterIP
-    port_1: 9200
-    port_2: 9300
+    http_port: 9200
+    transport_port: 9300
   resources:
     limits:
       cpu: 1000m
@@ -162,12 +169,10 @@ rabbitmq:
   password: changeit
   user: changeit
   erl_args: changeit
-  storage:
-    size: 1Gi
   resources:
     limits:
-      cpu: 500m
-      memory: 500M
+      cpu: 1000m
+      memory: 1000M
     requests:
       cpu: 400m
       memory: 400M
@@ -186,6 +191,10 @@ postgres:
     requests:
       cpu: 400m
       memory: 400M
+
+secrets:
+  token_signing_secret: fillthisin
+  crypto_salt: fillthisin
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious

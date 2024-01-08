@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   labels:
     {{- include "information-radiator.labels" . | nindent 4 }}
@@ -11,8 +11,6 @@ spec:
     matchLabels:
       {{- include "information-radiator.selectorLabels" . | nindent 6 }}
       service-type: reporting-service
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -28,5 +26,16 @@ spec:
           {{ if .Values.resources }}
           resources: {{ toYaml .Values.reporting_service.resources | nindent 12 }}
           {{ end }}
+          volumeMounts:
+            - mountPath: "/opt/assets"
+              name: {{ include "information-radiator.fullname" . }}-reporting-service-volume
       restartPolicy: Always
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-reporting-service-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi
 status: {}

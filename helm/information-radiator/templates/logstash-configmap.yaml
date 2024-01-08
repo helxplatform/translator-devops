@@ -6,23 +6,23 @@ data:
   logstash.conf: |-
     input {
       rabbitmq {
-        host => "rabbitmq"
-        port => "5672"
+        host => "{{ include "information-radiator.fullname" . }}-rabbitmq"
+        port => "{{ .Values.rabbitmq.service.amqp_port }}"
         queue => "reporting.test-run-log.save"
         passive => true
-        user => "admin"
-        password => "py44LI3uonU4tHXGRidGk8m4oPwlnsHE65HS92Jk2cAEV5t5"
+        user => "{{ .Values.rabbitmq.user }}"
+        password => "{{ .Values.rabbitmq.password }}"
         subscription_retry_interval_seconds => 5
         tags => ["log"]
       }
 
       rabbitmq {
-        host => "rabbitmq"
-        port => "5672"
+        host => "{{ include "information-radiator.fullname" . }}-rabbitmq"
+        port => "{{ .Values.rabbitmq.service.amqp_port }}"
         queue => "reporting.test-run-screenshot.save-in-logs"
         passive => true
-        user => "admin"
-        password => "py44LI3uonU4tHXGRidGk8m4oPwlnsHE65HS92Jk2cAEV5t5"
+        user => "{{ .Values.rabbitmq.user }}"
+        password => "{{ .Values.rabbitmq.password }}"
         subscription_retry_interval_seconds => 5
         tags => ["screenshot"]
       }
@@ -30,7 +30,7 @@ data:
 
     output {
       elasticsearch {
-        hosts => ["elasticsearch:9200"]
+        hosts => ["elasticsearch:{{ .Values.elasticsearch.service.http_port }}"]
         index => 'test-run-data-%{+YYYY.MM.dd}'
         template => '/test-run-data-template.json'
         template_overwrite => true

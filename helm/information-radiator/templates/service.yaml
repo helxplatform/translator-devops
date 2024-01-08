@@ -111,21 +111,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "information-radiator.fullname" . }}-elasticsearch
+  name: elasticsearch
   labels:
     {{- include "information-radiator.labels" . | nindent 4 }}
     service-type: elasticsearch
 spec:
   type: {{ .Values.elasticsearch.service.type }}
   ports:
-    - port: {{ .Values.elasticsearch.service.port_1 }}
-      targetPort: {{ .Values.elasticsearch.service.port_1 }}
+    - port: {{ .Values.elasticsearch.service.http_port }}
+      targetPort: {{ .Values.elasticsearch.service.http_port }}
       protocol: TCP
-      name: elasticsearch-port-1
-    - port: {{ .Values.elasticsearch.service.port_2 }}
-      targetPort: {{ .Values.elasticsearch.service.port_2 }}
+      name: elasticsearch-http-port
+    - port: {{ .Values.elasticsearch.service.transport_port }}
+      targetPort: {{ .Values.elasticsearch.service.transport_port }}
       protocol: TCP
-      name: elasticsearch-port-2
+      name: elasticsearch-transport-port
   selector:
     {{- include "information-radiator.selectorLabels" . | nindent 4 }}
     service-type: elasticsearch
@@ -225,7 +225,7 @@ spec:
   type: {{ .Values.minio.service.type }}
   ports:
     - port: {{ .Values.minio.service.port }}
-      targetPort: 5432
+      targetPort: {{ .Values.minio.service.port }}
       protocol: TCP
       name: minio-service-port
   selector:

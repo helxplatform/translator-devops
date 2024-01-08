@@ -30,7 +30,7 @@ data:
   DATABASE_POOL_SIZE: "50"
   DATABASE_STATE_MANAGEMENT_ENABLED: "true"
 
-  ES_URIS: {{ include "information-radiator.fullname" . }}-elasticsearch:9200
+  ES_URIS: elasticsearch:{{ .Values.elasticsearch.service.http_port }}
   ES_USERNAME: ""
   ES_PASSWORD: ""
 
@@ -58,12 +58,12 @@ data:
   RABBITMQ_PASSWORD: {{ .Values.rabbitmq.password }}
 
   # s3.env
-  S3_ENDPOINT: http://{{ include "information-radiator.fullname" . }}-minio-storage:9000
-  S3_ACCESS_KEY_ID: zebrunner
-  S3_SECRET: J33dNyeTDj
+  S3_ENDPOINT: http://{{ include "information-radiator.fullname" . }}-minio-storage:{{ .Values.minio.service.port }}
+  S3_ACCESS_KEY_ID: {{ .Values.minio.access_key }}
+  S3_SECRET: {{ .Values.minio.secret_key }}
   S3_REGION: us-east-1
   S3_BUCKET: zebrunner
 
   # secrets.env
-  TOKEN_SIGNING_SECRET: AUwMLdWFBtUHVgvjFfMmAEadXqZ6HA4dKCiCmjgCXxaZ4ZO8od
-  CRYPTO_SALT: TDkxalR4T3EySGI0T0YyMitScmkxWDlsUXlPV2R4OEZ1b2kyL1VJeFVHST0=
+  TOKEN_SIGNING_SECRET: {{ .Values.secrets.token_signing_secret }}
+  CRYPTO_SALT: {{ .Values.secrets.crypto_salt }}
