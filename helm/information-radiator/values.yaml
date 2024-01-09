@@ -10,9 +10,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "22.04"
 
-informationradiator:
-  storage: 20Gi
-
 podAnnotations: {}
 
 podSecurityContext: {}
@@ -51,6 +48,26 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+test_harness:
+  tag: v0.0.1
+  pullPolicy: Always
+  repository: ghcr.io/translatorsri/testharness
+  cronInterval: "0 5 * * SUN"
+  access_token: fillthisin
+  reporter_url: fillthisin
+  tests_url: fillthisin
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 5Gi
+    requests:
+      cpu: 800m
+      memory: 3Gi
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 3000
+    fsGroup: 2000
 
 nginx:
   tag: 1.17
