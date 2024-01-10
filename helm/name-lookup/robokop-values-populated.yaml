@@ -1,0 +1,23 @@
+# ROBOKOP project-specific configuration:
+# helm install name-lookup . -n robokop-u24 -f ./values-populated.yaml -f ./renci-exp-values-populated.yaml -f ./robokop-values-populated.yaml
+
+# After installing, upgrade with dataUrl set to ""
+# helm upgrade name-lookup . -n robokop-u24 -f ./values-populated.yaml -f ./renci-exp-values-populated.yaml -f ./robokop-values-populated.yaml --set dataUrl=""
+
+webServer:
+  serverHostName: https://robokop-name-resolver.apps.renci.org
+
+dataUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/solr/snapshot.backup.robokop-filtered-ggv2024jan9.tar.gz"
+
+ingress:
+  host: robokop-name-resolver.apps.renci.org
+
+solr:
+  resources:
+    requests:
+      memory: "8Gi"
+    limits:
+      memory: "8Gi"
+  heap_mem: "-Xms8G -Xmx8G"
+  gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
+  storage: 16Gi
