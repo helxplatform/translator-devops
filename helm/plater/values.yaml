@@ -74,8 +74,10 @@ neo4j:
         - bash
         - -c
         - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
-  tolerations:
-  affinity:
+  affinity: {}
+  tolerations: []
+  nodeSelector: {}
+
 
 service:
   type: ClusterIP
@@ -153,6 +155,9 @@ app:
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
         url: ""
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 skipAttributes:
   - provided_by

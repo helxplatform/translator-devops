@@ -2,16 +2,35 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# There are two node-normalization-loader modes:
+# 1. `load` (default): Use the loader to load a set of backend Redis servers with Babel compendium/conflation JSONL files.
+# 2. `restore`: Use the loader-pipe-job to load the database backups into the backend Redis databases.
+mode: restore
+
 image:
-  repository: "containers.renci.org/translator/r3_nodenorm"
-  tag: "2.0.9"
+  repository: "ghcr.io/translatorsri/nodenormalization"
+  tag: "v2.3.5"
   pullPolicy: Always
 fullnameOverride: ""
+
+# Settings to use for a restore job.
+restore:
+  repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
+  tag: "v2.3.5"
+  pullPolicy: Always
+  dataDir: "/data"
+  dataSize: 50G
+  ephemeralStorage: 1G
+
+# node affinity and tolerations settings.
+app:
+  affinity: {}
+  tolerations: {}
 
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022dec2/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023nov5/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
@@ -21,14 +40,16 @@ data:
     - ChemicalMixture.txt
     - ComplexMolecularMixture.txt
     - Disease.txt
+    - Drug.txt
     - GeneFamily.txt
     - Gene.txt.00
     - Gene.txt.01
     - Gene.txt.02
     - Gene.txt.03
     - Gene.txt.04
+    - Gene.txt.05
     - GrossAnatomicalStructure.txt
-    - MacromolecularComplexMixin.txt
+    - MacromolecularComplex.txt
     - MolecularActivity.txt
     - MolecularMixture.txt
     - OrganismTaxon.txt
@@ -59,6 +80,8 @@ data:
     - Protein.txt.21
     - Protein.txt.22
     - Protein.txt.23
+    - Protein.txt.24
+    - Protein.txt.25
     - SmallMolecule.txt.00
     - SmallMolecule.txt.01
     - SmallMolecule.txt.02
@@ -73,13 +96,18 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2022dec2/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2023nov5/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
           - biolink:Gene
           - biolink:Protein
         redis_db: "gene_protein_db"
+      - file: "DrugChemical.txt"
+        types:
+          - biolink:ChemicalEntity
+          - biolink:Drug
+        redis_db: "chemical_drug_db"
 codeDir: /code
 
 redis_backend_config: {}
@@ -93,5 +121,7 @@ securityContext:
 resources:
   limits:
     memory: 10Gi
+    ephemeral-storage: 2Gi
   requests:
     memory: 10Gi
+    ephemeral-storage: 2Gi

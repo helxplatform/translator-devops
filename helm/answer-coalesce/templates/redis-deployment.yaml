@@ -52,6 +52,18 @@ spec:
             - mountPath: /data
               name: {{ include "answer-coalesce.fullname" . }}-redis-data-volume
               subPath: data
+      {{- with .Values.redis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}       
       volumes:
       {{- if .Values.dataUrl}}
       - name: {{ include "answer-coalesce.fullname" . }}-seed-script
@@ -66,4 +78,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 25Gi
+            storage: {{ .Values.redis.storageSize }}

@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ac-loader.fullname" . }}-loader
+  labels:
+    app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: loader
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: loader
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app: loader
+    spec:
+      volumes:
+        - name: {{ include "ac-loader.fullname" . }}-configmap
+          configMap:
+            name: {{ include "ac-loader.fullname" . }}-configmap
+            defaultMode: 0777
+      initContainers:
+       - name: {{ .Chart.Name }}-download-files
+         image: "{{ .Values.AC.image.repository }}:{{ .Values.AC.image.tag }}"
+         imagePullPolicy: Always
+         command:
+         - /download.sh
+         volumeMounts:
+            - mountPath: /data/            
+              name:  {{ include "ac-loader.fullname" . }}-data-files
+            - mountPath: "/download.sh"
+              name: {{ include "ac-loader.fullname" . }}-configmap
+              subPath: download.sh
+      containers:
+        - name: {{ .Chart.Name }}-loader
+          image: "{{ .Values.AC.image.repository }}:{{ .Values.AC.image.tag }}"
+          imagePullPolicy: "{{  .Values.AC.image.pullPolicy }}"
+          env:
+          - name: REDIS_HOST
+            value: {{ include "ac-loader.fullname" . }}-redis
+          - name: REDIS_PORT
+            value: "6379"
+          - name: DATA_DIR
+            value: /data
+          command:
+            - bash
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /data/
+              name:  {{ include "ac-loader.fullname" . }}-data-files          
+          resources:
+            {{- toYaml .Values.AC.resources | nindent 12 }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "ac-loader.fullname" . }}-data-files
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.AC.storageSize }}

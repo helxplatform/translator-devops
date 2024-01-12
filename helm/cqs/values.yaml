@@ -1,0 +1,75 @@
+replicaCount: 1
+image:
+  repository: "ghcr.io/translatorsri/cqs"
+  tag: "fillthisin"
+  pullPolicy: Always
+ingress:
+  host: "fillthisin"
+  class: ""
+  enabled: true
+  pathType: ImplementationSpecific
+  timeout: 7200 # 1hr
+  major_minor_version: "0.2"
+  tls:
+    enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      keepalive_timeout 86400;
+    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/send-timeout: "86400"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0,::/0
+x_trapi:
+  maturity: "development"
+  location: "RENCI"
+  version: "1.4.0"
+app:
+  port: 8000
+  resources:
+    requests:
+      memory: 12Gi
+      cpu: 4
+      ephemeral-storage: 2Gi
+    limits:
+      memory: 16Gi
+      cpu: 6
+      ephemeral-storage: 4Gi
+  log_level: "info,rocket=debug,launch=debug"
+  workflow_runner_url: "fillthisin"
+  response_url: "fillthisin"
+  affinity: {} 
+  tolerations: []
+  nodeSelector: {}
+
+postgres:
+  image:
+    repository: "postgres"
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  mountSubPath: ""
+  resources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 10Gi
+      cpu: 1000m
+  imagePullSecrets: []
+  storage:
+    size: 12Gi
+  user: "fillthisin"
+  password: "fillthisin"
+  dbName: "fillthisin"
+  server: "fillthisin"
+  port: 5432
+  affinity: {} 
+  tolerations: []
+  nodeSelector: {}

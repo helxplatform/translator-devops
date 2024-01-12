@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "ac-loader.fullname" . }}-redis
+  labels:
+    app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: redis
+spec:
+  serviceName: {{ include "ac-loader.fullname" . }}-redis
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "ac-loader.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app: redis
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-loader
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: "{{  .Values.redis.image.pullPolicy }}"
+          args:
+          {{- range .Values.redis.args }}
+          - {{ . | quote }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /data/
+              name:  {{ include "ac-loader.fullname" . }}-redis-data-files          
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+          ports:
+            - containerPort: 6379
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "ac-loader.fullname" . }}-redis-data-files
+      spec:
+        accessModes: [ "ReadWriteMany" ]
+        resources:
+          requests:
+            storage: {{ .Values.redis.storageSize }}

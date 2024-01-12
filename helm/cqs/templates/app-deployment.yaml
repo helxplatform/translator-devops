@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cqs.fullname" . }}-app-deployment
+  labels:
+    {{- include "cqs.labels" . | nindent 4 }}
+    type: webserver
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cqs.selectorLabels" . | nindent 6 }}
+      type: webserver
+  template:
+    metadata:
+      labels:
+        {{- include "cqs.selectorLabels" . | nindent 8 }}
+        type: webserver
+    spec:
+      containers:
+        - name: {{ include "cqs.fullname" . }}-app-server
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "cqs.fullname" . }}-configmap
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          resources: {{ toYaml .Values.app.resources | nindent 12 }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -29,7 +29,6 @@ data:
     done
   download_metadata.sh: |-
     #!/usr/bin/env bash
-
     LOCAL_DESTINATION="/home/plater/Plater/PLATER/metadata"
     MAX_ATTEMPTS=3
     TIMEOUT=3

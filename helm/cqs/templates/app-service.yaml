@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "cqs.fullname" . }}-app-service
+  labels:
+    {{- include "cqs.labels" . | nindent 4 }}
+    type: webserver
+spec:
+  selector:
+    {{- include "cqs.selectorLabels" . | nindent 4 }}
+    type: webserver
+  ports:
+    - name: http
+      port: {{ .Values.app.port }}
+      targetPort: http
+      protocol: TCP

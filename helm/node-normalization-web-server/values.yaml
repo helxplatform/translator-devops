@@ -8,7 +8,7 @@
 
 image:
   repository: ghcr.io/translatorsri/nodenormalization
-  tag: v2.1.1
+  tag: v2.3.5
   pullPolicy: Always
 
 web:
@@ -16,7 +16,14 @@ web:
   service:
     type: ClusterIP
   serverHostName: "http(s)://#####"
+  serverName: "infores:sri-node-normalizer"
+  otel:
+    enabled: false
+    jaegerHost:
+    jaegerPort:
   securityContext: {}
+  affinity: {}
+  tolerations: {}
   configPath: "/code/redis_config.yaml"
   # exra Args for uvicorn
   extraArgs:
@@ -73,7 +80,8 @@ ingress:
   class:
   # same as web.serverHostName
   hostName: #####
-  trapiVersion: "1.3"
+  trapiVersion: "1.4"
+  prevTrapiVersion: "1.3"
   annotations:
     # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -135,3 +143,8 @@ x_trapi:
     value: "maturity"
   location:
     value: "location"
+
+app:
+  nodeSelector: {}
+  affinity: {}
+  tolerations: {}

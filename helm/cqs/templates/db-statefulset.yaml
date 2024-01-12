@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "cqs.fullname" . }}-db-statefulset
+  labels:
+    {{- include "cqs.labels" . | nindent 4 }}
+    type: dbms
+spec:
+  serviceName: {{ include "cqs.fullname" . }}-db-service
+  selector:
+    matchLabels:
+      {{- include "cqs.selectorLabels" . | nindent 6 }}
+      type: dbms
+  template:
+    metadata:
+      {{- with .Values.postgres.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "cqs.labels" . | nindent 8 }}
+        type: dbms
+    spec:
+      {{- with .Values.postgres.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.postgres.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-postgres
+          securityContext:
+            {{- toYaml .Values.postgres.securityContext | nindent 12 }}
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+          env:
+          - name: POSTGRES_PASSWORD
+            value: {{ .Values.postgres.password }}
+          - name: POSTGRES_USER
+            value: {{ .Values.postgres.user }}
+          - name: POSTGRES_DB
+            value: {{ .Values.postgres.dbName }}
+          ports:
+            - name: postgres-port
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.postgres.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /var/lib/postgresql/pg_data
+          {{ if .Values.postgres.mountSubPath }}
+            subPath: postgresdata
+          {{ end }}
+            name: {{ include "cqs.fullname" . }}-postgres-data
+          - mountPath: /dev/shm
+            name: dshm
+      {{- with .Values.postgres.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgres.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.postgres.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 400Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "cqs.fullname" . }}-postgres-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storage.size }}

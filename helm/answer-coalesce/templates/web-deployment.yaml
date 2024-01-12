@@ -34,7 +34,7 @@ spec:
             - "--host"
             - "0.0.0.0"
             - "--port"
-            - "{{ .Values.ac.containerPort }}"
+            - "8080"
             - "--workers"
             - "4"
             - "--root-path"
@@ -42,7 +42,7 @@ spec:
             - "src.server:APP"
           ports:
             - name: http
-              containerPort: {{ .Values.ac.containerPort }}
+              containerPort: 8080
               protocol: TCP
           volumeMounts:
             - mountPath: /repo/AnswerCoalesce/config.json
@@ -54,3 +54,15 @@ spec:
         - name: redis-config
           configMap:
             name: {{ include "answer-coalesce.fullname" . }}-redis-config
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
