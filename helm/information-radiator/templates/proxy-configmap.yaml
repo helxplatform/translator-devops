@@ -4,11 +4,11 @@ metadata:
   name: {{ include "information-radiator.fullname" . }}-nginx-configmap
 data:
   nginx.conf: |-
-    user  nginx;
-    worker_processes  1;
-
-    error_log  /var/log/nginx/error.log warn;
-    pid        /var/run/nginx.pid;
+    # Based on https://www.nginx.com/resources/wiki/start/topics/examples/full/#nginx-conf
+    user              www www;  ## Default: nobody
+    worker_processes  auto;
+    error_log         "/opt/bitnami/nginx/logs/error.log";
+    pid               "/opt/bitnami/nginx/tmp/nginx.pid";
 
     events {
         worker_connections  1024;
@@ -36,22 +36,20 @@ data:
             server {{ include "information-radiator.fullname" . }}-rabbitmq:{{ .Values.rabbitmq.service.web_port }};
         }
 
+        access_log    "/opt/bitnami/nginx/logs/access.log";
+
+        client_body_temp_path  "/opt/bitnami/nginx/tmp/client_body" 1 2;
+        proxy_temp_path        "/opt/bitnami/nginx/tmp/proxy" 1 2;
+        fastcgi_temp_path      "/opt/bitnami/nginx/tmp/fastcgi" 1 2;
+        scgi_temp_path         "/opt/bitnami/nginx/tmp/scgi" 1 2;
+        uwsgi_temp_path        "/opt/bitnami/nginx/tmp/uwsgi" 1 2;
+
         server {
-            listen 80;
+            listen {{ .Values.nginx.service.port }};
             ignore_invalid_headers off;
 
             resolver 127.0.0.11 valid=30s;
             resolver_timeout 10s;
-
-            # Uncomment below block to setup SSL on this NGiNX instance. make sure to put ssl.crt and ssl.key to nginx/ssl shared folder
-    #        ssl_certificate /etc/nginx/ssl/ssl.crt;
-    #        ssl_certificate_key /etc/nginx/ssl/ssl.key;
-    #        ssl_session_timeout 5m;
-    #        ssl_session_cache shared:SSL:10m;
-    #        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
-    #        ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
-    #        ssl_prefer_server_ciphers on;
-
 
             location / {
                 proxy_pass http://reporting-ui-server/;
@@ -180,93 +178,3 @@ data:
         }
 
     }
-
-  ssl.crt: |-
-    -----BEGIN CERTIFICATE-----
-    MIIFrzCCA5egAwIBAgIUdm5LjzUnY31xxP+cyfqkDSEFBjwwDQYJKoZIhvcNAQEL
-    BQAwZzELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAkNBMRIwEAYDVQQHDAlSb3Nldmls
-    bGUxFjAUBgNVBAoMDVplYnJ1bm5lciBJbmMxCzAJBgNVBAsMAlFBMRIwEAYDVQQD
-    DAlsb2NhbGhvc3QwHhcNMjExMDA5MTE1MjI5WhcNMzExMDA3MTE1MjI5WjBnMQsw
-    CQYDVQQGEwJVUzELMAkGA1UECAwCQ0ExEjAQBgNVBAcMCVJvc2V2aWxsZTEWMBQG
-    A1UECgwNWmVicnVubmVyIEluYzELMAkGA1UECwwCUUExEjAQBgNVBAMMCWxvY2Fs
-    aG9zdDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAOYJs/SBjPNBoiuk
-    m0HKMBgsmSerEmx99uMjRJn9+KXi6m198hPEQOjXQklsxP9sdQYMFQTx9JTFQ9SG
-    uuNzrAq2npkndNoT5czWNib/hPc6xg50ujBldugcHfNE1enqxq8ysltkeN3cz50g
-    auYKro7jdzBRUKwhB+AOHdmv/Sx5wHpSTOJHtvB40I1/5Com+ysvG3vhoNuupUE0
-    sdOs8Tqdgo8fW4gYFkb/a0s7boNrE27qbP0ImPnaRMP3nNe3ug29AiB71Z/FNSpN
-    Swi/vWRYQNlj0s8CFqfoyQbqD1M9e5UeL2j4927oE7y10QNJ8PpIsy28pgeutcIE
-    OcoQgZyNzqOYgYVX6b+OgBKQhLJhTWGk9yuAUjpGFIBieHX+A1nKTpKdkQWDqXnj
-    PktfZ1kpcNnPIvXlHgLSV+ulBsQGvRGwvrK0FGxnMQXcupC9NmxGOxxdt0TPAYRX
-    U2inIJOo+t3LDJZ11pFUCbaJG9eN5TyZu54l2ZctyC+yPd2djmwFY9pK17FyKu/N
-    sJbpYS4FgWPUFZ1p8OmoZIyxCumHfUtz4cB60goZnWzPlMFqGOPE8r7iBDLJjT3Y
-    g5V0WleDLJdrSQmdXPVlqWQXdEoFTyHAB4+FmnOcYXRRcdmZPlpEwEhOeC0MKyTr
-    XP32XEn4lUUEBAdSBFfw6aOzA/VbAgMBAAGjUzBRMB0GA1UdDgQWBBTpFxwqosnF
-    2G8cmeDuNuTdA5j82DAfBgNVHSMEGDAWgBTpFxwqosnF2G8cmeDuNuTdA5j82DAP
-    BgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4ICAQCDIy3tTjy/HIa2BBRB
-    Dtn6fBWQDe4/EE03SfyVpFJk3/AzchMljBrnmhrvyRCrV8bESflCjwSgnSIsqBF/
-    iISnPjUIesrnM/mW5teIBgWP3Rt+C0TJnZgipWMakA5Ka/xWPSt8W8CZJ5o8Vuly
-    qGA4xT6w5RmX9Pe86GBHuzQo7n86SV6SZ4Z+vq4i+IKhbnIellTXsn0uruQ6Ij/E
-    G+1bblvsN/qKs+GK0xI6vCo38BZqleCbSmBQpusHp/I8pqVPkWK4GyVIsQunzfhO
-    oXP4z1gPHKRdQvcpVxBWdp6KtZ4xAJXXDwDTFgddTD8Nb8FD9leAWy9Gkx266bTP
-    ikfybm7P2w+/a8Y8nUVomh21xX3+joD+puhMQ0pt0Y13/bpYHxaIefnZUozR75IP
-    d5A+BWIy5Yhxqrp4rkqMKRPeLdtOUeBz1fNNA3a7F38mJEoeUh5Fe49sHxQhH/Vv
-    N3uhbBnkSZzYxgHewnaItlXnMZuzRAcF1POnuHx6FOF/EzQJ+9fh9jFf1DDE2YlL
-    I/7mhKe4ieLU2Z3xl7KRcrG3B85r57/qgDfGDffzKfE0ZS6U725Z/NaxQBgfxM/7
-    FIG3pLwOV3OzdUDEZz4sfvitzqprzBUzVSmfD2PbPapQwz6dvWanXjoSsMBMMZTt
-    BzZO47rvBFbQR0Es4v8f/dUq6Q==
-    -----END CERTIFICATE-----
-  
-  ssl.key: |-
-    -----BEGIN PRIVATE KEY-----
-    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
-    i3gD47/Gq1yAhveMR3sGCBpJHZIXF/g=
-    -----END PRIVATE KEY-----
-
