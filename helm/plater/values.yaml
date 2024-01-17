@@ -15,13 +15,6 @@ bash:
     repository: bash
     tag: "5.2.15"
 
-initresources:
-  requests:
-    memory: 5Gi
-    cpu: 100m
-  limits:
-    memory: 10Gi
-
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
@@ -97,9 +90,10 @@ app:
     resources:
       requests:
         memory: 1Gi
-        cpu: 100m
+        cpu: 500m
       limits:
         memory: 3Gi
+        cpu: 2000m
 
   port: 8080
   automatAddress: http://automat
@@ -123,11 +117,17 @@ app:
     service:
       type: ClusterIP
     allowUpgrade: true
-    resources:
+    initresources:
       requests:
-        cpu: 100m
+        memory: 5Gi
+        cpu: 500m
+      limits:
+        memory: 10Gi
+        cpu: 2000m
+    resources:
       limits:
         ephemeral-storage: 256Mi
+        cpu: 2000m
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
