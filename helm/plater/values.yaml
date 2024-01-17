@@ -127,6 +127,7 @@ app:
     resources:
       limits:
         ephemeral-storage: 256Mi
+        cpu: 2000m
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
