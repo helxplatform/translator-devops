@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+   annotations:
+     cert-manager.io/cluster-issuer: letsencrypt
+     nginx.ingress.kubernetes.io/permanent-redirect: https://robokop.renci.org
+     nginx.ingress.kubernetes.io/permanent-redirect-code: '308'
+   name: covidkop-redirect
+   namespace: robokop-u24
+spec:
+  tls:
+    - hosts:
+        - covidkop.renci.org
+      secretName: covidkop.renci.org-tls
+  rules:
+     - host: covidkop.renci.org
+       http:
+         paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: covidkop  # this is not actually used due to the redirect
+               port:
+                 number: 80
+
