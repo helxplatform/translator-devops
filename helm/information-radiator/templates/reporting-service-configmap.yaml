@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-reporting-service-configmap
+data:
+  # reporting-service.env
+  MULTITENANT: "false"
+  WEB_HOST: http://{{ include "information-radiator.fullname" . }}-proxy:80
+  API_HOST: http://{{ include "information-radiator.fullname" . }}-proxy:80
+  API_CONTEXT_PATH: reporting-service
+  USE_ARTIFACT_PROXY: "false"
+
+  REDIS_HOST: {{ include "information-radiator.fullname" . }}-redis
+  REDIS_PORT: "{{ .Values.redis.service.port }}"
+  REDIS_PASSWORD: {{ .Values.redis.password }}
+
+  RABBITMQ_STOMP_HOST: {{ include "information-radiator.fullname" . }}-rabbitmq
+  RABBITMQ_STOMP_PORT: "{{ .Values.rabbitmq.service.stomp_port }}"
+
+  JENKINS_ENABLED: "false"
+  JENKINS_URL: ""
+  JENKINS_USER: admin
+  JENKINS_PASSWORD: changeit
+  JENKINS_FOLDER: ""
+  JENKINS_JOB_URL_VISIBILITY: "true"
+
+  DATABASE_URL: jdbc:postgresql://{{ include "information-radiator.fullname" . }}-postgres:{{ .Values.postgres.service.port }}/postgres
+  DATABASE_USERNAME: {{ .Values.postgres.user }}
+  DATABASE_PASSWORD: {{ .Values.postgres.password }}
+  DATABASE_POOL_SIZE: "50"
+  DATABASE_STATE_MANAGEMENT_ENABLED: "true"
+
+  ES_URIS: elasticsearch:{{ .Values.elasticsearch.service.http_port }}
+  ES_USERNAME: ""
+  ES_PASSWORD: ""
+
+  GITHUB_CLIENT_ID: ""
+  GITHUB_CLIENT_SECRET: ""
+  GITHUB_HOST: github.com
+
+  DEBUG_ENABLED: "false"
+  DEBUG_PORT: "5005"
+  DEBUG_SUSPEND_STARTUP: "false"
+
+  TWITTER_ENABLED: "false"
+  TWITTER_CONSUMER_KEY: ""
+  TWITTER_CONSUMER_SECRET: ""
+
+  TEMPLATES_DIRECTORY: templates
+
+  IAM_HOST: {{ include "information-radiator.fullname" . }}-iam-service
+  IAM_PORT: "{{ .Values.iam_service.service.port }}"
+
+  # rabbitmq.env
+  RABBITMQ_HOST: {{ include "information-radiator.fullname" . }}-rabbitmq
+  RABBITMQ_PORT: "{{ .Values.rabbitmq.service.amqp_port }}"
+  RABBITMQ_USERNAME: {{ .Values.rabbitmq.user }}
+  RABBITMQ_PASSWORD: {{ .Values.rabbitmq.password }}
+
+  # s3.env
+  S3_ENDPOINT: http://{{ include "information-radiator.fullname" . }}-minio-storage:{{ .Values.minio.service.port }}
+  S3_ACCESS_KEY_ID: {{ .Values.minio.access_key }}
+  S3_SECRET: {{ .Values.minio.secret_key }}
+  S3_REGION: us-east-1
+  S3_BUCKET: zebrunner
+
+  # secrets.env
+  TOKEN_SIGNING_SECRET: {{ .Values.secrets.token_signing_secret }}
+  CRYPTO_SALT: {{ .Values.secrets.crypto_salt }}

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: rabbitmq
+  name: {{ include "information-radiator.fullname" . }}-rabbitmq
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: rabbitmq
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: rabbitmq
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-rabbitmq
+          image: 'rabbitmq:{{ .Values.rabbitmq.tag }}'
+          env:
+            - name: RABBITMQ_DEFAULT_PASS
+              value: {{ .Values.rabbitmq.password }}
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.rabbitmq.user }}
+            - name: RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS
+              value: {{ .Values.rabbitmq.erl_args }}
+          {{ if .Values.rabbitmq.resources }}
+          resources: {{ toYaml .Values.rabbitmq.resources | nindent 12 }}
+          {{ end }}
+          ports:
+            - name: webport
+              containerPort: {{ .Values.rabbitmq.service.web_port }}
+              protocol: TCP
+            - name: amqpport
+              containerPort: {{ .Values.rabbitmq.service.amqp_port }}
+              protocol: TCP
+            - name: stompport
+              containerPort: {{ .Values.rabbitmq.service.stomp_port }}
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /rabbit-definitions/001-general-definition.json
+              name: rabbitmq-configmap
+              subPath: 001-general-definition.json
+            - mountPath: /rabbit-definitions/002-email-send-definition.json
+              name: rabbitmq-configmap
+              subPath: 002-email-send-definition.json
+            - mountPath: /rabbit-definitions/003-user-saved-definition.json
+              name: rabbitmq-configmap
+              subPath: 003-user-saved-definition.json
+            - mountPath: /rabbit-definitions/004-test-run-screenshot-definition.json
+              name: rabbitmq-configmap
+              subPath: 004-test-run-screenshot-definition.json
+            - mountPath: /rabbit-definitions/005-test-run-artifact-definition.json
+              name: rabbitmq-configmap
+              subPath: 005-test-run-artifact-definition.json
+            - mountPath: /rabbit-definitions/006-test-run-log-definition.json
+              name: rabbitmq-configmap
+              subPath: 006-test-run-log-definition.json
+            - mountPath: /rabbit-definitions/007-integration-saved-definition.json
+              name: rabbitmq-configmap
+              subPath: 007-integration-saved-definition.json
+            - mountPath: /rabbit-definitions/008-integration-reinit-definition.json
+              name: rabbitmq-configmap
+              subPath: 008-integration-reinit-definition.json
+            - mountPath: /rabbit-definitions/016-user-deleted-definition.json
+              name: rabbitmq-configmap
+              subPath: 016-user-deleted-definition.json
+            - mountPath: /etc/rabbitmq/enabled_plugins
+              name: rabbitmq-configmap
+              subPath: enabled_plugins
+      restartPolicy: Always
+      volumes:
+        - name: rabbitmq-configmap
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-rabbitmq-configmap
+            defaultMode: 0777

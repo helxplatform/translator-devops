@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: iam-service
+  name: {{ include "information-radiator.fullname" . }}-iam-service
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: iam-service
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: iam-service
+    spec:
+      containers:
+        - image: 'zebrunner/iam-service:{{ .Values.iam_service.tag }}'
+          name: {{ include "information-radiator.fullname" . }}-iam-service
+          envFrom:
+          - configMapRef:
+              name: {{ include "information-radiator.fullname" . }}-iam-configmap
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.iam_service.resources | nindent 12 }}
+          {{ end }}
+      restartPolicy: Always

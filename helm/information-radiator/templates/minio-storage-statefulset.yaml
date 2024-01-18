@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: minio-storage
+  name: {{ include "information-radiator.fullname" . }}-minio-storage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: minio-storage
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: minio-storage
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-minio-storage
+          image: 'minio/minio:{{ .Values.minio.tag }}'
+          env:
+            - name: MINIO_ACCESS_KEY
+              value: {{ .Values.minio.access_key }}
+            - name: MINIO_SECRET_KEY
+              value: {{ .Values.minio.secret_key }}
+          {{ if .Values.minio.resources }}
+          resources: {{ toYaml .Values.minio.resources | nindent 12 }}
+          {{ end }}
+          args:
+            - "server"
+            - "/data"
+      restartPolicy: Always
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-minio-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi
