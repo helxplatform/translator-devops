@@ -29,6 +29,7 @@ ingress:
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: 'true'
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+    nginx.ingress.kubernetes.io/tags: Name=transltr-eks-ci-blue-aragorn-ranker,environment=ci,org=ncats,project=translator,program=Translator,access-team=ncats-devops
 
 web:
   serverHostName: "hostname"

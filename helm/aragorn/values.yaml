@@ -36,6 +36,7 @@ ingress:
     nginx.ingress.kubernetes.io/service-upstream: 'true'
     nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    nginx.ingress.kubernetes.io/tags: Name=transltr-eks-ci-blue-aragorn,environment=ci,org=ncats,project=translator,program=Translator,access-team=ncats-devops
   tls:
     enabled: false
 
