@@ -97,7 +97,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/tags: Name=transltr-eks-ci-blue-ac,environment=ci,org=ncats,project=translator,program=Translator,access-team=ncats-devops
-    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: ab=cd
 
 x_trapi:
   maturity:
