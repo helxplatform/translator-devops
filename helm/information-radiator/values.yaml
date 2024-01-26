@@ -56,7 +56,7 @@ test_harness:
   tests_url: fillthisin
   resources:
     limits:
-      cpu: 8000m
+      cpu: 800m
       memory: 10Gi
     requests:
       cpu: 500m
