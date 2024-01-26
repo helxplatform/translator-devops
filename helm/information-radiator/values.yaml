@@ -56,10 +56,10 @@ test_harness:
   tests_url: fillthisin
   resources:
     limits:
-      cpu: 800m
+      cpu: 1000m
       memory: 10Gi
     requests:
-      cpu: 500m
+      cpu: 800m
       memory: 7Gi
 
 nginx:
