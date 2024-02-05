@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-elasticsearch-configmap
+data:
+  elasticsearch.yml: |-
+    # ======================== Elasticsearch Configuration =========================
+    network.host : 0.0.0.0
+
+    discovery.type : single-node
+    bootstrap.memory_lock : true
+    logger.level : INFO
+
+    # CORS configuration to allow external HTTP calls
+    http.cors.enabled : true
+    http.cors.allow-origin : "*"
+    http.cors.allow-methods : OPTIONS, HEAD, GET, POST, PUT, DELETE
+    http.cors.allow-headers : "*"
+    http.cors.allow-credentials: true

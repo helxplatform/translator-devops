@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: reporting-ui
+  name: {{ include "information-radiator.fullname" . }}-reporting-ui
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: reporting-ui
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: reporting-ui
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-reporting-ui
+          image: 'zebrunner/reporting-ui:{{ .Values.reporting_ui.tag }}'
+          envFrom:
+          - configMapRef:
+              name: {{ include "information-radiator.fullname" . }}-reporting-ui-configmap
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ end }}
+      restartPolicy: Always

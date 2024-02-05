@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: logstash
+  name: {{ include "information-radiator.fullname" . }}-logstash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: logstash
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: logstash
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-logstash
+          image: 'logstash:{{ .Values.logstash.tag }}'
+          env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.logstash.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: /usr/share/logstash/pipeline/logstash.conf
+              name: logstash-config
+              subPath: logstash.conf
+            - mountPath: /mapping.json
+              name: logstash-config
+              subPath: mapping.json
+            - mountPath: /test-run-data-template.json
+              name: logstash-config
+              subPath: test-run-data-template.json
+      restartPolicy: Always
+      volumes:
+        - name: logstash-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-logstash-configmap
+            defaultMode: 0777
+status: {}

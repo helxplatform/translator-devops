@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: elasticsearch
+  name: {{ include "information-radiator.fullname" . }}-elasticsearch
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: elasticsearch
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: elasticsearch
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-elasticsearch
+          image: 'elasticsearch:{{ .Values.elasticsearch.tag }}'
+          env:
+            - name: ES_JAVA_OPTS
+              value: -Xmx1024m -Xms512m
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            - name: bootstrap.memory_lock
+              value: "true"
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.elasticsearch.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: "/usr/share/elasticsearch/config/elasticsearch.yml"
+              name: "elasticsearch-config"
+              subPath: "elasticsearch.yml"
+            - mountPath: "/usr/share/elasticsearch/data"
+              name: {{ include "information-radiator.fullname" . }}-elasticsearch-volume
+      restartPolicy: Always
+      volumes:
+        - name: elasticsearch-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-elasticsearch-configmap
+            defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-elasticsearch-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi
+status: {}

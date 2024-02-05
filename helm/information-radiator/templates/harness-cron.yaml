@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-harness-cronjob
+spec:
+  schedule: "{{ .Values.test_harness.cronInterval }}"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # don't retry
+      template:
+        spec:
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ include "information-radiator.fullname" . }}-harness
+            image: {{ .Values.test_harness.repository }}:{{ .Values.test_harness.tag }}
+            imagePullPolicy: {{ .Values.test_harness.pullPolicy }}
+            command:
+              - test-harness
+              - --reporter_url={{ .Values.test_harness.reporter_url }}
+              - --reporter_access_token={{ .Values.test_harness.access_token }}
+              - download
+              - "1"
+              - --tests_url={{ .Values.test_harness.tests_url }}
+            # command: [ "/bin/bash", "-c", "--" ]
+            # args: [ "while true; do sleep 30; done;" ]
+            resources:
+              {{ toYaml .Values.test_harness.resources | nindent 14 }}
+
+          restartPolicy: Never

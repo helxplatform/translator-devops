@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "yobokop.fullname" . }}-yobokop
+  labels:
+    {{- include "yobokop.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  selector:
+    matchLabels:
+      {{- include "yobokop.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "yobokop.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-yobokop
+          envFrom:
+            - configMapRef:
+                name: {{ include "yobokop.fullname" . }}-env-configmap
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.yobokop.repository }}:{{ .Values.yobokop.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.yobokop.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.yobokop.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.yobokop.resources | nindent 12 }}
