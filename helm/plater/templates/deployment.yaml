@@ -21,7 +21,7 @@ spec:
     spec:
       initContainers:
         - name: {{ include "plater.fullname" . }}-metadata-download-container
-          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          image: "{{ .Values.bash.image.repository }}:{{ .Values.bash.image.tag }}"
           command:
             - './download_metadata.sh'
           envFrom:
@@ -85,4 +85,16 @@ spec:
             name: {{ include "plater.fullname" . }}-configmap
             defaultMode: 0777
         - name: {{ include "plater.fullname" . }}-metadata-pvc
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 

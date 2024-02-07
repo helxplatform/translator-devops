@@ -1,0 +1,4 @@
+dataUrl: https://data.monarchinitiative.org/monarch-kg-dev/2023-09-15/monarch-kg.neo4j.dump
+metadataUrl: https://stars.renci.org/var/plater/sri-reference-kg/2023-09-15/sri-reference-kg.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/sri-reference-kg/2023-09-15/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/sri-reference-kg/2023-09-15/testing_data.json

@@ -56,6 +56,23 @@ spec:
               serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-root
               servicePort: {{ .Values.web.port }}
               {{- end }}
+          # While transitioning from TRAPI 1.3 to TRAPI 1.4, it would be simpler to keep hosting
+          # our content at /1.3/ as well as /1.4/. We'll declare this deprecated and get rid of
+          # it at some point.
+          - path: "/{{.Values.ingress.prevTrapiVersion}}(/|$)(.*)"
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: "{{ .Values.ingress.pathType }}"
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ include "node-normalization-webserver.fullname" . }}-service-root
+                port:
+                  number: {{ .Values.web.port }}
+              {{- else }}
+              serviceName: {{ include "node-normalization-webserver.fullname" . }}-service-root
+              servicePort: {{ .Values.web.port }}
+              {{- end }}
 ---
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1

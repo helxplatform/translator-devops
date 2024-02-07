@@ -1,0 +1,103 @@
+# Default values for ac-loader.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+
+dataFiles:
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/links.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/nodelabels.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/backlinks.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/nodenames.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/prov.txt
+ - https://stars.renci.org/var/answer_coalesce/input_files_11_30/category_count.txt
+
+
+AC:
+  image:
+    repository: "ghcr.io/ranking-agent/answercoalesce"
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v0.2.4.8-alpha"
+  storageSize: 180Gi
+  resources: 
+    limits:
+      memory: 60Gi
+      cpu: 1
+
+
+redis:
+  image:
+    repository: "redis"
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "6.2.6"
+  storageSize: 230Gi
+  resources:
+    limits:
+      memory: 220Gi
+      cpu: 3
+  args:
+    - --maxmemory
+    - '220gb'
+    - --loglevel
+    - 'notice'
+    - --logfile
+    - '/data/answer-coalesce.log'
+    - --stop-writes-on-bgsave-error
+    - 'no'
+    - --dbfilename
+    - 'answer-coalesce.rdb'
+    - --proto-max-bulk-len
+    - '1000mb'
+    - --timeout
+    - '60'
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
