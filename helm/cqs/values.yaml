@@ -9,7 +9,7 @@ ingress:
   enabled: true
   pathType: ImplementationSpecific
   timeout: 7200 # 1hr
-  major_minor_version: "0.2"
+  major_minor_version: "1.4"
   tls:
     enabled: true
   annotations:
