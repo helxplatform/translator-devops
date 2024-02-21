@@ -23,7 +23,11 @@ spec:
                   requests:
                     storage: {{ .Values.blocklist.storage }}
         {{ end }}
-      restartPolicy: OnFailure
+      # Because of the way in which the Restore Job works -- by creating fields in
+      # the Solr database, including copy fields -- it can no longer be re-run on
+      # failure. Instead, it should fail so we can look at the error output and
+      # figure out what to do next.
+      restartPolicy: Never
       containers:
         - name: restore-container
           image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
