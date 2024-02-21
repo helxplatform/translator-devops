@@ -115,8 +115,9 @@ blocklist:
   # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also
   # set this on Kubernetes by running:
   #   kubectl -n $NAMESPACE create secret generic {{name-lookup.fullname}}-secrets --from-literal=github_personal_access_token=github_pat_...
-  # The storage necessary to store the blocklist file. This is currently an ephemeral volume, so make sure it fits in the
-  # ephemeral storage limit!
+  # The storage necessary to store the blocklist file. This is currently an ephemeral volume, and because we need
+  # to use `split` to split this into 500 ID chunks, we actually need TWICE the amount of storage needed to store
+  # the blocklist. Luckily, the blocklist is about 7KB right now, so 100Mi should be future proof for a while.
   storage: 100Mi
 
 x_trapi:

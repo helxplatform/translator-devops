@@ -175,22 +175,22 @@ data:
 
     # Delete the blocklist terms from the Solr database.
     {{ if .Values.blocklist.url }}
-    read -a CURIE_LIST <<< $(xargs -I{lin} echo \\\"{lin}\\\" < ${BLOCKLIST_DIR}/blocklist.txt)
-    echo CURIEs on the Blocklist: ${CURIE_LIST[@]}.
 
-    # The blocklist is pretty large, so we break it into chunks.
-    arrayLength=${#CURIE_LIST[@]}
-    echo Chunking ${arrayLength} CURIEs into chunks of ${BLOCKLIST_CHUNK_SIZE}.
+    BLOCKLIST_DIR=/var/blocklist
 
-    for ((i=0; i<${arrayLength}; i+=BLOCKLIST_CHUNK_SIZE)); do
-      # Process chunk
-      curie_chunk=("${CURIE_LIST[@]:i:BLOCKLIST_CHUNK_SIZE}")
+    # Split the blocklist into files of 500 CURIEs each.
+    rm -rf ${BLOCKLIST_DIR}/blocklist_*
+    split -l ${BLOCKLIST_CHUNK_SIZE} ${BLOCKLIST_DIR}/blocklist.txt ${BLOCKLIST_DIR}/blocklist_
+
+    # Delete each blocklist.
+    for file in ${BLOCKLIST_DIR}/blocklist_*; do
+      CURIE_LIST=$(xargs -I{lin} echo \\\"{lin}\\\" < ${file})
 
       SOLR_DELETE="{
         'delete': {
-          'query': 'curie:(${curie_chunk[@]})'
+          'query': 'curie:(${CURIE_LIST})'
         }}"
-      echo SOLR delete query: ${SOLR_DELETE}
+      echo SOLR delete query for ${file}: ${SOLR_DELETE}
 
       wget --post-data "${SOLR_DELETE}" \
       --header='Content-Type:application/json' \
