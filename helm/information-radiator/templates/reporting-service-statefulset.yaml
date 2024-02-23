@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: reporting-service
+  name: {{ include "information-radiator.fullname" . }}-reporting-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: reporting-service
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: reporting-service
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-reporting-service
+          image: 'zebrunner/reporting-service:{{ .Values.reporting_service.tag }}'
+          envFrom:
+          - configMapRef:
+              name: {{ include "information-radiator.fullname" . }}-reporting-service-configmap
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.reporting_service.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: "/opt/assets"
+              name: {{ include "information-radiator.fullname" . }}-reporting-service-volume
+      restartPolicy: Always
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-reporting-service-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi
+status: {}

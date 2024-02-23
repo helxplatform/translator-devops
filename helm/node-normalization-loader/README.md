@@ -81,6 +81,17 @@ start new Redis instances. The procedure for doing that is:
 
 5. VERY IMPORTANT: remember to update the `host_name` -- otherwise the jobs will overwrite your previous database!
 
-5. Start the loader jobs
+6. Start the loader jobs
    (`helm install -n translator-dev -f values-populated.yaml -f renci-dev-values-populated.yaml nn-loader .`). This
    should create one job for every database.
+
+## Updating the Redis database on ITRB
+
+The Jenkinsfile included in this repository should have all the instructions necessary to wipe and reload the
+Redis databases. Three important things to note:
+
+1. The CLEAN\_REDIS flag can be used to clean all the Redis databases before a load. Please use this carefully!
+2. The NodeNorm personnel at RENCI know how many keys to expect in every database -- please check with them to
+   ensure that the database has loaded completely.
+3. Once the Redis databases have been completely loaded, please create backups of the Redis databases so that
+   they can restored if necessary.

@@ -1,0 +1,32 @@
+{{- if .Values.tpfServer.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "redis-tpf.fullname" . }}
+  labels:
+    {{- include "redis-tpf.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "redis-tpf.fullname" . }}
+  minReplicas: {{ .Values.tpfServer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.tpfServer.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.tpfServer.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.tpfServer.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.tpfServer.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.tpfServer.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

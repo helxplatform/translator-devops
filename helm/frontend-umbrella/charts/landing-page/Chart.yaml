@@ -1,0 +1,9 @@
+name: landing-page
+apiVersion: v2
+version: 1.0.0
+type: application
+description: The landing page for ROBOKOP. Built with Next.Js and React.
+maintainers:
+  - name: David Glymph
+    email: dglymph@renci.org
+

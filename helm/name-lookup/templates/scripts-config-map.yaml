@@ -21,6 +21,7 @@ data:
     #!/bin/sh
 
     BLOCKLIST_DIR="/var/blocklist"
+    BLOCKLIST_CHUNK_SIZE=500
 
     # Download the Blocklist file. We do this before turning on xtrace (`set -xa`) so that we don't record
     # the GitHub authorization token in the Kubernetes logs.
@@ -32,6 +33,7 @@ data:
 
       CURIE_LIST=$(xargs -I{lin} echo \"{lin}\" < ${BLOCKLIST_DIR}/blocklist.txt)
       echo CURIEs on the Blocklist: ${CURIE_LIST}.
+      echo Blocklist CURIEs will be chunked into chunks of ${BLOCKLIST_CHUNK_SIZE}.
     {{ end }}
 
     # Turn on xtrace and set up config variables.
@@ -174,19 +176,29 @@ data:
 
     # Delete the blocklist terms from the Solr database.
     {{ if .Values.blocklist.url }}
-    CURIE_LIST=$(xargs -I{lin} echo \\\"{lin}\\\" < ${BLOCKLIST_DIR}/blocklist.txt)
-    echo CURIEs on the Blocklist: ${CURIE_LIST}.
-    SOLR_DELETE="{
-      'delete': {
-        'query': 'curie:(${CURIE_LIST})'
-      }}"
-    echo SOLR delete query: ${SOLR_DELETE}
 
-    wget --post-data "${SOLR_DELETE}" \
-    --header='Content-Type:application/json' \
-    -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update?commit=true
+    BLOCKLIST_DIR=/var/blocklist
 
-    sleep 1
+    # Split the blocklist into files of 500 CURIEs each.
+    rm -rf ${BLOCKLIST_DIR}/blocklist_*
+    split -l ${BLOCKLIST_CHUNK_SIZE} ${BLOCKLIST_DIR}/blocklist.txt ${BLOCKLIST_DIR}/blocklist_
+
+    # Delete each blocklist.
+    for file in ${BLOCKLIST_DIR}/blocklist_*; do
+      CURIE_LIST=$(xargs -I{lin} echo \\\"{lin}\\\" < ${file})
+
+      SOLR_DELETE="{
+        'delete': {
+          'query': 'curie:(${CURIE_LIST})'
+        }}"
+      echo SOLR delete query for ${file}: ${SOLR_DELETE}
+
+      wget --post-data "${SOLR_DELETE}" \
+      --header='Content-Type:application/json' \
+      -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/update?commit=true
+
+      sleep 10
+    done
     {{ end }}
  
     exit 0

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: proxy
+  name: {{ include "information-radiator.fullname" . }}-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: proxy
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: proxy
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-proxy
+          image: '{{ .Values.nginx.repository }}:{{ .Values.nginx.tag }}'
+          ports:
+            - containerPort: {{ .Values.nginx.service.port }}
+              protocol: TCP
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: "/opt/bitnami/nginx/conf/nginx.conf"
+              name: "nginx-config"
+              subPath: "nginx.conf"
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-nginx-configmap
+            defaultMode: 0777
+      restartPolicy: Always
+status: {}

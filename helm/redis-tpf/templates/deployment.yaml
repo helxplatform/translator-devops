@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "redis-tpf.fullname" . }}
+  labels:
+    {{- include "redis-tpf.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.tpfServer.autoscaling.enabled }}
+  replicas: {{ .Values.tpfServer.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "redis-tpf.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.tpfServer.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "redis-tpf.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.tpfServer.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "redis-tpf.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.tpfServer.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.tpfServer.securityContext | nindent 12 }}
+          image: "{{ .Values.tpfServer.image.repository }}:{{ .Values.tpfServer.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.tpfServer.image.pullPolicy }}
+          env:
+          - name: REDIS_HOST
+            value: {{ include "redis-tpf.fullname" . }}-redis-service
+          - name: REDIS_PORT
+            value: {{ .Values.redis.service.port | quote}}
+          - name: REDIS_PASSWORD
+            value: {{ .Values.redis.password | quote}}
+          command:
+            - python
+          args:
+            - "src/server.py"
+          ports:
+            - name: http
+              containerPort: {{ .Values.tpfServer.service.port }}
+              protocol: TCP
+
+          {{ if .Values.tpfServer.probe }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          {{ end }}
+          resources:
+            {{- toYaml .Values.tpfServer.resources | nindent 12 }}
+      #     volumeMounts:
+      #       - name: data-vol
+      #         mountPath: /repo/data/          
+      # volumes:
+      #   - name: data-vol
+      #     persistentVolumeClaim:
+      #       claimName: data-pvc
+      {{- with .Values.tpfServer.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tpfServer.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tpfServer.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

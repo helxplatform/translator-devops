@@ -1,0 +1,9 @@
+name: api-docs
+apiVersion: v2
+version: 1.0.0
+type: application
+description: The API documentation site for Automat. Built with Docusaurus & served with NGINX.
+maintainers:
+  - name: David Glymph
+    email: dglymph@renci.org
+

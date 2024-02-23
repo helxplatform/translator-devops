@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+   annotations:
+     cert-manager.io/cluster-issuer: letsencrypt
+     nginx.ingress.kubernetes.io/permanent-redirect: https://robokop.renci.org
+     nginx.ingress.kubernetes.io/permanent-redirect-code: '308'
+   name: scentkop-redirect
+   namespace: robokop-u24
+spec:
+  tls:
+    - hosts:
+        - scentkop.apps.renci.org
+      secretName: scentkop.apps.renci.org-tls
+  rules:
+     - host: scentkop.apps.renci.org
+       http:
+         paths:
+         - path: /
+           pathType: Prefix
+           backend:
+             service:
+               name: scentkop
+               port:
+                 number: 80
+

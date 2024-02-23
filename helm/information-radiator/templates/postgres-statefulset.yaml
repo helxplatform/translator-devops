@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: postgres
+  name: {{ include "information-radiator.fullname" . }}-postgres
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: postgres
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-postgres
+          image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
+          ports:
+            - name: http
+              containerPort: {{ .Values.postgres.service.port }}
+              protocol: TCP
+          args:
+            - postgres
+            - -c
+            - max_connections=200
+          env:
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.postgres.password }}
+            - name: POSTGRES_USER
+              value: {{ .Values.postgres.user }}
+          {{ if .Values.postgres.resources }}
+          resources: {{ toYaml .Values.postgres.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: "/docker-entrypoint-initdb.d/zafira-init.sh"
+              name: "postgres-config"
+              subPath: zafira-init.sh
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-mng-data.sql"
+              name: "postgres-config"
+              subPath: db-mng-data.sql
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-mng-structure.sql"
+              name: "postgres-config"
+              subPath: db-mng-structure.sql
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-reporting-database.sql"
+              name: "postgres-config"
+              subPath: db-reporting-database.sql
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-views-cron.sql"
+              name: "postgres-config"
+              subPath: db-views-cron.sql
+            - mountPath: "/var/lib/postgresql/data"
+              name: {{ include "information-radiator.fullname" . }}-postgres-volume
+      restartPolicy: Always
+      volumes:
+        - name: postgres-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-postgres-configmap
+            defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-postgres-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

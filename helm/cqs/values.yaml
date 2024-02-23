@@ -9,7 +9,7 @@ ingress:
   enabled: true
   pathType: ImplementationSpecific
   timeout: 7200 # 1hr
-  major_minor_version: "0.2"
+  major_minor_version: "1.4"
   tls:
     enabled: true
   annotations:
@@ -45,6 +45,10 @@ app:
   log_level: "info,rocket=debug,launch=debug"
   workflow_runner_url: "fillthisin"
   response_url: "fillthisin"
+  affinity: {} 
+  tolerations: []
+  nodeSelector: {}
+
 postgres:
   image:
     repository: "postgres"
@@ -66,3 +70,6 @@ postgres:
   dbName: "fillthisin"
   server: "fillthisin"
   port: 5432
+  affinity: {} 
+  tolerations: []
+  nodeSelector: {}

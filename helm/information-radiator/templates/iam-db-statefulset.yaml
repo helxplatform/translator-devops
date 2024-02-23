@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: iam-db
+  name: {{ include "information-radiator.fullname" . }}-iam-db
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: iam-db
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: iam-db
+    spec:
+      containers:
+        - name: {{ include "information-radiator.fullname" . }}-iam-db
+          image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
+          envFrom:
+          - configMapRef:
+              name: {{ include "information-radiator.fullname" . }}-iam-configmap
+          ports:
+            - name: postgres-http
+              containerPort: {{ .Values.iam_db_service.service.port }}
+              protocol: TCP
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: "/docker-entrypoint-initdb.d/iam-db-init.sh"
+              name: iam-config
+              subPath: iam-db-init.sh
+            - mountPath: "/docker-entrypoint-initdb.d/sql/db-iam-database.sql"
+              name: iam-config
+              subPath: db-iam-database.sql
+            - mountPath: "/var/lib/postgresql/data"
+              name: {{ include "information-radiator.fullname" . }}-iam-db-volume
+      restartPolicy: Always
+      volumes:
+        - name: iam-config
+          configMap:
+            name: {{ include "information-radiator.fullname" . }}-iam-configmap
+            defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "information-radiator.fullname" . }}-iam-db-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 1Gi
+status: {}

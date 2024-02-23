@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "information-radiator.fullname" . }}-test-connection"
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "information-radiator.fullname" . }}:{{ .Values.nginx.service.port }}']
+  restartPolicy: Never

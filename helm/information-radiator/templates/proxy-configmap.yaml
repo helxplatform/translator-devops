@@ -1,0 +1,180 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-nginx-configmap
+data:
+  nginx.conf: |-
+    # Based on https://www.nginx.com/resources/wiki/start/topics/examples/full/#nginx-conf
+    user              www www;  ## Default: nobody
+    worker_processes  auto;
+    error_log         "/opt/bitnami/nginx/logs/error.log";
+    pid               "/opt/bitnami/nginx/tmp/nginx.pid";
+
+    events {
+        worker_connections  1024;
+    }
+
+    http {
+
+        upstream reporting-ui-server {
+            server {{ include "information-radiator.fullname" . }}-reporting-ui:{{ .Values.reporting_ui.service.port }};
+        }
+
+        upstream reporting-service-server {
+            server {{ include "information-radiator.fullname" . }}-reporting-service:{{ .Values.reporting_service.service.port }};
+        }
+
+        upstream iam-service-server {
+            server {{ include "information-radiator.fullname" . }}-iam-service:{{ .Values.iam_service.service.port }};
+        }
+
+        upstream artifacts-proxy-service-server {
+            server {{ include "information-radiator.fullname" . }}-artifacts-proxy:{{ .Values.artifacts.service.port }};
+        }
+
+        upstream rabbitmq-server {
+            server {{ include "information-radiator.fullname" . }}-rabbitmq:{{ .Values.rabbitmq.service.web_port }};
+        }
+
+        access_log    "/opt/bitnami/nginx/logs/access.log";
+
+        client_body_temp_path  "/opt/bitnami/nginx/tmp/client_body" 1 2;
+        proxy_temp_path        "/opt/bitnami/nginx/tmp/proxy" 1 2;
+        fastcgi_temp_path      "/opt/bitnami/nginx/tmp/fastcgi" 1 2;
+        scgi_temp_path         "/opt/bitnami/nginx/tmp/scgi" 1 2;
+        uwsgi_temp_path        "/opt/bitnami/nginx/tmp/uwsgi" 1 2;
+
+        server {
+            listen {{ .Values.nginx.service.port }};
+            ignore_invalid_headers off;
+
+            resolver 127.0.0.11 valid=30s;
+            resolver_timeout 10s;
+
+            location / {
+                proxy_pass http://reporting-ui-server/;
+            }
+
+            location /api/reporting/ {
+                proxy_pass http://reporting-service-server/;
+
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection upgrade;
+            }
+
+            location /api/iam/ {
+                proxy_pass http://iam-service-server/;
+
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection upgrade;
+            }
+
+            location ~ "^/api/reporting/v1/test-runs/(?<test_run_id>.+)/logs" {
+                if ($request_method = GET) {
+                  rewrite ^/api/reporting/(.*)$ /$1 break;
+                  proxy_pass http://reporting-service-server;
+                }
+
+                rewrite ^/(.*)$ /v1/test-runs/$test_run_id/logs break;
+                proxy_pass http://artifacts-proxy-service-server;
+            }
+
+            location ~ "^/api/reporting/v1/test-runs/(?<test_run_id>.+)/tests/(?<test_id>.+)/screenshots" {
+                client_max_body_size 10M;
+
+                if ($request_method = GET) {
+                  rewrite ^/api/reporting/(.*)$ /$1 break;
+                  proxy_pass http://reporting-service-server;
+                }
+
+                set $captured_at_timestamp $http_x_zbr_screenshot_captured_at;
+                if ($msec ~ "(.*)\.(.*)") {
+                    set $timestamp_millis "$1$2";
+                }
+                if ($http_x_zbr_screenshot_captured_at = "") {
+                    set $captured_at_timestamp $timestamp_millis;
+                }
+
+                proxy_set_header x-zbr-screenshot-captured-at $captured_at_timestamp;
+
+                proxy_set_header x-zbr-test-run-id $test_run_id;
+                proxy_set_header x-zbr-test-id $test_id;
+
+                rewrite ^/(.*)$ /v1/screenshots break;
+                proxy_pass http://artifacts-proxy-service-server;
+            }
+
+            location ~ "^/api/reporting/v1/test-runs/(?<test_run_id>.+)/tests/(?<test_id>.+)/artifacts" {
+                client_max_body_size 1G;
+
+                proxy_set_header x-zbr-test-run-id $test_run_id;
+                proxy_set_header x-zbr-test-id $test_id;
+
+                rewrite ^/(.*)$ /v1/artifacts break;
+                proxy_pass http://artifacts-proxy-service-server;
+            }
+
+            # in nginx.conf file, this mapping should placed after mapping for test artifacts (previous one)
+            # otherwise, nginx will route by this mapping for both test and test run artifacts
+            location ~ "^/api/reporting/v1/test-runs/(?<test_run_id>.+)/artifacts" {
+                client_max_body_size 1G;
+
+                proxy_set_header x-zbr-test-run-id $test_run_id;
+
+                rewrite ^/(.*)$ /v1/artifacts break;
+                proxy_pass http://artifacts-proxy-service-server;
+            }
+
+            location ~ ^/(artifacts|assets|common|users)/ {
+              limit_except GET {
+                deny all;
+              }
+
+              proxy_set_header User-Agent "custom_secret_value";
+              rewrite ^/(.*)$ /zebrunner/$1 break;
+              proxy_buffering off;
+              proxy_pass http://{{ include "information-radiator.fullname" . }}-minio-storage:{{ .Values.minio.service.port }};
+            }
+
+        }
+
+        server {
+            listen 15672;
+
+            location / {
+                proxy_pass http://rabbitmq-server/;
+            }
+        }
+
+    }
+
+    stream {
+
+        upstream rabbitmq-server {
+            server {{ include "information-radiator.fullname" . }}-rabbitmq:5672;
+        }
+
+        upstream redis {
+            server {{ include "information-radiator.fullname" . }}-redis:6379;
+        }
+
+        upstream postgres {
+            server {{ include "information-radiator.fullname" . }}-postgres:5432;
+        }
+
+        server {
+            listen 5672;
+            proxy_pass rabbitmq-server;
+        }
+
+        server {
+            listen 6379;
+            proxy_pass redis;
+        }
+
+        server {
+            listen 5432;
+            proxy_pass postgres;
+        }
+
+    }

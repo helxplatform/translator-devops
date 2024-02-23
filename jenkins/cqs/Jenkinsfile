@@ -1,0 +1,115 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build && sri' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+        string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "ci"
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/cqs/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+                script {
+                    def image_meta = readYaml file: 'helm/cqs/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = image_meta.cqs.image
+                    env.BUILD_VERSION = image_meta.cqs.version
+                    currentBuild.displayName = image_meta.cqs.version
+                }
+           }
+        }
+        stage('build') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/cqs/*"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-cqs",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                ]) {
+                    dir("helm/cqs") {
+                        script {
+                            sh '''
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION $IMAGE_NAME
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
+                            docker.image(env.IMAGE_NAME).push("${BUILD_VERSION}")
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
+            when {
+                anyOf {
+                    changeset "helm/cqs/*"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            environment {
+              APP = "cqs"
+            }
+            steps {
+                checkout scm
+                dir("helm/cqs") {
+                    configFileProvider([
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
+                    ]){
+                        sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        mv ncats-dev-values.yaml ./values-ncats.yaml
+                        /bin/bash deploy.sh
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
+        }
+    }
+}

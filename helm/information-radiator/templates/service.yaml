@@ -1,0 +1,233 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: reporting-ui
+  name: {{ include "information-radiator.fullname" . }}-reporting-ui
+spec:
+  ports:
+    - name: reporting-ui-port
+      port: {{ .Values.reporting_ui.service.port }}
+      protocol: TCP
+      targetPort: {{ .Values.reporting_ui.service.port }}
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: reporting-ui
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: proxy
+  name: {{ include "information-radiator.fullname" . }}-proxy
+spec:
+  ports:
+    - name: proxy-service-port
+      port: {{ .Values.nginx.service.port }}
+      protocol: TCP
+      targetPort: {{ .Values.nginx.service.port }}
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: proxy
+status:
+  loadBalancer: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-postgres
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: postgres
+spec:
+  type: {{ .Values.postgres.service.type }}
+  ports:
+    - port: {{ .Values.postgres.service.port }}
+      targetPort: {{ .Values.postgres.service.port }}
+      protocol: TCP
+      name: postgres-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-redis
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-reporting-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: reporting-service
+spec:
+  type: {{ .Values.reporting_service.service.type }}
+  ports:
+    - port: {{ .Values.reporting_service.service.port }}
+      targetPort: {{ .Values.reporting_service.service.port }}
+      protocol: TCP
+      name: reporting-service-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: reporting-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-artifacts-proxy
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: artifacts-proxy
+spec:
+  type: {{ .Values.artifacts.service.type }}
+  ports:
+    - port: {{ .Values.artifacts.service.port }}
+      targetPort: {{ .Values.artifacts.service.port }}
+      protocol: TCP
+      name: artifacts-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: artifacts-proxy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: elasticsearch
+spec:
+  type: {{ .Values.elasticsearch.service.type }}
+  ports:
+    - port: {{ .Values.elasticsearch.service.http_port }}
+      targetPort: {{ .Values.elasticsearch.service.http_port }}
+      protocol: TCP
+      name: elasticsearch-http-port
+    - port: {{ .Values.elasticsearch.service.transport_port }}
+      targetPort: {{ .Values.elasticsearch.service.transport_port }}
+      protocol: TCP
+      name: elasticsearch-transport-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: elasticsearch
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-rabbitmq
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: rabbitmq
+spec:
+  type: {{ .Values.rabbitmq.service.type }}
+  ports:
+    - port: {{ .Values.rabbitmq.service.web_port }}
+      targetPort: {{ .Values.rabbitmq.service.web_port }}
+      protocol: TCP
+      name: rabbitmq-web-port
+    - port: {{ .Values.rabbitmq.service.amqp_port }}
+      targetPort: {{ .Values.rabbitmq.service.amqp_port }}
+      protocol: TCP
+      name: rabbitmq-amqp-port
+    - port: {{ .Values.rabbitmq.service.stomp_port }}
+      targetPort: {{ .Values.rabbitmq.service.stomp_port }}
+      protocol: TCP
+      name: rabbitmq-stomp-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: rabbitmq
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-logstash
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: logstash
+spec:
+  type: {{ .Values.logstash.service.type }}
+  ports:
+    - port: {{ .Values.logstash.service.port_1 }}
+      targetPort: {{ .Values.logstash.service.port_1 }}
+      protocol: TCP
+      name: logstash-port-1
+    - port: {{ .Values.logstash.service.port_2 }}
+      targetPort: {{ .Values.logstash.service.port_2 }}
+      protocol: TCP
+      name: logstash-port-2
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: logstash
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-iam-service
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: iam-service
+spec:
+  type: {{ .Values.iam_service.service.type }}
+  ports:
+    - port: {{ .Values.iam_service.service.port }}
+      targetPort: {{ .Values.iam_service.service.port }}
+      protocol: TCP
+      name: iam-service-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: iam-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-iam-db
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: iam-db
+spec:
+  type: {{ .Values.iam_db_service.service.type }}
+  ports:
+    - port: {{ .Values.iam_db_service.service.port }}
+      targetPort: {{ .Values.iam_db_service.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: iam-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-minio-storage
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: minio-storage
+spec:
+  type: {{ .Values.minio.service.type }}
+  ports:
+    - port: {{ .Values.minio.service.port }}
+      targetPort: {{ .Values.minio.service.port }}
+      protocol: TCP
+      name: minio-service-port
+  selector:
+    {{- include "information-radiator.selectorLabels" . | nindent 4 }}
+    service-type: minio-storage
