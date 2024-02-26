@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-logstash-configmap
+data:
+  logstash.conf: |-
+    input {
+      rabbitmq {
+        host => "{{ include "information-radiator.fullname" . }}-rabbitmq"
+        port => "{{ .Values.rabbitmq.service.amqp_port }}"
+        queue => "reporting.test-run-log.save"
+        passive => true
+        user => "{{ .Values.rabbitmq.user }}"
+        password => "{{ .Values.rabbitmq.password }}"
+        subscription_retry_interval_seconds => 5
+        tags => ["log"]
+      }
+
+      rabbitmq {
+        host => "{{ include "information-radiator.fullname" . }}-rabbitmq"
+        port => "{{ .Values.rabbitmq.service.amqp_port }}"
+        queue => "reporting.test-run-screenshot.save-in-logs"
+        passive => true
+        user => "{{ .Values.rabbitmq.user }}"
+        password => "{{ .Values.rabbitmq.password }}"
+        subscription_retry_interval_seconds => 5
+        tags => ["screenshot"]
+      }
+    }
+
+    output {
+      elasticsearch {
+        hosts => ["elasticsearch:{{ .Values.elasticsearch.service.http_port }}"]
+        index => 'test-run-data-%{+YYYY.MM.dd}'
+        template => '/test-run-data-template.json'
+        template_overwrite => true
+        template_name => 'test-run-data'
+      }
+    }
+
+    filter {
+      if "log" in [tags] {
+        mutate { add_field => { "kind" => "log" } }
+      } else if "screenshot" in [tags] {
+        mutate {
+          add_field => { "kind" => "screenshot" }
+          rename => {
+            "objectKey" => "message"
+            "capturedAt" => "timestamp"
+          }
+        }
+      }
+    }
+  mapping.json: |-
+    {
+      "index_patterns":[
+          "logs-*"
+      ],
+      "mappings":{
+          "doc":{
+            "properties":{
+                "@timestamp":{
+                  "type":"date"
+                },
+                "@version":{
+                  "type":"text"
+                },
+                "correlation-id":{
+                  "type":"keyword"
+                },
+                "level":{
+                  "type":"text"
+                },
+                "logger":{
+                  "type":"text"
+                },
+                "message":{
+                  "type":"text",
+                  "index":false
+                },
+                "threadName":{
+                  "type":"text"
+                },
+                "timestamp":{
+                  "type":"long"
+                }
+            }
+          }
+      }
+    }
+  test-run-data-template.json: |-
+    {
+      "index_patterns" : ["test-run-data-*"],
+      "settings": {
+        "number_of_shards" :   1,
+        "number_of_replicas" : 1
+      },
+      "mappings" : {
+        "doc" : {
+          "properties" : {
+            "@timestamp" : { "type" : "date" },
+            "@version" : { "type" : "keyword" },
+            "tenant" : { "type" : "keyword" },
+            "kind" : { "type" : "keyword" },
+            "timestamp" : { "type" : "long" },
+            "testRunId" : { "type" : "keyword" },
+            "testId" : { "type" : "keyword" },
+            "level" : { "type" : "text" },
+            "message" : { "type" : "text" }
+          }
+        }
+      }
+    }

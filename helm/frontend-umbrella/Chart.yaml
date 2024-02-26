@@ -1,0 +1,16 @@
+name: frontend-umbrella
+apiVersion: v2
+version: 1.0.0
+type: application
+description: |
+  Umbrella chart controlling ingress for:
+    landing-page      /
+    api-docs          /api
+    question builder  /question-builder 
+maintainers:
+  - name: David Glymph
+    email: dglymph@renci.org
+dependencies:
+  - name: landing-page
+  - name: api-docs
+  - name: qgraph

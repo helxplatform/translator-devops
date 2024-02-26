@@ -1,0 +1,43 @@
+{{ if .Values.robokache.enabled }}
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: {{ include "qgraph.fullname" . }}-robokache
+    labels:
+      {{- include "qgraph.labels" . | nindent 4 }}
+      service-type: database
+  spec:
+    serviceName: {{ include "qgraph.fullname" . }}-robokache
+    selector:
+      matchLabels:
+        {{- include "qgraph.selectorLabels" . | nindent 6 }}
+        service-type: database
+    template:
+      metadata:
+        labels:
+          {{- include "qgraph.selectorLabels" . | nindent 8 }}
+          service-type: database
+      spec:
+        containers:
+          - name: {{ .Chart.Name }}-robokache-container
+            image: "{{ .Values.robokache.repository }}:{{ .Values.robokache.tag }}"
+            ports:
+              - name: http
+                containerPort: {{ .Values.robokache.service.port }}
+                protocol: TCP
+            volumeMounts:
+              - mountPath: {{ .Values.robokache.dbPath }}
+                name: {{ include "qgraph.fullname" . }}-robokache-data-volume
+                subPath: data
+            resources:
+              {{ toYaml .Values.robokache.resources | nindent 12 }}
+
+    volumeClaimTemplates:
+      - metadata:
+          name: {{ include "qgraph.fullname" . }}-robokache-data-volume
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: {{ .Values.robokache.storage.size }}
+{{ end }}

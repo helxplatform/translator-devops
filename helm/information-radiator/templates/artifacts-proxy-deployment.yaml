@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "information-radiator.fullname" . }}-artifacts-proxy
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: artifacts-proxy
+spec:
+  selector:
+    matchLabels:
+      {{- include "information-radiator.selectorLabels" . | nindent 6 }}
+      service-type: artifacts-proxy
+  template:
+    metadata:
+      labels:
+        {{- include "information-radiator.selectorLabels" . | nindent 8 }}
+        service-type: artifacts-proxy
+    spec:
+      containers:
+        - image: 'zebrunner/artifacts-proxy-service:{{ .Values.artifacts.tag }}'
+          name: {{ include "information-radiator.fullname" . }}-artifacts-proxy
+          envFrom:
+          - configMapRef:
+              name: {{ include "information-radiator.fullname" . }}-artifacts-proxy-configmap
+          {{ if .Values.resources }}
+          resources: {{ toYaml .Values.artifacts.resources | nindent 12 }}
+          {{ end }}
+      restartPolicy: Always

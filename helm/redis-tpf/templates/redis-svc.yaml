@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "redis-tpf.fullname" . }}-redis-service
+  labels:
+    {{- include "redis-tpf.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: 6379
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "redis-tpf.selectorLabels" . | nindent 4 }}
+    service-type: redis

@@ -1,0 +1,54 @@
+ingress:
+  host: robokop.renci.org
+  paths:
+  - path: /api-docs(?:\/|$)(.*)
+    pathType: Prefix
+    backend:
+      service:
+        name: api-docs
+        port:
+          number: 8080
+  - path: /question-builder(?:\/|$)(.*)
+    pathType: Prefix
+    backend:
+      service:
+        name: qgraph-svc
+        port:
+          number: 7080
+  - path: /(.*)$
+    pathType: Prefix
+    backend:
+      service:
+        name: landing-page
+        port:
+          number: 3000
+
+# qgraph .Values override
+qgraph:
+  env:
+    # robokache: http://qgraph-robokache
+    strider: https://strider.renci.org/1.3
+    aragorn: http://aragorn-aragorn-service:8080
+    robokop_ara: http://aragorn-aragorn-robokop-service:8080
+    node_normalizer: http://nn-web-node-normalization-web-service-root.translator-dev:8080
+    name_resolver: https://robokop-name-resolver.apps.renci.org
+    biolink: https://raw.githubusercontent.com/biolink/biolink-model/v3.5.4/biolink-model.yaml
+
+  qgraph:
+    repository: ghcr.io/robokopu24/qgraph
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v1.2.2"
+    service:
+      type: ClusterIP
+      port: 7080
+
+  robokache:
+    repository: ghcr.io/ncats-gamma/robokache
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "v4.1.5"
+    service:
+      type: ClusterIP
+      port: 8080
+    dbPath: "/data"
