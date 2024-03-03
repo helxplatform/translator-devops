@@ -9,14 +9,14 @@ mode: restore
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.5"
+  tag: "v2.3.6"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "v2.3.5"
+  tag: "v2.3.6"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
