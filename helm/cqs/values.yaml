@@ -45,7 +45,8 @@ app:
   log_level: "info,rocket=debug,launch=debug"
   workflow_runner_url: "fillthisin"
   response_url: "fillthisin"
-  affinity: {} 
+  write_wfr_output: "false"
+  affinity: {}
   tolerations: []
   nodeSelector: {}
 
