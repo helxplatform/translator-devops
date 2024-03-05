@@ -55,6 +55,7 @@ solr:
     #
     requests:
       memory: "58Gi"
+      cpu: 1000m
     limits:
       memory: "58Gi"
       cpu: 2000m
