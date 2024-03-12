@@ -181,7 +181,6 @@ config:
       "https://automat.transltr.io/pharos/1.4/openapi.json",
       "https://automat.transltr.io/reactome/1.4/openapi.json",
       "https://automat.transltr.io/robokopkg/1.4/openapi.json",
-      "https://automat.transltr.io/sri-reference-kg/1.4/openapi.json",
       "https://automat.transltr.io/string-db/1.4/openapi.json",
       "https://automat.transltr.io/ubergraph/1.4/openapi.json",
       "https://automat.transltr.io/viral-proteome/1.4/openapi.json",
