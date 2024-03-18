@@ -3,26 +3,14 @@ ingress:
   public: true
   paths:
   - path: /api-docs(?:\/|$)(.*)
-    pathType: Prefix
-    backend:
-      service:
-        name: api-docs
-        port:
-          number: 8080
+    name: api-docs-svc
+    port: 8080
   - path: /question-builder(?:\/|$)(.*)
-    pathType: Prefix
-    backend:
-      service:
-        name: qgraph-svc
-        port:
-          number: 7080
+    name: qgraph-svc
+    port: 7080
   - path: /(.*)$
-    pathType: Prefix
-    backend:
-      service:
-        name: landing-page
-        port:
-          number: 3000
+    name: landing-page-svc
+    port: 3000
 
 # qgraph .Values override
 qgraph:
