@@ -1,5 +1,6 @@
 ingress:
   host: robokop.renci.org
+  public: true
   paths:
   - path: /api-docs(?:\/|$)(.*)
     pathType: Prefix

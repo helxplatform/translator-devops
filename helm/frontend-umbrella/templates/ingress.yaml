@@ -10,8 +10,9 @@ metadata:
     # This only works for DNS names in public zones like *.renci.org or *.apps.renci.org. See https://wiki.renci.org/index.php/Kubernetes_Cloud/Let%27s_Encrypt_Migration
     cert-manager.io/cluster-issuer: letsencrypt
 
-    # uncomment this line to expose to the public internet
+    {{ if .Values.ingress.public }}
     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+    {{ end }}
 
     # keep these so complex queries don't timeout
     nginx.ingress.kubernetes.io/proxy-body-size: "250m"
