@@ -1,0 +1,8 @@
+ingress:
+  host: yobokop.apps.renci.org
+  public: false
+
+# qgraph .Values override
+qgraph:
+  env:
+    name_resolver: https://yobokop-name-resolver.apps.renci.org
