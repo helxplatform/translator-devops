@@ -6,4 +6,4 @@ ingress:
 qgraph:
   env:
     name_resolver: https://yobokop-name-resolver.apps.renci.org
-    aragorn: http://yobokop-aragorn-aragorn-robokop-service:8080
+    robokop_ara: http://yobokop-aragorn-aragorn-robokop-service:8080
