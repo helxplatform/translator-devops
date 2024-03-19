@@ -7,5 +7,3 @@ qgraph:
   env:
     name_resolver: https://yobokop-name-resolver.apps.renci.org
     robokop_ara: http://yobokop-aragorn-aragorn-robokop-service:8080
-  qgraph:
-    tag: "v1.2.5-yobokop"
