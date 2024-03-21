@@ -10,3 +10,4 @@ data:
   NODE_NORMALIZER: {{ .Values.env.node_normalizer }}
   NAME_RESOLVER: {{ .Values.env.name_resolver }}
   BIOLINK: {{ .Values.env.biolink }}
+  GPT_PASSWORD: {{ .Values.env.GPT_PASSWORD }}

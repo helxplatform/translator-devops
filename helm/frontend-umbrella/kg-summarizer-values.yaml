@@ -1,0 +1,12 @@
+ingress:
+  host: robokop-kgsumdemo.apps.renci.org
+  public: false
+
+# qgraph .Values override
+qgraph:
+  env:
+    GPT_PASSWORD: pass
+
+  qgraph:
+    # Overrides the image tag whose default is the chart values.yaml.
+    tag: "v1.3.2-beta"
