@@ -1,6 +1,6 @@
 ingress:
   host: yobokop.apps.renci.org
-  public: false
+  public: true
 
 # qgraph .Values override
 qgraph:
