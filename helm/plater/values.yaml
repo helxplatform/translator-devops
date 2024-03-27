@@ -18,7 +18,7 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "epc-testing-2"
+    tag: "epc-testing-3"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
