@@ -43,11 +43,11 @@ spec:
       securityContext:
         {{ $securityContext | toYaml | nindent 8 }}
       {{ end }}
-      {{- with .Values.app.affinity }}
+      {{- with $.Values.app.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.app.tolerations }}
+      {{- with $.Values.app.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

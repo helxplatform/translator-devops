@@ -63,9 +63,8 @@ data:
     echo "FINISHED"
 
   redis_config.yaml: |
-    {{- range $key, $v := .Values.redis_backend_config }}
+    {{- range $key, $config := .Values.redis_backend_config }}
     {{ $key | replace "\"" "" }}:
-      {{- $redis_config := omit $v "restoreURL" "storageSize" }}
-      {{- $redis_config | toYaml | nindent 6 }}
+      {{- $config.connectionDetails | toYaml | nindent 6 }}
     {{- end }}
 {{- end }}
