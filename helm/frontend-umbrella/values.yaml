@@ -21,7 +21,7 @@ qgraph:
     robokop_ara: http://aragorn-aragorn-robokop-service:8080
     node_normalizer: http://nn-web-node-normalization-web-service-root.translator-dev:8080
     name_resolver: https://robokop-name-resolver.apps.renci.org
-    biolink: https://raw.githubusercontent.com/biolink/biolink-model/v3.5.4/biolink-model.yaml
+    biolink: https://raw.githubusercontent.com/biolink/biolink-model/v4.1.6/biolink-model.yaml
 
   qgraph:
     repository: ghcr.io/robokopu24/qgraph
