@@ -82,7 +82,10 @@ data:
     - Protein.txt.23
     - Protein.txt.24
     - Protein.txt.25
-    - Publication.txt
+    - Publication.txt.00
+    - Publication.txt.01
+    - Publication.txt.02
+    - Publication.txt.03
     - SmallMolecule.txt.00
     - SmallMolecule.txt.01
     - SmallMolecule.txt.02
