@@ -4,7 +4,7 @@ id-id:
     enabled: true
   master:
     persistence:
-      size: 100Gi
+      size: 140Gi
     resources:
       limits:
         cpu: 1500m
@@ -30,7 +30,7 @@ id-categories:
     enabled: true
   master:
     persistence:
-      size: 150Gi
+      size: 100Gi
     resources:
       limits:
         cpu: 1500m
@@ -81,7 +81,7 @@ semantic-count:
     enabled: true
   master:
     persistence:
-      size: 1Gi
+      size: 20Mi
     resources:
       limits:
         cpu: 100m
@@ -109,7 +109,7 @@ conflation-db:
     enabled: true
   master:
     persistence:
-      size: 20Gi
+      size: 15Gi
     resources:
       limits:
         cpu: 1000m
@@ -134,7 +134,7 @@ info-content:
     enabled: true
   master:
     persistence:
-      size: 1Gi
+      size: 500Mi
     resources:
       limits:
         cpu: 150m
