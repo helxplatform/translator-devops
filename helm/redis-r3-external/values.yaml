@@ -34,10 +34,10 @@ id-categories:
     resources:
       limits:
         cpu: 1500m
-        memory: 50Gi
+        memory: 60Gi
       requests:
         cpu: 500m
-        memory: 25Gi
+        memory: 40Gi
     readinessProbe:
       enabled: false
     startupProbe:
