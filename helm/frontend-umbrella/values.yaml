@@ -27,7 +27,7 @@ qgraph:
     repository: ghcr.io/robokopu24/qgraph
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "v1.3.0"
+    tag: "v1.3.1"
     service:
       type: ClusterIP
       port: 7080
