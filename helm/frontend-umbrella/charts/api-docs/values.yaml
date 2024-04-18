@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/robokopu24/api-docs
-  tag: 2.1.0
+  tag: 2.2.1
 
 # env:
 
@@ -17,3 +17,9 @@ resources:
 service:
   type: ClusterIP
   port: 8080
+
+# Check for override in parent chart
+ingress:
+  host: test-rkfe.apps.renci.org
+  path: /api-docs(?:\/|$)(.*)
+  public: false
