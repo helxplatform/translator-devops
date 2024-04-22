@@ -18,8 +18,7 @@ service:
   type: ClusterIP
   port: 8080
 
-# Check for override in parent chart
 ingress:
-  host: test-rkfe.apps.renci.org
+  host: robokop.renci.org
   path: /api-docs(?:\/|$)(.*)
-  public: false
+  public: true

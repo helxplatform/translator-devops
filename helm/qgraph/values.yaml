@@ -26,11 +26,11 @@ qgraph:
 
 ingress:
   enabled: true
-  public: false
+  public: true
   tls:
     enabled: false
   className: ""
-  host: test-rkfe.apps.renci.org
+  host: robokop.renci.org
   path: /question-builder(?:\/|$)(.*)
 
 env:

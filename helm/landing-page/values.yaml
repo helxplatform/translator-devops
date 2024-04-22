@@ -19,9 +19,8 @@ service:
   type: ClusterIP
   port: 3000
 
-# Check for override in parent chart
 ingress:
-  host: test-rkfe.apps.renci.org
+  host: robokop.renci.org
   path: /(.*)$
   tls: true
-  public: false
+  public: true
