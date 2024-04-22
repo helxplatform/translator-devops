@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-3.5.4/PHAROS_Automat/1a20bf45c2983099/graph_1a20bf45c2983099.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-3.5.4/PHAROS_Automat/1a20bf45c2983099/PHAROS_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-3.5.4/PHAROS_Automat/1a20bf45c2983099/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-3.5.4/PHAROS_Automat/1a20bf45c2983099/testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-4.2.0/PHAROS_Automat/45dab165ca92e24d/graph_45dab165ca92e24d.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-4.2.0/PHAROS_Automat/45dab165ca92e24d/PHAROS_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.0/PHAROS_Automat/45dab165ca92e24d/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.0/PHAROS_Automat/45dab165ca92e24d/testing_data.json
