@@ -60,7 +60,7 @@ id-eq-id:
     resources:
       limits:
         cpu: 3000m
-        memory: 180Gi
+        memory: 220Gi
       requests:
         cpu: 500m
         memory: 150Gi
