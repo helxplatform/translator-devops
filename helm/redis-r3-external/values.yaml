@@ -95,9 +95,6 @@ semantic-count:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
@@ -148,9 +145,6 @@ info-content:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
@@ -176,9 +170,6 @@ chemical-drug-db:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
