@@ -1,0 +1,9 @@
+ingress:
+  host: yobokop.apps.renci.org
+  public: true
+
+# qgraph .Values override
+qgraph:
+  env:
+    name_resolver: https://yobokop-name-resolver.apps.renci.org
+    robokop_ara: http://yobokop-aragorn-aragorn-robokop-service:8080

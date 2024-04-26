@@ -89,7 +89,7 @@ ingress:
   enabled: false
   class: ""
   pathType: "ImplementationSpecific"
-  path: "/1.4"
+  path: "/"
   strider:
     host: "the strider host name"
     annotations:
@@ -103,7 +103,7 @@ ingress:
       nginx.ingress.kubernetes.io/send-timeout: "86400"
       nginx.ingress.kubernetes.io/service-upstream: "true"
       nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
-      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      # nginx.ingress.kubernetes.io/rewrite-target: /$2
 
 env:
   max_process_time: 3400
@@ -113,7 +113,7 @@ env:
   jaeger_host: jaeger-otel-agent
   service_name: "STRIDER"
   jaeger_port: 6831
-  kp_trapi_version: "1.4.0"
+  kp_trapi_version: "1.5.0"
   kp_timeout: 10
   information_content_threshold: 75
 

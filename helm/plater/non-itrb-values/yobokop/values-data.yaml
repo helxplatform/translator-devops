@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-3.4.2/YobokopKG/bdd116c0308604f3/graph_bdd116c0308604f3.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-3.4.2/YobokopKG/bdd116c0308604f3/YobokopKG.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-3.4.2/YobokopKG/bdd116c0308604f3/empty_meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-3.4.2/YobokopKG/bdd116c0308604f3/empty_testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-4.1.4/YobokopKG/dce656aef0b2d1f7/graph_dce656aef0b2d1f7.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-4.1.4/YobokopKG/dce656aef0b2d1f7/YobokopKG.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-4.1.4/YobokopKG/dce656aef0b2d1f7/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-4.1.4/YobokopKG/dce656aef0b2d1f7/testing_data.json

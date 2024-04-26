@@ -1,0 +1,23 @@
+# yobokop project-specific configuration:
+# helm install yobokop-name-lookup . -n robokop-u24 -f ./values-populated.yaml -f ./renci-exp-values-populated.yaml -f ./yobokop-values-populated.yaml
+
+# After installing, upgrade with dataUrl set to ""
+# helm upgrade yobokop-name-lookup . -n robokop-u24 -f ./values-populated.yaml -f ./renci-exp-values-populated.yaml -f ./yobokop-values-populated.yaml --set dataUrl=""
+
+webServer:
+  serverHostName: https://yobokop-name-resolver.apps.renci.org
+
+dataUrl: "https://stars.renci.org/var/babel_outputs/yobokop-filtered/solr-backups/2023nov5-by-bl4.1.4-dce656aef0b2d1f7/snapshot.backup.tar.gz"
+
+ingress:
+  host: yobokop-name-resolver.apps.renci.org
+
+solr:
+  resources:
+    requests:
+      memory: "8Gi"
+    limits:
+      memory: "8Gi"
+  heap_mem: "-Xms8G -Xmx8G"
+  gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
+  storage: 16Gi

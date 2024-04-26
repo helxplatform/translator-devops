@@ -47,10 +47,10 @@ ingress:
   #      - chart-example.local
 
 test_harness:
-  tag: v0.0.1
+  tag: v0.1.8
   pullPolicy: Always
   repository: ghcr.io/translatorsri/testharness
-  cronInterval: "0 5 * * SUN"
+  cronInterval: "0 4 * * SUN"
   access_token: fillthisin
   reporter_url: fillthisin
   tests_url: fillthisin
@@ -60,7 +60,7 @@ test_harness:
       memory: 10Gi
     requests:
       cpu: 800m
-      memory: 7Gi
+      memory: 8Gi
 
 nginx:
   repository: bitnami/nginx
@@ -135,6 +135,12 @@ minio:
     requests:
       cpu: 400m
       memory: 400M
+
+minio_mc:
+  tag: RELEASE.2020-05-28T23-43-36Z
+  service:
+    type: ClusterIP
+  interval: "0 0 * * SUN"
 
 artifacts:
   tag: 1.8.0
