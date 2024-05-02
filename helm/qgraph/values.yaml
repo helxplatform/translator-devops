@@ -6,11 +6,16 @@ replicaCount: 1
 nameOverride: ""
 fullnameOverride: ""
 
+# Check for overrides in parent chart
+
 qgraph:
-  repository: ghcr.io/ncats-gamma/qgraph/proxy
+  repository: ghcr.io/robokopu24/qgraph
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "v1.3.3"
+  service:
+    type: ClusterIP
+    port: 7080
   resources:
     requests:
       memory: 500Mi
@@ -19,12 +24,33 @@ qgraph:
       memory: 4Gi
       cpu: 1000m
 
+ingress:
+  enabled: true
+  public: true
+  tls:
+    enabled: false
+  className: ""
+  host: robokop.renci.org
+  path: /question-builder(?:\/|$)(.*)
+
+env:
+  # robokache: http://qgraph-robokache
+  strider: https://strider.renci.org/1.3
+  aragorn: http://aragorn-aragorn-service:8080
+  robokop_ara: http://aragorn-aragorn-robokop-service:8080
+  node_normalizer: http://nn-web-node-normalization-web-service-root.translator-dev:8080
+  name_resolver: https://robokop-name-resolver.apps.renci.org
+  biolink: https://raw.githubusercontent.com/biolink/biolink-model/v4.1.6/biolink-model.yaml
+
 robokache:
-  enabled: false
   repository: ghcr.io/ncats-gamma/robokache
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "v4.1.5"
+  service:
+    type: ClusterIP
+    port: 8080
+  dbPath: "/data"
   resources:
     requests:
       memory: 500Mi
@@ -34,24 +60,6 @@ robokache:
       cpu: 1000m
   storage:
     size: 30Gi
-
-ingress:
-  enabled: false
-  className: ""
-  pathType: "ImplementationSpecific"
-  host: "hostname"
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      keepalive_timeout 86400;
-    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
-    nginx.ingress.kubernetes.io/send-timeout: "86400"
-    nginx.ingress.kubernetes.io/service-upstream: "true"
-    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

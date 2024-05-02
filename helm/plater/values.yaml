@@ -18,7 +18,7 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v1.5.0"
+    tag: "v1.6.5"
     imagePullPolicy: Always
   neo4j:
     repository: renciorg/neo4j-4.4.10-apoc-gds
@@ -97,7 +97,7 @@ app:
 
   port: 8080
   automatAddress: http://automat
-  bl_version: 2.1.0
+  bl_version: 4.1.6
   neo4j:
     httpPort: 7474
     boltPort: 7687
@@ -131,7 +131,7 @@ app:
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
-      version: 1.4.0
+      version: 1.5.0
       operations:
         - lookup
         - overlay_connect_knodes

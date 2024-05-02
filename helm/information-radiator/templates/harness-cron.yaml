@@ -4,8 +4,8 @@ metadata:
   name: {{ include "information-radiator.fullname" . }}-harness-cronjob
 spec:
   schedule: "{{ .Values.test_harness.cronInterval }}"
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
   jobTemplate:
     spec:
       backoffLimit: 0 # don't retry
@@ -28,6 +28,9 @@ spec:
               - --tests_url={{ .Values.test_harness.tests_url }}
             # command: [ "/bin/bash", "-c", "--" ]
             # args: [ "while true; do sleep 30; done;" ]
+            env:
+            - name: SLACK_WEBHOOK_URL
+              value: {{ .Values.test_harness.slack_webhook_url }}
             resources:
               {{ toYaml .Values.test_harness.resources | nindent 14 }}
 

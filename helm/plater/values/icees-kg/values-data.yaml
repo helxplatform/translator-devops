@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-3.5.4/icees-kg/10-25-2023/graph.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-3.5.4/icees-kg/10-25-2023/icees-kg.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-3.5.4/icees-kg/10-25-2023/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-3.5.4/icees-kg/10-25-2023/testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-4.2.0/icees-kg/1.5.0/graph.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-4.2.0/icees-kg/1.5.0/icees-kg.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.0/icees-kg/1.5.0/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.0/icees-kg/1.5.0/testing_data.json
