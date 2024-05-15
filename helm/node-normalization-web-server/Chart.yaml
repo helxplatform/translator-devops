@@ -23,4 +23,4 @@ version: 0.3.0
 # 
 # NodeNorm versions are based on the version of the NodeNorm Docker image concatenated with the
 # Babel release date.
-appVersion: 2.3.5_2023nov5
+appVersion: 2.3.8_2024mar24

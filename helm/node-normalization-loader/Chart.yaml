@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.4.0
+version: 0.5.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -23,4 +23,4 @@ version: 0.4.0
 # 
 # NodeNorm versions are based on the version of the NodeNorm Docker image concatenated with the
 # Babel release date.
-appVersion: 2.3.4_2023nov5
+appVersion: 2.3.8_2024mar24
