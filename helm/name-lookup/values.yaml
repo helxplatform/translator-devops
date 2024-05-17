@@ -13,9 +13,9 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.3.11
+    tag: v1.3.12
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2023nov5/solr/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2024mar24/nameres/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:

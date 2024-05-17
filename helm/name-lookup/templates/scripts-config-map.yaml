@@ -159,6 +159,17 @@ data:
                         "stored": true,
                         "required": false,
                         "sortMissingLast": true
+                    },
+                    {
+                        "name": "taxa",
+                        "type": "string",
+                        "stored": true,
+                        "multiValued": true
+                    },
+                    {
+                        "name": "clique_identifier_count",
+                        "type": "pint",
+                        "stored": true
                     }
                 ]
             }' \
