@@ -102,7 +102,7 @@ redis:
       args:
         - '-O'
         - '/data/dump.rdb'
-        - 'https://stars.renci.org/var/omnicorp/redis/omnicorp-6-29-23.rdb'
+        - 'https://stars.renci.org/var/omnicorp/redis/omnicorp-5-15-2024.rdb'
       volumeMounts:
       - name: redis-data
         mountPath: '/data/'
