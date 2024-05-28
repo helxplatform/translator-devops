@@ -9,14 +9,22 @@ data:
     #!/bin/sh
     set -xa
     DATA_DIR="/var/solr/data"
+    DOWNLOAD_DIR="/var/solr/download"
     BACKUP_NAME="snapshot.backup"
     BACKUP_ZIP="${BACKUP_NAME}.tar.gz"
     BACKUP_URL="{{ .Values.dataUrl }}"
-    rm -rf $DATA_DIR/*
-    wget -nv -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL
+
+    # Delete the download directory.
+    rm -rf $DOWNLOAD_DIR
+    mkdir -p $DOWNLOAD_DIR
+    wget -nv -O $DOWNLOAD_DIR/$BACKUP_ZIP $BACKUP_URL
+
+    # Download
+    rm -rf $DATA_DIR
+    mkdir -p $DATA_DIR
     cd $DATA_DIR
-    tar -xf $DATA_DIR/$BACKUP_ZIP -C $DATA_DIR
-    rm $DATA_DIR/$BACKUP_ZIP
+    tar -xf $DOWNLOAD_DIR/$BACKUP_ZIP -C $DATA_DIR
+    rm -rf $DOWNLOAD_DIR
   restore.sh: |-
     #!/bin/sh
 
