@@ -29,7 +29,7 @@ spec:
           command:
             - /download.sh
           volumeMounts:
-            - mountPath: /var/solr/data
+            - mountPath: /var/solr
               name: {{ include "name-lookup.fullname" . }}-solr-data-vol
             - mountPath: "/download.sh"
               name: {{ include "name-lookup.fullname" . }}-configmap
