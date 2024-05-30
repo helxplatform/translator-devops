@@ -97,6 +97,13 @@ app:
   nodeSelector:
   affinity:
   tolerations:
+  resources:
+    requests:
+      memory: "300M"
+      cpu: 250m
+    limits:
+      memory: "512M"
+      cpu: 500m
 
 nameOverride: ""
 fullnameOverride: ""
