@@ -6,7 +6,7 @@ data:
   WORKFLOW_RUNNER_URL: "{{ .Values.app.workflow_runner_url }}"
   RUST_LOG: "{{ .Values.app.log_level }}"
   RESPONSE_URL: "{{ .Values.app.response_url }}"
-  SCHEMA_VERSION: "{{ .Values.x_trapi.version }}"
+  TRAPI_VERSION: "{{ .Values.x_trapi.version }}"
   MATURITY: "{{ .Values.x_trapi.maturity }}"
   LOCATION: "{{ .Values.x_trapi.location }}"
   POSTGRES_DB: "{{ .Values.postgres.dbName }}"

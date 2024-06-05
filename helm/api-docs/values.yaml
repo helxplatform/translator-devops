@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/robokopu24/api-docs
-  tag: 2.1.0
+  tag: 2.2.1
 
 # env:
 
@@ -17,3 +17,8 @@ resources:
 service:
   type: ClusterIP
   port: 8080
+
+ingress:
+  host: robokop.renci.org
+  path: /api-docs(?:\/|$)(.*)
+  public: true

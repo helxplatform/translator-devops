@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "yobokop.fullname" . }}-env-configmap
+  name: {{ include "qgraph.fullname" . }}-env-configmap
 data:
   ROBOKACHE: {{ .Values.env.robokache }}:{{ .Values.robokache.service.port }}
   STRIDER: {{ .Values.env.strider }}
@@ -10,3 +10,4 @@ data:
   NODE_NORMALIZER: {{ .Values.env.node_normalizer }}
   NAME_RESOLVER: {{ .Values.env.name_resolver }}
   BIOLINK: {{ .Values.env.biolink }}
+  GPT_PASSWORD: {{ .Values.env.GPT_PASSWORD }}

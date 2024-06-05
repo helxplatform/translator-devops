@@ -7,7 +7,7 @@
 webServer:
   serverHostName: https://robokop-name-resolver.apps.renci.org
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2023aug3-with-drugs/solr/snapshot.backup.robokop-filtered-1-16-24.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/robokop-filtered/solr-backups/2023nov5-by-bl4.1.4-b0a6856ee32b9b09/snapshot.backup.tar.gz"
 
 ingress:
   host: robokop-name-resolver.apps.renci.org
@@ -18,6 +18,9 @@ solr:
       memory: "8Gi"
     limits:
       memory: "8Gi"
+      # NOTE that currently the namespace this is deployed in has no cpu limits, so this is commented out
+      # but if we need to impose CPU limits again, or deploy elsewhere, set the cpu limit to something large enough
+      # cpu: 1000m
   heap_mem: "-Xms8G -Xmx8G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
   storage: 16Gi

@@ -4,11 +4,11 @@ id-id:
     enabled: true
   master:
     persistence:
-      size: 100Gi
+      size: 150Gi
     resources:
       limits:
         cpu: 1500m
-        memory: 100Gi
+        memory: 150Gi
       requests:
         cpu: 200m
         memory: 80Gi
@@ -30,14 +30,14 @@ id-categories:
     enabled: true
   master:
     persistence:
-      size: 150Gi
+      size: 100Gi
     resources:
       limits:
         cpu: 1500m
-        memory: 50Gi
+        memory: 100Gi
       requests:
         cpu: 500m
-        memory: 25Gi
+        memory: 50Gi
     readinessProbe:
       enabled: false
     startupProbe:
@@ -60,7 +60,7 @@ id-eq-id:
     resources:
       limits:
         cpu: 3000m
-        memory: 150Gi
+        memory: 220Gi
       requests:
         cpu: 500m
         memory: 150Gi
@@ -81,23 +81,20 @@ semantic-count:
     enabled: true
   master:
     persistence:
-      size: 1Gi
+      size: 20Mi
     resources:
       limits:
         cpu: 100m
-        memory: 1Gi
+        memory: 100Mi
       requests:
         cpu: 50m
-        memory: 100Mi
+        memory: 20Mi
     readinessProbe:
       enabled: false
     startupProbe:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
@@ -109,14 +106,14 @@ conflation-db:
     enabled: true
   master:
     persistence:
-      size: 20Gi
+      size: 15Gi
     resources:
       limits:
         cpu: 1000m
-        memory: 6Gi
+        memory: 10Gi
       requests:
         cpu: 250m
-        memory: 3Gi
+        memory: 6Gi
     readinessProbe:
       enabled: false
     startupProbe:
@@ -134,23 +131,20 @@ info-content:
     enabled: true
   master:
     persistence:
-      size: 1Gi
+      size: 500Mi
     resources:
       limits:
         cpu: 150m
-        memory: 1Gi
+        memory: 500Mi
       requests:
         cpu: 50m
-        memory: 100Mi
+        memory: 250Mi
     readinessProbe:
       enabled: false
     startupProbe:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"
@@ -162,23 +156,20 @@ chemical-drug-db:
     enabled: true
   master:
     persistence:
-      size: 1Gi
+      size: 300Mi
     resources:
       limits:
         cpu: 150m
-        memory: 1Gi
+        memory: 300Mi
       requests:
         cpu: 50m
-        memory: 1Gi
+        memory: 150Mi
     readinessProbe:
       enabled: false
     startupProbe:
       enabled: false
     livenessProbe:
       enabled: false
-    resources:
-      requests:
-        memory: #
     extraFlags:
     - "--save 300 1000000"
     - "--appendonly no"

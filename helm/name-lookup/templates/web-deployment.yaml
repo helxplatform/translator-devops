@@ -44,6 +44,10 @@ spec:
             - name: http
               containerPort: {{ .Values.webServer.port }}
               protocol: TCP
+          {{- with .Values.app.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.app.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

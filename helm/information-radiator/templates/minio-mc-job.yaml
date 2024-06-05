@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    {{- include "information-radiator.labels" . | nindent 4 }}
+    service-type: minio-mc
+  name: {{ include "information-radiator.fullname" . }}-minio-mc
+spec:
+  schedule: "{{ .Values.minio_mc.interval }}"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # don't retry
+      template:
+        spec:
+          containers:
+            - name: {{ include "information-radiator.fullname" . }}-minio-mc
+              image: 'minio/mc:{{ .Values.minio_mc.tag }}'
+              env:
+                - name: HOST_ADDRESS
+                  value: {{ include "information-radiator.fullname" . }}-minio-storage
+                - name: HOST_PORT
+                  value: "{{ .Values.minio.service.port }}"
+                - name: MINIO_ACCESS_KEY
+                  value: {{ .Values.minio.access_key }}
+                - name: MINIO_SECRET_KEY
+                  value: {{ .Values.minio.secret_key }}
+              command: ["/bin/sh", "-c"]
+              args: [
+                "/usr/bin/mc config host add minio-host http://$(HOST_ADDRESS):$(HOST_PORT) $(MINIO_ACCESS_KEY) $(MINIO_SECRET_KEY) --api s3v4; /usr/bin/mc mb --ignore-existing minio-host/zebrunner; /usr/bin/mc policy set download minio-host/zebrunner; exit 0;"
+              ]
+          restartPolicy: OnFailure

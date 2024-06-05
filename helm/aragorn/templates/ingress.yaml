@@ -43,11 +43,11 @@ spec:
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-root-service
+                name: {{ $fullName }}-aragorn-service
                 port:
                   number: {{ $svcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}-root-service
+              serviceName: {{ $fullName }}-aragorn-service
               servicePort: {{ $svcPort }}
               {{- end }}
 {{- end }}

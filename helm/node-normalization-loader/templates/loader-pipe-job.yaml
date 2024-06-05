@@ -107,7 +107,11 @@ data:
     # to avoid filling up the log.
     # Instead, what we will do is to get the list of cluster nodes and then stream ALL the data to ALL the nodes. Very inefficient, but it should get the job done.
     # Thanks to Yaphet for writing this code initially.
+    {{ if $isCluster }}
     sub_nodes=$(redis-cli {{ if $sslEnabled }}--tls{{ end }} -h  {{ $hostName }} -p {{ $port }} cluster nodes 2>&1 | grep "master" | awk '{ print $2}' | grep -v "Warning" | grep -v "Using")
+    {{ else }}
+    sub_nodes="{{ $hostName }}:{{ $port }}"
+    {{ end }}
     for node in $sub_nodes; do
       IFS=':' read -ra node_host_port <<< $node
       sub_host_name="${node_host_port[0]}"

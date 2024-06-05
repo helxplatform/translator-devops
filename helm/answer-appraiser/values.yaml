@@ -21,7 +21,7 @@ redis:
   # full option here (https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml)
   architecture: standalone
   auth:
-    password: supersecretpassword
+    password: fillthisin
   image:
     repository: redis
     tag: "7.0.12"
@@ -70,7 +70,7 @@ redis:
     logfile /data/answer_appraiser_cache.log
 
 env:
-  trapi_version: 1.4.0
+  trapi_version: 1.5.0
   redis_host: answer-appraiser-redis-master
   redis_port: 6379
 
@@ -102,8 +102,8 @@ x_trapi:
 
 resources:
   limits:
-    cpu: 3000m
+    cpu: 6000m
     memory: 20Gi
   requests:
-    cpu: 1000m
+    cpu: 4000m
     memory: 10Gi
