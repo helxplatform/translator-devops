@@ -42,10 +42,10 @@ redis:
    - --stop-writes-on-bgsave-error
    - 'no'
   resources:
-    limits:
-      memory: 20Gi
     requests:
-      memory: 20Gi
+      memory: 50Gi
+    limits:
+      memory: 100Gi
 
   initresources:
     requests:
@@ -66,7 +66,7 @@ redis:
   affinity: {}
   tolerations: {}
   nodeSelector: {}
-  storageSize: 25Gi
+  storageSize: 50Gi
 
 dataUrl: ""
 
