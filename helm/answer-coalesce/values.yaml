@@ -42,10 +42,10 @@ redis:
    - --stop-writes-on-bgsave-error
    - 'no'
   resources:
-    limits:
-      memory: 20Gi
     requests:
-      memory: 20Gi
+      memory: 50Gi
+    limits:
+      memory: 100Gi
 
   initresources:
     requests:
@@ -66,7 +66,7 @@ redis:
   affinity: {}
   tolerations: {}
   nodeSelector: {}
-  storageSize: 25Gi
+  storageSize: 50Gi
 
 dataUrl: ""
 
@@ -89,13 +89,13 @@ ingress:
   host: "hostname"
   class: ""
   pathType: "ImplementationSpecific"
-  path: "/1.4"
+  path: "/"
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+#    nginx.ingress.kubernetes.io/rewrite-target: /$2
 
 x_trapi:
   maturity:
