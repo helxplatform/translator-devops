@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/translatorsri/trapi-openapi-aggregator
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.0.5"
+  tag: "v0.0.6"
 
 refreshInterval: "1 * * * *"
 imagePullSecrets: []
@@ -204,6 +204,10 @@ config:
       "https://answerappraiser.ci.transltr.io/openapi.json",
       "https://answerappraiser.test.transltr.io/openapi.json",
       "https://answerappraiser.transltr.io/openapi.json",
+      "https://answercoalesce.renci.org/openapi.json",
+      "https://answer-coalesce.ci.transltr.io/openapi.json",
+      "https://answer-coalesce.test.transltr.io/openapi.json",
+      "https://answer-coalesce.transltr.io/openapi.json",
       "https://cqs-dev.apps.renci.org/openapi.json",
       "https://cqs.ci.transltr.io/openapi.json",
       "https://cqs.test.transltr.io/openapi.json",
