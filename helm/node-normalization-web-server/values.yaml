@@ -8,7 +8,7 @@
 
 image:
   repository: ghcr.io/translatorsri/nodenormalization
-  tag: v2.3.8
+  tag: v2.3.11
   pullPolicy: Always
 
 web:
@@ -80,8 +80,11 @@ ingress:
   class:
   # same as web.serverHostName
   hostName: #####
-  trapiVersion: "1.4"
-  prevTrapiVersion: "1.3"
+  trapiVersion: "1.5"
+  trapiVersions:
+    - "1.3"
+    - "1.4"
+    - "1.5"
   annotations:
     # kubernetes.io/ingress.class: "{{ .Values.ingress.class }}"
     nginx.ingress.kubernetes.io/enable-cors: "true"
