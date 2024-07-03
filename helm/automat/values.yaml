@@ -36,8 +36,8 @@ app:
       memory: 1Gi
       cpu: 200m
     limits:
-      memory: 5Gi
-      cpu: 500m
+      memory: 7Gi
+      cpu: 800m
   affinity: {}
   tolerations: {}
   nodeSelector: {}
