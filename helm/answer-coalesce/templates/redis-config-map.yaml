@@ -3,6 +3,15 @@ kind: ConfigMap
 metadata:
   name: {{ include "answer-coalesce.fullname" . }}-redis-config
 data:
+  {{ if .Values.existingRedis}}
+  config.json: |-
+    {
+    "redis_host": "{{ .Values.existingRedis.host }}",
+    "redis_port": {{ .Values.existingRedis.port }},
+    "redis_password": "{{ .Values.existingRedis.password }}",
+    "test_mode": 0
+    }
+  {{ else }}
   config.json: |-
     {
     "redis_host": "{{ include "answer-coalesce.fullname" . }}-redis-service",

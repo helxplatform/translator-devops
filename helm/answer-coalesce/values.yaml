@@ -107,3 +107,9 @@ app:
   affinity: {}
   tolerations: {}
   nodeSelector: {}
+
+
+existingRedis: {}
+  # host: redis-server-address
+  # port: redis-server-port
+  # password: redis-password

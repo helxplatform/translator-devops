@@ -15,6 +15,8 @@ spec:
   selector:
     {{- include "answer-coalesce.selectorLabels" . | nindent 4 }}
     app: webServer
+{{ if .Values.existingRedis }}
+{{ else }}
 ---
 apiVersion: v1
 kind: Service
@@ -35,3 +37,4 @@ spec:
   selector:
     {{- include "answer-coalesce.selectorLabels" . | nindent 4 }}
     app: database
+{{ end }}
