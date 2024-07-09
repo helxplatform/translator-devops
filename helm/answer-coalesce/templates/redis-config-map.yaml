@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "answer-coalesce.fullname" . }}-redis-config
 data:
-  {{ if .Values.existingRedis}}
+  {{ if .Values.existingRedis }}
   config.json: |-
     {
     "redis_host": "{{ .Values.existingRedis.host }}",
@@ -19,6 +19,7 @@ data:
     "redis_password": "",
     "test_mode": 0
     }
+  {{ end }}
   seed_db.sh: |-
     #!/bin/sh
     set -x
