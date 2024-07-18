@@ -9,7 +9,7 @@ mode: restore
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.12"
+  tag: "v2.3.14"
   pullPolicy: Always
 fullnameOverride: ""
 
