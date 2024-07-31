@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "name-lookup.fullname" . }}-web-sever-dep
+  name: {{ include "name-lookup.fullname" . }}-web-server-dep
   labels:
     {{- include "name-lookup.labels" . | nindent 4 }}
     app-name: web-server
