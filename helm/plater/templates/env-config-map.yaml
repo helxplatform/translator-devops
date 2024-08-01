@@ -37,6 +37,7 @@ data:
   {{ if .Values.app.otel.enabled }}
   OTEL_ENABLED: "TRUE"
   OTEL_SERVICE_NAME: "automat-{{ .Release.Name }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.app.otel.jaegerHost | quote }}
   JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
   JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
   {{ end }}

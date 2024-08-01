@@ -65,6 +65,10 @@ spec:
             value: "gds.*,apoc.*"
           - name: NEO4J_dbms_security_procedures_allowlist
             value: "gds.*,apoc.*"
+          - name: NEO4J_dbms_security_auth__minimum__password__length
+            value: "1"
+          - name: NEO4J_dbms_usage__report_enabled
+            value: "false"
           - name: NEO4J_server_default__listen__address
             value: "0.0.0.0"
           - name: NEO4J_server_bolt_listen__address
