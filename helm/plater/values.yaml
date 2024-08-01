@@ -18,11 +18,11 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v1.6.5"
+    tag: "v2.0.1"
     imagePullPolicy: Always
   neo4j:
-    repository: renciorg/neo4j-4.4.10-apoc-gds
-    tag: 0.0.1
+    repository: ghcr.io/translatorsri/plater-neo4j
+    tag: "neo4j-image-5.22"
     imagePullPolicy: Always
 
 nameOverride: ""
@@ -79,6 +79,7 @@ app:
     enabled: "True"
     jaegerHost: "jaeger-otel-agent"
     jaegerPort: "6831"
+  profiler_on: "False"
   gunicorn:
     worker_timeout: 3600
     num_workers: 4
@@ -99,6 +100,7 @@ app:
   automatAddress: http://automat
   bl_version: 4.2.1
   neo4j:
+    protocol: bolt
     httpPort: 7474
     boltPort: 7687
     password: neo4jkp
@@ -116,7 +118,6 @@ app:
       size: 20Mi
     service:
       type: ClusterIP
-    allowUpgrade: true
     initresources:
       requests:
         memory: 5Gi
