@@ -1,6 +1,7 @@
 nameLookup:
   image: ghcr.io/translatorsri/nameresolution
   version: v1.4.0
+
 solr:
   image: solr
   version: "9.1"
