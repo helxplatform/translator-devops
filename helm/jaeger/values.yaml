@@ -31,10 +31,10 @@ jaeger:
     replicaCount: 1
     resources:
       limits:
-        cpu: 1
+        cpu: 500m
         memory: 1Gi
       requests:
-        cpu: 500m
+        cpu: 250m
         memory: 512Mi
   ## End collector
 
@@ -54,10 +54,10 @@ jaeger:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
+        memory: 2Gi
       requests:
         cpu: 256m
-        memory: 128Mi
+        memory: 1Gi
   # END UI
 
   # Schema
