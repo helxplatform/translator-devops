@@ -1,6 +1,6 @@
 plater:
   image: "ghcr.io/translatorsri/plater-clustered"
-  version: "v2.0.3"
+  version: "v2.0.5"
 neo4j:
   image: "ghcr.io/translatorsri/plater-neo4j"
   version: "neo4j-image-5.22"
