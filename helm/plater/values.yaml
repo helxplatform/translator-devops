@@ -18,7 +18,7 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v2.0.5"
+    tag: "v2.0.6"
     imagePullPolicy: Always
   neo4j:
     repository: ghcr.io/translatorsri/plater-neo4j
