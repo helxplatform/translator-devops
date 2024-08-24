@@ -41,7 +41,7 @@ spec:
               subPath: "config-conflation{{ $index }}.json"
           resources:
             {{ $resources | toYaml | nindent 12 }}
-      restartPolicy: OnFailure
+      restartPolicy: Never
       {{ with $securityContext }}
       securityContext:
         {{ $securityContext | toYaml | nindent 8 }}
