@@ -12,14 +12,14 @@ logLevel: INFO
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.15"
+  tag: "modify-loading-to-support-nulls"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "v2.3.15"
+  tag: "modify-loading-to-support-nulls"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
