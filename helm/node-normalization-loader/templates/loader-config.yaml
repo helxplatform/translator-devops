@@ -22,7 +22,7 @@ data:
     export FILE_NAME=$1
     {{ $baseURL_Com := .Values.data.compendia.sourceBaseUrl }}
     export FILE_URL={{ $baseURL_Com }}${FILE_NAME}
-    echo DOWNLOADING $file
+    echo DOWNLOADING $FILE_URL
     wget -nv -O $DATA_DIR/${FILE_NAME} $FILE_URL
     ls -al $DATA_DIR
     head -1 $DATA_DIR/${FILE_NAME}
