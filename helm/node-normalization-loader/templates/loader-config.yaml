@@ -17,7 +17,7 @@ data:
   {{ end }}
   run_loader_compendia.sh: |-
     #!/bin/sh -x
-    set -x
+    set -euo pipefail
     export DATA_DIR=/data
     export FILE_NAME=$1
     {{ $baseURL_Com := .Values.data.compendia.sourceBaseUrl }}
@@ -51,7 +51,7 @@ data:
   {{ end }}
   run_loader_conflation.sh: |-
     #!/bin/sh -x
-    set -x
+    set -euo pipefail
     export FILE_NAME=$1
     export DATA_DIR=/data
     {{ $baseURLCon := .Values.data.conflations.sourceBaseUrl }}
