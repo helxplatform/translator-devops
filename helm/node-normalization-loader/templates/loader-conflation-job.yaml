@@ -12,6 +12,7 @@ kind: Job
 metadata:
   name: "{{ $fullName }}-con-{{ $index }}-job"
 spec:
+  backoffLimit: 1
   template:
     metadata:
       name: "{{ $fullName }}-con-{{ $index }}-job"
