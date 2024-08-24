@@ -24,6 +24,9 @@ spec:
             - {{ $codeDir }}/run_loader.sh
           args:
             - {{ $conflationConfig.file }}
+          env:
+            - name: LOG_LEVEL
+              value: {{.Values.logLevel}}
           volumeMounts:
             - mountPath:  {{ $codeDir }}/run_loader.sh
               name: "loader-config"

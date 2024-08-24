@@ -7,6 +7,9 @@
 # 2. `restore`: Use the loader-pipe-job to load the database backups into the backend Redis databases.
 mode: restore
 
+# Log level for loading jobs.
+logLevel: INFO
+
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
   tag: "v2.3.15"
