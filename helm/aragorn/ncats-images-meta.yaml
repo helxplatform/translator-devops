@@ -1,6 +1,6 @@
 aragorn:
   image: ghcr.io/ranking-agent/aragorn
-  version: v2.8.3
+  version: v2.8.4
 aragornRabbitMq:
   image: "renciorg/aragorn-rbtmq"
   version: "0.0.2"
