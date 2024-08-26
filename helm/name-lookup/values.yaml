@@ -15,7 +15,7 @@ webServer:
     repository: ghcr.io/translatorsri/nameresolution
     tag: v1.4.0
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2024jul13/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2024aug18/nameres/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
