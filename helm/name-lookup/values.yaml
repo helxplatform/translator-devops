@@ -13,9 +13,9 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.3.12
+    tag: v1.3.14
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2024mar24/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2024jul13/nameres/snapshot.backup.tar.gz"
 forceRun: false
 
 busybox:
@@ -54,11 +54,11 @@ solr:
     # the memory to Solr helps with performance.
     #
     requests:
-      memory: "58Gi"
+      memory: "16Gi"
       cpu: 1000m
     limits:
-      memory: "58Gi"
-      cpu: 2000m
+      memory: "32Gi"
+      cpu: 4000m
 
   # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
   # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
@@ -66,7 +66,7 @@ solr:
   affinity:
   tolerations:
 
-  heap_mem: "-Xms58G -Xmx58G"
+  heap_mem: "-Xms30G -Xmx30G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
 
   # As of Babel 2023jul13, we need 130G to store the

@@ -20,6 +20,8 @@ spec:
       labels:
         {{- include "strider.selectorLabels" . | nindent 8 }}
         service-type: webserver
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
     spec:
       {{- with .Values.strider.securityContext }}
       securityContext:
