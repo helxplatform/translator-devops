@@ -28,6 +28,14 @@ jaeger:
   collector:
     image: jaegertracing/jaeger-collector
     pullPolicy: IfNotPresent
+    service:
+      otlp:
+        http:
+          name: otlp-http
+          port: 4318
+        grpc:
+          name: otlp-grpc
+          port: 4317
     replicaCount: 1
     resources:
       limits:

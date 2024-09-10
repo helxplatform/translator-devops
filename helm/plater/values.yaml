@@ -77,8 +77,8 @@ service:
 app:
   otel:
     enabled: "True"
-    jaegerHost: "jaeger-otel-agent"
-    jaegerPort: "6831"
+    jaegerHost: "jaeger-otel-collector"
+    jaegerPort: "4317"
   profiler_on: "True"
   gunicorn:
     worker_timeout: 3600
