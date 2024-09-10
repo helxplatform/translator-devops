@@ -79,7 +79,7 @@ app:
     enabled: "True"
     jaegerHost: "jaeger-otel-agent"
     jaegerPort: "6831"
-  profiler_on: "False"
+  profiler_on: "True"
   gunicorn:
     worker_timeout: 3600
     num_workers: 4
