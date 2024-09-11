@@ -77,7 +77,7 @@ service:
 app:
   otel:
     enabled: "True"
-    jaegerHost: "jaeger-otel-collector"
+    jaegerHost: "http://jaeger-otel-collector"
     jaegerPort: "4317"
   profiler_on: "True"
   gunicorn:
