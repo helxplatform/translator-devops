@@ -73,29 +73,31 @@ spec:
             {{ end }}
           - name: NEO4J_dbms_security_procedures_unrestricted
             value: "gds.*,apoc.*"
-          - name: "NEO4J_dbms_security_procedures_whitelist"
+          - name: NEO4J_dbms_security_procedures_allowlist
             value: "gds.*,apoc.*"
-          - name: NEO4J_dbms_connectors_default__listen__address
+          - name: NEO4J_server_default__listen__address
             value: "0.0.0.0"
-          - name: "NEO4J_dbms_connector_bolt_listen__address"
-            value: "0.0.0.0:7687"
-          - name: NEO4J_dbms_memory_heap_initial__size
+          - name: NEO4J_server_bolt_listen__address
+            value: ":7687"
+          - name: NEO4J_server_http_listen__address
+            value: ":7474"
+          - name: NEO4J_server_memory_heap_initial__size
             value: "{{ .Values.neo4j.heapSize }}"
-          - name: NEO4J_dbms_memory_heap_max__size
+          - name: NEO4J_server_memory_heap_max__size
             value: "{{ .Values.neo4j.heapSize }}"
-          - name: NEO4J_dbms_memory_pagecache_size
+          - name: NEO4J_server_memory_pagecache_size
             value: "{{ .Values.neo4j.pageCacheSize }}"
-          - name: NEO4J_dbms_read__only
+          - name: NEO4J_server_databases_default__to__read__only
             value: "{{ .Values.neo4j.readOnly }}"
-          - name: NEO4J_dbms_jvm_additional
+          - name: NEO4J_server_jvm_additional
             value: "{{ .Values.neo4j.jvmOptions }}"
           {{ if .Values.neo4j.queryTimeout }}
-          - name: NEO4J_dbms_transaction_timeout
+          - name: NEO4J_db_transaction_timeout
             value: "{{ .Values.neo4j.queryTimeout }}s"
           {{ end }}
-          - name: "NEO4J_dbms_threads_worker__count"
+          - name: "NEO4J_server_threads_worker__count"
             value: "{{ .Values.neo4j.workerCount }}"
-          - name: NEO4J_dbms_default__advertised__address
+          - name: NEO4J_server_default__advertised__address
             {{ if .Values.nginx.service.hostName }}
             value: {{ .Values.nginx.service.hostName }}
             {{ else if .Values.nginx.service.loadBalancerIP }}
@@ -103,7 +105,7 @@ spec:
             {{ else }}
             value: "0.0.0.0"
             {{ end }}
-          - name: NEO4J_dbms_connector_bolt_advertised__address
+          - name: NEO4J_server_bolt_advertised__address
             {{ if .Values.nginx.service.hostName }}
             value: {{ .Values.nginx.service.hostName }}:{{ .Values.nginx.service.boltPort }}
             {{ else if .Values.nginx.service.loadBalancerIP }}
