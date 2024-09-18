@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository:  containers.renci.org/translator/edgar
-  pullPolicy: IfNotPresent
+  repository:  ghcr.io/ranking-agent/edgar
+#  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: v1.1
+  tag: v1.0.1
   readinessProbe:
     port: 8080
     initialDelaySeconds: 15
@@ -55,10 +55,10 @@ resources:
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
    limits:
      cpu: 200m
-     memory: 5Gi
+     memory: 6Gi
    requests:
      cpu: 200m
-     memory: 2Gi
+     memory: 4Gi
 
 autoscaling:
   enabled: false
