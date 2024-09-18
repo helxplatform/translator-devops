@@ -36,7 +36,9 @@ spec:
           args:
             - "--bind"
             - "0.0.0.0:8050"
-            - "dash_app:server"
+            - "--timeout"
+            - "120"
+            - "app:server"
           ports:
             - name: http
               containerPort: 8050
