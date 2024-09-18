@@ -33,12 +33,12 @@ app:
   port: 8000
   resources:
     requests:
-      memory: 12Gi
-      cpu: 4
-      ephemeral-storage: 2Gi
-    limits:
       memory: 16Gi
-      cpu: 6
+      cpu: 4
+      ephemeral-storage: 4Gi
+    limits:
+      memory: 24Gi
+      cpu: 4
       ephemeral-storage: 4Gi
   log_level: "info,rocket=debug,launch=debug"
   workflow_runner_url: "fillthisin"

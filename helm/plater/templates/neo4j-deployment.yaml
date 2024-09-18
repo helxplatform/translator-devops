@@ -60,26 +60,33 @@ spec:
           env:
           - name: NEO4J_AUTH
             value: {{ .Values.app.neo4j.username }}/{{ .Values.app.neo4j.password }}
-          - name: NEO4J_dbms_connectors_default__listen__address
-            value: "0.0.0.0"
-          - name: NEO4J_dbms_memory_heap_initial__size
-            value: "{{ .Values.app.neo4j.heapSize }}"
-          - name: NEO4J_dbms_memory_heap_max__size
-            value: "{{ .Values.app.neo4j.heapSize }}"
-          - name: NEO4J_dbms_memory_pagecache_size
-            value: "{{ .Values.app.neo4j.pageCacheSize }}"
-          - name: NEO4J_dbms_read__only
-            value: "{{ .Values.app.neo4j.readOnly }}"
+
           - name: NEO4J_dbms_security_procedures_unrestricted
-            value: "apoc.*"
-          - name: NEO4J_dbms_jvm_additional
-            value: "-XX:+UnlockExperimentalVMOptions -XX:+UseZGC -Xss{{ .Values.app.neo4j.jvmStackSize }} -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
-          - name: NEO4J_dbms_transaction_timeout
+            value: "gds.*,apoc.*"
+          - name: NEO4J_dbms_security_procedures_allowlist
+            value: "gds.*,apoc.*"
+          - name: NEO4J_dbms_security_auth__minimum__password__length
+            value: "1"
+          - name: NEO4J_dbms_usage__report_enabled
+            value: "false"
+          - name: NEO4J_server_default__listen__address
+            value: "0.0.0.0"
+          - name: NEO4J_server_bolt_listen__address
+            value: ":7687"
+          - name: NEO4J_server_http_listen__address
+            value: ":7474"
+          - name: NEO4J_server_memory_heap_initial__size
+            value: "{{ .Values.app.neo4j.heapSize }}"
+          - name: NEO4J_server_memory_heap_max__size
+            value: "{{ .Values.app.neo4j.heapSize }}"
+          - name: NEO4J_server_memory_pagecache_size
+            value: "{{ .Values.app.neo4j.pageCacheSize }}"
+          - name: NEO4J_server_databases_default__to__read__only
+            value: "{{ .Values.app.neo4j.readOnly }}"
+          - name: NEO4J_server_jvm_additional
+            value: "-XX:+ExitOnOutOfMemoryError -XX:+UseCompressedOops -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
+          - name: NEO4J_db_transaction_timeout
             value: "{{ .Values.app.Neo4jQueryTimeout }}s"
-          {{- if .Values.app.neo4j.allowUpgrade }}
-          - name: NEO4J_dbms_allow__upgrade
-            value: "true"
-          {{- end }}
           ports:
             - name: neo4j-http
               containerPort: 7474

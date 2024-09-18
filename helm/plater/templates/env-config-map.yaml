@@ -8,6 +8,7 @@ data:
   {{ if not .Values.externalNeo4j }}
   NEO4J_HOST: {{ include "plater.fullname" . }}-neo4j-service
   NEO4J_HTTP_PORT: "{{ .Values.app.neo4j.httpPort }}"
+  NEO4J_BOLT_PORT: "{{ .Values.app.neo4j.boltPort }}"
   NEO4J_PASSWORD: "{{ .Values.app.neo4j.password }}"
   NEO4J_USERNAME: "{{ .Values.app.neo4j.username }}"
   {{ else }}
@@ -16,6 +17,8 @@ data:
   NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
   NEO4J_USERNAME: "{{ .Values.externalNeo4j.username }}"
   {{ end }}
+  NEO4J_PROTOCOL: "{{ .Values.app.neo4j.protocol }}"
+  NEO4J_QUERY_TIMEOUT: "{{ .Values.app.Neo4jQueryTimeout }}"
   PLATER_SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-plater-service"
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
   PLATER_TITLE: {{ .Release.Name }}
@@ -23,17 +26,18 @@ data:
   PLATER_METADATA_URL: "{{ .Values.metadataUrl }}"
   PLATER_METAKG_URL: "{{ .Values.metaKGUrl }}"
   PLATER_TEST_DATA_URL: "{{ .Values.testingDataUrl }}"
-  BL_VERSION: {{ .Values.app.bl_version }}
+  PROVENANCE_TAG: "{{ .Values.datasetDesc.provenanceTag }}"
+  BL_VERSION: "{{ .Values.app.bl_version }}"
   WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
   NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"
-  PROVENANCE_TAG: "{{ .Values.datasetDesc.provenanceTag }}"
-  NEO4J_QUERY_TIMEOUT: "{{ .Values.app.Neo4jQueryTimeout }}"
   MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
   LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
   PUBLIC_URL: "{{ .Values.app.public_url }}"
+  PROFILER_ON: "{{ .Values.app.profiler_on }}"
   {{ if .Values.app.otel.enabled }}
   OTEL_ENABLED: "TRUE"
   OTEL_SERVICE_NAME: "automat-{{ .Release.Name }}"
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.app.otel.jaegerHost | quote }}
   JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
   JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
   {{ end }}

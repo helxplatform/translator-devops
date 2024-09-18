@@ -28,14 +28,22 @@ jaeger:
   collector:
     image: jaegertracing/jaeger-collector
     pullPolicy: IfNotPresent
+    service:
+      otlp:
+        http:
+          name: otlp-http
+          port: 4318
+        grpc:
+          name: otlp-grpc
+          port: 4317
     replicaCount: 1
     resources:
       limits:
-        cpu: 1
-        memory: 1Gi
-      requests:
         cpu: 500m
-        memory: 512Mi
+        memory: 2Gi
+      requests:
+        cpu: 250m
+        memory: 1Gi
   ## End collector
 
 
@@ -54,10 +62,10 @@ jaeger:
     resources:
       limits:
         cpu: 500m
-        memory: 512Mi
+        memory: 2Gi
       requests:
         cpu: 256m
-        memory: 128Mi
+        memory: 1Gi
   # END UI
 
   # Schema

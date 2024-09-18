@@ -35,7 +35,7 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "helm/plater/*"
+                        changeset "helm/plater/**"
                         triggeredBy 'UserIdCause'
                     }
                 }
@@ -60,7 +60,7 @@ pipeline {
                         return !params.BUILD_VERSION
                     }
                     anyOf {
-                        changeset "helm/plater/*"
+                        changeset "helm/plater/**"
                         triggeredBy 'UserIdCause'
                     }
                 }
@@ -135,7 +135,7 @@ pipeline {
             }
             when {
                 anyOf {
-                    changeset "helm/plater/*"
+                    changeset "helm/plater/**"
                     triggeredBy 'UserIdCause'
                 }
             }

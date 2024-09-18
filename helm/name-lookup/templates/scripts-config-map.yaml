@@ -125,6 +125,13 @@ data:
                         "multiValued": true
                     },
                     {
+                        "name":"names_exactish",
+                        "type":"exactish",
+                        "indexed":true,
+                        "stored":true,
+                        "multiValued":true
+                    },
+                    {
                         "name":"curie",
                         "type":"string",
                         "stored":true
@@ -178,6 +185,13 @@ data:
     sleep 1
     wget --post-data '{
               "add-copy-field" : {
+                "source": "names",
+                "dest": "names_exactish"
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/schema
+    wget --post-data '{
+              "add-copy-field" : {
                 "source": "preferred_name",
                 "dest": "preferred_name_exactish"
               }}' \
@@ -211,5 +225,5 @@ data:
       sleep 10
     done
     {{ end }}
- 
+
     exit 0

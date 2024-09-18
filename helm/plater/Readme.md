@@ -46,7 +46,6 @@ Installation can be configured with the following parameters.
 | `app.neo4j.username` |  Neo4j user name | `neo4j`
 | `app.neo4j.heapSize` |  Neo4j [heap size configuration](https://neo4j.com/developer/guide-performance-tuning/#_heap_sizing) | `nil`
 | `app.neo4j.pageCacheSize` | Neo4j [page cache configuration](https://neo4j.com/developer/guide-performance-tuning/#_page_cache_sizing)  | `nil`
-| `app.neo4j.totalMemory` | This will be used to make requests to k8s, please compute as (app.neo4j.heapSize +  app.neo4j.pageCacheSize + 1G # for os)  | `nil`
 | `app.neo4j.storage.size` | Storage request size  | `20Mi`
 | `app.neo4j.service.type` |  Neo4j server kubernetes of service type | `ClusterIP`
 
