@@ -40,7 +40,7 @@ env:
   robokop_ara: http://aragorn-aragorn-robokop-service:8080
   node_normalizer: http://nn-web-node-normalization-web-service-root.translator-dev:8080
   name_resolver: https://robokop-name-resolver.apps.renci.org
-  biolink: https://raw.githubusercontent.com/biolink/biolink-model/v4.2.0/biolink-model.yaml
+  biolink: https://raw.githubusercontent.com/biolink/biolink-model/v4.2.1/biolink-model.yaml
 
 robokache:
   repository: ghcr.io/ncats-gamma/robokache
