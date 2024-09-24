@@ -1,0 +1,10 @@
+qgraph:
+  tag: "v1.4.0-beta"
+
+ingress:
+  enabled: true
+  public: false
+  tls:
+    enabled: true
+  host: qualified-predicates-robokop.apps.renci.org
+  path: /question-builder(?:\/|$)(.*)

@@ -12,7 +12,7 @@ qgraph:
   repository: ghcr.io/robokopu24/qgraph
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1.3.3"
+  tag: "v1.3.11"
   service:
     type: ClusterIP
     port: 7080
@@ -28,7 +28,7 @@ ingress:
   enabled: true
   public: true
   tls:
-    enabled: false
+    enabled: true
   className: ""
   host: robokop.renci.org
   path: /question-builder(?:\/|$)(.*)
@@ -40,7 +40,7 @@ env:
   robokop_ara: http://aragorn-aragorn-robokop-service:8080
   node_normalizer: http://nn-web-node-normalization-web-service-root.translator-dev:8080
   name_resolver: https://robokop-name-resolver.apps.renci.org
-  biolink: https://raw.githubusercontent.com/biolink/biolink-model/v4.1.6/biolink-model.yaml
+  biolink: https://raw.githubusercontent.com/biolink/biolink-model/v4.2.1/biolink-model.yaml
 
 robokache:
   repository: ghcr.io/ncats-gamma/robokache
