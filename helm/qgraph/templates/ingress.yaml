@@ -34,6 +34,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 
+    cert-manager.io/cluster-issuer: letsencrypt
     {{ if .Values.ingress.public }}
     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
     {{ end }}
@@ -43,11 +44,9 @@ spec:
   {{- end }}
   {{- if .Values.ingress.tls.enabled }}
   tls:
-  {{ range .Values.ingress.hosts }}
   - hosts:
-      - {{ . | quote }}
-    secretName: {{ . }}-tls
-  {{ end }}
+      - {{ .Values.ingress.host }}
+    secretName: {{ .Values.ingress.host }}-tls
   {{- end }}
 
   rules:
