@@ -17,7 +17,6 @@ data:
   NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
   NEO4J_USERNAME: "{{ .Values.externalNeo4j.username }}"
   {{ end }}
-  NEO4J_PROTOCOL: "{{ .Values.app.neo4j.protocol }}"
   NEO4J_QUERY_TIMEOUT: "{{ .Values.app.Neo4jQueryTimeout }}"
   PLATER_SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-plater-service"
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
