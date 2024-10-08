@@ -51,7 +51,7 @@ app:
 postgres:
   image:
     repository: "postgres"
-    tag: "latest"
+    tag: "16.4-bookworm"
     pullPolicy: IfNotPresent
   mountSubPath: ""
   resources:
