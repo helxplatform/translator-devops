@@ -8,7 +8,7 @@
 
 image:
   repository: ghcr.io/translatorsri/nodenormalization
-  tag: v2.3.16
+  tag: v2.3.17
   pullPolicy: Always
 
 web:
