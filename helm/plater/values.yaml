@@ -18,7 +18,7 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v2.0.6"
+    tag: "v2.1.2"
     imagePullPolicy: Always
   neo4j:
     repository: ghcr.io/translatorsri/plater-neo4j
@@ -161,8 +161,6 @@ app:
   affinity: {}
 
 skipAttributes:
-  - provided_by
-  - knowledge_source
 dataUrl: ""
 metadataUrl: ""
 metaKGUrl: ""
