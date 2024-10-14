@@ -17,10 +17,10 @@ jaeger:
       enabled: true
     resources:
       limits:
-        cpu: 2
+        cpu: 1500m
         memory: 4Gi
       requests:
-        cpu: 2
+        cpu: 500m
         memory: 4Gi
   ## End Agent
 
