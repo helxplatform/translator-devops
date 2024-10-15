@@ -69,6 +69,16 @@ spec:
           volumeMounts:
             - mountPath: /var/solr/data
               name: {{ include "name-lookup.fullname" . }}-solr-data-vol
+          startupProbe:
+            httpGet:
+              port: {{ .Values.solr.port }}
+              path: /solr/admin/cores?action=STATUS
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              port: {{ .Values.solr.port }}
+              path: /solr/admin/cores?action=STATUS
+            periodSeconds: 30
       {{- with .Values.solr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -89,4 +99,4 @@ spec:
         resources:
           requests:
             storage: {{ .Values.solr.storage }}
-            
+
