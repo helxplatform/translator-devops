@@ -78,7 +78,8 @@ spec:
             httpGet:
               port: {{ .Values.solr.port }}
               path: /solr/admin/cores?action=STATUS
-            periodSeconds: 60
+            periodSeconds: 120
+            terminationGracePeriodSeconds: 600
       {{- with .Values.solr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

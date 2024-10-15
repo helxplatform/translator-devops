@@ -14,7 +14,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "name-lookup.selectorLabels" . | nindent 8 }}
+        {{- include "name-lookup.labels" . | nindent 8 }}
         app-name: web-server
     spec:
       containers:
