@@ -48,6 +48,16 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          startupProbe:
+            httpGet:
+              port: {{ .Values.webServer.port }}
+              path: /status
+            periodSeconds: 120
+          readinessProbe:
+            httpGet:
+              port: {{ .Values.webServer.port }}
+              path: /status
+            periodSeconds: 120
       {{- with .Values.app.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
