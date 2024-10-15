@@ -46,6 +46,7 @@ spec:
           image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag }}"
           args:
           - '-DzkRun'
+          - '-DzkClientTimeout=5000'
           - '-q'
           - '-Dlog4j2.disable.jmx=true'
           - '-Dlog4j2.formatMsgNoLookups=true'
