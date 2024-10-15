@@ -73,12 +73,12 @@ spec:
             httpGet:
               port: {{ .Values.solr.port }}
               path: /solr/admin/cores?action=STATUS
-            periodSeconds: 30
+            periodSeconds: 60
           livenessProbe:
             httpGet:
               port: {{ .Values.solr.port }}
               path: /solr/admin/cores?action=STATUS
-            periodSeconds: 30
+            periodSeconds: 60
       {{- with .Values.solr.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
