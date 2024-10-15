@@ -102,7 +102,7 @@ app:
       memory: "512M"
       cpu: 500m
     limits:
-      memory: "1G"
+      memory: "2G"
       cpu: 1000m
 
 nameOverride: ""
