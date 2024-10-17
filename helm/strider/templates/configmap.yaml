@@ -21,3 +21,8 @@ data:
   KP_TRAPI_VERSION: "{{ .Values.env.kp_trapi_version }}"
   KP_TIMEOUT: "{{ .Values.env.kp_timeout }}"
   INFORMATION_CONTENT_THRESHOLD: "{{ .Values.env.information_content_threshold }}"
+
+  MCQ_ANSWER_COALESCER: {{ .Values.env.mcq_answer_coalescer }}
+  MCQ_GENETICS: {{ .Values.env.mcq_genetics }}
+  MCQ_COHD: {{ .Values.env.mcq_cohd }}
+  MCQ_SEMSEMIAN: {{ .Values.env.mcq_semsemian }}
