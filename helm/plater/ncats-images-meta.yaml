@@ -1,9 +1,9 @@
 plater:
   image: "ghcr.io/translatorsri/plater-clustered"
-  version: "v2.0.6"
+  version: "v1.6.5"
 neo4j:
-  image: "ghcr.io/translatorsri/plater-neo4j"
-  version: "neo4j-image-5.22"
+  image: "renciorg/neo4j-4.4.10-apoc-gds"
+  version: "0.0.1"
 busybox:
   image: "busybox"
   version: "1.35"

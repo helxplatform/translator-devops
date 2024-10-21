@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/HumanGOA_Automat/06f107a4e9e8e547/graph_06f107a4e9e8e547.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/HumanGOA_Automat/06f107a4e9e8e547/HumanGOA_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/HumanGOA_Automat/06f107a4e9e8e547/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/HumanGOA_Automat/06f107a4e9e8e547/testing_data.json
+dataUrl: https://stars.renci.org/var/plater/bl-4.2.0/HumanGOA_Automat/f4137b0fccd76fc1/graph_f4137b0fccd76fc1.db.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-4.2.0/HumanGOA_Automat/f4137b0fccd76fc1/HumanGOA_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.0/HumanGOA_Automat/f4137b0fccd76fc1/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.0/HumanGOA_Automat/f4137b0fccd76fc1/testing_data.json
