@@ -26,11 +26,8 @@ jobs:
         sudo chmod +x /usr/bin/yq
 
     - name: Log in to  Container Registry
-      env:
-        USERNAME: ${{ secrets.CONTAINERHUB_USERNAME }}
-        TOKEN: ${{ secrets.CONTAINERHUB_TOKEN }}
       run: |
-        helm registry login containers.renci.org --username $USERNAME --password $TOKEN
+        helm registry login containers.renci.org --username ${{ secrets.CONTAINERHUB_USERNAME }} --password ${{ secrets.CONTAINERHUB_TOKEN }}
 
     - name: Package and Push Charts
       run: |
