@@ -49,10 +49,7 @@ jobs:
             echo "Pushing $chart_name with version $version to OCI registry"
             helm push ./packages/"$chart_name-$version.tgz" oci://containers.renci.org/translator/
             rm ./packages/"$chart_name-$version.tgz"
-          else
-            echo "Error: Chart.yaml not found in $chart"
-            exit 1
-          fi
+          
         done
 #
 #    - name: Create GitHub Release
