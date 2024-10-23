@@ -8,7 +8,7 @@ image:
   repository:  ghcr.io/ranking-agent/edgar
 #  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: v1.0.1
+  tag: v1.0.2
   readinessProbe:
     port: 8080
     initialDelaySeconds: 15
@@ -54,10 +54,10 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
    limits:
-     cpu: 200m
+     cpu: 2500m
      memory: 6Gi
    requests:
-     cpu: 200m
+     cpu: 400m
      memory: 4Gi
 
 autoscaling:
