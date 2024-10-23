@@ -1,0 +1,50 @@
+name: Helm OCI Package and Release to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - ci-cd-helm-build
+  pull_request:
+    branches:
+      - ci-cd-helm-build
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        helm version
+
+    - name: Install yq (YAML processor)
+      run: |
+        sudo wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O /usr/bin/yq
+        sudo chmod +x /usr/bin/yq
+
+    - name: Log in to GitHub Container Registry (ghcr.io)
+      env:
+        USERNAME: ${{ secrets.secrets.CONTAINERHUB_USERNAME }}
+        TOKEN: ${{ secrets.CONTAINERHUB_TOKEN }}
+      run: |
+        echo $TOKEN | helm registry login containers.renci.org --username $USERNAME --password-stdin
+
+    - name: Package and Push Charts
+      run: |
+        for chart in $(ls -d charts/*/); do
+          chart_name=$(basename $chart)
+          version=$(yq eval '.version' $chart/Chart.yaml)
+          echo "Packaging $chart_name with version $version"
+          helm chart save $chart containers.renci.org/translator/$chart_name:$version
+          helm chart push containers.renci.org/translator/$chart_name:$version
+        done
+#
+#    - name: Create GitHub Release
+#      uses: softprops/action-gh-release@v1
+#      with:
+#        body: "New Helm charts release"
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
