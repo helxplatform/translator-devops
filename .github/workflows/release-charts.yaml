@@ -30,7 +30,7 @@ jobs:
         USERNAME: ${{ secrets.secrets.CONTAINERHUB_USERNAME }}
         TOKEN: ${{ secrets.CONTAINERHUB_TOKEN }}
       run: |
-        echo $TOKEN | helm registry login containers.renci.org --username $USERNAME --password-stdin
+        helm registry login containers.renci.org --username $USERNAME --password $TOKEN
 
     - name: Package and Push Charts
       run: |
