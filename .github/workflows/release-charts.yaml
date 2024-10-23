@@ -31,7 +31,7 @@ jobs:
 
     - name: Package and Push Charts
       run: |
-        for chart in $(ls -d charts/*/); do
+        for chart in $(ls -d helm/*/); do
           chart_name=$(basename $chart)
           version=$(yq eval '.version' $chart/Chart.yaml)
           echo "Packaging $chart_name with version $version"
