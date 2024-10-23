@@ -21,8 +21,8 @@ image:
     tag: "v2.1.2"
     imagePullPolicy: Always
   neo4j:
-    repository: ghcr.io/translatorsri/plater-neo4j
-    tag: "neo4j-image-5.22"
+    repository: renciorg/neo4j-4.4.10-apoc-gds
+    tag: 0.0.1
     imagePullPolicy: Always
 
 nameOverride: ""
@@ -77,9 +77,8 @@ service:
 app:
   otel:
     enabled: "True"
-    jaegerHost: "http://jaeger-otel-collector"
-    jaegerPort: "4317"
-  profiler_on: "True"
+    jaegerHost: "jaeger-otel-agent.translator-exp"
+    jaegerPort: "6831"
   gunicorn:
     worker_timeout: 3600
     num_workers: 4
@@ -98,9 +97,8 @@ app:
 
   port: 8080
   automatAddress: http://automat
-  bl_version: 4.2.1
+  bl_version: 4.1.6
   neo4j:
-    protocol: bolt
     httpPort: 7474
     boltPort: 7687
     password: neo4jkp
@@ -118,6 +116,7 @@ app:
       size: 20Mi
     service:
       type: ClusterIP
+    allowUpgrade: true
     initresources:
       requests:
         memory: 5Gi

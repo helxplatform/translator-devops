@@ -1,4 +1,4 @@
-dataUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-07-12/neo4j.dump
-metadataUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-07-12/monarchinitiative.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-07-12/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-07-12/testing_data.json
+dataUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-04-18/graph.db.dump
+metadataUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-04-18/monarchinitiative.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-04-18/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/monarchinitiative/2024-04-18/testing_data.json
