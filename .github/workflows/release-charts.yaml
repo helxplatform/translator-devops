@@ -27,7 +27,7 @@ jobs:
 
     - name: Log in to  Container Registry
       run: |
-        helm registry login containers.renci.org --username ${{ secrets.CONTAINERHUB_USERNAME }} --password ${{ secrets.CONTAINERHUB_TOKEN }}
+        helm registry login containers.renci.org --username '${{ secrets.CONTAINERHUB_USERNAME }}' --password '${{ secrets.CONTAINERHUB_TOKEN }}'
 
     - name: Package and Push Charts
       run: |
