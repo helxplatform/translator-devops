@@ -34,7 +34,7 @@ jobs:
         set -e  # Exit immediately if any command exits with a non-zero status
         for chart in helm/*/; do
           if [ -f "$chart/Chart.yaml" ]; then
-            chart_name=$(basename "$chart")
+            chart_name=$(yq eval '.name' "$chart/Chart.yaml")
             version=$(yq eval '.version' "$chart/Chart.yaml")
             if [ -z "$version" ]; then
               echo "Error: Could not find version in $chart_name/Chart.yaml"
@@ -48,6 +48,7 @@ jobs:
 
             echo "Pushing $chart_name with version $version to OCI registry"
             helm push ./packages/"$chart_name-$version.tgz" oci://containers.renci.org/translator/
+            rm ./packages/"$chart_name-$version.tgz"
           else
             echo "Error: Chart.yaml not found in $chart"
             exit 1
