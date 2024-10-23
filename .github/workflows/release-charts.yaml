@@ -1,0 +1,58 @@
+name: Helm OCI Package and Release to GitHub Container Registry
+
+on:
+  push:
+    branches:
+      - develop
+
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Helm
+      run: |
+        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+        helm version
+
+    - name: Install yq (YAML processor)
+      run: |
+        sudo wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O /usr/bin/yq
+        sudo chmod +x /usr/bin/yq
+
+    - name: Log in to  Container Registry
+      run: |
+        helm registry login containers.renci.org --username '${{ secrets.CONTAINERHUB_USERNAME }}' --password '${{ secrets.CONTAINERHUB_TOKEN }}'
+
+    - name: Package and Push Charts
+      run: |
+        set -e  # Exit immediately if any command exits with a non-zero status
+        for chart in helm/*/; do
+          if [ -f "$chart/Chart.yaml" ]; then
+            chart_name=$(yq eval '.name' "$chart/Chart.yaml")
+            version=$(yq eval '.version' "$chart/Chart.yaml")
+            if [ -z "$version" ]; then
+              echo "Error: Could not find version in $chart_name/Chart.yaml"
+              exit 1
+            fi
+            echo "Updating dependencies for $chart_name"
+            helm dependency update "$chart"
+
+            echo "Packaging $chart_name with version $version"
+            helm package "$chart" --version "$version" --destination ./packages
+
+            echo "Pushing $chart_name with version $version to OCI registry"
+            helm push ./packages/"$chart_name-$version.tgz" oci://containers.renci.org/translator/
+            rm ./packages/"$chart_name-$version.tgz"
+          fi
+        done
+#
+#    - name: Create GitHub Release
+#      uses: softprops/action-gh-release@v1
+#      with:
+#        body: "New Helm charts release"
+#      env:
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
