@@ -25,9 +25,9 @@ jobs:
         sudo wget https://github.com/mikefarah/yq/releases/download/v4.13.4/yq_linux_amd64 -O /usr/bin/yq
         sudo chmod +x /usr/bin/yq
 
-    - name: Log in to GitHub Container Registry (ghcr.io)
+    - name: Log in to  Container Registry
       env:
-        USERNAME: ${{ secrets.secrets.CONTAINERHUB_USERNAME }}
+        USERNAME: ${{ secrets.CONTAINERHUB_USERNAME }}
         TOKEN: ${{ secrets.CONTAINERHUB_TOKEN }}
       run: |
         helm registry login containers.renci.org --username $USERNAME --password $TOKEN
