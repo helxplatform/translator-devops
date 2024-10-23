@@ -31,12 +31,27 @@ jobs:
 
     - name: Package and Push Charts
       run: |
-        for chart in $(ls -d helm/*/); do
-          chart_name=$(basename $chart)
-          version=$(yq eval '.version' $chart/Chart.yaml)
-          echo "Packaging $chart_name with version $version"
-          helm chart save $chart containers.renci.org/translator/$chart_name:$version
-          helm chart push containers.renci.org/translator/$chart_name:$version
+        set -e  # Exit immediately if any command exits with a non-zero status
+        for chart in helm/*/; do
+          if [ -f "$chart/Chart.yaml" ]; then
+            chart_name=$(basename "$chart")
+            version=$(yq eval '.version' "$chart/Chart.yaml")
+            if [ -z "$version" ]; then
+              echo "Error: Could not find version in $chart_name/Chart.yaml"
+              exit 1
+            fi
+            echo "Updating dependencies for $chart_name"
+            helm dependency update "$chart"
+
+            echo "Packaging $chart_name with version $version"
+            helm package "$chart" --version "$version" --destination ./packages
+
+            echo "Pushing $chart_name with version $version to OCI registry"
+            helm push ./packages/"$chart_name-$version.tgz" oci://containers.renci.org/translator/
+          else
+            echo "Error: Chart.yaml not found in $chart"
+            exit 1
+          fi
         done
 #
 #    - name: Create GitHub Release
