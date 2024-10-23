@@ -48,8 +48,7 @@ jobs:
 
             echo "Pushing $chart_name with version $version to OCI registry"
             helm push ./packages/"$chart_name-$version.tgz" oci://containers.renci.org/translator/
-            rm ./packages/"$chart_name-$version.tgz"
-          
+            rm ./packages/"$chart_name-$version.tgz"          
         done
 #
 #    - name: Create GitHub Release
