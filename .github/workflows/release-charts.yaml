@@ -3,10 +3,10 @@ name: Helm OCI Package and Release to GitHub Container Registry
 on:
   push:
     branches:
-      - ci-cd-helm-build
+      - develop
   pull_request:
     branches:
-      - ci-cd-helm-build
+      - develop
 
 jobs:
   release:
