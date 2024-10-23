@@ -7,7 +7,7 @@
 webServer:
   serverHostName: https://robokop-name-resolver.apps.renci.org
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/robokop-filtered/solr-backups/2023nov5-by-bl4.1.4-b0a6856ee32b9b09/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/robokop-filtered/solr-backups/2024aug18-by-bl4.2.1-4901b2bc764444ea/snapshot.backup.tar.gz"
 
 ingress:
   host: robokop-name-resolver.apps.renci.org
