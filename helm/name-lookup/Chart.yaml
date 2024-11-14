@@ -14,11 +14,11 @@ type: application
 
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
-version: 0.4.4
+version: 0.4.6
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application.
 # 
 # NameRes versions are based on the version of the NameRes Docker image concatenated with the
 # Babel release date.
-appVersion: 1.4.3_2024aug18
+appVersion: 1.4.5_2024oct1
