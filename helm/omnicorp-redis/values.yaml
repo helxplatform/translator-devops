@@ -75,15 +75,17 @@ redis:
   # full option here (https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml)
   architecture: standalone
   image:
-    repository: redislabs/redisgraph
-    tag: "2.12.0"
+    repository:  bitnami/redis
+    tag: 7.4.1-debian-12-r2
   master:
+    configuration: |-
+      logfile "/data/strider_cache.log"
     resources:
       limits:
         cpu: 2
-        memory: 20Gi
+        memory: 50Gi
     readinessProbe:
-      enabled: true
+      enabled: false
       # to make it available ASAP
       periodSeconds: 1
       # spans 25 mins (150 * 10 secs)
@@ -94,24 +96,24 @@ redis:
       # responds with LOADING message. to avoid cyclic restarts
       # keeping this off
       enabled: false
-    initContainers:
-    - name: download-bckp
-      image: "busybox:1.35"
-      command:
-        - 'wget'
-      args:
-        - '-O'
-        - '/data/dump.rdb'
-        - 'https://stars.renci.org/var/omnicorp/redis/omnicorp-5-15-2024.rdb'
-      volumeMounts:
-      - name: redis-data
-        mountPath: '/data/'
-      resources:
-        limits:
-          cpu: 2
-          memory: 7Gi
+#    initContainers:
+#    - name: download-bckp
+#      image: "busybox:1.35"
+#      command:
+#        - 'wget'
+#      args:
+#        - '-O'
+#        - '/data/dump.rdb'
+#        - 'https://stars.renci.org/var/omnicorp/redis/pathfinder_omnicorp_11_21_2024.rdb'
+#      volumeMounts:
+#      - name: redis-data
+#        mountPath: '/data/'
+#      resources:
+#        limits:
+#          cpu: 2
+#          memory: 7Gi
     persistence:
-      size: 5Gi
+      size: 30Gi
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
