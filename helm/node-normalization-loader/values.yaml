@@ -51,6 +51,7 @@ data:
     - Gene.txt.03
     - Gene.txt.04
     - Gene.txt.05
+    - Gene.txt.06
     - GrossAnatomicalStructure.txt
     - MacromolecularComplex.txt
     - MolecularActivity.txt
