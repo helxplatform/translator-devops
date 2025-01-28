@@ -5,7 +5,7 @@
 #
 
 # Configuration
-NN_VERSION="${NN_VERSION:-2024oct24}"
+NN_VERSION="${NN_VERSION:-2025jan23}"
 NN_NAMESPACE="${NN_NAMESPACE:-translator-dev}"
 
 # Copy all the dump files.
