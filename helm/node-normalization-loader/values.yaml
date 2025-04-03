@@ -33,7 +33,7 @@ app:
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025jan23/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
@@ -104,7 +104,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025jan23/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
