@@ -93,7 +93,7 @@ ingress:
     nginx.org/proxy-connect-timeout: 300s
     nginx.org/proxy-read-timeout: 300s
     nginx.org/proxy-send-timeout: 300s
-  pathType: "Prefix"
+  pathType: "ImplementationSpecific"
   tls: []
 #   - hosts:
 #       - nodenormalization-dev.apps.renci.org
