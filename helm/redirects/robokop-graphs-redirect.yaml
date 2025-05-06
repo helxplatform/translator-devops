@@ -1,23 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-   annotations:
-     nginx.ingress.kubernetes.io/rewrite-target: /$1
-     nginx.ingress.kubernetes.io/permanent-redirect: https://stars.renci.org/var/plater$request_uri
-     nginx.ingress.kubernetes.io/permanent-redirect-code: '307'
-     cert-manager.io/cluster-issuer: letsencrypt
-     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
-   name: robokop-graphs-redirect
-   namespace: robokop-u24
+  name: robokop-graphs-redirect
+  namespace: robokop-u24
+  annotations:
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://stars.renci.org/var/plater/graphs/"
+    nginx.ingress.kubernetes.io/permanent-redirect-code: '307'
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
 spec:
   rules:
-     - host: robokop.renci.org
-       http:
-         paths:
-         - path: /graphs/(.*)$
-           pathType: Prefix
-           backend:
-             service:
-               name: robokop-graphs
-               port:
-                 number: 80
+    - host: robokop.renci.org
+      http:
+        paths:
+          - path: /graphs
+            pathType: Prefix
+            backend:
+              service:
+                name: robokop-graphs
+                port:
+                  number: 80
