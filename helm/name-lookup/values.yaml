@@ -17,6 +17,9 @@ webServer:
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/nameres/snapshot.backup.tar.gz"
 forceRun: false
+data:
+  babelVersion: 2025mar31
+  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025mar31.md
 
 busybox:
   image:
