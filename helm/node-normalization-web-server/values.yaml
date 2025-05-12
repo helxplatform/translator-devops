@@ -22,8 +22,9 @@ web:
     jaegerHost:
     jaegerPort:
   securityContext: {}
-  affinity: {}
-  tolerations: {}
+  nodeSelector: { }
+  affinity: { }
+  tolerations: { }
   configPath: "/code/redis_config.yaml"
   # exra Args for uvicorn
   extraArgs:
@@ -148,7 +149,3 @@ x_trapi:
   location:
     value: "location"
 
-app:
-  nodeSelector: {}
-  affinity: {}
-  tolerations: {}
