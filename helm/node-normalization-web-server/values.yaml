@@ -11,6 +11,10 @@ image:
   tag: v2.3.22
   pullPolicy: Always
 
+data:
+  babelVersion: "2025mar31"
+  babelVersionURL: "https://github.com/TranslatorSRI/Babel/blob/master/releases/2025mar31.md"
+
 web:
   port: 8080
   service:

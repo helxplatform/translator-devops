@@ -42,6 +42,10 @@ spec:
               name: "webserver-config"
               subPath: "redis_config.yaml"
           env:
+            - name: "BABEL_VERSION"
+              value: "{{ .Values.data.babelVersion }}"
+            - name: "BABEL_VERSION_URL"
+              value: "{{ .Values.data.babelVersionURL }}"
             - name: "SERVER_ROOT"
               value: "{{ .Values.web.serverHostName }}"
             - name: "MATURITY_VALUE"
