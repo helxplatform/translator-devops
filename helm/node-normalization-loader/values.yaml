@@ -19,7 +19,7 @@ fullnameOverride: ""
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "v2.3.20"
+  tag: "v2.3.23"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
@@ -38,6 +38,7 @@ data:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
     - Cell.txt
+    - CellLine.txt
     - CellularComponent.txt
     - ChemicalEntity.txt
     - ChemicalMixture.txt
