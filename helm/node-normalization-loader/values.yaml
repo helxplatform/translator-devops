@@ -12,14 +12,14 @@ logLevel: INFO
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.18"
+  tag: "v2.3.23"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "v2.3.18"
+  tag: "v2.3.23"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
@@ -33,11 +33,12 @@ app:
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2024oct24/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
     - Cell.txt
+    - CellLine.txt
     - CellularComponent.txt
     - ChemicalEntity.txt
     - ChemicalMixture.txt
@@ -51,6 +52,7 @@ data:
     - Gene.txt.03
     - Gene.txt.04
     - Gene.txt.05
+    - Gene.txt.06
     - GrossAnatomicalStructure.txt
     - MacromolecularComplex.txt
     - MolecularActivity.txt
@@ -103,7 +105,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2024oct24/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
