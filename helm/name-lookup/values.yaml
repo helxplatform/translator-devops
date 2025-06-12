@@ -21,7 +21,7 @@ data:
   babelVersion: 2025mar31
   babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025mar31.md
 
-busybox:
+downloader:
   image:
     repository: busybox
     tag: "stable"

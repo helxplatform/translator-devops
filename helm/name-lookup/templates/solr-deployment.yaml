@@ -25,7 +25,7 @@ spec:
       {{ if .Values.dataUrl }}
       initContainers:
         - name: {{ .Chart.Name }}-download-backup
-          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          image: "{{ .Values.downloader.image.repository }}:{{ .Values.downloader.image.tag }}"
           command:
             - /download.sh
           volumeMounts:
