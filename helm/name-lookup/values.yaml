@@ -24,7 +24,7 @@ data:
 busybox:
   image:
     repository: busybox
-    tag: "1.35"
+    tag: "stable"
 
 # busybox:
 #   image:
