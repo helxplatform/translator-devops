@@ -30,7 +30,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: restore-container
-          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          image: "{{ .Values.downloader.image.repository }}:{{ .Values.downloader.image.tag }}"
           command:
             - /restore.sh
           stdin: true
