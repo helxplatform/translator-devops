@@ -11,3 +11,6 @@ data:
   REDIS_HOST: {{ .Values.env.redis_host }}
   REDIS_PORT: "{{ .Values.env.redis_port }}"
   TRAPI_VERSION: "{{ .Values.env.trapi_version }}"
+  JAEGER_HOST: {{ .Values.env.jaeger_host }}
+  JAEGER_PORT: "{{ .Values.env.jaeger_port }}"
+  JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"

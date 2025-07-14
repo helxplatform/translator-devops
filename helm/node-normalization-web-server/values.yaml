@@ -8,8 +8,12 @@
 
 image:
   repository: ghcr.io/translatorsri/nodenormalization
-  tag: v2.3.15
+  tag: v2.3.23
   pullPolicy: Always
+
+data:
+  babelVersion: "2025mar31"
+  babelVersionURL: "https://github.com/TranslatorSRI/Babel/blob/master/releases/2025mar31.md"
 
 web:
   port: 8080
@@ -22,8 +26,9 @@ web:
     jaegerHost:
     jaegerPort:
   securityContext: {}
-  affinity: {}
-  tolerations: {}
+  nodeSelector: { }
+  affinity: { }
+  tolerations: { }
   configPath: "/code/redis_config.yaml"
   # exra Args for uvicorn
   extraArgs:
@@ -68,13 +73,14 @@ web:
       successThreshold: 1
       # if a pod fails twice on /docs we boot it.
       failureThreshold: 2
+
 resources:
   limits:
+    cpu: 1000m
     memory: 5Gi
-#     cpu: 1500m
   requests:
-    memory: 5Gi
-    cpu: 500m
+    cpu: 250m
+    memory: 3Gi
 
 ingress:
   class:
@@ -92,7 +98,7 @@ ingress:
     nginx.org/proxy-connect-timeout: 300s
     nginx.org/proxy-read-timeout: 300s
     nginx.org/proxy-send-timeout: 300s
-  pathType: "Prefix"
+  pathType: "ImplementationSpecific"
   tls: []
 #   - hosts:
 #       - nodenormalization-dev.apps.renci.org
@@ -147,7 +153,3 @@ x_trapi:
   location:
     value: "location"
 
-app:
-  nodeSelector: {}
-  affinity: {}
-  tolerations: {}

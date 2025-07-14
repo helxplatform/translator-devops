@@ -18,11 +18,11 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v1.6.5"
+    tag: "v2.1.4"
     imagePullPolicy: Always
   neo4j:
-    repository: renciorg/neo4j-4.4.10-apoc-gds
-    tag: 0.0.1
+    repository: ghcr.io/translatorsri/plater-neo4j
+    tag: "neo4j-5.26"
     imagePullPolicy: Always
 
 nameOverride: ""
@@ -77,14 +77,14 @@ service:
 app:
   otel:
     enabled: "True"
-    jaegerHost: "jaeger-otel-agent"
-    jaegerPort: "6831"
+    jaegerHost: "http://jaeger-otel-collector"
+    jaegerPort: "4317"
+  profiler_on: "True"
   gunicorn:
     worker_timeout: 3600
     num_workers: 4
   # this is the timeout used for the http request made to neo4j
   # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
-  # 30 mins default
   Neo4jQueryTimeout: 1600
   web:
     resources:
@@ -99,6 +99,7 @@ app:
   automatAddress: http://automat
   bl_version: 4.2.1
   neo4j:
+    protocol: bolt
     httpPort: 7474
     boltPort: 7687
     password: neo4jkp
@@ -116,7 +117,6 @@ app:
       size: 20Mi
     service:
       type: ClusterIP
-    allowUpgrade: true
     initresources:
       requests:
         memory: 5Gi
@@ -125,9 +125,11 @@ app:
         memory: 10Gi
         cpu: 2000m
     resources:
+      requests:
+        cpu: 2000m
       limits:
         ephemeral-storage: 256Mi
-        cpu: 2000m
+        cpu: 2500m
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
@@ -160,8 +162,6 @@ app:
   affinity: {}
 
 skipAttributes:
-  - provided_by
-  - knowledge_source
 dataUrl: ""
 metadataUrl: ""
 metaKGUrl: ""

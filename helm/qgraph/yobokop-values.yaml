@@ -1,8 +1,12 @@
-# TODO, figure this out for non-umbrella deployment. We might need the baseUrl to be configurable in the image so the question-builder
-# can be at the top-level domain. Following is the old config for reference
+ingress:
+  public: true
+  tls:
+    enabled: true
+  className: ""
+  host: yobokop.apps.renci.org
+  path: /question-builder(?:\/|$)(.*)
 
-# env:
-#   name_resolver: https://yobokop-name-resolver.apps.renci.org
-#   robokop_ara: http://yobokop-aragorn-aragorn-robokop-service:8080
-# ingress:
-#   host: yobokop.apps.renci.org
+env:
+  robokop_ara: http://yobokop-aragorn-aragorn-robokop-service:8080
+  name_resolver: https://yobokop-name-resolver.apps.renci.org
+  DEPLOYMENT: YOBOKOP

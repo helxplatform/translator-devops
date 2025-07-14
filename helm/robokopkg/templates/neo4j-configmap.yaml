@@ -16,12 +16,12 @@ data:
   download_data.sh: |-
     #!/bin/bash
     set -x
-    wget -O /data/db.dump ${NEO4J_DATA_URL}
+    wget -O /data/neo4j.dump ${NEO4J_DATA_URL}
     touch /data/done
   seed_db.sh: |-
     #!/bin/bash
     set -x
-    FILE=/data/db.dump
+    FILE=/data/neo4j.dump
     DATADIR=/data/databases
     until [ -f "$FILE" ]; do
         echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
@@ -39,4 +39,4 @@ data:
     rm -rf /data/databases/*
     rm -rf /data/transactions/*
     # load dump file
-    neo4j-admin load --from $FILE
+    neo4j-admin database load --from-path=/data/ neo4j

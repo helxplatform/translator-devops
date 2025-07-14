@@ -7,7 +7,7 @@
 webServer:
   serverHostName: https://yobokop-name-resolver.apps.renci.org
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/yobokop-filtered/solr-backups/2023nov5-by-bl4.1.4-dce656aef0b2d1f7/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/yobokop-filtered/solr-backups/2024mar24-by-bl4.2.0-40614106c036f010/snapshot.backup.tar.gz"
 
 ingress:
   host: yobokop-name-resolver.apps.renci.org
