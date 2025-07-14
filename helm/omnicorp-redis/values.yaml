@@ -74,14 +74,16 @@ affinity: {}
 redis:
   # full option here (https://github.com/bitnami/charts/blob/main/bitnami/redis/values.yaml)
   architecture: standalone
+  auth:
+    password: fillthisin
   image:
-    repository: redislabs/redisgraph
-    tag: "2.12.0"
+    repository: redis
+    tag: latest
   master:
     resources:
       limits:
         cpu: 2
-        memory: 20Gi
+        memory: 50Gi
     readinessProbe:
       enabled: true
       # to make it available ASAP
@@ -96,20 +98,20 @@ redis:
       enabled: false
     initContainers:
     - name: download-bckp
-      image: "busybox:1.35"
+      image: "busybox:stable"
       command:
         - 'wget'
       args:
         - '-O'
         - '/data/dump.rdb'
-        - 'https://stars.renci.org/var/omnicorp/redis/omnicorp-5-15-2024.rdb'
+        - 'https://stars.renci.org/var/omnicorp/redis/pathfinder_omnicorp_11_21_2024.rdb'
       volumeMounts:
       - name: redis-data
         mountPath: '/data/'
       resources:
         limits:
           cpu: 2
-          memory: 7Gi
+          memory: 50Gi
     persistence:
       size: 5Gi
   replica:

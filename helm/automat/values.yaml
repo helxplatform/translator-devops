@@ -42,6 +42,12 @@ app:
   tolerations: {}
   nodeSelector: {}
 
+otel:
+  enabled: "False"
+  serviceName: "Automat Server"
+  jaegerHost:
+  jaegerPort:
+
 x_trapi:
   maturity:
     value: "maturity"

@@ -37,8 +37,6 @@ spec:
             - "8080"
             - "--workers"
             - "4"
-            - "--root-path"
-            - "{{.Values.ingress.path}}"
             - "src.server:APP"
           ports:
             - name: http

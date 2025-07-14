@@ -24,6 +24,10 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - name: {{ .Release.Name }}-explore-database-pvc
+        persistentVolumeClaim:
+          claimName: {{ .Release.Name }}-explore-database-pvc
       containers:
         - name: {{ .Chart.Name }}-qgraph
           envFrom:
@@ -39,3 +43,6 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.qgraph.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: "/explore"
+              name: {{ .Release.Name }}-explore-database-pvc

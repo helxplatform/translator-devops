@@ -40,6 +40,11 @@ spec:
             value: "{{ .Values.app.otel.jaegerHost }}"
           - name: "JAEGER_PORT"
             value: "{{ .Values.app.otel.jaegerPort }}"
+          # Babel version information.
+          - name: BABEL_VERSION
+            value: "{{ .Values.data.babelVersion }}"
+          - name: BABEL_VERSION_URL
+            value: "{{ .Values.data.babelVersionURL }}"
           ports:
             - name: http
               containerPort: {{ .Values.webServer.port }}
