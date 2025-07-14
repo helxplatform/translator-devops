@@ -113,7 +113,7 @@ redis:
           cpu: 2
           memory: 50Gi
     persistence:
-      size: 5Gi
+      size: 50Gi
   replica:
     replicaCount: 0
   # anything that goes into redis.conf file
