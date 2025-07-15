@@ -1,0 +1,4 @@
+dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/EHR_Clinical_Connections_Automat/613242929fd651b8/neo4j.dump
+metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/EHR_Clinical_Connections_Automat/613242929fd651b8/EHR_Clinical_Connections_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/EHR_Clinical_Connections_Automat/613242929fd651b8/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/EHR_Clinical_Connections_Automat/613242929fd651b8/testing_data.json

@@ -123,6 +123,7 @@ config:
       "https://automat.renci.org/ctd/openapi.json",
       "https://automat.renci.org/drugcentral/openapi.json",
       "https://automat.renci.org/ehr-may-treat-kp/openapi.json",
+      "https://automat.renci.org/ehr-clinical-connections-kp/openapi.json",
       "https://automat.renci.org/genome-alliance/openapi.json",
       "https://automat.renci.org/gtex/openapi.json",
       "https://automat.renci.org/gtopdb/openapi.json",

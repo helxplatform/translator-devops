@@ -73,6 +73,8 @@ spec:
             value: "0.0.0.0"
           - name: NEO4J_server_bolt_listen__address
             value: ":7687"
+          - name: NEO4J_server_bolt_thread__pool__max__size
+            value: "1000"
           - name: NEO4J_server_http_listen__address
             value: ":7474"
           - name: NEO4J_server_memory_heap_initial__size

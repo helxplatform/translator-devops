@@ -12,14 +12,14 @@ logLevel: INFO
 
 image:
   repository: "ghcr.io/translatorsri/nodenormalization"
-  tag: "v2.3.17"
+  tag: "v2.3.23"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/translatorsri/nodenormalization-data-loading"
-  tag: "v2.3.17"
+  tag: "v2.3.23"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
@@ -28,16 +28,17 @@ restore:
 # node affinity and tolerations settings.
 app:
   affinity: {}
-  tolerations: {}
+  tolerations: []
 
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2024oct1/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
     - Cell.txt
+    - CellLine.txt
     - CellularComponent.txt
     - ChemicalEntity.txt
     - ChemicalMixture.txt
@@ -51,6 +52,7 @@ data:
     - Gene.txt.03
     - Gene.txt.04
     - Gene.txt.05
+    - Gene.txt.06
     - GrossAnatomicalStructure.txt
     - MacromolecularComplex.txt
     - MolecularActivity.txt
@@ -84,6 +86,7 @@ data:
     - Protein.txt.22
     - Protein.txt.23
     - Protein.txt.24
+    - Protein.txt.25
     - Publication.txt.00
     - Publication.txt.01
     - Publication.txt.02
@@ -102,7 +105,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2024oct1/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
@@ -116,7 +119,34 @@ data:
         redis_db: "chemical_drug_db"
 codeDir: /code
 
-redis_backend_config: {}
+redis_backend_config:
+  "eq_id_to_id_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/id-id.rdb.gz"
+    storageSize: 100G
+
+  "id_to_eqids_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/id-eq-id.rdb.gz"
+    storageSize: 150G
+
+  "id_to_type_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/id-categories.rdb.gz"
+    storageSize: 30G
+
+  "curie_to_bl_type_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/semantic-count.rdb.gz"
+    storageSize: 1G
+
+  "gene_protein_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/conflation-db.rdb.gz"
+    storageSize: 10G
+
+  "info_content_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/info-content.rdb.gz"
+    storageSize: 1G
+
+  "chemical_drug_db":
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2025mar31/rdb-backups/chemical-drug-db.rdb.gz"
+    storageSize: 1G
 
 securityContext:
   runAsUser: 1000

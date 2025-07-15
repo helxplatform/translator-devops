@@ -18,11 +18,11 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v2.1.2"
+    tag: "v2.1.4"
     imagePullPolicy: Always
   neo4j:
     repository: ghcr.io/translatorsri/plater-neo4j
-    tag: "neo4j-image-5.22"
+    tag: "neo4j-5.26"
     imagePullPolicy: Always
 
 nameOverride: ""
@@ -85,7 +85,6 @@ app:
     num_workers: 4
   # this is the timeout used for the http request made to neo4j
   # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
-  # 30 mins default
   Neo4jQueryTimeout: 1600
   web:
     resources:
@@ -126,9 +125,11 @@ app:
         memory: 10Gi
         cpu: 2000m
     resources:
+      requests:
+        cpu: 2000m
       limits:
         ephemeral-storage: 256Mi
-        cpu: 2000m
+        cpu: 2500m
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
