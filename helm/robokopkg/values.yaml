@@ -40,7 +40,7 @@ neo4j:
 
 guides:
   image:
-    repository: containers.renci.org/renciorg/neo4j-guides-server
+    repository: containers.renci.org/translator/neo4j-guides-server
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.0.1"
