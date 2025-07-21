@@ -7,7 +7,7 @@ replicaCount: 1
 
 neo4j:
   image:
-    repository: renciorg/neo4j-4.2-apoc-gds
+    repository: containers.renci.org/renciorg/neo4j-guides-server
     tag: latest
     imagePullPolicy: Always
   dataUrl: ""
