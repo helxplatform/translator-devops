@@ -86,8 +86,8 @@ rbtmq:
     requests:
       memory: 300M
   image:
-    repository: renciorg/aragorn-rbtmq
-    tag: 0.0.1
+    repository: containers.renci.org/translator/aragorn-rbtmq
+    tag: 0.0.2
   storage:
     createPV: false
     createPVC: false
