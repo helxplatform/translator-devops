@@ -7,7 +7,7 @@ replicaCount: 1
 
 neo4j:
   image:
-    repository: containers.renci.org/renciorg/neo4j-guides-server
+    repository: renciorg/neo4j-4.2-apoc-gds
     tag: latest
     imagePullPolicy: Always
   dataUrl: ""
@@ -40,7 +40,7 @@ neo4j:
 
 guides:
   image:
-    repository: renciorg/neo4j-guides-server
+    repository: containers.renci.org/renciorg/neo4j-guides-server
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.0.1"
