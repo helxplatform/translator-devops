@@ -5,7 +5,7 @@
 replicaCount: 1
 ac:
   image:
-    repository: renciorg/ac
+    repository: ghcr.io/ranking-agent/answercoalesce
     tag: latest
   service:
     type: ClusterIP
