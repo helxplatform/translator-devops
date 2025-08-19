@@ -102,6 +102,7 @@ data:
     - SmallMolecule.txt.08
     - SmallMolecule.txt.09
     - SmallMolecule.txt.10
+    - SmallMolecule.txt.11
     - umls.txt
   conflations:
     storageSize: 1G
