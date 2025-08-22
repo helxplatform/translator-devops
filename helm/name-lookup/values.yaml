@@ -13,13 +13,13 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.4.10
+    tag: v1.4.12
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2025aug17/nameres/snapshot.backup.tar.gz"
 forceRun: false
 data:
-  babelVersion: 2025mar31
-  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025mar31.md
+  babelVersion: 2025aug17
+  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025aug17.md
 
 downloader:
   image:
