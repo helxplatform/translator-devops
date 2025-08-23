@@ -23,8 +23,8 @@ data:
 
 downloader:
   image:
-    repository: busybox
-    tag: "stable"
+    repository: ghcr.io/translatorsri/nameresolution-data-loading
+    tag: latest
 
 # busybox:
 #   image:

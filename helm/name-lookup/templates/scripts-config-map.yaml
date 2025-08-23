@@ -13,7 +13,7 @@ data:
     BACKUP_ZIP="${BACKUP_NAME}.tar.gz"
     BACKUP_URL="{{ .Values.dataUrl }}"
     rm -rf $DATA_DIR/*
-    wget -nv -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL
+    wget -c -nv -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL --tries=10 --wait-retry=10 --timeout 60 --read-timeout 30
     cd $DATA_DIR
     tar -xf $DATA_DIR/$BACKUP_ZIP -C $DATA_DIR
     rm $DATA_DIR/$BACKUP_ZIP
