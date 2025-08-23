@@ -12,11 +12,16 @@ data:
     BACKUP_NAME="snapshot.backup"
     BACKUP_ZIP="${BACKUP_NAME}.tar.gz"
     BACKUP_URL="{{ .Values.dataUrl }}"
+
     rm -rf $DATA_DIR/*
+
+    # Download the file with retries if the download fails or if there is an existing file we can continue.
     wget -c --progress=dot:giga --tries=10 --waitretry=10 --timeout=60 --read-timeout=30 -O $DATA_DIR/$BACKUP_ZIP $BACKUP_URL 
+
     cd $DATA_DIR
     tar -xf $DATA_DIR/$BACKUP_ZIP -C $DATA_DIR
     rm $DATA_DIR/$BACKUP_ZIP
+
   restore.sh: |-
     #!/bin/sh
 

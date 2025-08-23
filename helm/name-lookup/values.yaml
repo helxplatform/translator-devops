@@ -23,7 +23,7 @@ data:
 
 downloader:
   image:
-    repository: ghcr.io/translatorsri/nameresolution-data-loading
+    repository: ghcr.io/translatorsri/renci-python-image
     tag: latest
 
 # busybox:
