@@ -12,8 +12,8 @@ image:
   pullPolicy: Always
 
 data:
-  babelVersion: "2025aug17"
-  babelVersionURL: "https://github.com/TranslatorSRI/Babel/blob/master/releases/2025aug17.md"
+  babelVersion: "2025sep1"
+  babelVersionURL: "https://github.com/TranslatorSRI/Babel/blob/master/releases/2025sep1.md"
 
 web:
   port: 8080
