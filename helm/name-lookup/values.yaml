@@ -15,11 +15,11 @@ webServer:
     repository: ghcr.io/translatorsri/nameresolution
     tag: v1.5.0
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2025aug17/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/nameres/snapshot.backup.tar.gz"
 forceRun: false
 data:
-  babelVersion: 2025aug17
-  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025aug17.md
+  babelVersion: 2025sep1
+  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025sep1.md
 
 downloader:
   image:
