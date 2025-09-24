@@ -7,13 +7,13 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: ghcr.io/translatorsri/nodenormalization
+  repository: ghcr.io/ncatstranslator/nodenormalization
   tag: v2.3.26
   pullPolicy: Always
 
 data:
   babelVersion: "2025sep1"
-  babelVersionURL: "https://github.com/TranslatorSRI/Babel/blob/master/releases/2025sep1.md"
+  babelVersionURL: "https://github.com/ncatstranslator/Babel/blob/master/releases/2025sep1.md"
 
 web:
   port: 8080
