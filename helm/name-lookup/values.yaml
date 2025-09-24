@@ -23,7 +23,7 @@ data:
 
 downloader:
   image:
-    repository: ghcr.io/ncatstranslator/renci-python-image
+    repository: ghcr.io/translatorsri/renci-python-image
     tag: latest
 
 # busybox:
