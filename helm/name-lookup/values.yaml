@@ -12,18 +12,18 @@ webServer:
   # container port
   port: 2433
   image:
-    repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.5.0
+    repository: ghcr.io/ncatstranslator/nameresolution
+    tag: v1.5.1
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/nameres/snapshot.backup.tar.gz"
 forceRun: false
 data:
   babelVersion: 2025sep1
-  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025sep1.md
+  babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2025sep1.md
 
 downloader:
   image:
-    repository: ghcr.io/translatorsri/renci-python-image
+    repository: ghcr.io/ncatstranslator/renci-python-image
     tag: latest
 
 # busybox:
