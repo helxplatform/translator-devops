@@ -6,6 +6,6 @@ solr:
   image: solr
   version: "9.1"
 
-busyBox:
-  repository: ghcr.io/translatorsri/renci-python-image
-  tag: latest
+renciPythonImage:
+  image: ghcr.io/translatorsri/renci-python-image
+  version: latest
