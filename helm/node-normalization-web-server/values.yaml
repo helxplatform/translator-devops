@@ -49,8 +49,8 @@ web:
   startupProbe:
     enabled: true
     config:
-      periodSeconds: 1
-      timeoutSeconds: 1
+      periodSeconds: 10
+      timeoutSeconds: 5
       successThreshold: 1
       # to be able to detect pod started asap  pinged every second, but not cause restart
       failureThreshold: 1500
@@ -58,8 +58,8 @@ web:
   readinessProbe:
     enabled: true
     config:
-      periodSeconds: 1
-      timeoutSeconds: 1
+      periodSeconds: 10
+      timeoutSeconds: 3
       # to make sure that if a worker got booted
       # we need to be sure before we start routing to that pod.
       successThreshold: 1
@@ -68,10 +68,10 @@ web:
   livenessProbe:
     enabled: true
     config:
-      periodSeconds: 5 # five seconds
+      periodSeconds: 30
       timeoutSeconds: 30
       successThreshold: 1
-      # if a pod fails twice on /docs we boot it.
+      # if a pod fails twice on /status we boot it.
       failureThreshold: 2
 
 resources:
