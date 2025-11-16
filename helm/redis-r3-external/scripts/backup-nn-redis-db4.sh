@@ -5,8 +5,8 @@
 #
 
 # Configuration
-NN_VERSION="${NN_VERSION:-2025sep1}"
-NN_NAMESPACE="${NN_NAMESPACE:-translator-dev}"
+NN_VERSION="${NN_VERSION:-2025nov4}"
+NN_NAMESPACE="${NN_NAMESPACE:-translator-exp}"
 
 # Copy all the dump files.
 function check_and_download() {
