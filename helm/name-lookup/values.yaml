@@ -13,7 +13,7 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/ncatstranslator/nameresolution
-    tag: v1.5.1
+    tag: v1.6.0
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2025nov4/nameres/snapshot.backup.tar.gz"
 forceRun: false
