@@ -12,14 +12,14 @@ logLevel: INFO
 
 image:
   repository: "ghcr.io/ncatstranslator/nodenormalization"
-  tag: "v2.3.27"
+  tag: "v2.3.28"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/ncatstranslator/nodenormalization-data-loading"
-  tag: "v2.3.27"
+  tag: "v2.3.28"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
