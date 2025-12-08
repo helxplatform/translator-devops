@@ -103,6 +103,7 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
+    # We no longer need to support cluster mode, so we can just pipe the data directly to the target host.
     # The `-c` option doesn't work in pipe mode, which is why we generate a ton of MOVED errors when we run this. The `grep -v MOVED` should suppress them
     # to avoid filling up the log.
     # Instead, what we will do is to get the list of cluster nodes and then stream ALL the data to ALL the nodes. Very inefficient, but it should get the job done.
@@ -115,8 +116,9 @@ data:
     for node in $sub_nodes; do
       IFS=':' read -ra node_host_port <<< $node
       sub_host_name="${node_host_port[0]}"
-      echo "... Started piping data to ${sub_host_name} as part of {{ $hostName }} ..." 
-      rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
+      echo "... Started piping data to ${sub_host_name} as part of {{ $hostName }} ..."
+      bash /home/nru/rdb-to-resp.sh "{{ $dataDir }}/{{ $dbName }}.rdb" "8.4" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
+      # rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
       echo "... Done piping data to ${sub_host_name} as part of {{ $hostName }} ..."
     done
 
