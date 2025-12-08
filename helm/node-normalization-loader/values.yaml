@@ -115,6 +115,9 @@ data:
         redis_db: "chemical_drug_db"
 codeDir: /code
 
+redis_config:
+  redis_version: "6.2"
+
 redis_backend_config:
   "eq_id_to_id_db":
     restoreURL: "https://stars.renci.org/var/babel_outputs/2025nov4/rdb-backups/id-id.rdb.gz"

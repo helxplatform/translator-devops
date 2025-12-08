@@ -8,6 +8,7 @@
 {{- $tag := .Values.restore.tag }}
 {{- $pullPolicy := .Values.restore.pullPolicy }}
 {{- $ephemeralStorage := .Values.restore.ephemeralStorage }}
+{{- $redisConfig := .Values.redis_config }}
 {{- range $dbName, $dbConf := .Values.redis_backend_config }}
 {{- $dbKubeName := $dbName | replace "_" "-"}}
 {{- $dataStorageSize := $dbConf.storageSize }}
@@ -18,7 +19,7 @@
 {{- $sslEnabled := $connectionDetails.ssl_enabled }}
 {{- $isCluster := $connectionDetails.is_cluster }}
 {{- $redisPassword := $connectionDetails.password }}
-{{- $redisVersion := $connectionDetails.redis_version | .Values.redis_backend_config.redis_version | default "6.2" }}
+{{- $redisVersion := $connectionDetails.redis_version | default $redisConfig.redis_version | default "6.2" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
