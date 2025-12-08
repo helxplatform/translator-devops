@@ -19,7 +19,7 @@ fullnameOverride: ""
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/ncatstranslator/nodenormalization-data-loading"
-  tag: "v2.3.28"
+  tag: "replace-rdb-reader"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
