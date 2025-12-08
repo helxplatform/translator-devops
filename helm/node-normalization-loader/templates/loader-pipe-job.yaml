@@ -18,6 +18,7 @@
 {{- $sslEnabled := $connectionDetails.ssl_enabled }}
 {{- $isCluster := $connectionDetails.is_cluster }}
 {{- $redisPassword := $connectionDetails.password }}
+{{- $redisVersion := $connectionDetails.redis_version | .Values.redis_backend_config.redis_version | default "6.2" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -117,7 +118,7 @@ data:
       IFS=':' read -ra node_host_port <<< $node
       sub_host_name="${node_host_port[0]}"
       echo "... Started piping data to ${sub_host_name} as part of {{ $hostName }} ..."
-      bash /home/nru/rdb-to-resp.sh "{{ $dataDir }}/{{ $dbName }}.rdb" "8.4" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
+      bash /home/nru/rdb-to-resp.sh "{{ $dataDir }}/{{ $dbName }}.rdb" "{{$redisVersion}}" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
       # rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
       echo "... Done piping data to ${sub_host_name} as part of {{ $hostName }} ..."
     done
