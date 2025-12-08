@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "robokop-ui.fullname" . }}-backend
+  labels:
+    {{- include "robokop-ui.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  selector:
+    matchLabels:
+      {{- include "robokop-ui.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+  template:
+    metadata:
+      {{- with .Values.backend.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "robokop-ui.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
+        persistentVolumeClaim:
+          claimName: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
+      containers:
+        - name: {{ .Chart.Name }}-robokop-ui-backend
+          {{- with .Values.backend.env }}
+          env:
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          image: "{{ .Values.backend.repository }}:{{ .Values.backend.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.backend.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: "/explore"
+              name: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
