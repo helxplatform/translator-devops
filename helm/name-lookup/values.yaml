@@ -57,10 +57,10 @@ solr:
     # the memory to Solr helps with performance.
     #
     requests:
-      memory: "32Gi"
+      memory: "16Gi"
       cpu: 4000m
     limits:
-      memory: "64Gi"
+      memory: "32Gi"
       cpu: 6000m
 
   # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
@@ -69,7 +69,7 @@ solr:
   affinity:
   tolerations:
 
-  heap_mem: "-Xms60G -Xmx60G"
+  heap_mem: "-Xms30G -Xmx30G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
 
   # As of Babel 2023jul13, we need 130G to store the
