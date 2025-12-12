@@ -76,7 +76,7 @@ spec:
           {{ if .Values.web.startupProbe.enabled }}
           startupProbe:
             httpGet:
-             path: /docs
+             path: /status
              port: {{ .Values.web.port }}
            {{ with .Values.web.startupProbe.config }}
             {{ . | toYaml | nindent 12 }}
@@ -85,7 +85,7 @@ spec:
           {{ if .Values.web.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /docs
+              path: /status
               port: {{ .Values.web.port }}
            {{ with .Values.web.readinessProbe.config }}
             {{ . | toYaml | nindent 12 }}
@@ -94,7 +94,7 @@ spec:
           {{ if .Values.web.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /docs
+              path: /status
               port: {{ .Values.web.port }}
            {{ with .Values.web.livenessProbe.config }}
             {{ . | toYaml | nindent 12 }}

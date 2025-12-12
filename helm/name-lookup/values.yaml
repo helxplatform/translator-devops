@@ -57,7 +57,7 @@ solr:
     # the memory to Solr helps with performance.
     #
     requests:
-      memory: "32Gi"
+      memory: "16Gi"
       cpu: 4000m
     limits:
       memory: "32Gi"
