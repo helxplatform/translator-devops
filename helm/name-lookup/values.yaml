@@ -97,6 +97,7 @@ app:
     enabled: false
     jaegerHost:
     jaegerPort:
+  logLevel: INFO
   nodeSelector:
   affinity:
   tolerations:
