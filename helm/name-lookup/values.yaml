@@ -39,7 +39,7 @@ solr:
   port: 8983
   image:
     repository: solr
-    tag: 9
+    tag: 9.1
   resources:
     # We tried increasing this to 200Gi. It looks like Solr used the following
     # amounts of memory (as per Sterling Grafana):
