@@ -1,3 +1,4 @@
 nodeNormalization:
-  image: ghcr.io/translatorsri/nodenormalization
-  version: v2.3.23
+  image: ghcr.io/ncatstranslator/nodenormalization
+  version: v2.3.26
+

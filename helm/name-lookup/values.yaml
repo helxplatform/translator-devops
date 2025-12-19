@@ -12,19 +12,19 @@ webServer:
   # container port
   port: 2433
   image:
-    repository: ghcr.io/translatorsri/nameresolution
-    tag: v1.4.10
+    repository: ghcr.io/ncatstranslator/nameresolution
+    tag: v1.5.1
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2025mar31/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/nameres/snapshot.backup.tar.gz"
 forceRun: false
 data:
-  babelVersion: 2025mar31
-  babelVersionURL: https://github.com/TranslatorSRI/Babel/blob/master/releases/2025mar31.md
+  babelVersion: 2025sep1
+  babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2025sep1.md
 
 downloader:
   image:
-    repository: busybox
-    tag: "stable"
+    repository: ghcr.io/translatorsri/renci-python-image
+    tag: latest
 
 # busybox:
 #   image:
@@ -57,11 +57,11 @@ solr:
     # the memory to Solr helps with performance.
     #
     requests:
-      memory: "16Gi"
-      cpu: 1000m
-    limits:
       memory: "32Gi"
       cpu: 4000m
+    limits:
+      memory: "32Gi"
+      cpu: 6000m
 
   # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
   # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
@@ -102,11 +102,11 @@ app:
   tolerations:
   resources:
     requests:
-      memory: "300M"
-      cpu: 250m
+      memory: 1Gi
+      cpu: 750m
     limits:
-      memory: "512M"
-      cpu: 500m
+      memory: 2Gi
+      cpu: 1000m
 
 nameOverride: ""
 fullnameOverride: ""

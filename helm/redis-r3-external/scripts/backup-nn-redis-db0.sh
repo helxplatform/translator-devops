@@ -5,7 +5,7 @@
 #
 
 # Configuration
-NN_VERSION="${NN_VERSION:-2025mar31}"
+NN_VERSION="${NN_VERSION:-2025sep1}"
 NN_NAMESPACE="${NN_NAMESPACE:-translator-dev}"
 RETRIES=10
 
@@ -22,9 +22,7 @@ function check_and_download() {
     echo Checking RDB file.
     kubectl exec -n "$NN_NAMESPACE" "nn-redis-$NN_VERSION-$name-master-0" -- bash -c 'redis-check-rdb /data/dump.rdb'
     # Backup file.
-    kubectl cp -n "$NN_NAMESPACE" "nn-redis-$NN_VERSION-$name-master-0:/data/dump.rdb" ./$name.rdb --retries $RETRIES && \
-        md5 ./$name.rdb && \
-        gzip ./$name.rdb
+    kubectl cp -n "$NN_NAMESPACE" "nn-redis-$NN_VERSION-$name-master-0:/data/compressed.rdb.gz" ./$name.rdb.gz --retries $RETRIES
 }
 
 # Download files

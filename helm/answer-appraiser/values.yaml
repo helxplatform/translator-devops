@@ -44,7 +44,7 @@ redis:
       enabled: false
     initContainers:
     - name: download-db
-      image: "busybox:1.35"
+      image: "busybox:stable"
       command:
         - 'wget'
       args:
@@ -82,8 +82,6 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      keepalive_timeout 86400;
     nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: "true"
