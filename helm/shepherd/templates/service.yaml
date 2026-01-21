@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shepherd.fullname" . }}-broker
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  type: {{ .Values.shepherd_broker.service.type }}
+  ports:
+    - port: {{ .Values.shepherd_broker.service.port }}
+      targetPort: 6379
+      protocol: TCP
+      name: redis-port
+  selector:
+    {{- include "shepherd.selectorLabels" . | nindent 4 }}
+    service-type: redis
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shepherd.fullname" . }}-server
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  type: {{ .Values.shepherd_server.service.type }}
+  ports:
+    - port: {{ .Values.shepherd_server.service.port }}
+      targetPort: {{ .Values.shepherd_server.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "shepherd.selectorLabels" . | nindent 4 }}
+    service-type: webserver
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "shepherd.fullname" . }}-db
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: postgres
+spec:
+  type: {{ .Values.shepherd_db.service.type }}
+  ports:
+    - port: {{ .Values.shepherd_db.service.port }}
+      targetPort: {{ .Values.shepherd_db.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "shepherd.selectorLabels" . | nindent 4 }}
+    service-type: postgres
