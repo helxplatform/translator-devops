@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "memgraph.fullname" . }}
+  labels:
+    {{- include "memgraph.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "memgraph.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "memgraph.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: download-dump
+          image: curlimages/curl:8.16.0
+          command:
+            - sh
+            - -c
+            - |
+              echo "Downloading Memgraph dump..."
+              curl -L -o /data/memgraph.cypher {{ required "memgraph.dataUrl must be set" .Values.memgraph.dataUrl  }}
+          volumeMounts:
+            - name: dump-data
+              mountPath: /data
+      containers:
+        - name: memgraph
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.portBolt }}
+              name: bolt
+          command: ["/bin/sh", "-c"]    
+          args:
+            - |
+              /usr/lib/memgraph/memgraph &
+              echo "Waiting for Memgraph to start..."
+              until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+                sleep 1
+              done
+              if [ -f /data/memgraph.cypher ]; then
+                echo "Loading dump into Memgraph..."
+                /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph.cypher
+              fi
+              wait 
+          volumeMounts:
+            - name: dump-data
+              mountPath: /data          
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+      volumes: 
+        - name: dump-data
+          persistentVolumeClaim:
+            claimName: {{ include "memgraph.dumpPVCName" . }}
+---
+

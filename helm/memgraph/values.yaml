@@ -1,0 +1,22 @@
+replicaCount: 1
+image:
+  repository: memgraph/memgraph
+  tag: "3.5.1"
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  name: memgraph-svc
+  portBolt: 7687
+
+deployment:
+  name: memgraph-deployment
+
+memgraph:
+  dataUrl: ""
+
+resources: {}
+
+dumpPVC:
+  storageClass: "basic"
+  accessMode: "ReadWriteOnce"

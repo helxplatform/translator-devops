@@ -1,0 +1,16 @@
+deployment:
+  name: litcoin-memgraph-deployment
+
+memgraph:
+  dataUrl: "https://stars.renci.org/var/data_services/litcoin/graphs/LitCoin_Validation_with_200_abstracts/c88f1c87993ef433/memgraph_graph.cypher"
+
+resources:
+  limits:
+    cpu: "2"
+    memory: "6Gi"
+  requests:
+    cpu: "300m"
+    memory: "512Mi"
+
+dumpPVC:
+  size: "5Gi"
