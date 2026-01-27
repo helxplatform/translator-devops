@@ -88,7 +88,9 @@ pipeline {
                         images.each { imageName ->
                             def sourceImage = imageMeta[imageName].image
                             def version = imageMeta[imageName].version
-                            def targetImageName = "translator-shepherd-${imageName.replace('_', '-')}"
+                            // Remove shepherd_ prefix if present, then add translator-shepherd- prefix
+                            def cleanName = imageName.replaceFirst('^shepherd_', '')
+                            def targetImageName = "translator-shepherd-${cleanName.replace('_', '-')}"
                             
                             sh """
                             docker pull ${sourceImage}:${version}
@@ -102,8 +104,8 @@ pipeline {
                         def postgresVersion = imageMeta.postgres.version
                         sh """
                         docker pull ${postgresImage}:${postgresVersion}
-                        docker tag ${postgresImage}:${postgresVersion} ${ECR_REGISTRY}/translator-postgres:${postgresVersion}
-                        docker push ${ECR_REGISTRY}/translator-postgres:${postgresVersion}
+                        docker tag ${postgresImage}:${postgresVersion} ${ECR_REGISTRY}/translator-shepherd-postgres:${postgresVersion}
+                        docker push ${ECR_REGISTRY}/translator-shepherd-postgres:${postgresVersion}
                         """
                         
                         // Handle redis
@@ -111,8 +113,8 @@ pipeline {
                         def redisVersion = imageMeta.redis.version
                         sh """
                         docker pull ${redisImage}:${redisVersion}
-                        docker tag ${redisImage}:${redisVersion} ${ECR_REGISTRY}/translator-redis-stack-server:${redisVersion}
-                        docker push ${ECR_REGISTRY}/translator-redis-stack-server:${redisVersion}
+                        docker tag ${redisImage}:${redisVersion} ${ECR_REGISTRY}/translator-shepherd-redis-stack-server:${redisVersion}
+                        docker push ${ECR_REGISTRY}/translator-shepherd-redis-stack-server:${redisVersion}
                         """
                     }
                 }
