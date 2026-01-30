@@ -14,11 +14,35 @@ data:
         echo "  -- Neo4j  is unavailable - sleeping"
         sleep 3
     done
-  download_data.sh: |-
+  download_data_neo4j.sh: |-
     #!/bin/bash
     set -x
     wget -O /data/neo4j.dump ${NEO4J_DATA_URL}
     touch /data/done
+
+  run_memgraph.sh: |-
+    #!/bin/sh
+    set -e
+    
+    echo "Starting Memgraph..."
+    /usr/lib/memgraph/memgraph &
+    MEMGRAPH_PID=$!
+    
+    echo "Waiting for Memgraph to accept connections..."
+    until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+      sleep 1
+    done
+    
+    if [ -f /data/memgraph.cypher ]; then
+      echo "Loading Memgraph dump..."
+      /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph.cypher
+      echo "Memgraph dump loaded"
+    else
+      echo "No memgraph.cypher found, skipping load"
+    fi
+    
+    wait ${MEMGRAPH_PID}
+
   health_check.sh: |-
     #!/usr/bin/env bash
     response=$(wget --server-response "${PUBLIC_URL}/openapi.json" 2>&1 | awk '/^  HTTP/{print $2}')

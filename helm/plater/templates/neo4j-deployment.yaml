@@ -1,4 +1,4 @@
-{{ if not .Values.externalNeo4j }}
+{{- if eq .Values.graph.backend "neo4j" }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -22,7 +22,7 @@ spec:
         - name: {{ include "plater.fullname" . }}-neo4j-download-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           command:
-            - '/download_data.sh'
+            - '/download_data_neo4j.sh'
           env:
             - name: NEO4J_DATA_URL
               value: {{ .Values.dataUrl }}
@@ -33,8 +33,8 @@ spec:
               name: {{ include "plater.fullname" . }}-neo4jkp-pvc
               subPath: neo4j_data
             - name: {{ include "plater.fullname" . }}-scripts
-              mountPath: /download_data.sh
-              subPath: download_data.sh
+              mountPath: /download_data_neo4j.sh
+              subPath: download_data_neo4j.sh
         - name: {{ include "plater.fullname" . }}-neo4j-seed-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           command:

@@ -1,0 +1,90 @@
+{{- if eq .Values.graph.backend "memgraph" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "plater.fullname" . }}-memgraph
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "plater.fullname" . }}-memgraph-service
+  selector:
+    matchLabels:
+      {{- include "plater.selectorLabels" . | nindent 6 }}
+      service-type: database
+  template:
+    metadata:
+      labels:
+        {{ - include "plater.selectorLabels" . | nindent 8 }}
+        service-type: database
+    spec:
+      {{- if .Values.memgraph.dataUrl }}
+      initContainers:
+        - name: {{ include "plater.fullname" . }}-memgraph-download-container
+          image: curlimages/curl:8.16.0
+          command:
+            - sh
+            - -c
+            - |
+              echo "Downloading Memgraph dump..."
+              curl -L -o /data/memgraph.cypher {{ .Values.memgraph.dataUrl  }}
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-memgraph-pvc
+              mountPath: /data
+              subPath: memgraph_data
+          resources:
+            {{ - toYaml .Values.app.memgraph.initresources | nindent 12 }}
+      {{- end }}
+
+      containers:
+        - name: {{ include "plater.fullname" . }}-memgraph-container
+          image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag }}"
+          imagePullPolicy: {{ .Values.image.memgraph.imagePullPolicy }}
+          ports:
+            - name: memgraph-bolt
+            - containerPort: {{ .Values.app.memgraph.boltPort }}
+            - protocol: TCP
+          command:
+            - /run_memgraph.sh
+          {{ - with .Values.app.memgraph.resources }}
+          resources:
+            {{ - toYaml . | nindent 12 }}
+          {{ - end }}
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-memgraph-pvc
+              mountPath: /data
+              subPath: memgraph_data
+          startupProbe:
+{{ toYaml .Values.memgraph.startupProbe | indent 12 }}
+          readinessProbe:
+{{ toYaml .Values.memgraph.readinessProbe | indent 12 }}
+          livenessProbe:
+{{ toYaml .Values.memgraph.livenessProbe | indent 12 }}
+
+      restartPolicy: Always
+      {{ with .Values.memgraph.nodeSelector }}
+      nodeSelector:
+      {{ toYaml . | nindent 8 }}
+      {{ end }}
+      {{ with .Values.memgraph.affinity }}
+      affinity:
+      {{ toYaml . | nindent 8 }}
+      {{ end }}
+      {{ with .Values.memgraph.tolerations }}
+      tolerations:
+      {{ toYaml . | nindent 8 }}
+      {{ end }}
+      volumes:
+        - name: {{ include "plater.fullname" . }}-scripts
+          configMap:
+            name: {{ include "plater.fullname" . }}-configmap
+            defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "plater.fullname" . }}-memgraph-pvc
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.app.memgraph.storage.size }}
+{{ end }}
+
