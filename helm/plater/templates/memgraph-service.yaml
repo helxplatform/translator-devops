@@ -1,0 +1,18 @@
+{{- if and (eq .Values.graph.backend "memgraph") (not .Values.graph.external) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plater.fullname" . }}-memgraph-service
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.app.memgraph.service.type }}
+  ports:
+    - port: {{ .Values.app.memgraph.boltPort }}
+      targetPort: {{ .Values.app.memgraph.boltPort }}
+      protocol: TCP
+      name: memgraph-bolt
+  selector:
+    {{- include "plater.selectorLabels" . | nindent 4 }}
+    service-type: database
+{{ end }}

@@ -1,4 +1,4 @@
-{{- if eq .Values.graph.backend "neo4j" }}
+{{- if and (eq .Values.graph.backend "neo4j") (not .Values.graph.external) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

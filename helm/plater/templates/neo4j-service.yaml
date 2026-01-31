@@ -1,0 +1,22 @@
+{{- if and (eq .Values.graph.backend "memgraph") (not .Values.graph.external) }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "plater.fullname" . }}-neo4j-service
+  labels:
+    {{- include "plater.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.app.neo4j.service.type }}
+  ports:
+    - port: {{ .Values.app.neo4j.httpPort }}
+      targetPort: {{ .Values.app.neo4j.httpPort }}
+      protocol: TCP
+      name: neo4j-http
+    - port: {{ .Values.app.neo4j.boltPort }}
+      targetPort: {{ .Values.app.neo4j.boltPort }}
+      protocol: TCP
+      name: neo4j-bolt
+  selector:
+    {{- include "plater.selectorLabels" . | nindent 4 }}
+    service-type: database
+{{ end }}
