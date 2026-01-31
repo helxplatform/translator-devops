@@ -14,10 +14,10 @@ spec:
   template:
     metadata:
       labels:
-        {{ - include "plater.selectorLabels" . | nindent 8 }}
+        {{- include "plater.selectorLabels" . | nindent 8 }}
         service-type: database
     spec:
-      {{- if .Values.memgraph.dataUrl }}
+      {{- if .Values.app.memgraph.dataUrl }}
       initContainers:
         - name: {{ include "plater.fullname" . }}-memgraph-download-container
           image: curlimages/curl:8.16.0
@@ -26,13 +26,13 @@ spec:
             - -c
             - |
               echo "Downloading Memgraph dump..."
-              curl -L -o /data/memgraph.cypher {{ .Values.memgraph.dataUrl  }}
+              curl -L -o /data/memgraph.cypher {{ .Values.app.memgraph.dataUrl  }}
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-memgraph-pvc
               mountPath: /data
               subPath: memgraph_data
           resources:
-            {{ - toYaml .Values.app.memgraph.initresources | nindent 12 }}
+            {{- toYaml .Values.app.memgraph.initresources | nindent 12 }}
       {{- end }}
 
       containers:
@@ -41,35 +41,35 @@ spec:
           imagePullPolicy: {{ .Values.image.memgraph.imagePullPolicy }}
           ports:
             - name: memgraph-bolt
-            - containerPort: {{ .Values.app.memgraph.boltPort }}
-            - protocol: TCP
+              containerPort: {{ .Values.app.memgraph.boltPort }}
+              protocol: TCP
           command:
             - /run_memgraph.sh
-          {{ - with .Values.app.memgraph.resources }}
+          {{- with .Values.app.memgraph.resources }}
           resources:
-            {{ - toYaml . | nindent 12 }}
-          {{ - end }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-memgraph-pvc
               mountPath: /data
               subPath: memgraph_data
           startupProbe:
-{{ toYaml .Values.memgraph.startupProbe | indent 12 }}
+{{ toYaml .Values.app.memgraph.startupProbe | indent 12 }}
           readinessProbe:
-{{ toYaml .Values.memgraph.readinessProbe | indent 12 }}
+{{ toYaml .Values.app.memgraph.readinessProbe | indent 12 }}
           livenessProbe:
-{{ toYaml .Values.memgraph.livenessProbe | indent 12 }}
+{{ toYaml .Values.app.memgraph.livenessProbe | indent 12 }}
 
       restartPolicy: Always
-      {{ with .Values.memgraph.nodeSelector }}
+      {{ with .Values.app.memgraph.nodeSelector }}
       nodeSelector:
       {{ toYaml . | nindent 8 }}
       {{ end }}
-      {{ with .Values.memgraph.affinity }}
+      {{ with .Values.app.memgraph.affinity }}
       affinity:
       {{ toYaml . | nindent 8 }}
       {{ end }}
-      {{ with .Values.memgraph.tolerations }}
+      {{ with .Values.app.memgraph.tolerations }}
       tolerations:
       {{ toYaml . | nindent 8 }}
       {{ end }}
@@ -87,4 +87,3 @@ spec:
           requests:
             storage: {{ .Values.app.memgraph.storage.size }}
 {{ end }}
-

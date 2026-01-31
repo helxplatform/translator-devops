@@ -9,7 +9,8 @@ data:
   NEO4J_QUERY_TIMEOUT: "{{ .Values.app.Neo4jQueryTimeout }}"
   {{- if .Values.graph.external }}
   NEO4J_HOST: { { .Values.externalNeo4j.hostName } }
-  NEO4J_HTTP_PORT: "{{ .Values.externalNeo4j.port }}"
+  NEO4J_HTTP_PORT: "{{ .Values.externalNeo4j.httpPort }}"
+  NEO4J_BOLT_PORT: "{{ .Values.externalNeo4j.boltPort }}"
   NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
   NEO4J_USERNAME: "{{ .Values.externalNeo4j.username }}"
    {{- else }}
@@ -27,7 +28,7 @@ data:
   MEMGRAPH_BOLT_PORT: "{{ .Values.externalMemgraph.boltPort }}"
   {{- else }}
   MEMGRAPH_HOST: {{ include "plater.fullname" . }}-memgraph-service
-  MEMGRAPH_BOLT_PORT: "{{ .Values.memgraph.boltPort }}"
+  MEMGRAPH_BOLT_PORT: "{{ .Values.app.memgraph.boltPort }}"
   {{- end }}
   {{- end }}
 

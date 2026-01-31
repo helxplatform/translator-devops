@@ -4,6 +4,9 @@
 
 replicaCount: 1
 
+graph:
+  backend: memgraph        # neo4j or memgraph
+  external: false
 
 busybox:
   image:
@@ -18,12 +21,16 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v2.1.4"
+    tag: "v2.3.0"
     imagePullPolicy: Always
   neo4j:
     repository: ghcr.io/translatorsri/plater-neo4j
     tag: "neo4j-5.26"
     imagePullPolicy: Always
+  memgraph:
+    repository: memgraph/memgraph
+    tag: "3.5.1"
+    pullPolicy: IfNotPresent
 
 nameOverride: ""
 fullnameOverride: ""
@@ -157,9 +164,42 @@ app:
         # this value should match chart installation name
         # https://automat-dev.renci.org/<chart install name>
         url: ""
+
+  memgraph:
+    storage:
+      size: 20Mi
+    service:
+      type: ClusterIP
+    boltPort: 7687
+    dataUrl: "https://stars.renci.org/var/data_services/litcoin/graphs/LitCoin_Validation_with_200_abstracts/c88f1c87993ef433/memgraph_graph.cypher"   # URL to memgraph cypher file to populate the database, if deploying internally
+    initresources:
+      requests:
+        memory: 5Gi
+        cpu: 500m
+      limits:
+        memory: 10Gi
+        cpu: 2000m
+    resources:
+      requests:
+        cpu: 2000m
+      limits:
+        ephemeral-storage: 256Mi
+        cpu: 2500m
+
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+externalNeo4j:
+  hostName: ""
+  boltPort: 7687
+  httpPort: 7474
+  username: neo4j
+  password: ""
+
+externalMemgraph:
+  hostName: ""
+  boltPort: 7687
 
 skipAttributes:
 dataUrl: ""

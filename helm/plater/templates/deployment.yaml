@@ -39,17 +39,19 @@ spec:
           command:
             - './check_neo.sh'
           env:
-          {{ if not .Values.externalNeo4j }}
+          {{- if eq .Values.graph.backend "neo4j" }}
+          {{- if not .Values.graph.external }}
             - name: NEO4J_HOST
               value: {{ include "plater.fullname" . }}-neo4j-service
             - name: NEO4J_HTTP_PORT
               value: "{{ .Values.app.neo4j.httpPort }}"
-          {{ else }}
+          {{- else }}
             - name: NEO4J_HOST
               value: {{ .Values.externalNeo4j.hostName }}
             - name: NEO4J_HTTP_PORT
-              value: "{{ .Values.externalNeo4j.port }}"
-          {{ end }}
+              value: "{{ .Values.externalNeo4j.httpPort }}"
+          {{- end }}
+          {{- end }}
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-config-files
               mountPath: /check_neo.sh
