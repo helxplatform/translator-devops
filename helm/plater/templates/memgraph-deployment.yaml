@@ -44,7 +44,7 @@ spec:
               containerPort: {{ .Values.app.memgraph.boltPort }}
               protocol: TCP
           command:
-            - /run_memgraph.sh
+            - '/run_memgraph.sh'
           {{- with .Values.app.memgraph.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
@@ -53,6 +53,9 @@ spec:
             - name: {{ include "plater.fullname" . }}-memgraph-pvc
               mountPath: /data
               subPath: memgraph_data
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /run_memgraph.sh
+              subPath: run_memgraph.sh
           startupProbe:
 {{ toYaml .Values.app.memgraph.startupProbe | indent 12 }}
           readinessProbe:

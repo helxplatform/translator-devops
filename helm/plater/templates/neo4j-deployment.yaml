@@ -88,7 +88,7 @@ spec:
           - name: NEO4J_server_jvm_additional
             value: "-XX:+ExitOnOutOfMemoryError -XX:+UseCompressedOops -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
           - name: NEO4J_db_transaction_timeout
-            value: "{{ .Values.app.Neo4jQueryTimeout }}s"
+            value: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}s"
           ports:
             - name: neo4j-http
               containerPort: 7474

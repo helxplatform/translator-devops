@@ -25,10 +25,15 @@ data:
     set -e
     
     echo "Starting Memgraph..."
-    /usr/lib/memgraph/memgraph &
+    /usr/lib/memgraph/memgraph \
+      --bolt-port=7687 \
+      --bolt-address=0.0.0.0 \
+      --log-level=INFO \
+      --also-log-to-stderr \
+      &
     MEMGRAPH_PID=$!
-    
-    echo "Waiting for Memgraph to accept connections..."
+      
+    echo "Waiting for Memgraph to accept connections...${MEMGRAPH_PID}"
     until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
       sleep 1
     done

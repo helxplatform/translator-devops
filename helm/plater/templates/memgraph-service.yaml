@@ -14,5 +14,5 @@ spec:
       name: memgraph-bolt
   selector:
     {{- include "plater.selectorLabels" . | nindent 4 }}
-    service-type: database
+    service-type: memgraph-database
 {{ end }}
