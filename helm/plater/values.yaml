@@ -30,7 +30,7 @@ image:
   memgraph:
     repository: memgraph/memgraph
     tag: "3.5.1"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
@@ -83,24 +83,24 @@ service:
   type: ClusterIP
 app:
   otel:
-    enabled: "True"
+    enabled: "False"
     jaegerHost: "http://jaeger-otel-collector"
     jaegerPort: "4317"
-  profiler_on: "True"
+  profiler_on: "False"
   gunicorn:
     worker_timeout: 3600
     num_workers: 4
   # this is the timeout used for the http request made to neo4j
   # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
-  Neo4jQueryTimeout: 1600
+  GRAPH_QUERY_TIMEOUT: 1600
   web:
     resources:
       requests:
         memory: 1Gi
         cpu: 500m
       limits:
-        memory: 3Gi
-        cpu: 2000m
+        memory: 2Gi
+        cpu: 1000m
 
   port: 8080
   automatAddress: http://automat
@@ -130,13 +130,13 @@ app:
         cpu: 500m
       limits:
         memory: 10Gi
-        cpu: 2000m
+        cpu: 1000m
     resources:
       requests:
-        cpu: 2000m
+        cpu: 1000m
       limits:
         ephemeral-storage: 256Mi
-        cpu: 2500m
+        cpu: 1500m
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
@@ -171,20 +171,22 @@ app:
     service:
       type: ClusterIP
     boltPort: 7687
-    dataUrl: "https://stars.renci.org/var/data_services/litcoin/graphs/LitCoin_Validation_with_200_abstracts/c88f1c87993ef433/memgraph_graph.cypher"   # URL to memgraph cypher file to populate the database, if deploying internally
+    dataUrl: ""   # URL to memgraph cypher file to populate the database, if deploying internally
     initresources:
+      requests:
+        memory: 1Gi
+        cpu: 500m
+      limits:
+        memory: 1Gi
+        cpu: 1000m
+    resources:
       requests:
         memory: 5Gi
         cpu: 500m
       limits:
-        memory: 10Gi
-        cpu: 2000m
-    resources:
-      requests:
-        cpu: 2000m
-      limits:
         ephemeral-storage: 256Mi
-        cpu: 2500m
+        memory: 6Gi
+        cpu: 1000m
 
   nodeSelector: {}
   tolerations: []
@@ -202,7 +204,7 @@ externalMemgraph:
   boltPort: 7687
 
 skipAttributes:
-dataUrl: ""
+dataUrl: ""   # this dataUrl is for neo4j data dump. Although it is better to move it to app.neo4j block, it could introduce breaking changes, so keep it here for now.
 metadataUrl: ""
 metaKGUrl: ""
 testingDataUrl: ""
