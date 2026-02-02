@@ -9,7 +9,7 @@ data:
   GRAPH_QUERY_TIMEOUT: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}"
   {{- if eq .Values.graph.backend "neo4j" }}
   {{- if .Values.graph.external }}
-  NEO4J_HOST: { { .Values.externalNeo4j.hostName } }
+  NEO4J_HOST: {{ .Values.externalNeo4j.hostName }}
   NEO4J_HTTP_PORT: "{{ .Values.externalNeo4j.httpPort }}"
   NEO4J_BOLT_PORT: "{{ .Values.externalNeo4j.boltPort }}"
   NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
