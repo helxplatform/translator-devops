@@ -95,9 +95,9 @@ data:
     fi
   seed_db.sh: |-
     #!/bin/bash
-    set -x
+    set -ex
     FILE=/data/neo4j.dump
-    DATADIR=/data/databases
+    NEO4J_DATA=/data
     until [ -f "$FILE" ]; do
         echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
         echo "sleeping..."
@@ -106,15 +106,15 @@ data:
     echo "$FILE found"
     echo "clearing previous database file if any..."
     # Make dir if they don't exist
-    mkdir -p /data/databases
-    mkdir -p /data/transactions
-    mkdir -p /data/dbms
+    mkdir -p ${NEO4J_DATA}/databases
+    mkdir -p ${NEO4J_DATA}/transactions
+    mkdir -p ${NEO4J_DATA}/dbms
     # clear out data from dir if they were present
-    rm -rf /data/dbms/*
-    rm -rf /data/databases/*
-    rm -rf /data/transactions/*
+    rm -rf ${NEO4J_DATA}/dbms/*
+    rm -rf ${NEO4J_DATA}/databases/*
+    rm -rf ${NEO4J_DATA}/transactions/*
     # load dump file
-    neo4j-admin database load --from-path=/data/ neo4j
+    neo4j-admin database load --from-path=/data/ neo4j --overwrite-destination=true --verbose
   dataset-desc.json: |
     {{ .Values.datasetDesc | toJson }}
   openapi-config.yaml: |-
