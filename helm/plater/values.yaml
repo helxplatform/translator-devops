@@ -114,8 +114,8 @@ app:
     # additional jvm parameters for large query strings
     jvmStackSize: 1g
     # These are jvm based values hence suffix with one of the following G, M etc...
-    heapSize:
-    pageCacheSize:
+    heapSize: 1g
+    pageCacheSize: 1g
     # It's used to request the cluster for memory capable of running neo4j per the heap and PageCache values above
     # Compute this value by summing up heapSize + pageCacheSize + (1G for os) + jvmStackSize
     # https://neo4j.com/docs/operations-manual/current/performance/memory-configuration/
@@ -134,8 +134,10 @@ app:
     resources:
       requests:
         cpu: 1000m
+        memory: 5Gi
       limits:
         ephemeral-storage: 256Mi
+        memory: 6Gi
         cpu: 1500m
   openapi_config:
   # Adds more configs to default open api config
