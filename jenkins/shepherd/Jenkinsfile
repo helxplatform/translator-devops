@@ -132,16 +132,18 @@ pipeline {
             }
             steps {
                 checkout scm
-                configFileProvider([
-                    configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
-                    ]){
-                withEnv([
-                    "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
-                ]) {
-                    sh '''
-                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
-                        /bin/bash prepare.sh
-                        '''
+                dir("helm/shepherd") {
+                    configFileProvider([
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
+                        ]){
+                    withEnv([
+                        "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                    ]) {
+                        sh '''
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            /bin/bash prepare.sh
+                            '''
+                        }
                     }
                 }
             }
