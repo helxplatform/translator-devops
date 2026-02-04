@@ -130,6 +130,9 @@ pipeline {
                     triggeredBy 'UserIdCause'
                 }
             }
+            environment {
+                APP = "shepherd"
+            }
             steps {
                 checkout scm
                 dir("helm/shepherd") {
@@ -142,6 +145,8 @@ pipeline {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
                             /bin/bash prepare.sh
+                            mv ncats-dev-values.yaml ./values-ncats.yaml
+                            /bin/bash deploy.sh
                             '''
                         }
                     }
