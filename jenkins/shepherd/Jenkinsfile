@@ -144,9 +144,8 @@ pipeline {
                     ]) {
                         sh '''
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            sed -i "s/DOCKER_IMAGE_VERSION/${BUILD_VERSION}/g" ncats-dev-values.yaml
                             /bin/bash prepare.sh
-                            mv ncats-dev-values.yaml ./values-ncats.yaml
-                            /bin/bash deploy.sh
                             '''
                         }
                     }
