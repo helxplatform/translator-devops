@@ -41,6 +41,7 @@ spec:
               subPath: init_db.sql
             - mountPath: "/var/lib/postgresql/data"
               name: {{ include "shepherd.fullname" . }}-db-volume
+              subPath: pgdata
       restartPolicy: Always
       volumes:
         - name: postgres-config
