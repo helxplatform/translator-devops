@@ -1,4 +1,10 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/COHD_Automat/8ebe848c557cff42/neo4j.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/COHD_Automat/8ebe848c557cff42/COHD_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/COHD_Automat/8ebe848c557cff42/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/COHD_Automat/8ebe848c557cff42/testing_data.json
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/COHD_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/COHD_Automat/c5dbcc677cd94de2/testing_data.json
