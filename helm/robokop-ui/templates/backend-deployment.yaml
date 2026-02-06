@@ -1,3 +1,4 @@
+{{- if .Values.backend.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,3 +49,4 @@ spec:
           volumeMounts:
             - mountPath: "/explore"
               name: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
+{{- end }}

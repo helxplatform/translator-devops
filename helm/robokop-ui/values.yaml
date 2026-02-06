@@ -2,7 +2,8 @@ imagePullSecrets:
   - name: regcred-comms
 
 backend:
-  repository: "containers.renci.org/comms/robokop-ui-backend"
+  enabled: true
+  repository: "ghcr.io/robokopu24/robokop-backend-server"
   tag: "latest"
   pullPolicy: IfNotPresent
   resources:
@@ -28,7 +29,7 @@ backend:
 
 frontend:
   repository: "ghcr.io/robokopu24/robokop-frontend"
-  tag: "latest"
+  tag: "v1.2.0"
   pullPolicy: IfNotPresent
   resources:
     requests:
