@@ -21,7 +21,7 @@ bash:
 image:
   plater:
     repository:  ghcr.io/translatorsri/plater-clustered
-    tag: "v2.3.0"
+    tag: "v2.3.1"
     imagePullPolicy: Always
   neo4j:
     repository: ghcr.io/translatorsri/plater-neo4j
@@ -106,6 +106,7 @@ app:
   automatAddress: http://automat
   bl_version: 4.2.1
   neo4j:
+    dataUrl: ""   # URL to neo4j data dump, if deploying internally
     protocol: bolt
     httpPort: 7474
     boltPort: 7687
@@ -206,7 +207,8 @@ externalMemgraph:
   boltPort: 7687
 
 skipAttributes:
-dataUrl: ""   # this dataUrl is for neo4j data dump. Although it is better to move it to app.neo4j block, it could introduce breaking changes, so keep it here for now.
+graphMetadataUrl: ""
+schemaUrl: ""
 metadataUrl: ""
 metaKGUrl: ""
 testingDataUrl: ""

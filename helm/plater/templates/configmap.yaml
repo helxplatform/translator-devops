@@ -66,6 +66,10 @@ data:
     RC=0
     
     function download() {
+      if [ -z "$2" ]; then
+        echo "SKIPPING $1 (no URL provided)"
+        return 0
+      fi
       CMD="wget -O $LOCAL_DESTINATION/$1 $2"
       echo "RUNNING: $CMD"
       $CMD
@@ -76,7 +80,9 @@ data:
     
       download metadata.json ${PLATER_METADATA_URL} && \
         download meta_knowledge_graph.json ${PLATER_METAKG_URL} && \
-        download sri_testing_data.json ${PLATER_TEST_DATA_URL}
+        download sri_testing_data.json ${PLATER_TEST_DATA_URL} && \
+        download graph_metadata.json ${PLATER_GRAPH_METADATA_URL} && \
+        download schema.json ${PLATER_SCHEMA_URL}
       RC=$?
       if [[ $RC == 0 ]]; then
         break;

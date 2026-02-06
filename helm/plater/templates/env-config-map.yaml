@@ -38,6 +38,8 @@ data:
   PLATER_TITLE: {{ .Release.Name }}
   PLATER_VERSION: {{ .Values.image.plater.tag }}
   PLATER_METADATA_URL: "{{ .Values.metadataUrl }}"
+  PLATER_GRAPH_METADATA_URL: "{{ .Values.graphMetadataUrl }}"
+  PLATER_SCHEMA_URL: "{{ .Values.schemaUrl }}"
   PLATER_METAKG_URL: "{{ .Values.metaKGUrl }}"
   PLATER_TEST_DATA_URL: "{{ .Values.testingDataUrl }}"
   PROVENANCE_TAG: "{{ .Values.datasetDesc.provenanceTag }}"
