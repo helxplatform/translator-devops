@@ -1,10 +1,10 @@
 app:
   neo4j:
-    dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/Reactome_Automat/07a8dc1cac1936b5/graph_07a8dc1cac1936b5.db.dump
+    dataUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/neo4j.dump
   memgraph:
-    dataUrl: ""
-graphMetadataUrl: ""
-schemaUrl: ""
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/Reactome_Automat/07a8dc1cac1936b5/Reactome_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/Reactome_Automat/07a8dc1cac1936b5/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/Reactome_Automat/07a8dc1cac1936b5/testing_data.json
+    dataUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/Reactome_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/Reactome_Automat/daa56e23aecd8900/testing_data.json
