@@ -67,7 +67,8 @@ data:
     
     function download() {
       if [ -z "$2" ]; then
-        echo "SKIPPING $1 (no URL provided)"
+        echo "SKIPPING $1 (no URL provided), writing empty JSON file"
+        echo '{}' > "$LOCAL_DESTINATION/$1"
         return 0
       fi
       CMD="wget -O $LOCAL_DESTINATION/$1 $2"
