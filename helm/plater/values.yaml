@@ -174,7 +174,9 @@ app:
     service:
       type: ClusterIP
     boltPort: 7687
-    dataUrl: ""   # URL to memgraph cypher file to populate the database, if deploying internally
+    # dataUrl is the base URL with _nodes.cypher, _edges.cypher, and _indexes.cypher to be appended
+    # to point to three required memgraph cypher files to populate the database, if deploying internally
+    dataUrl: ""
     initresources:
       requests:
         memory: 1Gi

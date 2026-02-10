@@ -22,15 +22,18 @@ spec:
         - name: {{ include "plater.fullname" . }}-memgraph-download-container
           image: curlimages/curl:8.16.0
           command:
-            - sh
-            - -c
-            - |
-              echo "Downloading Memgraph dump..."
-              curl -L -o /data/memgraph.cypher {{ .Values.app.memgraph.dataUrl  }}
+            - '/download_data_memgraph.sh'
+          env:
+            - name: MEMGRAPH_DATA_URL
+              value: {{ .Values.app.memgraph.dataUrl }}
+
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-memgraph-pvc
               mountPath: /data
               subPath: memgraph_data
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /download_data_memgraph.sh
+              subPath: download_data_memgraph.sh
           resources:
             {{- toYaml .Values.app.memgraph.initresources | nindent 12 }}
       {{- end }}

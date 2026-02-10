@@ -20,6 +20,15 @@ data:
     wget -O /data/neo4j.dump ${NEO4J_DATA_URL}
     touch /data/done
 
+  download_data_memgraph.sh: |-
+    #!/bin/sh
+    set -e
+    echo "Downloading Memgraph ingestion files..."
+    curl -L -o /data/memgraph_nodes.cypher ${MEMGRAPH_DATA_URL}_nodes.cypher
+    curl -L -o /data/memgraph_indexes.cypher ${MEMGRAPH_DATA_URL}_indexes.cypher
+    curl -L -o /data/memgraph_edges.cypher ${MEMGRAPH_DATA_URL}_edges.cypher
+    touch /data/done
+
   run_memgraph.sh: |-
     #!/bin/sh
     set -e
@@ -29,22 +38,27 @@ data:
       --bolt-port=7687 \
       --bolt-address=0.0.0.0 \
       --log-level=INFO \
-      --also-log-to-stderr \
-      &
+      --also-log-to-stderr &
     MEMGRAPH_PID=$!
       
-    echo "Waiting for Memgraph to accept connections...${MEMGRAPH_PID}"
+    echo "Waiting for Memgraph to accept connections..."
     until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
       sleep 1
     done
     
-    if [ -f /data/memgraph.cypher ]; then
-      echo "Loading Memgraph dump..."
-      /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph.cypher
-      echo "Memgraph dump loaded"
-    else
-      echo "No memgraph.cypher found, skipping load"
-    fi
+    echo "Loading Memgraph nodes..."
+    /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_nodes.cypher
+    echo "Waiting for storage to settle before creating indexes..."
+    sleep 5
+    echo "Creating indexes (with retry)..."
+    until /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_indexes.cypher; do
+      echo "Index creation failed, retrying..."
+      sleep 3
+    done
+    echo "Loading Memgraph edges..."
+    /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_edges.cypher
+    
+    echo "Memgraph ingestion completed."
     
     wait ${MEMGRAPH_PID}
 
