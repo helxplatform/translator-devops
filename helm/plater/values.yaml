@@ -78,6 +78,29 @@ neo4j:
   tolerations: []
   nodeSelector: {}
 
+memgraph:
+  readinessProbe:
+    tcpSocket:
+      port: 7687
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    failureThreshold: 3
+    timeoutSeconds: 10
+
+  livenessProbe:
+    tcpSocket:
+      port: 7687
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    failureThreshold: 5
+    timeoutSeconds: 10
+
+  startupProbe:
+    tcpSocket:
+      port: 7687
+    failureThreshold: 30
+    periodSeconds: 10
+    timeoutSeconds: 10
 
 service:
   type: ClusterIP

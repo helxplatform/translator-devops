@@ -33,17 +33,34 @@ data:
     #!/bin/sh
     set -e
     
-    echo "Starting Memgraph..."
+    echo "Starting Memgraph in BULK INGEST mode..."
+
+    MEMGRAPH_PID=0
+    
+    cleanup() {
+      if [ "$MEMGRAPH_PID" -ne 0 ]; then
+        echo "Stopping Memgraph..."
+        kill -TERM "$MEMGRAPH_PID"
+        wait "$MEMGRAPH_PID"
+      fi
+    }
+    trap cleanup EXIT
+
     /usr/lib/memgraph/memgraph \
       --bolt-port=7687 \
       --bolt-address=0.0.0.0 \
+      --storage-mode=IN_MEMORY_ANALYTICAL \
+      --storage-snapshot-interval-sec=0 \
+      --query-execution-timeout-sec=0 \
       --log-level=INFO \
-      --also-log-to-stderr &
+      --also-log-to-stderr \
+      --data-directory=/var/lib/memgraph &
+  
     MEMGRAPH_PID=$!
       
     echo "Waiting for Memgraph to accept connections..."
     until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
-      sleep 1
+      sleep 2
     done
     
     echo "Loading Memgraph nodes..."
@@ -53,14 +70,15 @@ data:
     echo "Creating indexes (with retry)..."
     until /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_indexes.cypher; do
       echo "Index creation failed, retrying..."
-      sleep 3
+      sleep 5
     done
     echo "Loading Memgraph edges..."
     /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_edges.cypher
     
-    echo "Memgraph ingestion completed."
-    
-    wait ${MEMGRAPH_PID}
+    echo "Forcing final snapshot..."
+    echo "STORAGE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
+
+    echo "Bulk ingestion completed successfully."
 
   health_check.sh: |-
     #!/usr/bin/env bash

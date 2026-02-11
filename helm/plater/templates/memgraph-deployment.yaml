@@ -36,16 +36,8 @@ spec:
               subPath: download_data_memgraph.sh
           resources:
             {{- toYaml .Values.app.memgraph.initresources | nindent 12 }}
-      {{- end }}
-
-      containers:
-        - name: {{ include "plater.fullname" . }}-memgraph-container
+        - name: {{ include "plater.fullname" . }}-memgraph-bulk-ingest-container
           image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag }}"
-          imagePullPolicy: {{ .Values.image.memgraph.imagePullPolicy }}
-          ports:
-            - name: memgraph-bolt
-              containerPort: {{ .Values.app.memgraph.boltPort }}
-              protocol: TCP
           command:
             - '/run_memgraph.sh'
           {{- with .Values.app.memgraph.resources }}
@@ -59,12 +51,31 @@ spec:
             - name: {{ include "plater.fullname" . }}-scripts
               mountPath: /run_memgraph.sh
               subPath: run_memgraph.sh
+      {{- end }}
+
+      containers:
+        - name: {{ include "plater.fullname" . }}-memgraph-container
+          image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag }}"
+          imagePullPolicy: {{ .Values.image.memgraph.imagePullPolicy }}
+          ports:
+            - name: memgraph-bolt
+              containerPort: {{ .Values.app.memgraph.boltPort }}
+              protocol: TCP
+          {{- with .Values.app.memgraph.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ include "plater.fullname" . }}-memgraph-pvc
+              mountPath: /data
+              subPath: memgraph_data
+
           startupProbe:
-{{ toYaml .Values.app.memgraph.startupProbe | indent 12 }}
+{{ toYaml .Values.memgraph.startupProbe | indent 12 }}
           readinessProbe:
-{{ toYaml .Values.app.memgraph.readinessProbe | indent 12 }}
+{{ toYaml .Values.memgraph.readinessProbe | indent 12 }}
           livenessProbe:
-{{ toYaml .Values.app.memgraph.livenessProbe | indent 12 }}
+{{ toYaml .Values.memgraph.livenessProbe | indent 12 }}
 
       restartPolicy: Always
       {{ with .Values.app.memgraph.nodeSelector }}
