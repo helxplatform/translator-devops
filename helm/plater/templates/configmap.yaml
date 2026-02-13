@@ -33,6 +33,19 @@ data:
     #!/bin/sh
     set -e
     
+    DATA_DIR="/data/memgraph"
+    
+    # If snapshot already exists → skip ingestion
+    if [ -d "$DATA_DIR/snapshots" ] && [ "$(ls -A $DATA_DIR/snapshots 2>/dev/null)" ]; then
+      echo "Existing snapshot detected. Starting Memgraph in serving mode..."
+      exec /usr/lib/memgraph/memgraph \
+        --bolt-port=7687 \
+        --bolt-address=0.0.0.0 \
+        --storage-mode=IN_MEMORY_TRANSACTIONAL \
+        --storage-wal-enabled=true \
+        --data-directory="$DATA_DIR"
+    fi
+
     echo "Starting Memgraph in BULK INGEST mode..."
 
     MEMGRAPH_PID=0
@@ -52,9 +65,10 @@ data:
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
       --query-execution-timeout-sec=0 \
-      --log-level=INFO \
+      --storage-wal-enabled=false \
+      --log-level=WARNING \
       --also-log-to-stderr \
-      --data-directory=/var/lib/memgraph &
+      --data-directory="$DATA_DIR" &
   
     MEMGRAPH_PID=$!
       
@@ -63,22 +77,34 @@ data:
       sleep 2
     done
     
-    echo "Loading Memgraph nodes..."
+    echo "Memgraph is ready. Loading Memgraph nodes..."
     /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_nodes.cypher
     echo "Waiting for storage to settle before creating indexes..."
     sleep 5
-    echo "Creating indexes (with retry)..."
+    echo "All nodes are loaded. Creating indexes (with retry)..."
     until /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_indexes.cypher; do
-      echo "Index creation failed, retrying..."
+      echo "Index creation failed, retrying in 5s..."
       sleep 5
     done
-    echo "Loading Memgraph edges..."
+    
+    echo "Loading edges..."
     /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_edges.cypher
     
-    echo "Forcing final snapshot..."
+    echo "Edge ingestion done. Forcing final snapshot..."
     echo "STORAGE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
-
     echo "Bulk ingestion completed successfully."
+    
+    echo "Switching to serving mode..."
+
+    kill -TERM "$MEMGRAPH_PID"
+    wait "$MEMGRAPH_PID"
+    
+    exec /usr/lib/memgraph/memgraph \
+      --bolt-port=7687 \
+      --bolt-address=0.0.0.0 \
+      --storage-mode=IN_MEMORY_TRANSACTIONAL \
+      --storage-wal-enabled=true \
+      --data-directory="$DATA_DIR"
 
   health_check.sh: |-
     #!/usr/bin/env bash

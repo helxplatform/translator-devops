@@ -36,27 +36,14 @@ spec:
               subPath: download_data_memgraph.sh
           resources:
             {{- toYaml .Values.app.memgraph.initresources | nindent 12 }}
-        - name: {{ include "plater.fullname" . }}-memgraph-bulk-ingest-container
-          image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag }}"
-          command:
-            - '/run_memgraph.sh'
-          {{- with .Values.app.memgraph.resources }}
-          resources:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: {{ include "plater.fullname" . }}-memgraph-pvc
-              mountPath: /data
-              subPath: memgraph_data
-            - name: {{ include "plater.fullname" . }}-scripts
-              mountPath: /run_memgraph.sh
-              subPath: run_memgraph.sh
       {{- end }}
 
       containers:
         - name: {{ include "plater.fullname" . }}-memgraph-container
           image: "{{ .Values.image.memgraph.repository }}:{{ .Values.image.memgraph.tag }}"
           imagePullPolicy: {{ .Values.image.memgraph.imagePullPolicy }}
+          command:
+            - '/run_memgraph.sh'
           ports:
             - name: memgraph-bolt
               containerPort: {{ .Values.app.memgraph.boltPort }}
@@ -69,7 +56,9 @@ spec:
             - name: {{ include "plater.fullname" . }}-memgraph-pvc
               mountPath: /data
               subPath: memgraph_data
-
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /run_memgraph.sh
+              subPath: run_memgraph.sh
           startupProbe:
 {{ toYaml .Values.memgraph.startupProbe | indent 12 }}
           readinessProbe:
