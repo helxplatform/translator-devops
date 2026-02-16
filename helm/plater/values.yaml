@@ -200,13 +200,18 @@ app:
     # dataUrl is the base URL with _nodes.cypher, _edges.cypher, and _indexes.cypher to be appended
     # to point to three required memgraph cypher files to populate the database, if deploying internally
     dataUrl: ""
+    MAX_PARALLEL: 2  # a proper value should be about 0.8 * requested_cpu_limit
+    # BATCH_SIZE controls how many CSV edge rows are processed per transaction with memory usage roughly scale
+    # with BATCH_SIZE × MAX_PARALLEL × average_edge_size
+    # Increasing BATCH_SIZE reduces transaction overhead but increases peak memory usage.
+    BATCH_SIZE: 2000
     initresources:
       requests:
         memory: 1Gi
         cpu: 500m
       limits:
         memory: 1Gi
-        cpu: 1000m
+        cpu: 3000m
     resources:
       requests:
         memory: 5Gi

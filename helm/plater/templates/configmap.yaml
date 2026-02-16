@@ -23,19 +23,34 @@ data:
   download_data_memgraph.sh: |-
     #!/bin/sh
     set -e
-    echo "Downloading Memgraph ingestion files..."
-    curl -L -o /data/memgraph_nodes.cypher ${MEMGRAPH_DATA_URL}_nodes.cypher
-    curl -L -o /data/memgraph_indexes.cypher ${MEMGRAPH_DATA_URL}_indexes.cypher
-    curl -L -o /data/memgraph_edges.cypher ${MEMGRAPH_DATA_URL}_edges.cypher
-    touch /data/done
+    DATA_DIR="/data/memgraph"
+    
+    # If snapshot already exists, skip ingestion
+    if [ ! -f /data/done ]; then      
+      echo "Downloading Memgraph ingestion files..."
+      curl -L -o /data/memgraph_nodes.cypher ${MEMGRAPH_DATA_URL}_nodes.cypher
+      curl -L -o /data/memgraph_indexes.cypher ${MEMGRAPH_DATA_URL}_indexes.cypher
+      
+      curl -L -o /data/edges_manifest.txt "${MEMGRAPH_DATA_URL}_edges_manifest.txt"
+      echo "Downloading all edge files in parallel..."
+      while IFS= read -r filename; do
+        curl -L -o "/data/${filename}" "${MEMGRAPH_DATA_URL}_${filename}" &
+      done < /data/edges_manifest.txt
+      wait
+      touch /data/done
+    else
+      echo "Files have been previously downloaded already"
+    fi
 
   run_memgraph.sh: |-
     #!/bin/sh
     set -e
     
     DATA_DIR="/data/memgraph"
+    MAX_PARALLEL=${MAX_PARALLEL}
+    BATCH_SIZE=${BATCH_SIZE}
     
-    # If snapshot already exists → skip ingestion
+    # If snapshot already exists, skip ingestion
     if [ -d "$DATA_DIR/snapshots" ] && [ "$(ls -A $DATA_DIR/snapshots 2>/dev/null)" ]; then
       echo "Existing snapshot detected. Starting Memgraph in serving mode..."
       exec /usr/lib/memgraph/memgraph \
@@ -48,17 +63,6 @@ data:
 
     echo "Starting Memgraph in BULK INGEST mode..."
 
-    MEMGRAPH_PID=0
-    
-    cleanup() {
-      if [ "$MEMGRAPH_PID" -ne 0 ]; then
-        echo "Stopping Memgraph..."
-        kill -TERM "$MEMGRAPH_PID"
-        wait "$MEMGRAPH_PID"
-      fi
-    }
-    trap cleanup EXIT
-
     /usr/lib/memgraph/memgraph \
       --bolt-port=7687 \
       --bolt-address=0.0.0.0 \
@@ -66,8 +70,8 @@ data:
       --storage-snapshot-interval-sec=0 \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
-      --log-level=WARNING \
-      --also-log-to-stderr \
+      --log-level=ERROR \
+      --memory-limit=0 \
       --data-directory="$DATA_DIR" &
   
     MEMGRAPH_PID=$!
@@ -77,8 +81,9 @@ data:
       sleep 2
     done
     
-    echo "Memgraph is ready. Loading Memgraph nodes..."
+    echo "Loading Memgraph nodes..."
     /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_nodes.cypher
+    
     echo "Waiting for storage to settle before creating indexes..."
     sleep 5
     echo "All nodes are loaded. Creating indexes (with retry)..."
@@ -87,11 +92,57 @@ data:
       sleep 5
     done
     
-    echo "Loading edges..."
-    /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_edges.cypher
+    echo "Loading edges in parallel..."
     
-    echo "Edge ingestion done. Forcing final snapshot..."
-    echo "STORAGE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
+    load_edge_file() {
+    filename="$1"
+    base=$(basename "$filename" .csv)
+    relpart=$(echo "$base" | sed 's/^edges_//')
+    reltype=$(echo "$relpart" | sed 's/_/:/')
+    echo "Starting $filename as relationship type $reltype"
+
+    printf '
+    LOAD CSV FROM "/data/%s"
+    WITH HEADER DELIMITER "\t" AS row
+    CALL {
+      WITH row
+      MATCH (a:`biolink:NamedThing` {id: row.subject}),
+            (b:`biolink:NamedThing` {id: row.object})
+      CREATE (a)-[r:`%s`]->(b)
+      SET r += row
+      SET r.category = split(row.category, "\u001F")
+      FOREACH (_ IN CASE WHEN row.publications <> "" THEN [1] ELSE [] END |
+        SET r.publications = split(row.publications, "\u001F")
+      )
+      FOREACH (_ IN CASE WHEN row.has_evidence <> "" THEN [1] ELSE [] END |
+        SET r.has_evidence = split(row.has_evidence, "\u001F")
+      )
+      FOREACH (_ IN CASE WHEN row.anatomical_context_qualifier <> "" THEN [1] ELSE [] END |
+        SET r.anatomical_context_qualifier = split(row.anatomical_context_qualifier, "\u001F")
+      )
+      REMOVE r.subject, r.object, r.predicate
+    } IN TRANSACTIONS OF %s ROWS;
+    ' "$filename" "$reltype" "$BATCH_SIZE" \
+      | /usr/bin/mgconsole --host localhost --port 7687
+  
+      echo "Finished ${filename}"
+    }
+
+    echo "Loading edges in parallel..."
+
+    while IFS= read -r filename; do
+      load_edge_file "$filename" &
+  
+      # Dynamic throttling
+      while [ "$(jobs -pr | wc -l)" -ge "$MAX_PARALLEL" ]; do
+        sleep 1
+      done
+    done < /data/edges_manifest.txt
+  
+    wait
+    
+    echo "Creating persistent snapshot (this may take a while for large graph)..."
+    echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
     echo "Bulk ingestion completed successfully."
     
     echo "Switching to serving mode..."

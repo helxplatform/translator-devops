@@ -30,6 +30,8 @@ data:
   {{- else }}
   MEMGRAPH_HOST: {{ include "plater.fullname" . }}-memgraph-service
   MEMGRAPH_BOLT_PORT: "{{ .Values.app.memgraph.boltPort }}"
+  MAX_PARALLEL: "{{ .Values.app.memgraph.MAX_PARALLEL }}"
+  BATCH_SIZE: "{{ .Values.app.memgraph.BATCH_SIZE }}"
   {{- end }}
   {{- end }}
 
