@@ -49,6 +49,7 @@ data:
     DATA_DIR="/data/memgraph"
     MAX_PARALLEL=${MAX_PARALLEL}
     BATCH_SIZE=${BATCH_SIZE}
+    QUERY_TIMEOUT=${GRAPH_QUERY_TIMEOUT}
     
     # If snapshot already exists, skip ingestion
     if [ -d "$DATA_DIR/snapshots" ] && [ "$(ls -A $DATA_DIR/snapshots 2>/dev/null)" ]; then
@@ -58,6 +59,7 @@ data:
         --bolt-address=0.0.0.0 \
         --storage-mode=IN_MEMORY_TRANSACTIONAL \
         --storage-wal-enabled=true \
+        --query-execution-timeout-sec=$QUERY_TIMEOUT \
         --data-directory="$DATA_DIR"
     fi
 
@@ -155,6 +157,7 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_TRANSACTIONAL \
       --storage-wal-enabled=true \
+      --query-execution-timeout-sec=$QUERY_TIMEOUT \
       --data-directory="$DATA_DIR"
 
   health_check.sh: |-
