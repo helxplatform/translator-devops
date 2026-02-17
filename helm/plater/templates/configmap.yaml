@@ -43,13 +43,15 @@ data:
     fi
 
   run_memgraph.sh: |-
-    #!/bin/sh
-    set -e
+    #!/bin/bash
+    set -euo pipefail
     
     DATA_DIR="/data/memgraph"
-    MAX_PARALLEL=${MAX_PARALLEL}
     BATCH_SIZE=${BATCH_SIZE}
     QUERY_TIMEOUT=${GRAPH_QUERY_TIMEOUT}
+    
+    echo "Cleaning stream metadata directory..."
+    rm -rf $DATA_DIR/streams/*
     
     # If snapshot already exists, skip ingestion
     if [ -d "$DATA_DIR/snapshots" ] && [ "$(ls -A $DATA_DIR/snapshots 2>/dev/null)" ]; then
@@ -72,7 +74,7 @@ data:
       --storage-snapshot-interval-sec=0 \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
-      --log-level=ERROR \
+      --log-level=TRACE \
       --memory-limit=0 \
       --data-directory="$DATA_DIR" &
   
@@ -94,16 +96,15 @@ data:
       sleep 5
     done
     
-    echo "Loading edges in parallel..."
-    
     load_edge_file() {
     filename="$1"
     base=$(basename "$filename" .csv)
+    marker="/tmp/edge_${base}"
     relpart=$(echo "$base" | sed 's/^edges_//')
     reltype=$(echo "$relpart" | sed 's/_/:/')
     echo "Starting $filename as relationship type $reltype"
 
-    printf '
+    if printf '
     LOAD CSV FROM "/data/%s"
     WITH HEADER DELIMITER "\t" AS row
     CALL {
@@ -126,26 +127,81 @@ data:
     } IN TRANSACTIONS OF %s ROWS;
     ' "$filename" "$reltype" "$BATCH_SIZE" \
       | /usr/bin/mgconsole --host localhost --port 7687
-  
+    then
       echo "Finished ${filename}"
+      touch "${marker}.done"
+    else
+      echo "FAILED $filename"
+      touch "${marker}.failed"
+    fi
     }
 
     echo "Loading edges in parallel..."
 
-    while IFS= read -r filename; do
-      load_edge_file "$filename" &
-  
-      # Dynamic throttling
-      while [ "$(jobs -pr | wc -l)" -ge "$MAX_PARALLEL" ]; do
-        sleep 1
-      done
-    done < /data/edges_manifest.txt
-  
-    wait
+    rm -f /tmp/edge_*.done /tmp/edge_*.failed
     
+    while IFS= read -r filename; do
+      load_edge_file "$filename" &      
+    done < /data/edges_manifest.txt
+    
+    expected=$(wc -l < /data/edges_manifest.txt)
+    echo "Waiting for $expected edge files to complete..."
+    
+    while true; do
+      done_count=$(find /tmp -maxdepth 1 -name 'edge_*.done' | wc -l)
+      fail_count=$(find /tmp -maxdepth 1 -name 'edge_*.failed' | wc -l)
+      total=$((done_count + fail_count))
+    
+      echo "Completed: $done_count, Failed: $fail_count, Total: $total / $expected"
+    
+      if [ "$total" -eq "$expected" ]; then
+        break
+      fi
+    
+      sleep 5
+    done
+    
+    if [ "$fail_count" -ne 0 ]; then
+      echo "One or more edge loads failed. Aborting."
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      exit 1
+    fi
+    
+    echo "All edge loads completed successfully."
+
+    echo "Waiting for Memgraph to finish ingestion transactions..."
+
+    while true; do
+      active=$(echo "SHOW TRANSACTIONS;" | \
+        /usr/bin/mgconsole --host localhost --port 7687 | \
+        grep -c "transaction_id")
+    
+      if [ "$active" -le 1 ]; then
+        break
+      fi
+    
+      echo "Still $active active transactions..."
+      sleep 5
+    done
+    
+    echo "Checking for active transactions..."
+    echo "SHOW TRANSACTIONS;" | /usr/bin/mgconsole --host localhost --port 7687
+    
+    echo "Checking storage info before snapshot..."
+    echo "SHOW STORAGE INFO;" | /usr/bin/mgconsole --host localhost --port 7687
     echo "Creating persistent snapshot (this may take a while for large graph)..."
     echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
-    echo "Bulk ingestion completed successfully."
+    
+    SNAP_STATUS=$?
+    echo "Snapshot exit code: $SNAP_STATUS"
+  
+    if [ "$SNAP_STATUS" -ne 0 ]; then
+      echo "Snapshot failed!"
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      exit 1
+    fi
     
     echo "Switching to serving mode..."
 

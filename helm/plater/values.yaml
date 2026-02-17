@@ -115,7 +115,7 @@ app:
     num_workers: 4
   # this is the timeout used for the http request made to neo4j
   # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
-  GRAPH_QUERY_TIMEOUT: 1600
+  GRAPH_QUERY_TIMEOUT: 3600
   web:
     resources:
       requests:
@@ -200,9 +200,8 @@ app:
     # dataUrl is the base URL with _nodes.cypher, _edges.cypher, and _indexes.cypher to be appended
     # to point to three required memgraph cypher files to populate the database, if deploying internally
     dataUrl: ""
-    MAX_PARALLEL: 2  # a proper value should be about 0.8 * requested_cpu_limit
     # BATCH_SIZE controls how many CSV edge rows are processed per transaction with memory usage roughly scale
-    # with BATCH_SIZE × MAX_PARALLEL × average_edge_size
+    # with BATCH_SIZE × num_of_csv_files × average_edge_size
     # Increasing BATCH_SIZE reduces transaction overhead but increases peak memory usage.
     BATCH_SIZE: 2000
     initresources:
