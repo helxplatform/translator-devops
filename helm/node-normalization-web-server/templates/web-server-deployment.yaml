@@ -46,6 +46,8 @@ spec:
               value: "{{ .Values.data.babelVersion }}"
             - name: "BABEL_VERSION_URL"
               value: "{{ .Values.data.babelVersionURL }}"
+            - name: "BIOLINK_MODEL_TAG"
+              value: "{{ .Values.data.biolinkModelTag }}"
             - name: "SERVER_ROOT"
               value: "{{ .Values.web.serverHostName }}"
             - name: "MATURITY_VALUE"
