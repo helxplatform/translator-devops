@@ -60,8 +60,7 @@ data:
         --bolt-port=7687 \
         --bolt-address=0.0.0.0 \
         --storage-mode=IN_MEMORY_TRANSACTIONAL \
-        --storage-wal-enabled=true \
-        --storage-snapshot-retention-count=1 \
+        --storage-wal-enabled=false \
         --storage-snapshot-interval-sec=0 \
         --query-execution-timeout-sec=$QUERY_TIMEOUT \
         --data-directory="$DATA_DIR"
@@ -214,8 +213,7 @@ data:
       --bolt-port=7687 \
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_TRANSACTIONAL \
-      --storage-wal-enabled=true \
-      --storage-snapshot-retention-count=1 \
+      --storage-wal-enabled=false \
       --storage-snapshot-interval-sec=0 \
       --log-level=ERROR \
       --query-execution-timeout-sec=$QUERY_TIMEOUT \
