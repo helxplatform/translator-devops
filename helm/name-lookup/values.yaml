@@ -20,6 +20,7 @@ forceRun: false
 data:
   babelVersion: 2025nov4
   babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2025nov4.md
+  biolinkModelTag: "v4.2.6-rc5"
 
 downloader:
   image:
