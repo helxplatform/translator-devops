@@ -20,7 +20,7 @@ version: 0.4.3
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-# 
+#
 # NodeNorm versions are based on the version of the NodeNorm Docker image concatenated with the
 # Babel release date.
-appVersion: 2.3.28_2025nov4
+appVersion: 2.4.1_2025sep1
