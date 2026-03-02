@@ -29,6 +29,9 @@ spec:
       - name: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
         persistentVolumeClaim:
           claimName: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
+      - name: {{ include "robokop-ui.fullname" .}}-graph-metadata-pvc
+        persistentVolumeClaim:
+          claimName: {{ include "robokop-ui.fullname" .}}-graph-metadata-pvc
       containers:
         - name: {{ .Chart.Name }}-robokop-ui-backend
           {{- with .Values.backend.env }}
@@ -49,4 +52,6 @@ spec:
           volumeMounts:
             - mountPath: "/explore"
               name: {{ include "robokop-ui.fullname" .}}-explore-database-pvc
+            - mountPath: "/graph-metadata"
+              name: {{ include "robokop-ui.fullname" .}}-graph-metadata-pvc
 {{- end }}
