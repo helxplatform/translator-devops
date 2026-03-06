@@ -73,6 +73,7 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
+      --storage-snapshot-on-exit=false \ 
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
@@ -150,6 +151,7 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
+      --storage-snapshot-on-exit=false \ 
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
@@ -175,6 +177,7 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
+      --storage-snapshot-on-exit=false \ 
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
@@ -288,6 +291,10 @@ data:
     
     echo "Checking storage info before snapshot..."
     echo "SHOW STORAGE INFO;" | /usr/bin/mgconsole --host localhost --port 7687
+    
+    echo "Cleaning up intermediate snapshots..."
+    rm -f "$DATA_DIR/snapshots"/*
+    
     echo "Creating persistent snapshot (this may take a while for large graph)..."
     echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
     
@@ -312,6 +319,7 @@ data:
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-wal-enabled=false \
       --storage-snapshot-interval-sec=0 \
+      --storage-snapshot-on-exit=false \
       --log-level=ERROR \
       --query-execution-timeout-sec=$QUERY_TIMEOUT \
       --data-directory="$DATA_DIR"
