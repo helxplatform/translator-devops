@@ -28,8 +28,8 @@ image:
     tag: "neo4j-5.26"
     imagePullPolicy: Always
   memgraph:
-    repository: memgraph/memgraph
-    tag: "3.5.1"
+    repository: renci/memgraph
+    tag: "3.5.2"
     pullPolicy: Always
 
 nameOverride: ""
@@ -111,11 +111,11 @@ app:
     jaegerPort: "4317"
   profiler_on: "False"
   gunicorn:
-    worker_timeout: 3600
+    worker_timeout: 10800
     num_workers: 4
   # this is the timeout used for the http request made to neo4j
   # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
-  GRAPH_QUERY_TIMEOUT: 3600
+  GRAPH_QUERY_TIMEOUT: 10800
   web:
     resources:
       requests:

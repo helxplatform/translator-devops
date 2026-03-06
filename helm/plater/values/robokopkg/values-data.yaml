@@ -2,7 +2,7 @@ app:
   neo4j:
     dataUrl: https://stars.renci.org/var/plater/graphs/RobokopKG/f10f782cda309e98/neo4j.dump
   memgraph:
-    dataUrl: https://stars.renci.org/var/plater/graphs/RobokopKG/f10f782cda309e98/memgraph.cypher
+    dataUrl: https://stars.renci.org/var/plater/graphs/RobokopKG/f10f782cda309e98/memgraph/memgraph_graph
 graphMetadataUrl: https://stars.renci.org/var/plater/graphs/RobokopKG/f10f782cda309e98/graph-metadata.json
 schemaUrl: https://stars.renci.org/var/plater/graphs/RobokopKG/f10f782cda309e98/schema.json
 metadataUrl: https://stars.renci.org/var/plater/graphs/RobokopKG/f10f782cda309e98/RobokopKG.meta.json
