@@ -34,6 +34,9 @@ data:
       curl -L -o /data/edges_manifest.txt "${MEMGRAPH_DATA_URL}_edges_manifest.txt"
       echo "Downloading all edge files in parallel..."
       while IFS= read -r filename; do
+        # Remove any prefix before "edges_biolink"
+        filename="${filename#*edges_biolink}"
+        filename="edges_biolink${filename}"
         curl -L -o "/data/${filename}" "${MEMGRAPH_DATA_URL}_${filename}" &
       done < /data/edges_manifest.txt
       wait
@@ -73,16 +76,17 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \ 
+      --storage-snapshot-on-exit=false \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
       --memory-limit=0 \
       --query-modules-directory=/usr/lib/memgraph/query_modules \
-      --data-directory="$DATA_DIR" &  
+      --data-directory="$DATA_DIR" \
+      >> /var/log/memgraph/memgraph_ingest.log 2>&1 &  
   
     MEMGRAPH_PID=$!
-      
+    echo "Memgraph PID: $MEMGRAPH_PID"  
     echo "Waiting for Memgraph to accept connections..."
     until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
       sleep 2
@@ -151,14 +155,15 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \ 
+      --storage-snapshot-on-exit=false \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
       --memory-limit=0 \
       --query-modules-directory=/usr/lib/memgraph/query_modules \
       --data-directory="$DATA_DIR" \
-      --init-data-file=/tmp/assign_labels.cypher &
+      --init-data-file=/tmp/assign_labels.cypher 
+      >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
     MEMGRAPH_PID=$!
     echo "Waiting for Memgraph to accept connections..."
     until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
@@ -177,13 +182,14 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \ 
+      --storage-snapshot-on-exit=false \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
       --memory-limit=0 \
       --query-modules-directory=/usr/lib/memgraph/query_modules \
-      --data-directory="$DATA_DIR" &
+      --data-directory="$DATA_DIR" 
+      >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
     MEMGRAPH_PID=$!
     
     echo "Waiting for Memgraph to accept connections..."
