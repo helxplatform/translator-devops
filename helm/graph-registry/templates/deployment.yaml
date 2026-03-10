@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "graph-registry.fullname" . }}
+  labels:
+    {{- include "graph-registry.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "graph-registry.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "graph-registry.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "graph-registry.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.port }}
+              protocol: TCP
+          env:
+            - name: SHARED_DIR
+              value: {{ .Values.app.sharedDir | quote }}
+            - name: APP_PORT
+              value: {{ .Values.app.port | quote }}
+            {{- if .Values.nfs.enabled }}
+            - name: NFS_MOUNT_PATH
+              value: {{ .Values.nfs.mountPath | quote }}
+            {{- end }}
+            {{- with .Values.app.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if or .Values.persistence.enabled .Values.nfs.enabled }}
+          volumeMounts:
+            {{- if .Values.persistence.enabled }}
+            - name: shared-data
+              mountPath: {{ .Values.app.sharedDir }}
+            {{- end }}
+            {{- if .Values.nfs.enabled }}
+            - name: nfs
+              mountPath: {{ .Values.nfs.mountPath }}
+              {{- if .Values.nfs.readOnly }}
+              readOnly: true
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- if or .Values.persistence.enabled .Values.nfs.enabled }}
+      volumes:
+        {{- if .Values.persistence.enabled }}
+        - name: shared-data
+          persistentVolumeClaim:
+            claimName: {{ include "graph-registry.pvcName" . }}
+        {{- end }}
+        {{- if .Values.nfs.enabled }}
+        - name: nfs
+          nfs:
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path }}
+            {{- if .Values.nfs.readOnly }}
+            readOnly: true
+            {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
