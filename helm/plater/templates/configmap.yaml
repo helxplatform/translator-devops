@@ -34,10 +34,11 @@ data:
       curl -L -o /data/edges_manifest.txt "${MEMGRAPH_DATA_URL}_edges_manifest.txt"
       echo "Downloading all edge files in parallel..."
       while IFS= read -r filename; do
+        ori_filename="$filename"
         # Remove any prefix before "edges_biolink"
         filename="${filename#*edges_biolink}"
         filename="edges_biolink${filename}"
-        curl -L -o "/data/${filename}" "${MEMGRAPH_DATA_URL}_${filename}" &
+        curl -L -o "/data/${ori_filename}" "${MEMGRAPH_DATA_URL}_${filename}" &
       done < /data/edges_manifest.txt
       wait
       touch /data/done
@@ -55,8 +56,8 @@ data:
     echo "Cleaning stream metadata directory..."
     rm -rf $DATA_DIR/streams/*
     
-    # If snapshot already exists, skip ingestion
-    if [ -d "$DATA_DIR/snapshots" ] && [ "$(ls -A $DATA_DIR/snapshots 2>/dev/null)" ]; then
+    # If final snapshot exists (post-edge-loading), skip ingestion and go straight to serving mode  
+    if [ -f "$DATA_DIR/.ingestion_complete" ]; then
       echo "Existing snapshot detected. Starting Memgraph in serving mode..."
       exec /usr/lib/memgraph/memgraph \
         --bolt-port=7687 \
@@ -69,81 +70,86 @@ data:
         --data-directory="$DATA_DIR"
     fi
 
-    echo "Starting Memgraph in BULK INGEST mode..."
-
-    /usr/lib/memgraph/memgraph \
-      --bolt-port=7687 \
-      --bolt-address=0.0.0.0 \
-      --storage-mode=IN_MEMORY_ANALYTICAL \
-      --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \
-      --query-execution-timeout-sec=0 \
-      --storage-wal-enabled=false \
-      --log-level=WARNING \
-      --memory-limit=0 \
-      --query-modules-directory=/usr/lib/memgraph/query_modules \
-      --data-directory="$DATA_DIR" \
-      >> /var/log/memgraph/memgraph_ingest.log 2>&1 &  
+    # If nodes are loaded but label assignment not done, skip to label assignment
+    if [ -f "$DATA_DIR/.nodes_loaded" ]; then
+      echo "Nodes already loaded. Skipping to label assignment..."
+    else
+      echo "Starting Memgraph in BULK INGEST mode..."
+      /usr/lib/memgraph/memgraph \
+        --bolt-port=7687 \
+        --bolt-address=0.0.0.0 \
+        --storage-mode=IN_MEMORY_ANALYTICAL \
+        --storage-snapshot-interval-sec=0 \
+        --query-execution-timeout-sec=0 \
+        --storage-wal-enabled=false \
+        --log-level=WARNING \
+        --memory-limit=0 \
+        --query-modules-directory=/usr/lib/memgraph/query_modules \
+        --data-directory="$DATA_DIR" \
+        >> /var/log/memgraph/memgraph_ingest.log 2>&1 &  
+    
+      MEMGRAPH_PID=$!
+      echo "Memgraph PID: $MEMGRAPH_PID"  
+      echo "Waiting for Memgraph to accept connections..."
+      until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+        sleep 2
+      done
+      echo "Bolt is ready."
+      echo "Loading Memgraph nodes in transactions of $BATCH_SIZE..."
   
-    MEMGRAPH_PID=$!
-    echo "Memgraph PID: $MEMGRAPH_PID"  
-    echo "Waiting for Memgraph to accept connections..."
-    until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
-      sleep 2
-    done
-    echo "Bolt is ready."
-    echo "Loading Memgraph nodes in transactions of $BATCH_SIZE..."
-
-    DELIM=$'\x1F'
-    printf "
-    CALL {
-      LOAD CSV FROM \"/data/memgraph_nodes.csv\"
-      WITH HEADER DELIMITER \"\t\" AS row
-    
-      CREATE (n)
-    
-      SET n.id = row.id,
-      n.name = row.name,
-      n.description = row.description,
-      n.information_content =
-        CASE WHEN row.information_content <> \"\"
-             THEN toFloat(row.information_content)
-             ELSE NULL END,
-      n.chembl_natural_product = row.chembl_natural_product = \"true\",
-      n.chembl_black_box_warning = row.chembl_black_box_warning = \"true\",
-      n.chembl_prodrug = row.chembl_prodrug = \"true\"
-   
-      SET n.equivalent_identifiers =
-          CASE WHEN row.equivalent_identifiers <> \"\"
-               THEN split(row.equivalent_identifiers, \"$DELIM\")
+      DELIM=$'\x1F'
+      printf "
+      CALL {
+        LOAD CSV FROM \"/data/memgraph_nodes.csv\"
+        WITH HEADER DELIMITER \"\t\" AS row
+      
+        CREATE (n)
+      
+        SET n.id = row.id,
+        n.name = row.name,
+        n.description = row.description,
+        n.information_content =
+          CASE WHEN row.information_content <> \"\"
+               THEN toFloat(row.information_content)
+               ELSE NULL END,
+        n.chembl_natural_product = row.chembl_natural_product = \"true\",
+        n.chembl_black_box_warning = row.chembl_black_box_warning = \"true\",
+        n.chembl_prodrug = row.chembl_prodrug = \"true\"
+     
+        SET n.equivalent_identifiers =
+            CASE WHEN row.equivalent_identifiers <> \"\"
+                 THEN split(row.equivalent_identifiers, \"$DELIM\")
+                 ELSE [] END,
+        n.synonym =
+          CASE WHEN row.synonym <> \"\"
+               THEN split(row.synonym, \"$DELIM\")
                ELSE [] END,
-      n.synonym =
-        CASE WHEN row.synonym <> \"\"
-             THEN split(row.synonym, \"$DELIM\")
-             ELSE [] END,
-      n.xref =
-        CASE WHEN row.xref <> \"\"
-             THEN split(row.xref, \"$DELIM\")
-             ELSE [] END,
-      n.in_taxon =
-        CASE WHEN row.in_taxon <> \"\"
-             THEN split(row.in_taxon, \"$DELIM\")
-             ELSE [] END,
-      n.category =
-        CASE WHEN trim(row.category) <> \"\" THEN split(row.category, \"$DELIM\") ELSE [] END
-    
-      RETURN 1 AS _
-    } IN TRANSACTIONS OF %s ROWS;
-    " "$BATCH_SIZE" \
-    | /usr/bin/mgconsole --host localhost --port 7687
-    
-    echo "Loading nodes finished."
-    
-    echo "Stopping Memgraph to restart for label assignment..."
-    kill -TERM "$MEMGRAPH_PID"
-    wait "$MEMGRAPH_PID"
-    echo "Memgraph stopped."
-    
+        n.xref =
+          CASE WHEN row.xref <> \"\"
+               THEN split(row.xref, \"$DELIM\")
+               ELSE [] END,
+        n.in_taxon =
+          CASE WHEN row.in_taxon <> \"\"
+               THEN split(row.in_taxon, \"$DELIM\")
+               ELSE [] END,
+        n.category =
+          CASE WHEN trim(row.category) <> \"\" THEN split(row.category, \"$DELIM\") ELSE [] END
+      
+        RETURN 1 AS _
+      } IN TRANSACTIONS OF %s ROWS;
+      " "$BATCH_SIZE" \
+      | /usr/bin/mgconsole --host localhost --port 7687
+      
+      echo "Loading nodes finished."
+      
+      echo "Stopping Memgraph to restart for label assignment..."
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      echo "Memgraph stopped."
+      # Mark nodes as loaded
+      touch "$DATA_DIR/.nodes_loaded"
+    fi
+          
     echo "Generating label assignment cypher file..."
     cat > /tmp/assign_labels.cypher << 'EOF'
     CALL assign_labels.from_category() YIELD processed RETURN processed;
@@ -155,14 +161,14 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
       --memory-limit=0 \
       --query-modules-directory=/usr/lib/memgraph/query_modules \
       --data-directory="$DATA_DIR" \
-      --init-data-file=/tmp/assign_labels.cypher 
+      --storage-snapshot-on-exit=false \
+      --init-data-file=/tmp/assign_labels.cypher \
       >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
     MEMGRAPH_PID=$!
     echo "Waiting for Memgraph to accept connections..."
@@ -182,13 +188,12 @@ data:
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \
       --query-execution-timeout-sec=0 \
       --storage-wal-enabled=false \
       --log-level=WARNING \
       --memory-limit=0 \
       --query-modules-directory=/usr/lib/memgraph/query_modules \
-      --data-directory="$DATA_DIR" 
+      --data-directory="$DATA_DIR" \
       >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
     MEMGRAPH_PID=$!
     
@@ -318,14 +323,13 @@ data:
 
     kill -TERM "$MEMGRAPH_PID"
     wait "$MEMGRAPH_PID"
-    
+    touch "$DATA_DIR/.ingestion_complete"
     exec /usr/lib/memgraph/memgraph \
       --bolt-port=7687 \
       --bolt-address=0.0.0.0 \
       --storage-mode=IN_MEMORY_ANALYTICAL \
       --storage-wal-enabled=false \
       --storage-snapshot-interval-sec=0 \
-      --storage-snapshot-on-exit=false \
       --log-level=ERROR \
       --query-execution-timeout-sec=$QUERY_TIMEOUT \
       --data-directory="$DATA_DIR"
