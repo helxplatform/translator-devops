@@ -149,39 +149,42 @@ data:
       # Mark nodes as loaded
       touch "$DATA_DIR/.nodes_loaded"
     fi
-          
-    echo "Generating label assignment cypher file..."
-    cat > /tmp/assign_labels.cypher << 'EOF'
-    CALL assign_labels.from_category() YIELD processed RETURN processed;
-    EOF
     
-    echo "Restarting Memgraph in background to assign labels..."
-    /usr/lib/memgraph/memgraph \
-      --bolt-port=7687 \
-      --bolt-address=0.0.0.0 \
-      --storage-mode=IN_MEMORY_ANALYTICAL \
-      --storage-snapshot-interval-sec=0 \
-      --query-execution-timeout-sec=0 \
-      --storage-wal-enabled=false \
-      --log-level=WARNING \
-      --memory-limit=0 \
-      --query-modules-directory=/usr/lib/memgraph/query_modules \
-      --data-directory="$DATA_DIR" \
-      --storage-snapshot-on-exit=false \
-      --init-data-file=/tmp/assign_labels.cypher \
-      >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
-    MEMGRAPH_PID=$!
-    echo "Waiting for Memgraph to accept connections..."
-    until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
-        sleep 2
-    done
-    echo "Bolt is ready, label assignment via init-data-file should be complete."
-    
-    echo "Stopping Memgraph after label assignment..."
-    kill -TERM "$MEMGRAPH_PID"
-    wait "$MEMGRAPH_PID"
-    echo "Label assignment complete. Memgraph stopped."
-
+    if [ -f "$DATA_DIR/.labels_assigned" ]; then
+      echo "Labels already assigned. Skipping to node indexing and edge loading..."
+    else
+      # jump directly to starting memgraph for label assignment      
+      echo "Generating label assignment cypher file..."
+      echo 'CALL assign_labels.from_category() YIELD processed RETURN processed;' \
+        > /tmp/assign_labels.cypher
+      
+      echo "Restarting Memgraph in background to assign labels..."
+      /usr/lib/memgraph/memgraph \
+        --bolt-port=7687 \
+        --bolt-address=0.0.0.0 \
+        --storage-mode=IN_MEMORY_ANALYTICAL \
+        --storage-snapshot-interval-sec=0 \
+        --query-execution-timeout-sec=0 \
+        --storage-wal-enabled=false \
+        --log-level=WARNING \
+        --memory-limit=0 \
+        --query-modules-directory=/usr/lib/memgraph/query_modules \
+        --data-directory="$DATA_DIR" \
+        --init-data-file=/tmp/assign_labels.cypher \
+        >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
+      MEMGRAPH_PID=$!
+      echo "Waiting for Memgraph to accept connections..."
+      until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+          sleep 2
+      done
+      echo "Bolt is ready, label assignment via init-data-file should be complete."
+      
+      echo "Stopping Memgraph after label assignment..."
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      echo "Label assignment complete. Memgraph stopped."
+      touch "$DATA_DIR/.labels_assigned"
+    fi   
     echo "Restarting Memgraph in background for node indexing and edge loading..."
     /usr/lib/memgraph/memgraph \
       --bolt-port=7687 \
@@ -202,14 +205,21 @@ data:
         sleep 2
     done
     
-    echo "All nodes are loaded. Creating indexes (with retry)..."
-    until /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_indexes.cypher; do
-      echo "Index creation failed, retrying in 5s..."
-      sleep 5
-    done
+    if [ -f "$DATA_DIR/.indexes_created" ]; then
+      echo "Indexes already created. Skipping to edge loading..."
+    else
+      echo "All nodes are loaded. Creating indexes (with retry)..."
+      until /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_indexes.cypher; do
+        echo "Index creation failed, retrying in 5s..."
+        sleep 5
+      done
+      echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
+      touch "$DATA_DIR/.indexes_created"
+    fi
     
     load_edge_file() {
     filename="$1"
+    batch_size="${2:-$BATCH_SIZE}"
     base=$(basename "$filename" .csv)
     marker="/tmp/edge_${base}"
     relpart=$(echo "$base" | sed 's/^edges_//')
@@ -237,7 +247,7 @@ data:
       )
       REMOVE r.subject, r.object, r.predicate
     } IN TRANSACTIONS OF %s ROWS;
-    ' "$filename" "$reltype" "$BATCH_SIZE" \
+    ' "$filename" "$reltype" "$batch_size" \
       | /usr/bin/mgconsole --host localhost --port 7687
     then
       echo "Finished ${filename}"
@@ -248,42 +258,58 @@ data:
     fi
     }
 
-    echo "Loading edges in parallel..."
+    LARGE_THRESHOLD=1000000000  # 1GB
+    EDGE_BATCH_SIZE=$((BATCH_SIZE / 4))  # smaller batches for large files
 
+    echo "Loading edges in parallel..."
     rm -f /tmp/edge_*.done /tmp/edge_*.failed
     
+    small_count=0
+    large_files=()
     while IFS= read -r filename; do
-      load_edge_file "$filename" &      
+      filesize=$(stat -c%s "/data/$filename" 2>/dev/null || echo 0)
+      if [ "$filesize" -gt "$LARGE_THRESHOLD" ]; then
+          large_files+=("$filename")
+      else
+          load_edge_file "$filename" &
+          small_count=$((small_count + 1))
+      fi           
     done < /data/edges_manifest.txt
     
-    expected=$(wc -l < /data/edges_manifest.txt)
-    echo "Waiting for $expected edge files to complete..."
+    echo "Waiting for $small_count small edge files to complete in parallel..."
     
     while true; do
       done_count=$(find /tmp -maxdepth 1 -name 'edge_*.done' | wc -l)
       fail_count=$(find /tmp -maxdepth 1 -name 'edge_*.failed' | wc -l)
-      total=$((done_count + fail_count))
-    
-      echo "Completed: $done_count, Failed: $fail_count, Total: $total / $expected"
-    
-      if [ "$total" -eq "$expected" ]; then
-        break
-      fi
-    
+      total=$((done_count + fail_count))    
+      echo "Completed: $done_count, Failed: $fail_count, Total: $total / $small_count"    
+      if [ "$total" -eq "$small_count" ]; then break; fi
       sleep 5
     done
     
     if [ "$fail_count" -ne 0 ]; then
-      echo "One or more edge loads failed. Aborting."
+      echo "One or more small edge loads failed. Aborting."
       kill -TERM "$MEMGRAPH_PID"
       wait "$MEMGRAPH_PID"
       exit 1
     fi
     
+    echo "Small edge files complete. Loading ${#large_files[@]} large files sequentially..."
+    for filename in "${large_files[@]}"; do
+      load_edge_file "$filename" "$EDGE_BATCH_SIZE"
+    done
+    
+    fail_count=$(find /tmp -maxdepth 1 -name 'edge_*.failed' | wc -l)
+    if [ "$fail_count" -ne 0 ]; then
+        echo "One or more large edge loads failed. Aborting."
+        kill -TERM "$MEMGRAPH_PID"
+        wait "$MEMGRAPH_PID"
+        exit 1
+    fi
+    
     echo "All edge loads completed successfully."
-
+    
     echo "Waiting for Memgraph to finish ingestion transactions..."
-
     while true; do
       active=$(echo "SHOW TRANSACTIONS;" | \
         /usr/bin/mgconsole --host localhost --port 7687 | \
