@@ -218,49 +218,49 @@ data:
     fi
     
     load_edge_file() {
-    filename="$1"
-    batch_size="${2:-$BATCH_SIZE}"
-    base=$(basename "$filename" .csv)
-    marker="/tmp/edge_${base}"
-    relpart=$(echo "$base" | sed 's/_part_[a-z]*$//' | sed 's/^edges_//')
-    reltype=$(echo "$relpart" | sed 's/_/:/')
-    echo "Starting $filename as relationship type $reltype"
-
-    if printf '
-    LOAD CSV FROM "/data/%s"
-    WITH HEADER DELIMITER "\t" AS row
-    CALL {
-      WITH row
-      MATCH (a:`biolink:NamedThing` {id: row.subject}),
-            (b:`biolink:NamedThing` {id: row.object})
-      CREATE (a)-[r:`%s`]->(b)
-      SET r += row
-      SET r.category = split(row.category, "\u001F")
-      FOREACH (_ IN CASE WHEN row.publications <> "" THEN [1] ELSE [] END |
-        SET r.publications = split(row.publications, "\u001F")
-      )
-      FOREACH (_ IN CASE WHEN row.has_evidence <> "" THEN [1] ELSE [] END |
-        SET r.has_evidence = split(row.has_evidence, "\u001F")
-      )
-      FOREACH (_ IN CASE WHEN row.anatomical_context_qualifier <> "" THEN [1] ELSE [] END |
-        SET r.anatomical_context_qualifier = split(row.anatomical_context_qualifier, "\u001F")
-      )
-      REMOVE r.subject, r.object, r.predicate
-    } IN TRANSACTIONS OF %s ROWS;
-    ' "$filename" "$reltype" "$batch_size" \
-      | /usr/bin/mgconsole --host localhost --port 7687
-    then
-      echo "Finished ${filename}"
-      touch "${marker}.done"
-    else
-      echo "FAILED $filename"
-      touch "${marker}.failed"
-    fi
+      filename="$1"
+      batch_size="${2:-$BATCH_SIZE}"
+      base=$(basename "$filename" .csv)
+      marker="/tmp/edge_${base}"
+      relpart=$(echo "$base" | sed 's/_part_[a-z]*$//' | sed 's/^edges_//')
+      reltype=$(echo "$relpart" | sed 's/_/:/')
+      echo "Starting $filename as relationship type $reltype"
+  
+      if printf '
+      LOAD CSV FROM "/data/%s"
+      WITH HEADER DELIMITER "\t" AS row
+      CALL {
+        WITH row
+        MATCH (a:`biolink:NamedThing` {id: row.subject}),
+              (b:`biolink:NamedThing` {id: row.object})
+        CREATE (a)-[r:`%s`]->(b)
+        SET r += row
+        SET r.category = split(row.category, "\u001F")
+        FOREACH (_ IN CASE WHEN row.publications <> "" THEN [1] ELSE [] END |
+          SET r.publications = split(row.publications, "\u001F")
+        )
+        FOREACH (_ IN CASE WHEN row.has_evidence <> "" THEN [1] ELSE [] END |
+          SET r.has_evidence = split(row.has_evidence, "\u001F")
+        )
+        FOREACH (_ IN CASE WHEN row.anatomical_context_qualifier <> "" THEN [1] ELSE [] END |
+          SET r.anatomical_context_qualifier = split(row.anatomical_context_qualifier, "\u001F")
+        )
+        REMOVE r.subject, r.object, r.predicate
+      } IN TRANSACTIONS OF %s ROWS;
+      ' "$filename" "$reltype" "$batch_size" \
+        | /usr/bin/mgconsole --host localhost --port 7687
+      then
+        echo "Finished ${filename}"
+        touch "${marker}.done"
+      else
+        echo "FAILED $filename"
+        touch "${marker}.failed"
+      fi
     }
 
     LARGE_THRESHOLD=1000000000  # 1GB
     SPLIT_LINES=4000000
-    
+  
     if [ -f "$DATA_DIR/.edges_split" ]; then
       echo "Large edge files already split, loading expanded manifest..."
       cp /data/edges_manifest_expanded.txt /tmp/edges_manifest_expanded.txt
@@ -292,7 +292,7 @@ data:
       cp /tmp/edges_manifest_expanded.txt /data/edges_manifest_expanded.txt
       touch "$DATA_DIR/.edges_split"
     fi
-    
+  
     echo "Loading all edge files in parallel..."
     rm -f /tmp/edge_*.done /tmp/edge_*.failed
     
@@ -316,45 +316,35 @@ data:
       if [ "$total" -eq "$total_count" ]; then break; fi
       sleep 5
     done
-    
+  
     if [ "$fail_count" -ne 0 ]; then
       echo "One or more edge loads failed. Aborting."
       kill -TERM "$MEMGRAPH_PID"
       wait "$MEMGRAPH_PID"
       exit 1
     fi
-    
+  
     echo "All edge loads completed successfully."
-    
     echo "Waiting for Memgraph to finish ingestion transactions..."
     while true; do
       active=$(echo "SHOW TRANSACTIONS;" | \
         /usr/bin/mgconsole --host localhost --port 7687 | \
         grep -c "transaction_id")
-    
-      if [ "$active" -le 1 ]; then
-        break
-      fi
-    
+      if [ "$active" -le 1 ]; then break; fi  
       echo "Still $active active transactions..."
       sleep 5
     done
-    
     echo "Checking for active transactions..."
     echo "SHOW TRANSACTIONS;" | /usr/bin/mgconsole --host localhost --port 7687
     
     echo "Checking storage info before snapshot..."
     echo "SHOW STORAGE INFO;" | /usr/bin/mgconsole --host localhost --port 7687
     
-    echo "Cleaning up intermediate snapshots..."
-    rm -f "$DATA_DIR/snapshots"/*
-    
     echo "Creating persistent snapshot (this may take a while for large graph)..."
     echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
     
     SNAP_STATUS=$?
-    echo "Snapshot exit code: $SNAP_STATUS"
-  
+    
     if [ "$SNAP_STATUS" -ne 0 ]; then
       echo "Snapshot failed!"
       kill -TERM "$MEMGRAPH_PID"
@@ -362,6 +352,20 @@ data:
       exit 1
     fi
     
+    # Verify snapshot is not empty before deleting old ones
+    SNAP_FILE=$(ls -t "$DATA_DIR/snapshots/" | head -1)
+    SNAP_SIZE=$(stat -c%s "$DATA_DIR/snapshots/$SNAP_FILE")
+    if [ "$SNAP_SIZE" -lt 2000000 ]; then
+        echo "ERROR: New snapshot appears empty (${SNAP_SIZE} bytes), aborting!"
+        kill -TERM "$MEMGRAPH_PID"
+        wait "$MEMGRAPH_PID"
+        exit 1
+    fi
+    echo "Snapshot verified: $SNAP_FILE (${SNAP_SIZE} bytes)"
+    echo "Cleaning up intermediate snapshots (keeping newest)..."
+    # Keep only the most recent snapshot
+    ls -t "$DATA_DIR/snapshots/" | tail -n +2 | xargs -I{} rm -f "$DATA_DIR/snapshots/{}"
+
     echo "Switching to serving mode..."
 
     kill -TERM "$MEMGRAPH_PID"
