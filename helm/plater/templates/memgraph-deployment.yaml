@@ -49,6 +49,8 @@ spec:
               value: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}"
             - name: BATCH_SIZE
               value: "{{ .Values.app.memgraph.BATCH_SIZE }}"
+            - name: MAX_PARALLEL
+              value: "{{ .Values.app.memgraph.MAX_PARALLEL }}"
           ports:
             - name: memgraph-bolt
               containerPort: {{ .Values.app.memgraph.boltPort }}

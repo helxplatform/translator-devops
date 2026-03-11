@@ -222,7 +222,7 @@ data:
     batch_size="${2:-$BATCH_SIZE}"
     base=$(basename "$filename" .csv)
     marker="/tmp/edge_${base}"
-    relpart=$(echo "$base" | sed 's/^edges_//')
+    relpart=$(echo "$base" | sed 's/_part_[a-z]*$//' | sed 's/^edges_//')
     reltype=$(echo "$relpart" | sed 's/_/:/')
     echo "Starting $filename as relationship type $reltype"
 
@@ -259,52 +259,69 @@ data:
     }
 
     LARGE_THRESHOLD=1000000000  # 1GB
-    EDGE_BATCH_SIZE=$((BATCH_SIZE / 4))  # smaller batches for large files
-
-    echo "Loading edges in parallel..."
+    SPLIT_LINES=4000000
+    
+    if [ -f "$DATA_DIR/.edges_split" ]; then
+      echo "Large edge files already split, loading expanded manifest..."
+      cp /data/edges_manifest_expanded.txt /tmp/edges_manifest_expanded.txt
+    else
+      echo "Checking for large edge files to split..."
+      rm -f /tmp/edges_manifest_expanded.txt
+      while IFS= read -r filename; do
+          filesize=$(stat -c%s "/data/$filename" 2>/dev/null || echo 0)
+          if [ "$filesize" -gt "$LARGE_THRESHOLD" ]; then
+              echo "Splitting large file: $filename"
+              base="${filename%.csv}"
+              header=$(head -1 "/data/$filename")
+              # Split into parts preserving header
+              rm -f /data/${base}_part_*.csv
+              tail -n +2 "/data/$filename" | split -l "$SPLIT_LINES" \
+                --additional-suffix=".csv" \
+                --filter="{ echo \"$header\"; cat; } > \$FILE" \
+                - "/data/${base}_part_"
+              for part in /data/${base}_part_*.csv; do
+                  echo "$(basename $part)" >> /tmp/edges_manifest_expanded.txt
+                  echo "  Created part: $(basename $part) ($(stat -c%s $part) bytes)"
+              done
+          else
+              echo "$filename" >> /tmp/edges_manifest_expanded.txt
+          fi
+      done < /data/edges_manifest.txt
+      echo "Expanded manifest has $(wc -l < /tmp/edges_manifest_expanded.txt) files"
+      # Persist to data dir so it survives pod restarts
+      cp /tmp/edges_manifest_expanded.txt /data/edges_manifest_expanded.txt
+      touch "$DATA_DIR/.edges_split"
+    fi
+    
+    echo "Loading all edge files in parallel..."
     rm -f /tmp/edge_*.done /tmp/edge_*.failed
     
-    small_count=0
-    large_files=()
+    MAX_PARALLEL=${MAX_PARALLEL:-10}
+    total_count=0
     while IFS= read -r filename; do
-      filesize=$(stat -c%s "/data/$filename" 2>/dev/null || echo 0)
-      if [ "$filesize" -gt "$LARGE_THRESHOLD" ]; then
-          large_files+=("$filename")
-      else
-          load_edge_file "$filename" &
-          small_count=$((small_count + 1))
-      fi           
-    done < /data/edges_manifest.txt
+        while [ "$(jobs -rp | wc -l)" -ge "$MAX_PARALLEL" ]; do
+          sleep 2
+        done
+        load_edge_file "$filename" &
+        total_count=$((total_count + 1))
+    done < /tmp/edges_manifest_expanded.txt
     
-    echo "Waiting for $small_count small edge files to complete in parallel..."
+    echo "Waiting for $total_count edge files to complete in parallel..."
     
     while true; do
       done_count=$(find /tmp -maxdepth 1 -name 'edge_*.done' | wc -l)
       fail_count=$(find /tmp -maxdepth 1 -name 'edge_*.failed' | wc -l)
       total=$((done_count + fail_count))    
-      echo "Completed: $done_count, Failed: $fail_count, Total: $total / $small_count"    
-      if [ "$total" -eq "$small_count" ]; then break; fi
+      echo "Completed: $done_count, Failed: $fail_count, Total: $total / $total_count"    
+      if [ "$total" -eq "$total_count" ]; then break; fi
       sleep 5
     done
     
     if [ "$fail_count" -ne 0 ]; then
-      echo "One or more small edge loads failed. Aborting."
+      echo "One or more edge loads failed. Aborting."
       kill -TERM "$MEMGRAPH_PID"
       wait "$MEMGRAPH_PID"
       exit 1
-    fi
-    
-    echo "Small edge files complete. Loading ${#large_files[@]} large files sequentially..."
-    for filename in "${large_files[@]}"; do
-      load_edge_file "$filename" "$EDGE_BATCH_SIZE"
-    done
-    
-    fail_count=$(find /tmp -maxdepth 1 -name 'edge_*.failed' | wc -l)
-    if [ "$fail_count" -ne 0 ]; then
-        echo "One or more large edge loads failed. Aborting."
-        kill -TERM "$MEMGRAPH_PID"
-        wait "$MEMGRAPH_PID"
-        exit 1
     fi
     
     echo "All edge loads completed successfully."

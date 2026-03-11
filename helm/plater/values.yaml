@@ -91,14 +91,14 @@ memgraph:
     tcpSocket:
       port: 7687
     initialDelaySeconds: 60
-    periodSeconds: 10
-    failureThreshold: 5
+    periodSeconds: 30
+    failureThreshold: 720
     timeoutSeconds: 10
 
   startupProbe:
     tcpSocket:
       port: 7687
-    failureThreshold: 30
+    failureThreshold: 720
     periodSeconds: 10
     timeoutSeconds: 10
 
@@ -204,6 +204,7 @@ app:
     # with BATCH_SIZE × num_of_csv_files × average_edge_size
     # Increasing BATCH_SIZE reduces transaction overhead but increases peak memory usage.
     BATCH_SIZE: 2000
+    MAX_PARALLEL: 10
     initresources:
       requests:
         memory: 1Gi
