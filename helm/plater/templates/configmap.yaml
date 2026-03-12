@@ -259,8 +259,8 @@ data:
       fi
     }
 
-    LARGE_THRESHOLD=1000000000  # 1GB
-    SPLIT_LINES=4000000
+    LARGE_THRESHOLD=${LARGE_THRESHOLD:-1000000000}  # 1GB default
+    SPLIT_LINES=${SPLIT_LINES:-4000000}
   
     if [ -f "$DATA_DIR/.edges_split" ]; then
       echo "Large edge files already split, loading expanded manifest..."

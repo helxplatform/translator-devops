@@ -200,11 +200,15 @@ app:
     # dataUrl is the base URL with _nodes.cypher, _edges.cypher, and _indexes.cypher to be appended
     # to point to three required memgraph cypher files to populate the database, if deploying internally
     dataUrl: ""
-    # BATCH_SIZE controls how many CSV edge rows are processed per transaction with memory usage roughly scale
-    # with BATCH_SIZE × num_of_csv_files × average_edge_size
-    # Increasing BATCH_SIZE reduces transaction overhead but increases peak memory usage.
+    # BATCH_SIZE controls how many CSV edge rows are processed per transaction
+    # MAX_PARALLEL controls how many parallel jobs to run simultaneously for edge ingestion
+    # LARGE_THRESHOLD serves as the file size threshold which determines which large csv edge files get split.
+    # SPLIT_LINES determines split file size.
+    # All these four values influence memory usage: reduce these values will reduce total memory usage.
     BATCH_SIZE: 2000
     MAX_PARALLEL: 10
+    LARGE_THRESHOLD: 1000000000
+    SPLIT_LINES: 4000000
     initresources:
       requests:
         memory: 1Gi
