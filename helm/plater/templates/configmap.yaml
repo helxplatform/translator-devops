@@ -196,6 +196,7 @@ data:
       --log-level=WARNING \
       --memory-limit=0 \
       --query-modules-directory=/usr/lib/memgraph/query_modules \
+      --storage-snapshot-on-exit=false \
       --data-directory="$DATA_DIR" \
       >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
     MEMGRAPH_PID=$!
