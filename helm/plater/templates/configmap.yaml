@@ -223,7 +223,7 @@ data:
       batch_size="${2:-$BATCH_SIZE}"
       base=$(basename "$filename" .csv)
       marker="/tmp/edge_${base}"
-      relpart=$(echo "$base" | sed 's/_part_[a-z]*$//' | sed 's/^edges_//')
+      relpart=$(echo "$base" | sed 's/_part_[a-z]*$//' | sed 's/.*\(biolink_.*\)/\1/')
       reltype=$(echo "$relpart" | sed 's/_/:/')
       echo "Starting $filename as relationship type $reltype"
   
