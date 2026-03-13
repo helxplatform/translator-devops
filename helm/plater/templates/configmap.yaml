@@ -46,6 +46,186 @@ data:
       echo "Files have been previously downloaded already"
     fi
 
+  generate_load_cypher.py: |-
+    #!/usr/bin/env python3
+    """
+    Dynamically generates Memgraph LOAD CSV Cypher queries from typed CSV headers.
+
+    Usage:
+      python3 generate_load_cypher.py node <csv_file> <batch_size>
+      python3 generate_load_cypher.py edge <csv_file> <batch_size> <relationship_type>
+    """
+    import sys
+
+    DEFAULT_ARRAY_DELIM = '\\u001f'
+
+    def parse_header(header_line, delimiter='\t'):
+        """Parse typed header columns into property type lists and WITH clause mapping."""
+        float_props = []
+        int_props = []
+        array_props = []
+        bool_props = []
+        string_props = []
+        skip_props = set()
+        with_mappings = []
+    
+        for col in header_line.rstrip('\n').rstrip('\r').split(delimiter):
+            col = col.strip()
+            if ':' in col:
+                name, typ = col.rsplit(':', 1)
+            else:
+                name, typ = col, 'string'
+    
+            if typ in ('START_ID', 'END_ID', 'TYPE'):
+                skip_props.add(name)
+                # Still need these in WITH clause for edge MATCH but not SET
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'ID':
+                string_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'LABEL':
+                array_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'float':
+                float_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'int':
+                int_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ in ('string[]', 'float[]', 'int[]'):
+                array_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'boolean':
+                bool_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            else:
+                string_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+    
+        return {
+            'float': float_props,
+            'int': int_props,
+            'array': array_props,
+            'bool': bool_props,
+            'string': string_props,
+            'skip': skip_props,
+            'with_clause': ',\n    '.join(with_mappings),
+        }
+
+    def build_set_statements(props, array_delim, entity):
+        statements = []
+
+        for prop in props['string']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` <> "" '
+                'THEN row.`' + prop + '` ELSE null END'
+            )
+
+        for prop in props['float']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` <> "" '
+                'THEN toFloat(row.`' + prop + '`) ELSE null END'
+            )
+
+        for prop in props['int']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` <> "" '
+                'THEN toInteger(row.`' + prop + '`) ELSE null END'
+            )
+
+        for prop in props['array']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN trim(row.`' + prop + '`) <> "" '
+                'THEN split(row.`' + prop + '`, "' + array_delim + '") ELSE null END'
+            )
+
+        for prop in props['bool']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` = "true" THEN true '
+                'WHEN row.`' + prop + '` = "false" THEN false '
+                'ELSE null END'
+            )
+
+        return '\n  '.join(statements)
+
+    def generate_node_cypher(csv_file, batch_size, array_delim=DEFAULT_ARRAY_DELIM):
+        with open(csv_file, 'r') as f:
+            header_line = f.readline()
+
+        props = parse_header(header_line)
+        set_statements = build_set_statements(props, array_delim, entity='n')
+        set_statements = set_statements.replace('row.`', '`')
+        cypher = (
+            'CALL {\n'
+            '  LOAD CSV FROM "' + csv_file + '"\n'
+            '  WITH HEADER DELIMITER "\\t" AS row\n'
+            '  WITH\n    ' + props['with_clause'] + '\n'
+            '  CREATE (n)\n'
+            '  ' + set_statements + '\n'
+            '  RETURN 1 AS _\n'
+            '} IN TRANSACTIONS OF ' + str(batch_size) + ' ROWS;'
+        )
+        return cypher
+
+    def generate_edge_cypher(csv_file, batch_size, array_delim=DEFAULT_ARRAY_DELIM, rel_type=''):
+        with open(csv_file, 'r') as f:
+            header_line = f.readline()
+
+        props = parse_header(header_line)
+
+        for prop_list in props.values():
+            if isinstance(prop_list, list):
+                for skip in ('subject', 'object', 'predicate'):
+                    if skip in prop_list:
+                        prop_list.remove(skip)
+
+        set_statements = build_set_statements(props, array_delim, entity='r')
+        set_statements = set_statements.replace('row.`', '`')
+    
+        cypher = (
+            'LOAD CSV FROM "' + csv_file + '"\n'
+            'WITH HEADER DELIMITER "\\t" AS row\n'
+            'CALL {\n'
+            '  WITH row\n'
+            '  WITH\n    ' + props['with_clause'] + '\n'
+            '  MATCH (a:`biolink:NamedThing` {id: `subject`}),\n'
+            '        (b:`biolink:NamedThing` {id: `object`})\n'
+            '  CREATE (a)-[r:`' + rel_type + '`]->(b)\n'
+            '  ' + set_statements + '\n'
+            '  RETURN 1 AS _\n'
+            '} IN TRANSACTIONS OF ' + str(batch_size) + ' ROWS;'
+        )
+        return cypher
+
+    def main():
+        if len(sys.argv) < 3:
+            print(__doc__)
+            sys.exit(1)
+
+        mode = sys.argv[1]
+        csv_file = sys.argv[2]
+        batch_size = sys.argv[3] if len(sys.argv) > 3 else '200000'
+        array_delim = DEFAULT_ARRAY_DELIM
+
+        if mode == 'node':
+            print(generate_node_cypher(csv_file, batch_size, array_delim))
+        elif mode == 'edge':
+            if len(sys.argv) < 5:
+                print("Error: edge mode requires relationship_type argument")
+                sys.exit(1)
+            rel_type = sys.argv[4]
+            print(generate_edge_cypher(csv_file, batch_size, array_delim, rel_type))
+        else:
+            print(f"Error: unknown mode '{mode}', use 'node' or 'edge'")
+            sys.exit(1)
+
+    if __name__ == '__main__':
+        main()
   run_memgraph.sh: |-
     #!/bin/bash
     set -euo pipefail
@@ -97,48 +277,10 @@ data:
       echo "Bolt is ready."
       echo "Loading Memgraph nodes in transactions of $BATCH_SIZE..."
   
-      DELIM=$'\x1F'
-      printf "
-      CALL {
-        LOAD CSV FROM \"/data/memgraph_nodes.csv\"
-        WITH HEADER DELIMITER \"\t\" AS row
-      
-        CREATE (n)
-      
-        SET n.id = row.id,
-        n.name = row.name,
-        n.description = row.description,
-        n.information_content =
-          CASE WHEN row.information_content <> \"\"
-               THEN toFloat(row.information_content)
-               ELSE NULL END,
-        n.chembl_natural_product = row.chembl_natural_product = \"true\",
-        n.chembl_black_box_warning = row.chembl_black_box_warning = \"true\",
-        n.chembl_prodrug = row.chembl_prodrug = \"true\"
-     
-        SET n.equivalent_identifiers =
-            CASE WHEN row.equivalent_identifiers <> \"\"
-                 THEN split(row.equivalent_identifiers, \"$DELIM\")
-                 ELSE [] END,
-        n.synonym =
-          CASE WHEN row.synonym <> \"\"
-               THEN split(row.synonym, \"$DELIM\")
-               ELSE [] END,
-        n.xref =
-          CASE WHEN row.xref <> \"\"
-               THEN split(row.xref, \"$DELIM\")
-               ELSE [] END,
-        n.in_taxon =
-          CASE WHEN row.in_taxon <> \"\"
-               THEN split(row.in_taxon, \"$DELIM\")
-               ELSE [] END,
-        n.category =
-          CASE WHEN trim(row.category) <> \"\" THEN split(row.category, \"$DELIM\") ELSE [] END
-      
-        RETURN 1 AS _
-      } IN TRANSACTIONS OF %s ROWS;
-      " "$BATCH_SIZE" \
-      | /usr/bin/mgconsole --host localhost --port 7687
+      python3 /generate_load_cypher.py node \
+          /data/memgraph_nodes.csv \
+          "$BATCH_SIZE" \
+          | /usr/bin/mgconsole --host localhost --port 7687
       
       echo "Loading nodes finished."
       
@@ -227,40 +369,22 @@ data:
       reltype=$(echo "$relpart" | sed 's/_/:/')
       echo "Starting $filename as relationship type $reltype"
   
-      if printf '
-      LOAD CSV FROM "/data/%s"
-      WITH HEADER DELIMITER "\t" AS row
-      CALL {
-        WITH row
-        MATCH (a:`biolink:NamedThing` {id: row.subject}),
-              (b:`biolink:NamedThing` {id: row.object})
-        CREATE (a)-[r:`%s`]->(b)
-        SET r += row
-        SET r.category = split(row.category, "\u001F")
-        FOREACH (_ IN CASE WHEN row.publications <> "" THEN [1] ELSE [] END |
-          SET r.publications = split(row.publications, "\u001F")
-        )
-        FOREACH (_ IN CASE WHEN row.has_evidence <> "" THEN [1] ELSE [] END |
-          SET r.has_evidence = split(row.has_evidence, "\u001F")
-        )
-        FOREACH (_ IN CASE WHEN row.anatomical_context_qualifier <> "" THEN [1] ELSE [] END |
-          SET r.anatomical_context_qualifier = split(row.anatomical_context_qualifier, "\u001F")
-        )
-        REMOVE r.subject, r.object, r.predicate
-      } IN TRANSACTIONS OF %s ROWS;
-      ' "$filename" "$reltype" "$batch_size" \
-        | /usr/bin/mgconsole --host localhost --port 7687
+      if python3 /generate_load_cypher.py edge \
+          "/data/$filename" \
+          "$batch_size" \
+          "$reltype" \
+          | /usr/bin/mgconsole --host localhost --port 7687
       then
-        echo "Finished ${filename}"
-        touch "${marker}.done"
+          echo "Finished ${filename}"
+          touch "${marker}.done"
       else
-        echo "FAILED $filename"
-        touch "${marker}.failed"
+          echo "FAILED $filename"
+          touch "${marker}.failed"
       fi
     }
 
-    LARGE_THRESHOLD=${LARGE_THRESHOLD:-1000000000}  # 1GB default
-    SPLIT_LINES=${SPLIT_LINES:-4000000}
+    LARGE_THRESHOLD=$(printf '%.0f' "${LARGE_THRESHOLD:-1000000000}")
+    SPLIT_LINES=$(printf '%.0f' "${SPLIT_LINES:-4000000}")
   
     if [ -f "$DATA_DIR/.edges_split" ]; then
       echo "Large edge files already split, loading expanded manifest..."

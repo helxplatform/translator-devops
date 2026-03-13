@@ -70,6 +70,9 @@ spec:
             - name: {{ include "plater.fullname" . }}-scripts
               mountPath: /run_memgraph.sh
               subPath: run_memgraph.sh
+            - name: {{ include "plater.fullname" . }}-scripts
+              mountPath: /generate_load_cypher.py
+              subPath: generate_load_cypher.py
           startupProbe:
 {{ toYaml .Values.memgraph.startupProbe | indent 12 }}
           readinessProbe:
