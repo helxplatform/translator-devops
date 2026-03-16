@@ -22,6 +22,7 @@ data:
   CALLBACK_HOST: "https://{{ .Values.ingress.host }}"
   KG_RETRIEVAL_URL: {{ .Values.shepherd.kg_retrieval_url }}
   SYNC_KG_RETRIEVAL_URL: {{ .Values.shepherd.sync_kg_retrieval_url }}
+  DEFAULT_DATA_TIER: "{{ .Values.shepherd.default_data_tier }}"
   OMNICORP_URL: {{ .Values.shepherd.omnicorp_url }}
   ARAX_URL: {{ .Values.shepherd.arax_url }}
   NODE_NORM: {{ .Values.shepherd.node_norm }}
@@ -35,5 +36,7 @@ data:
   # OTEL_ENABLED: "True"
   JAEGER_HOST: {{ .Values.otel.jaeger_host }}
   JAEGER_PORT: "{{ .Values.otel.jaeger_port }}"
+
+  GANDALF_GRAPH_PATH: {{ .Values.gandalf.sharedData.mountPath }}
 
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}

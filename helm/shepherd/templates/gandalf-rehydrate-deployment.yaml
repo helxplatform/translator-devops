@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "shepherd.fullname" . }}-gandalf-rehydrate
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.gandalf_rehydrate.autoscaling.enabled }}
+  replicas: {{ .Values.gandalf_rehydrate.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: worker
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: worker
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-gandalf-rehydrate
+          image: "{{ .Values.gandalf_rehydrate.image.repository }}:{{ .Values.shepherd.tag }}"
+          imagePullPolicy: {{ .Values.gandalf_rehydrate.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "shepherd.fullname" . }}-configmap
+          command:
+            - 'python'
+          args:
+            - "worker.py"
+          {{ if .Values.gandalf_rehydrate.resources }}
+          resources: {{ toYaml .Values.gandalf_rehydrate.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - name: {{ include "shepherd.fullname" . }}-logs-pvc
+              mountPath: /app/logs/
+            # -- Shared mmap/LMDB data
+            - name: gandalf-data
+              mountPath: {{ .Values.gandalf_rehydrate.sharedData.mountPath }}
+              readOnly: true
+      volumes:
+        - name: {{ include "shepherd.fullname" . }}-logs-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+        # -- Shared graph data volume (mmap + LMDB files)
+        - name: gandalf-data
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-gandalf-data
+      {{- with .Values.shepherd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
