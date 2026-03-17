@@ -50,6 +50,13 @@ spec:
   - host: {{ .Values.frontend.ingress.host }}
     http:
       paths:
+      - path: /graphs/[^/]+/[^/]+/.+
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: {{ include "robokop-ui.fullname" .}}-graph-viewer-svc
+            port:
+              number: {{ .Values.graphViewer.service.port }}
       - path: {{ .Values.frontend.ingress.path }}
         pathType: {{ .Values.frontend.ingress.pathType }}
         backend:

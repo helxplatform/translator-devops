@@ -52,3 +52,19 @@ frontend:
     host: robokop.renci.org
     pathType: Prefix
     path: /
+
+graphViewer:
+  repository: "nginx"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0
+      memory: 0
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    type: ClusterIP
+    containerPort: 80
+    port: 80
