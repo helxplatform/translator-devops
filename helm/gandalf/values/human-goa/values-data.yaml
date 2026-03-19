@@ -1,0 +1,10 @@
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/HumanGOA_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/HumanGOA_Automat/abbe9af6ff54da74/testing_data.json

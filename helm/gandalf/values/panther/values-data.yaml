@@ -1,0 +1,10 @@
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/PANTHER_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/PANTHER_Automat/a39d2667617d6e69/testing_data.json

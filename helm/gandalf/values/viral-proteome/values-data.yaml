@@ -1,0 +1,10 @@
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/ViralProteome_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/ViralProteome_Automat/be3a42b4b9d961a6/testing_data.json

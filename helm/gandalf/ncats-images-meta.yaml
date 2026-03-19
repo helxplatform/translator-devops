@@ -1,0 +1,12 @@
+plater:
+  image: "ghcr.io/translatorsri/plater-clustered"
+  version: "v2.1.4"
+neo4j:
+  image: "ghcr.io/translatorsri/plater-neo4j"
+  version: "neo4j-5.26"
+busybox:
+  image: "busybox"
+  version: "1.35"
+bash:
+  image: "bash"
+  version: "5.2.15"
