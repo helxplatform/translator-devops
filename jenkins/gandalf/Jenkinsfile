@@ -1,0 +1,166 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        choice(name: 'PLATERS', choices: 'all\ncam-kp\nicees-kg\nmonarch-kg\nrobokopkg\n', description: 'Platers to deploy')
+        choice(name: 'LOAD_DATA', choices: 'no\nyes', description: 'Load data or not, default no')
+        choice(name: 'ACTION', choices: 'install\ndelete', description: 'Install or delete, default install')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+        string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "dev"
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/gandalf/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+               script {
+                    def imageMeta = readYaml file: 'helm/gandalf/ncats-images-meta.yaml'
+                    env.ORIGINAL_REPO = imageMeta.plater.image
+                    env.BUILD_VERSION = imageMeta.plater.version
+                    env.ORIGINAL_REPO_NEO4J = imageMeta.neo4j.image
+                    env.BUILD_VERSION_NEO4J = imageMeta.neo4j.version
+                    env.ORIGINAL_REPO_BUSYBOX = imageMeta.busybox.image
+                    env.BUILD_VERSION_BUSYBOX = imageMeta.busybox.version
+                    currentBuild.displayName = imageMeta.plater.version + "#" + imageMeta.neo4j.version
+              }
+           }
+        }
+        stage('build image') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/gandalf/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                withEnv([
+                    "IMAGE_NAME=translator-sri-plater-clustered",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION)
+                ]) {
+                    dir("helm/gandalf") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO:$BUILD_VERSION
+                            docker tag $ORIGINAL_REPO:$BUILD_VERSION 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
+                            sh '''
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
+                                image.push()
+                        }
+                    }
+                }
+                withEnv([
+                    "IMAGE_NAME=translator-sri-neo4j-42-apoc-gds",
+                    "BUILD_VERSION=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
+                ]) {
+                    dir("helm/gandalf") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J
+                            docker tag $ORIGINAL_REPO_NEO4J:$BUILD_VERSION_NEO4J 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:$BUILD_VERSION")
+                            sh '''
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
+                                image.push()
+                        }
+                    }
+                }
+                withEnv([
+                    "IMAGE_NAME=translator-busybox"
+                ]) {
+                    dir("helm/gandalf") {
+                        script {
+
+                            sh '''
+                            docker pull $ORIGINAL_REPO_BUSYBOX:stable
+                            docker pull $ORIGINAL_REPO_BUSYBOX:latest
+                            docker tag $ORIGINAL_REPO_BUSYBOX:stable 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable
+                            docker tag $ORIGINAL_REPO_BUSYBOX:latest 853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest
+                            '''
+                            def image = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:stable")
+                            def imageLatest = docker.image("853771734544.dkr.ecr.us-east-1.amazonaws.com/$IMAGE_NAME:latest")
+
+                            sh '''
+                            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                            '''
+                                image.push()
+                                imageLatest.push()
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
+            when {
+                anyOf {
+                    changeset "helm/gandalf/**"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            steps {
+                checkout scm
+                configFileProvider([
+                    configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
+                    ]){
+                withEnv([
+                    "BUILD_VERSION_PLATER=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[0] : env.BUILD_VERSION),
+                    "BUILD_VERSION_NEO4J=" + (params.BUILD_VERSION ? params.BUILD_VERSION.tokenize("#")[1] : env.BUILD_VERSION_NEO4J)
+                ]) {
+                    sh '''
+                        aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                        /bin/bash prepare.sh
+                        '''
+                    }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
+        }
+    }
+}
