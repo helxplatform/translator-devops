@@ -28,3 +28,5 @@ data:
   {{ end }}
 
   GRAPH_PATH: {{ .Values.app.gandalf.sharedData.mountPath }}
+  LOAD_MMAPS_INTO_MEMORY: "false"
+  GANDALF_WORKERS: "{{ .Values.app.gandalf.num_workers }}"

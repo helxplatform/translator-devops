@@ -21,7 +21,7 @@ bash:
 image:
   gandalf:
     repository: ghcr.io/maximusunc/gandalf
-    tag: 0.2.1
+    tag: 0.3.0
     pullPolicy: Always
 
 nameOverride: ""
@@ -155,6 +155,56 @@ app:
         ephemeral-storage: 256Mi
         memory: 6Gi
         cpu: 1500m
+  gandalf:
+    num_workers: 2
+    service:
+      port: 6429
+      type: ClusterIP
+    resources:
+      requests:
+        cpu: "2000m"
+        memory: "5Gi"
+      limits:
+        cpu: "2000m"
+        memory: "5Gi"
+    sharedData:
+      mountPath: ""
+    autoscaling:
+      enabled: false
+      replicaCount: 1
+    loader:
+      enabled: false
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 600
+      image:
+        repository: busybox
+        tag: "1.36"
+        pullPolicy: IfNotPresent
+      sources:
+        - ""
+
+      # Skip download if data already exists and source URLs haven't changed
+      skipIfExists: true
+
+      # Optional shell command to run after all downloads complete
+      # Runs inside the init container with the data volume mounted
+      postDownloadCommand: "ls -lh"
+
+      # Resources for the init container (downloads can be memory-light)
+      resources:
+        requests:
+          cpu: "1000m"
+          memory: "5Gi"
+          ephemeral-storage: "5Gi"
+        limits:
+          cpu: "2"
+          memory: "6Gi"
+          ephemeral-storage: "6Gi"
+    persistentVolume:
+      accessModes: 
+        - ReadWriteMany
+      size: "5Gi"
+
   openapi_config:
   # Adds more configs to default open api config
     x-trapi:
