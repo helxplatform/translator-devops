@@ -3,11 +3,11 @@ replicaCount: 1
 
 image:
   # -- Container image repository
-  repository: docker.io/hsrenci/graph_registry
+  repository: ghcr.io/robokopu24/graph-registry
   # -- Image pull policy
   pullPolicy: Always
   # -- Image tag (defaults to Chart appVersion)
-  tag: "0.0.1"
+  tag: "main"
 
 # -- Image pull secrets for private registries
 imagePullSecrets: []
@@ -24,7 +24,7 @@ app:
   # -- Port the FastAPI app listens on
   port: 8000
   # -- Path to the shared directory inside the container
-  sharedDir: /mnt/shared
+  sharedDir: /stars/var/plater/graphs
   # -- Additional environment variables (list of {name, value} objects)
   extraEnv: []
   #   - name: LOG_LEVEL
@@ -56,13 +56,13 @@ nfs:
   # -- Enable the NFS volume mount
   enabled: true
   # -- NFS server hostname
-  server: server.hostname.com
+  server: na-projects.edc.renci.org
   # -- Export path on the NFS server
-  path: /path/to/graphs
+  path: /stars
   # -- Mount path inside the container
-  mountPath: /path/to/graphs
+  mountPath: /stars
   # -- Mount the NFS volume as read-only
-  readOnly: true
+  readOnly: false
 
 # ---------------------------------------------------------------------------
 # Pod security context (required for NFS access at RENCI)
@@ -94,7 +94,7 @@ service:
 # ---------------------------------------------------------------------------
 ingress:
   # -- Enable Ingress resource
-  enabled: false
+  enabled: true
   # -- Ingress class name
   className: ""
   # -- Ingress annotations
@@ -103,15 +103,15 @@ ingress:
     # nginx.ingress.kubernetes.io/rewrite-target: /
   # -- Ingress hosts
   hosts:
-    - host: some-url.org
+    - host: robokop-graph-registry.apps.renci.org
       paths:
         - path: /
           pathType: Prefix
   # -- TLS configuration
   tls:
-    - secretName: some-url.org-tls
+    - secretName: robokop-graph-registry.apps.renci.org-tls
       hosts:
-          - some-url.org
+          - robokop-graph-registry.apps.renci.org
 
 # ---------------------------------------------------------------------------
 # Resources
