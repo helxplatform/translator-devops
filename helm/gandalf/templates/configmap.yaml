@@ -15,9 +15,9 @@ data:
   BL_VERSION: "{{ .Values.app.bl_version }}"
   WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
   NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"
-  MATURITY_VALUE: "{{ .Values.x_trapi.maturity.value }}"
-  LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
-  PUBLIC_URL: "{{ .Values.app.public_url }}"
+  SERVER_MATURITY: "{{ .Values.x_trapi.maturity.value }}"
+  SERVER_LOCATION: "{{ .Values.x_trapi.location.value }}"
+  SERVER_URL: "{{ .Values.app.public_url }}"
   PROFILER_ON: "{{ .Values.app.profiler_on }}"
   {{ if .Values.app.otel.enabled }}
   OTEL_ENABLED: "TRUE"
