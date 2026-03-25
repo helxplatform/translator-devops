@@ -48,6 +48,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "plater.fullname" . }}-configmap
+          env:
+            - name: PYSTOW_HOME
+              value: "/tmp/pystow"
           command:
             - 'gunicorn'
           args:
