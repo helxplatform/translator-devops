@@ -11,7 +11,7 @@ data:
   SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-gandalf-service"
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
   PLATER_TITLE: {{ .Release.Name }}
-  PROVENANCE_TAG: "{{ .Values.datasetDesc.provenanceTag }}"
+  INFORES: "{{ .Values.datasetDesc.provenanceTag }}"
   BL_VERSION: "{{ .Values.app.bl_version }}"
   WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
   NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"
