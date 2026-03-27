@@ -21,7 +21,7 @@ bash:
 image:
   gandalf:
     repository: ghcr.io/maximusunc/gandalf
-    tag: 0.3.1
+    tag: 0.3.2
     pullPolicy: Always
 
 nameOverride: ""
