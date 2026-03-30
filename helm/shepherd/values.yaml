@@ -36,11 +36,12 @@ otel:
   jaeger_port: "6831"
 
 shepherd:
-  tag: latest
+  tag: fillthisin
   logsPVCSize: 3Gi
   lookup_timeout: fillthisin
   kg_retrieval_url: fillthisin
   sync_kg_retrieval_url: fillthisin
+  default_data_tier: 0
   omnicorp_url: fillthisin
   arax_url: fillthisin
   log_level: INFO
