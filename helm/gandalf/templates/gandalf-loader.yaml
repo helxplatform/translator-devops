@@ -97,6 +97,10 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.neo4j.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- with .Values.neo4j.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
