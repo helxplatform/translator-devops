@@ -49,6 +49,272 @@ shepherd:
   affinity: {}
   tolerations: []
 
+probes:
+  enabled: false
+  failureThreshold: 5
+  successThreshold: 1
+  period: 120
+  timeoutSeconds: 30
+  
+aragorn:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/aragorn
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+aragorn_lookup:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/aragorn_lookup
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+aragorn_omnicorp:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/aragorn_omnicorp
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+aragorn_pathfinder:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/aragorn_pathfinder
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 3Gi
+      cpu: 1000m
+    limits:
+      memory: 5Gi
+      cpu: 1000m
+
+aragorn_score:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/aragorn_score
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+arax:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/arax
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+  
+arax_rank:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/arax_rank
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 7Gi
+      cpu: 3000m
+    limits:
+      memory: 10Gi
+      cpu: 4000m
+
+bte:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/bte
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+bte_lookup:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/bte_lookup
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+filter_analyses_top_n:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/filter_analyses_top_n
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+filter_kgraph_orphans:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/filter_kgraph_orphans
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+filter_results_top_n:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/filter_results_top_n
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+finish_query:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/finish_query
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+gandalf:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/gandalf
+    imagePullPolicy: Always
+  sharedData:
+    mountPath: /data/gandalf_mmap
+  persistentVolume:
+    accessModes:
+      - ReadWriteMany
+    size: 40Gi
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "15Gi"
+    limits:
+      cpu: "1500m"
+      memory: "20Gi"
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
 # ---------------------------------------------------------------------------
 # Init container — download data from public server(s)
 # ---------------------------------------------------------------------------
@@ -88,105 +354,25 @@ gandalfLoader:
       cpu: "1"
       memory: "1Gi"
 
-probes:
-  enabled: false
-  failureThreshold: 5
-  successThreshold: 1
-  period: 120
-  timeoutSeconds: 30
-
-shepherd_server:
+gandalf_rehydrate:
   image:
-    repository: ghcr.io/biopack-team/shepherd/shepherd_server
+    repository: ghcr.io/biopack-team/shepherd/gandalf_rehydrate
     imagePullPolicy: Always
-  service:
-    type: ClusterIP
-    port: 5439
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 50
-    targetMemory: 50
+  sharedData:
+    mountPath: /data/gandalf_mmap
   resources:
     requests:
-      memory: 5Gi
-      cpu: 1000m
+      cpu: "1000m"
+      memory: "15Gi"
     limits:
-      memory: 8Gi
-      cpu: 3000m
-
-filter_kgraph_orphans:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/filter_kgraph_orphans
-    imagePullPolicy: Always
+      cpu: "1500m"
+      memory: "20Gi"
   autoscaling:
     enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
-      cpu: 1000m
-
-filter_results_top_n:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/filter_results_top_n
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
-      cpu: 1000m
-
-sort_results_score:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/sort_results_score
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
-      cpu: 1000m
-
-finish_query:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/finish_query
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
-      cpu: 1000m
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
 
 merge_message:
   image:
@@ -205,28 +391,10 @@ merge_message:
     limits:
       memory: 5Gi
       cpu: 2000m
-  
-aragorn:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/aragorn
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 1Gi
-      cpu: 1000m
-    limits:
-      memory: 1Gi
-      cpu: 1000m
 
-aragorn_lookup:
+score_paths:
   image:
-    repository: ghcr.io/biopack-team/shepherd/aragorn_lookup
+    repository: ghcr.io/biopack-team/shepherd/score_paths
     imagePullPolicy: Always
   autoscaling:
     enabled: false
@@ -236,118 +404,10 @@ aragorn_lookup:
     targetMemory: 75
   resources:
     requests:
-      memory: 1Gi
-      cpu: 1000m
-    limits:
-      memory: 1Gi
-      cpu: 1000m
-
-aragorn_pathfinder:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/aragorn_pathfinder
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 3Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
       memory: 5Gi
-      cpu: 1000m
-
-aragorn_omnicorp:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/aragorn_omnicorp
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
-      cpu: 1000m
-
-aragorn_score:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/aragorn_score
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 2Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
-      cpu: 1000m
-
-arax:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/arax
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 1Gi
-      cpu: 1000m
-    limits:
-      memory: 1Gi
-      cpu: 1000m
-
-bte:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/bte
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 1Gi
-      cpu: 1000m
-    limits:
-      memory: 1Gi
-      cpu: 1000m
-
-bte_lookup:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/bte_lookup
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 1Gi
-      cpu: 1000m
-    limits:
-      memory: 1Gi
       cpu: 1000m
 
 sipr:
@@ -366,6 +426,24 @@ sipr:
       cpu: 1000m
     limits:
       memory: 1Gi
+      cpu: 1000m
+
+sort_results_score:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/sort_results_score
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
       cpu: 1000m
 
 shepherd_db:
@@ -430,6 +508,27 @@ shepherd_broker:
     - '60'
     - --save
     - '60 1'
+
+shepherd_server:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/shepherd_server
+    imagePullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 5439
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 50
+    targetMemory: 50
+  resources:
+    requests:
+      memory: 5Gi
+      cpu: 1000m
+    limits:
+      memory: 8Gi
+      cpu: 3000m
 
 securityContext:
   runAsUser: 1000

@@ -14,6 +14,7 @@ metadata:
     "helm.sh/resource-policy": keep
     {{- end }}
 spec:
+  storageClassName: nfs-client
   accessModes:
     {{- toYaml .Values.gandalf.persistentVolume.accessModes | nindent 4 }}
   resources:

@@ -1,21 +1,3 @@
-shepherd_server:
-  image: "ghcr.io/biopack-team/shepherd/shepherd_server"
-  version: "v0.6.9"
-filter_kgraph_orphans:
-  image: "ghcr.io/biopack-team/shepherd/filter_kgraph_orphans"
-  version: "v0.6.9"
-filter_results_top_n:
-  image: "ghcr.io/biopack-team/shepherd/filter_results_top_n"
-  version: "v0.6.9"
-sort_results_score:
-  image: "ghcr.io/biopack-team/shepherd/sort_results_score"
-  version: "v0.6.9"
-finish_query:
-  image: "ghcr.io/biopack-team/shepherd/finish_query"
-  version: "v0.6.9"
-merge_message:
-  image: "ghcr.io/biopack-team/shepherd/merge_message"
-  version: "v0.6.9"
 aragorn:
   image: "ghcr.io/biopack-team/shepherd/aragorn"
   version: "v0.6.9"
@@ -34,14 +16,50 @@ aragorn_score:
 arax:
   image: "ghcr.io/biopack-team/shepherd/arax"
   version: "v0.6.9"
+arax_rank:
+  image: "ghcr.io/biopack-team/shepherd/arax_rank"
+  version: "v0.6.9"
 bte:
   image: "ghcr.io/biopack-team/shepherd/bte"
   version: "v0.6.9"
 bte_lookup:
   image: "ghcr.io/biopack-team/shepherd/bte_lookup"
   version: "v0.6.9"
+filter_analyses_top_n:
+  image: "ghcr.io/biopack-team/shepherd/filter_analyses_top_n"
+  version: "v0.6.9"
+filter_kgraph_orphans:
+  image: "ghcr.io/biopack-team/shepherd/filter_kgraph_orphans"
+  version: "v0.6.9"
+filter_results_top_n:
+  image: "ghcr.io/biopack-team/shepherd/filter_results_top_n"
+  version: "v0.6.9"
+finish_query:
+  image: "ghcr.io/biopack-team/shepherd/finish_query"
+  version: "v0.6.9"
+gandalf:
+  image: "ghcr.io/biopack-team/shepherd/gandalf"
+  version: "v0.6.9"
+gandalf_rehydrate:
+  image: "ghcr.io/biopack-team/shepherd/gandalf_rehydrate"
+  version: "v0.6.9"
+gandalf_loader:
+  image: "busybox"
+  version: "stable"
+merge_message:
+  image: "ghcr.io/biopack-team/shepherd/merge_message"
+  version: "v0.6.9"
+score_paths:
+  image: "ghcr.io/biopack-team/shepherd/score_paths"
+  version: "v0.6.9"
+shepherd_server:
+  image: "ghcr.io/biopack-team/shepherd/shepherd_server"
+  version: "v0.6.9"
 sipr:
   image: "ghcr.io/biopack-team/shepherd/sipr"
+  version: "v0.6.9"
+sort_results_score:
+  image: "ghcr.io/biopack-team/shepherd/sort_results_score"
   version: "v0.6.9"
 postgres:
   image: "postgres"
