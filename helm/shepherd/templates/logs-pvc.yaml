@@ -3,7 +3,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "shepherd.fullname" . }}-logs-pvc
 spec:
-  storageClassName: nfs-client
   accessModes:
   - ReadWriteMany
   resources:
