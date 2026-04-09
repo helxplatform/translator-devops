@@ -99,7 +99,7 @@ service:
 app:
   otel:
     enabled: "False"
-    jaegerHost: "http://jaeger-otel-collector"
+    jaegerHost: "http://jaeger-otel-collector.translator-exp"
     jaegerPort: "4317"
   profiler_on: "False"
   gunicorn:
