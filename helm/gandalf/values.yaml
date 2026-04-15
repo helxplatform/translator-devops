@@ -20,8 +20,8 @@ bash:
 
 image:
   gandalf:
-    repository: ghcr.io/maximusunc/gandalf
-    tag: 0.3.2
+    repository: ghcr.io/ranking-agent/gandalf
+    tag: 0.3.3
     pullPolicy: Always
 
 nameOverride: ""
