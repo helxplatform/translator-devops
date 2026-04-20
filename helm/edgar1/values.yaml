@@ -1,0 +1,95 @@
+# Default values for EDGAR
+
+# Global settings
+namespace: olawumi
+
+# Backend configuration
+backend:
+  name: edgar-backend
+  replicaCount: 1
+  image:
+    repository: ghcr.io/wumirose/edgar-backend
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+# Frontend configuration
+frontend:
+  name: edgar-frontend
+  replicaCount: 1
+  image:
+    repository: ghcr.io/wumirose/edgar-frontend
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+    kubernetes.io/proxy-body-size: 512m
+
+  hosts:
+    - host: edgar-test.apps.renci.org
+      paths:
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: edgar-backend
+              port: 8000
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: edgar-frontend
+              port: 3000
+  tls:
+    - hosts:
+        - edgar-test.apps.renci.org
+      secretName: edgar-test.apps.renci.org-tls
+
+imagePullSecrets: []
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

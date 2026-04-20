@@ -2,8 +2,8 @@ ac:
   image: ghcr.io/ranking-agent/answercoalesce
   version: v3.0.3
 busyBox:
-  image: "busybox"
-  version: "stable"
+  image: "curlimages/curl"
+  version: "latest"
 redis:
   image: "redis"
   version: "6.2.6"

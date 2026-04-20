@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: annotation-frontend
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: annotation-frontend
+  ports:
+  - protocol: TCP
+    port: {{ .Values.frontend.service.port }}
+    targetPort: 80
+  type: {{ .Values.frontend.service.type }}

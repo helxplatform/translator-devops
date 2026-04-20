@@ -1,0 +1,89 @@
+namespace: olawumi
+
+
+# Backend configuration
+backend:
+  name: annotation-backend
+  replicaCount: 1
+  image:
+    repository: ghcr.io/wumirose/annotation-backend
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 8000
+    targetPort: 8000
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: basic
+
+frontend:
+  name: annotation-frontend
+  replicaCount: 1
+  image:
+    repository: ghcr.io/wumirose/annotation-frontend
+    tag: latest
+    pullPolicy: Always
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+ingress:
+  enabled: true
+  className: ""
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    kubernetes.io/proxy-body-size: 512m
+
+  hosts:
+    - host: annotation-test.apps.renci.org
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: annotation-frontend
+              port: 80
+  tls:
+    - hosts:
+        - annotation-test.apps.renci.org
+      secretName: annotation-test.apps.renci.org-tls
+
+imagePullSecrets: []
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
