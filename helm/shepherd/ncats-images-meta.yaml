@@ -1,0 +1,69 @@
+aragorn:
+  image: "ghcr.io/biopack-team/shepherd/aragorn"
+  version: "v0.7.6"
+aragorn_lookup:
+  image: "ghcr.io/biopack-team/shepherd/aragorn_lookup"
+  version: "v0.7.6"
+aragorn_pathfinder:
+  image: "ghcr.io/biopack-team/shepherd/aragorn_pathfinder"
+  version: "v0.7.6"
+aragorn_omnicorp:
+  image: "ghcr.io/biopack-team/shepherd/aragorn_omnicorp"
+  version: "v0.7.6"
+aragorn_score:
+  image: "ghcr.io/biopack-team/shepherd/aragorn_score"
+  version: "v0.7.6"
+arax:
+  image: "ghcr.io/biopack-team/shepherd/arax"
+  version: "v0.7.6"
+arax_rank:
+  image: "ghcr.io/biopack-team/shepherd/arax_rank"
+  version: "v0.7.6"
+bte:
+  image: "ghcr.io/biopack-team/shepherd/bte"
+  version: "v0.7.6"
+bte_lookup:
+  image: "ghcr.io/biopack-team/shepherd/bte_lookup"
+  version: "v0.7.6"
+filter_analyses_top_n:
+  image: "ghcr.io/biopack-team/shepherd/filter_analyses_top_n"
+  version: "v0.7.6"
+filter_kgraph_orphans:
+  image: "ghcr.io/biopack-team/shepherd/filter_kgraph_orphans"
+  version: "v0.7.6"
+filter_results_top_n:
+  image: "ghcr.io/biopack-team/shepherd/filter_results_top_n"
+  version: "v0.7.6"
+finish_query:
+  image: "ghcr.io/biopack-team/shepherd/finish_query"
+  version: "v0.7.6"
+gandalf:
+  image: "ghcr.io/biopack-team/shepherd/gandalf"
+  version: "v0.7.6"
+gandalf_rehydrate:
+  image: "ghcr.io/biopack-team/shepherd/gandalf_rehydrate"
+  version: "v0.7.6"
+gandalf_loader:
+  image: "busybox"
+  version: "stable"
+merge_message:
+  image: "ghcr.io/biopack-team/shepherd/merge_message"
+  version: "v0.7.6"
+score_paths:
+  image: "ghcr.io/biopack-team/shepherd/score_paths"
+  version: "v0.7.6"
+shepherd_server:
+  image: "ghcr.io/biopack-team/shepherd/shepherd_server"
+  version: "v0.7.6"
+sipr:
+  image: "ghcr.io/biopack-team/shepherd/sipr"
+  version: "v0.7.6"
+sort_results_score:
+  image: "ghcr.io/biopack-team/shepherd/sort_results_score"
+  version: "v0.7.6"
+postgres:
+  image: "postgres"
+  version: "17-bookworm"
+redis:
+  image: "redis/redis-stack-server"
+  version: "7.2.0-v11"
