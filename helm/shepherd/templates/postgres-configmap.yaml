@@ -4,6 +4,8 @@ metadata:
   name: {{ include "shepherd.fullname" . }}-postgres-configmap
 data:
   init_db.sql: |-
+    -- Initialize the Shepherd POSTGRES tables --
+
     CREATE TABLE IF NOT EXISTS shepherd_brain (
       qid varchar(255) PRIMARY KEY,
       start_time TIMESTAMP,
@@ -21,5 +23,6 @@ data:
 
     CREATE TABLE IF NOT EXISTS callbacks (
       query_id varchar(255) REFERENCES shepherd_brain(qid),
-      callback_id varchar(255)
+      callback_id varchar(255),
+      otel_trace varchar(255)
     );
