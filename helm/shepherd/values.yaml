@@ -405,10 +405,10 @@ score_paths:
   resources:
     requests:
       memory: 4Gi
-      cpu: 1000m
+      cpu: 1200m
     limits:
       memory: 5Gi
-      cpu: 1000m
+      cpu: 1500m
 
 sipr:
   image:
