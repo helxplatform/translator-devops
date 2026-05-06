@@ -22,9 +22,9 @@ web:
   serverHostName: "hostname"
 
 busybox:
-  image:
-    repository: busybox
-    tag: 1.35
+     image:
+        repository: busybox
+        tag: 1.36-glibc
 redis:
   image:
     repository: redis
@@ -68,6 +68,9 @@ redis:
   nodeSelector: {}
   storageSize: 50Gi
 
+# Set dataUrl to seed Redis with a pre-built dump on first deploy.
+# Leave empty or comment out to skip seeding (e.g. on subsequent redeploys when data already exists).
+# Example: "https://stars.renci.org/var/answer_coalesce/YYYY-MM-DD/answer-coalesce.rdb"
 dataUrl: ""
 
 
