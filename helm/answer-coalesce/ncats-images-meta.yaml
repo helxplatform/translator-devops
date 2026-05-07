@@ -1,9 +1,10 @@
 ac:
   image: ghcr.io/ranking-agent/answercoalesce
   version: v3.0.4-translatorkg
-busyBox:
-  image: "busybox"
-  version: "stable"
+busybox:
+  image:
+    repository: curlimages/curl
+    tag: latest
 redis:
   image: "redis"
   version: "6.2.6"
