@@ -99,6 +99,23 @@ userconfig:
       logs:
         level: info
 
+jaeger:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt
+    labels:
+      app: jaeger
+      version: "2.17.0" 
+    hosts:
+      - translator-otel-dev.apps.renci.org
+    tls:
+      - hosts:
+          - translator-otel-dev.apps.renci.org
+        secretName: translator-otel-dev.apps.renci.org-tls
+    pathType: ImplementationSpecific
+
 # Index cleaner CronJob — prunes indices older than N days
 esIndexCleaner:
   enabled: true
