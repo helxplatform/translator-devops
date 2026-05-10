@@ -21,10 +21,6 @@ userconfig:
               - "https://elasticsearch-master:9200"
             tls:
               insecure_skip_verify: true    # skip self-signed cert validation
-            auth:
-              basic:
-                username: "elastic"
-                password: "XUOaoqxgyz54QWPa"
             indices:
               index_prefix: "jaeger"
               spans:
