@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "shepherd.fullname" . }}-server
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: webserver
+spec:
+  replicas: {{ .Values.shepherd_server.replicaCount }}
+  {{ if .Values.shepherd_server.strategy }}
+  strategy:
+    type: {{ .Values.shepherd_server.strategy }}
+  {{ end }}
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: webserver
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: webserver
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+
+        - name: {{ .Chart.Name }}-server
+          image: "{{ .Values.shepherd_server.image.repository }}:{{ .Values.shepherd.tag }}"
+          imagePullPolicy: "{{ .Values.shepherd_server.image.imagePullPolicy }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "shepherd.fullname" . }}-configmap
+          command:
+            - 'uvicorn'
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "{{ .Values.shepherd_server.service.port }}"
+            - "shepherd_server.server:APP"
+          ports:
+            - name: http
+              containerPort: {{ .Values.shepherd_server.service.port }}
+              protocol: TCP
+          {{ if .Values.shepherd_server.resources }}
+          resources: {{ toYaml .Values.shepherd_server.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+          - name: {{ include "shepherd.fullname" . }}-logs-pvc
+            mountPath: /app/logs/
+      volumes:
+      - name: {{ include "shepherd.fullname" . }}-logs-pvc
+        persistentVolumeClaim:
+          claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+      {{- with .Values.shepherd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

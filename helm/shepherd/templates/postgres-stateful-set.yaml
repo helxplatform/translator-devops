@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: postgres
+  name: {{ include "shepherd.fullname" . }}-db
+spec:
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: postgres
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: postgres
+    spec:
+      containers:
+        - name: {{ include "shepherd.fullname" . }}-db
+          image: '{{ .Values.shepherd_db.image.repository }}:{{ .Values.shepherd_db.image.tag }}'
+          ports:
+            - name: http
+              containerPort: {{ .Values.shepherd_db.service.port }}
+              protocol: TCP
+          args:
+            - postgres
+            - -c
+            - max_connections=200
+          env:
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.shepherd_db.auth.password }}
+            - name: POSTGRES_USER
+              value: {{ .Values.shepherd_db.auth.user }}
+          {{ if .Values.shepherd_db.resources }}
+          resources: {{ toYaml .Values.shepherd_db.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+            - mountPath: "/docker-entrypoint-initdb.d/init_db.sql"
+              name: "postgres-config"
+              subPath: init_db.sql
+            - mountPath: "/var/lib/postgresql/data"
+              name: {{ include "shepherd.fullname" . }}-db-volume
+              subPath: pgdata
+      restartPolicy: Always
+      volumes:
+        - name: postgres-config
+          configMap:
+            name: {{ include "shepherd.fullname" . }}-postgres-configmap
+            defaultMode: 0777
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "shepherd.fullname" . }}-db-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 2Gi
