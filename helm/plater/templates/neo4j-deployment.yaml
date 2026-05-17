@@ -17,7 +17,7 @@ spec:
         {{- include "plater.selectorLabels" . | nindent 8 }}
         service-type: neo4j-database
     spec:
-      {{- if .Values.dataUrl }}
+      {{- if .Values.app.neo4j.dataUrl }}
       initContainers:
         - name: {{ include "plater.fullname" . }}-neo4j-download-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
@@ -25,7 +25,7 @@ spec:
             - '/download_data_neo4j.sh'
           env:
             - name: NEO4J_DATA_URL
-              value: {{ .Values.dataUrl }}
+              value: {{ .Values.app.neo4j.dataUrl }}
           resources:
             {{- toYaml .Values.app.neo4j.initresources | nindent 12 }}
           volumeMounts:
