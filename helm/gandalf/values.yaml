@@ -46,7 +46,7 @@ app:
         cpu: "2000m"
         memory: "5Gi"
     sharedData:
-      mountPath: ""
+      mountPath: "/data"
     autoscaling:
       enabled: false
       replicaCount: 1
