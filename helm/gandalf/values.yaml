@@ -80,7 +80,7 @@ app:
           ephemeral-storage: "6Gi"
     persistentVolume:
       accessModes: 
-        - ReadWriteMany
+        - ReadWriteOnce
       size: "10Gi"
 
   openapi_config:
