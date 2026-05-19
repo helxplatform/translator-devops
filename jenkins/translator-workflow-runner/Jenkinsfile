@@ -41,9 +41,15 @@ pipeline {
                 script {
                     script {
                         def imageMeta = readYaml file: 'helm/translator-workflow-runner/ncats-images-meta.yaml'
-                        env.ORIGINAL_REPO = imageMeta.translatorWorkflowRunner.image
-                        env.BUILD_VERSION = imageMeta.translatorWorkflowRunner.version
-                        currentBuild.displayName = imageMeta.translatorWorkflowRunner.version
+                        def runnerMeta = imageMeta?.translatorWorkflowRunner ?: imageMeta?.get('translator-workflow-runner')
+
+                        if (!runnerMeta?.image || !runnerMeta?.version) {
+                            error("Invalid helm/translator-workflow-runner/ncats-images-meta.yaml: expected translatorWorkflowRunner.image and translatorWorkflowRunner.version")
+                        }
+
+                        env.ORIGINAL_REPO = runnerMeta.image
+                        env.BUILD_VERSION = runnerMeta.version
+                        currentBuild.displayName = runnerMeta.version
                     }
                 }
             }

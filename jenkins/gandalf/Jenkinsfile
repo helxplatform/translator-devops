@@ -41,9 +41,15 @@ pipeline {
                 script {
                     script {
                         def imageMeta  = readYaml file: 'helm/gandalf/ncats-images-meta.yaml'
-                        env.ORIGINAL_REPO = imageMeta.gandalf.image
-                        env.BUILD_VERSION = imageMeta.gandalf.version
-                        currentBuild.displayName = imageMeta.gandalf.version
+                        def gandalfMeta = imageMeta?.gandalf ?: imageMeta?.get('translator-gandalf')
+
+                        if (!gandalfMeta?.image || !gandalfMeta?.version) {
+                            error("Invalid helm/gandalf/ncats-images-meta.yaml: expected gandalf.image and gandalf.version")
+                        }
+
+                        env.ORIGINAL_REPO = gandalfMeta.image
+                        env.BUILD_VERSION = gandalfMeta.version
+                        currentBuild.displayName = gandalfMeta.version
                     }
                 }
             }
