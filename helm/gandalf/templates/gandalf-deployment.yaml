@@ -45,7 +45,7 @@ spec:
           volumeMounts:
             # -- Shared mmap/LMDB data
             - name: {{ include "gandalf.fullname" . }}-data
-              mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
+              mountPath: {{ .Values.app.gandalf.sharedData.mountPath | default "/data" }}
               readOnly: true
       volumes:
         # -- Shared graph data volume (mmap + LMDB files)
