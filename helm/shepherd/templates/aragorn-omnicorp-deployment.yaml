@@ -27,6 +27,16 @@ spec:
       securityContext:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
+      initContainers:
+        - name: omnicorp-wait-for-data
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - 'until [ -f {{ .Values.omnicorpLoader.sharedData.mountPath }}/curies.lmdb ]; do echo "waiting..."; sleep 5; done'
+          volumeMounts:
+            - name: omnicorp-data
+              mountPath: {{ .Values.omnicorpLoader.sharedData.mountPath }}
       containers:
         - name: {{ .Chart.Name }}-aragorn-omnicorp
           image: "{{ .Values.aragorn_omnicorp.image.repository }}:{{ .Values.shepherd.tag }}"
@@ -42,12 +52,20 @@ spec:
           resources: {{ toYaml .Values.aragorn_omnicorp.resources | nindent 12 }}
           {{ end }}
           volumeMounts:
-          - name: {{ include "shepherd.fullname" . }}-logs-pvc
-            mountPath: /app/logs/
+            - name: {{ include "shepherd.fullname" . }}-logs-pvc
+              mountPath: /app/logs/
+            # -- Shared LMDB data
+            - name: omnicorp-data
+              mountPath: {{ .Values.omnicorpLoader.sharedData.mountPath }}
+              readOnly: true
       volumes:
-      - name: {{ include "shepherd.fullname" . }}-logs-pvc
-        persistentVolumeClaim:
-          claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+        - name: {{ include "shepherd.fullname" . }}-logs-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+        # -- Shared data volume (LMDB files)
+        - name: omnicorp-data
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-omnicorp-data
       {{- with .Values.shepherd.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

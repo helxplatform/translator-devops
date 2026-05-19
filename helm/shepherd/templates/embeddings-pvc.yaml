@@ -1,0 +1,16 @@
+{{- if .Values.embeddingsLoader.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "shepherd.fullname" . }}-embeddings-data
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    {{- toYaml .Values.embeddingsLoader.persistentVolume.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.embeddingsLoader.persistentVolume.size }}
+{{- end }}

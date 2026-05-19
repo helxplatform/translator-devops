@@ -15,6 +15,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
     nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: 'true'
@@ -104,10 +105,10 @@ aragorn_omnicorp:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 3Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
 
 aragorn_pathfinder:
@@ -140,10 +141,10 @@ aragorn_score:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 3Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
 
 arax:
@@ -392,6 +393,51 @@ merge_message:
       memory: 5Gi
       cpu: 2000m
 
+# ---------------------------------------------------------------------------
+# Init container — download data from public server(s)
+# ---------------------------------------------------------------------------
+omnicorpLoader:
+  sharedData:
+    mountPath: /data/omnicorp_lmdb
+  persistentVolume:
+    accessModes:
+      - ReadWriteMany
+    size: 12Gi
+  enabled: false
+
+  # Image for the init container (needs wget; busybox or alpine work well)
+  image:
+    repository: busybox
+    tag: "1.36"
+    pullPolicy: IfNotPresent
+
+  # List of URLs to download. Supported formats:
+  #   .tar.gz / .tgz  — extracted automatically
+  #   .tar             — extracted automatically
+  #   .zip             — extracted automatically (requires unzip in image; use alpine)
+  #   anything else    — downloaded as-is into the mount path
+  sources: []
+    # - https://example.com/graph-data/edges.mmap
+    # - https://example.com/graph-data/nodes.lmdb.tar.gz
+    # - https://example.com/graph-data/metadata.json
+
+  # Skip download if data already exists and source URLs haven't changed
+  skipIfExists: true
+
+  # Optional shell command to run after all downloads complete
+  # Runs inside the init container with the data volume mounted
+  postDownloadCommand: ""
+    # e.g.: "chmod -R 755 /data/graph && echo 'permissions set'"
+
+  # Resources for the init container (downloads can be memory-light)
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+
 score_paths:
   image:
     repository: ghcr.io/biopack-team/shepherd/score_paths
@@ -508,6 +554,22 @@ shepherd_broker:
     - '60'
     - --save
     - '60 1'
+
+shepherd_monitor:
+  service:
+    type: ClusterIP
+    port: 5440
+  image:
+    repository: ghcr.io/biopack-team/shepherd/monitor
+    imagePullPolicy: Always
+  slack_webhook_url: fillthisin
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1200m
 
 shepherd_server:
   image:

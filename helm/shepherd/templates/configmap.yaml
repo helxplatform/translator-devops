@@ -33,4 +33,6 @@ data:
 
   GANDALF_GRAPH_PATH: {{ .Values.gandalf.sharedData.mountPath }}
 
+  OMNICORP_CURIES_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/curies.lmdb"
+  OMNICORP_SHARED_COUNTS_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/shared_counts.lmdb"
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}
