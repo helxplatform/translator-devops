@@ -1,0 +1,64 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: 853771734544.dkr.ecr.us-east-1.amazonaws.com/translator-gandalf
+  tag: DOCKER_IMAGE_VERSION
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  class: alb
+  pathType: ImplementationSpecific
+  path: /*
+  gandalf:
+    host: tier0-dogpark.ci.transltr.io
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/group.name: tier0-dogpark
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 6429}]'
+      alb.ingress.kubernetes.io/success-codes: '200'
+      alb.ingress.kubernetes.io/healthcheck-path: '/health'
+      alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=1800
+      alb.ingress.kubernetes.io/tags: Name=tier0-dogpark.ci.transltr.io,environment=ci,program=translator,project=translator,org=ncats,app-group=sri,access-team=ncats-devops
+      external-dns.alpha.kubernetes.io/hostname: tier0-dogpark.ci.transltr.io
+
+app:
+  gandalf:
+    service:
+      port: 6429
+      type: ClusterIP
+    resources:
+      requests:
+        cpu: "2000m"
+        memory: "5Gi"
+      limits:
+        cpu: "2000m"
+        memory: "5Gi"
+    autoscaling:
+      enabled: false
+      replicaCount: 1
+    loader:
+      enabled: false
+    persistentVolume:
+      accessModes:
+        - ReadWriteMany
+      size: "5Gi"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: application
+            operator: In
+            values:
+            - "sri1"
+  tolerations:
+    - key: "transltr"
+      value: "sri1"
+      operator: "Equal"
+      effect: "NoSchedule"
