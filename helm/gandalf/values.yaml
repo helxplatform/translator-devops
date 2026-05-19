@@ -51,7 +51,7 @@ app:
       enabled: false
       replicaCount: 1
     loader:
-      enabled: false
+      enabled: true
       backoffLimit: 1
       ttlSecondsAfterFinished: 600
       image:
