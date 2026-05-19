@@ -20,4 +20,5 @@ spec:
   resources:
     requests:
       storage: {{ .Values.app.gandalf.persistentVolume.size }}
+  volumeMode: Filesystem
 {{- end }}
