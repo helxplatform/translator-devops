@@ -48,8 +48,6 @@ spec:
             - "--timeout"
             - "{{ .Values.appraiser.workerTimeout }}"
             - "app.server:APP"
-            - "--config"
-            - "gunicorn.conf.py"
           volumeMounts:
             - name: answer-appraiser-logs-vol
               mountPath: /app/logs
