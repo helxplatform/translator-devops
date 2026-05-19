@@ -36,7 +36,9 @@ data:
   {{ if .Values.app.otel.enabled }}
   OTEL_ENABLED: "TRUE"
   OTEL_SERVICE_NAME: "automat-{{ .Release.Name }}"
-  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.app.otel.jaegerHost | quote }}
+  OTEL_EXPORTER_OTLP_INSECURE: {{ .Values.app.otel.insecure | default "false" | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.app.otel.insecure | default "false" | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.app.otel.jaegerHost }}:{{ .Values.app.otel.jaegerPort }}"
   JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
   JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
   {{ end }}
