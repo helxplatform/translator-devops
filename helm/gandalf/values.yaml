@@ -19,10 +19,9 @@ bash:
     tag: "5.2.15"
 
 image:
-  gandalf:
-    repository: ghcr.io/ranking-agent/gandalf
-    tag: 0.3.3
-    pullPolicy: Always
+  repository: ghcr.io/ranking-agent/gandalf
+  tag: 0.3.3
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
