@@ -1,0 +1,16 @@
+{{- if .Values.omnicorpLoader.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "shepherd.fullname" . }}-omnicorp-data
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    {{- toYaml .Values.omnicorpLoader.persistentVolume.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.omnicorpLoader.persistentVolume.size }}
+{{- end }}
