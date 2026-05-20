@@ -1,0 +1,80 @@
+# SPDX-FileCopyrightText: 2022 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2023 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2024 Renaissance Computing Institute. All rights reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: LicenseRef-RENCI
+# SPDX-License-Identifier: MIT
+
+# Default values for robokop-ui-postgres.
+# This is a YAML-formatted file.
+
+replicaCount: 1
+
+image:
+  repository: postgres
+  tag: "9.6.23"
+  pullPolicy: IfNotPresent
+
+backup:
+  enable: true
+  crontab: "0 5 * * *"
+
+# will invoke a DB restore when set
+restoreDB: false
+
+dataMountPath: /var/lib/postgresql/data
+dataMountSubPath: /db_data
+accessMode: "ReadWriteOnce"
+
+adminUser:
+adminPassword: ""
+mountSubPath: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+storage:
+  create: false
+  name: vol
+  claimName: pvc
+  storageClass: ""
+  size: 10Gi
+  accessMode: "ReadWriteMany"
+  efsHandle: ""
+  mountPoint: /pg_data
+
+backupSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 1234
+
+shmSize: 1Gi
+
+resources:
+  limits:
+    memory: 3Gi
+  requests:
+    memory: 1Gi
+    cpu: 250m
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

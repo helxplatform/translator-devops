@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "shepherd.fullname" . }}-broker
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: redis
+spec:
+  serviceName: {{ include "shepherd.fullname" . }}-broker
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: redis
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: redis
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-broker-container
+          image: "{{ .Values.shepherd_broker.image.repository }}:{{ .Values.shepherd_broker.image.tag }}"
+          ports:
+            - name: redis
+              containerPort: {{ .Values.shepherd_broker.service.port }}
+              protocol: TCP
+          command:
+            - "redis-stack-server"
+          args:
+            - --requirepass
+            - {{ .Values.shepherd_broker.auth.password }}
+            {{- range .Values.shepherd_broker.args }}
+            - {{ . | quote }}
+            {{- end }}
+          volumeMounts:
+            - mountPath: {{ .Values.shepherd_broker.dbPath }}
+              name: {{ include "shepherd.fullname" . }}-broker-data-volume
+          resources:
+            {{ toYaml .Values.shepherd_broker.resources | nindent 12 }}
+      {{- with .Values.shepherd_broker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd_broker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd_broker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "shepherd.fullname" . }}-broker-data-volume
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi

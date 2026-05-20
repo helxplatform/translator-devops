@@ -19,6 +19,8 @@ spec:
         {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
         app: database
     spec:
+      securityContext:
+        fsGroup: 999
     {{- if .Values.dataUrl }}
       initContainers:
         - name: {{ include "answer-coalesce.fullname" . }}-redis-seed-container

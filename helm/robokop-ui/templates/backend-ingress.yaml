@@ -1,0 +1,60 @@
+{{- if .Values.backend.ingress.enabled -}}
+{{- $fullName := include "robokop-ui.fullname" . -}}
+{{- $svcPort := .Values.backend.service.port -}}
+{{- $pathType := .Values.backend.ingress.pathType -}}
+{{- if and .Values.backend.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.backend.ingress.frontend.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.backend.ingress.annotations "kubernetes.io/ingress.class" .Values.backend.ingress.className}}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-backend-ingress
+  labels:
+    {{- include "robokop-ui.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "250m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+    nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+    nginx.ingress.kubernetes.io/send-timeout: "86400"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+
+    nginx.ingress.kubernetes.io/use-regex: "true"
+
+    cert-manager.io/cluster-issuer: letsencrypt
+    {{ if .Values.backend.ingress.public }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
+    {{ end }}
+spec:
+  {{- if and .Values.backend.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.backend.ingress.className }}
+  {{- end }}
+  {{- if .Values.backend.ingress.tls.enabled }}
+  tls:
+  - hosts:
+      - {{ .Values.backend.ingress.host }}
+    secretName: {{ .Values.backend.ingress.host }}-tls
+  {{- end }}
+
+  rules:
+  - host: {{ .Values.backend.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.backend.ingress.path }}
+        pathType: {{ .Values.backend.ingress.pathType }}
+        backend:
+          service:
+            name: {{ include "robokop-ui.fullname" .}}-backend-svc
+            port:
+              number: {{ .Values.backend.service.port }}
+{{- end }}

@@ -88,6 +88,18 @@ config:
     }
   servers:
     [
+      "https://shepherd.renci.org/aragorn/openapi.json",
+      "https://shepherd.ci.transltr.io/aragorn/openapi.json",
+      "https://shepherd.test.transltr.io/aragorn/openapi.json",
+      "https://shepherd.transltr.io/aragorn/openapi.json",
+      "https://shepherd.renci.org/arax/openapi.json",
+      "https://shepherd.ci.transltr.io/arax/openapi.json",
+      "https://shepherd.test.transltr.io/arax/openapi.json",
+      "https://shepherd.transltr.io/arax/openapi.json",
+      "https://shepherd.renci.org/bte/openapi.json",
+      "https://shepherd.ci.transltr.io/bte/openapi.json",
+      "https://shepherd.test.transltr.io/bte/openapi.json",
+      "https://shepherd.transltr.io/bte/openapi.json",
       "https://aragorn.ci.transltr.io/aragorn/openapi.json",
       "https://aragorn.ci.transltr.io/robokop/openapi.json",
       "https://aragorn.renci.org/aragorn/openapi.json",
