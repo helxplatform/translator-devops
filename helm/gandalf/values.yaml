@@ -81,7 +81,7 @@ app:
     persistentVolume:
       accessModes: 
         - ReadWriteOnce
-      size: "10Gi"
+      size: "50Gi"
 
   openapi_config:
     # Adds more configs to default open api config
