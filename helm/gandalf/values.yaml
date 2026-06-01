@@ -19,10 +19,9 @@ bash:
     tag: "5.2.15"
 
 image:
-  gandalf:
-    repository: ghcr.io/ranking-agent/gandalf
-    tag: 0.3.3
-    pullPolicy: Always
+  repository: ghcr.io/ranking-agent/gandalf
+  tag: 0.3.3
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
@@ -47,12 +46,12 @@ app:
         cpu: "2000m"
         memory: "5Gi"
     sharedData:
-      mountPath: ""
+      mountPath: "/data"
     autoscaling:
       enabled: false
       replicaCount: 1
     loader:
-      enabled: false
+      enabled: true
       backoffLimit: 1
       ttlSecondsAfterFinished: 600
       image:
@@ -81,8 +80,8 @@ app:
           ephemeral-storage: "6Gi"
     persistentVolume:
       accessModes: 
-        - ReadWriteMany
-      size: "5Gi"
+        - ReadWriteOnce
+      size: "50Gi"
 
   openapi_config:
     # Adds more configs to default open api config

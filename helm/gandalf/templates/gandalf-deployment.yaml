@@ -24,8 +24,8 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-gandalf
-          image: "{{ .Values.image.gandalf.repository }}:{{ .Values.image.gandalf.tag }}"
-          imagePullPolicy: {{ .Values.image.gandalf.pullPolicy }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           envFrom:
             - configMapRef:
                 name: {{ include "gandalf.fullname" . }}-configmap
@@ -45,7 +45,7 @@ spec:
           volumeMounts:
             # -- Shared mmap/LMDB data
             - name: {{ include "gandalf.fullname" . }}-data
-              mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
+              mountPath: {{ .Values.app.gandalf.sharedData.mountPath | default "/data" }}
               readOnly: true
       volumes:
         # -- Shared graph data volume (mmap + LMDB files)
