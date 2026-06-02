@@ -6,10 +6,14 @@ metadata:
   labels:
     {{- include "shepherd.labels" . | nindent 4 }}
   annotations:
+    # Long-lived data volume: never let Helm delete it on upgrade/uninstall.
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
     {{- toYaml .Values.omnicorpLoader.persistentVolume.accessModes | nindent 4 }}
+  {{- with .Values.omnicorpLoader.persistentVolume.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.omnicorpLoader.persistentVolume.size }}

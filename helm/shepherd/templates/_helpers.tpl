@@ -50,3 +50,23 @@ app.kubernetes.io/name: {{ include "shepherd.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
+{{/*
+Shared hash of the omnicorp loader source URLs.
+Rendered identically into the loader Job (as SOURCES_HASH env) and the worker
+Deployment (as a pod-template annotation), so a change to `sources`:
+  - changes the loader Job pod template  -> Job re-runs on `helm upgrade`
+  - changes the worker pod-template annotation -> worker rolls to pick up new data
+Truncated to 12 chars to match the loader's stored .source-url-hash.
+*/}}
+{{- define "shepherd.omnicorpSourcesHash" -}}
+{{- join "," .Values.omnicorpLoader.sources | sha256sum | trunc 12 -}}
+{{- end -}}
+
+{{/*
+Shared hash of the embeddings loader source URLs. Same purpose as the omnicorp
+hash above: drives loader Job re-runs and worker (score-paths) rolls when the
+`embeddingsLoader.sources` value changes.
+*/}}
+{{- define "shepherd.embeddingsSourcesHash" -}}
+{{- join "," .Values.embeddingsLoader.sources | sha256sum | trunc 12 -}}
+{{- end -}}

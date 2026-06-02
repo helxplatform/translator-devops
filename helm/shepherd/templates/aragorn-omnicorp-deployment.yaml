@@ -7,10 +7,10 @@ metadata:
     service-type: worker
 spec:
   replicas: {{ .Values.aragorn_omnicorp.replicaCount }}
-  {{ if .Values.aragorn_omnicorp.strategy }}
+  {{- if .Values.aragorn_omnicorp.strategy }}
   strategy:
     type: {{ .Values.aragorn_omnicorp.strategy }}
-  {{ end }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "shepherd.selectorLabels" . | nindent 6 }}
@@ -21,19 +21,30 @@ spec:
         {{- include "shepherd.selectorLabels" . | nindent 8 }}
         service-type: worker
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        # Rolls the worker whenever the loader's source URLs change, so new pods
+        # re-run the init container and open the freshly-loaded data.
+        checksum/omnicorp-sources: {{ include "shepherd.omnicorpSourcesHash" . }}
     spec:
       {{- with .Values.securityContext }}
       securityContext:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
       initContainers:
+        # Wait for the loader's success-only sentinel. Gating on .data-ready
+        # (written last, only on full success) instead of a data file means the
+        # worker never starts on a partially-loaded volume.
         - name: omnicorp-wait-for-data
           image: busybox
           command:
             - /bin/sh
             - -c
-            - 'until [ -f {{ .Values.omnicorpLoader.sharedData.mountPath }}/curies.lmdb ]; do echo "waiting..."; sleep 5; done'
+            - |
+              until [ -f {{ .Values.omnicorpLoader.sharedData.mountPath }}/.data-ready ]; do
+                echo "waiting for loader to finish (.data-ready)..."
+                sleep 5
+              done
+              echo "Data ready."
           volumeMounts:
             - name: omnicorp-data
               mountPath: {{ .Values.omnicorpLoader.sharedData.mountPath }}
@@ -48,13 +59,13 @@ spec:
             - 'python'
           args:
             - "worker.py"
-          {{ if .Values.aragorn_omnicorp.resources }}
+          {{- if .Values.aragorn_omnicorp.resources }}
           resources: {{ toYaml .Values.aragorn_omnicorp.resources | nindent 12 }}
-          {{ end }}
+          {{- end }}
           volumeMounts:
             - name: {{ include "shepherd.fullname" . }}-logs-pvc
               mountPath: /app/logs/
-            # -- Shared LMDB data
+            # Shared LMDB data (read-only for the worker)
             - name: omnicorp-data
               mountPath: {{ .Values.omnicorpLoader.sharedData.mountPath }}
               readOnly: true
@@ -62,7 +73,6 @@ spec:
         - name: {{ include "shepherd.fullname" . }}-logs-pvc
           persistentVolumeClaim:
             claimName: {{ include "shepherd.fullname" . }}-logs-pvc
-        # -- Shared data volume (LMDB files)
         - name: omnicorp-data
           persistentVolumeClaim:
             claimName: {{ include "shepherd.fullname" . }}-omnicorp-data

@@ -6,6 +6,11 @@ deploymentStrategy: Recreate
 nameOverride: ""
 fullnameOverride: ""
 
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+
 ingress:
   host: ingress_HOST
   class: ""
@@ -42,6 +47,7 @@ shepherd:
   lookup_timeout: fillthisin
   kg_retrieval_url: fillthisin
   sync_kg_retrieval_url: fillthisin
+  kg_rehydrate_url: fillthisin
   default_data_tier: 0
   omnicorp_url: fillthisin
   arax_url: fillthisin
@@ -291,90 +297,6 @@ finish_query:
       memory: 2Gi
       cpu: 1000m
 
-gandalf:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/gandalf
-    imagePullPolicy: Always
-  sharedData:
-    mountPath: /data/gandalf_mmap
-  persistentVolume:
-    accessModes:
-      - ReadWriteMany
-    size: 40Gi
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "15Gi"
-    limits:
-      cpu: "1500m"
-      memory: "20Gi"
-  replicaCount: 1
-  autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 80
-
-# ---------------------------------------------------------------------------
-# Init container — download data from public server(s)
-# ---------------------------------------------------------------------------
-gandalfLoader:
-  enabled: false
-
-  # Image for the init container (needs wget; busybox or alpine work well)
-  image:
-    repository: busybox
-    tag: "1.36"
-    pullPolicy: IfNotPresent
-
-  # List of URLs to download. Supported formats:
-  #   .tar.gz / .tgz  — extracted automatically
-  #   .tar             — extracted automatically
-  #   .zip             — extracted automatically (requires unzip in image; use alpine)
-  #   anything else    — downloaded as-is into the mount path
-  sources: []
-    # - https://example.com/graph-data/edges.mmap
-    # - https://example.com/graph-data/nodes.lmdb.tar.gz
-    # - https://example.com/graph-data/metadata.json
-
-  # Skip download if data already exists and source URLs haven't changed
-  skipIfExists: true
-
-  # Optional shell command to run after all downloads complete
-  # Runs inside the init container with the data volume mounted
-  postDownloadCommand: ""
-    # e.g.: "chmod -R 755 /data/graph && echo 'permissions set'"
-
-  # Resources for the init container (downloads can be memory-light)
-  resources:
-    requests:
-      cpu: "250m"
-      memory: "256Mi"
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-
-gandalf_rehydrate:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/gandalf_rehydrate
-    imagePullPolicy: Always
-  sharedData:
-    mountPath: /data/gandalf_mmap
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "15Gi"
-    limits:
-      cpu: "1500m"
-      memory: "20Gi"
-  autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 80
-
 merge_message:
   image:
     repository: ghcr.io/biopack-team/shepherd/merge_message
@@ -450,11 +372,11 @@ score_paths:
     targetMemory: 75
   resources:
     requests:
-      memory: 4Gi
-      cpu: 1200m
+      memory: 20Gi
+      cpu: 5000m
     limits:
-      memory: 5Gi
-      cpu: 1500m
+      memory: 22Gi
+      cpu: 6000m
 
 sipr:
   image:
@@ -570,6 +492,10 @@ shepherd_monitor:
     limits:
       memory: 2Gi
       cpu: 1200m
+  ingress:
+    enabled: false
+    rootPath: /monitor
+  slack_webhook_url: fillthisin
 
 shepherd_server:
   image:
@@ -591,8 +517,3 @@ shepherd_server:
     limits:
       memory: 8Gi
       cpu: 3000m
-
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 3000
-  fsGroup: 2000

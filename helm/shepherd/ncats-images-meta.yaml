@@ -37,15 +37,6 @@ filter_results_top_n:
 finish_query:
   image: "ghcr.io/biopack-team/shepherd/finish_query"
   version: "v0.7.7"
-gandalf:
-  image: "ghcr.io/biopack-team/shepherd/gandalf"
-  version: "v0.7.7"
-gandalf_rehydrate:
-  image: "ghcr.io/biopack-team/shepherd/gandalf_rehydrate"
-  version: "v0.7.7"
-gandalf_loader:
-  image: "busybox"
-  version: "stable"
 merge_message:
   image: "ghcr.io/biopack-team/shepherd/merge_message"
   version: "v0.7.7"
