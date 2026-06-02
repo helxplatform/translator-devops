@@ -69,8 +69,18 @@ solr:
   affinity:
   tolerations:
 
-  heap_mem: "-Xmx12G"
-  gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
+  # -Xms == -Xmx so the heap is allocated up front and never resized at runtime.
+  # 12G leaves ~20G of a 32Gi container for the OS page cache, which serves the
+  # mmap'd ~142G index (the live heap set is only a few GB; see #265/#267).
+  heap_mem: "-Xms12G -Xmx12G"
+
+  # G1 GC. We deliberately do NOT pin the young generation (no -XX:NewSize/
+  # MaxNewSize): a fixed young gen overrides G1NewSizePercent/G1MaxNewSizePercent
+  # and disables the MaxGCPauseMillis pause-time goal. Instead we let G1 size the
+  # young gen adaptively against a 200ms pause target, and let IHOP stay adaptive
+  # (no -XX:InitiatingHeapOccupancyPercent override). See
+  # https://github.com/NCATSTranslator/NameResolution/issues/272
+  gc: "-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M"
 
   # Solr query cache tuning, applied to the name_lookup collection via the Config
   # API during the restore job (written to the collection's configoverlay.json).
