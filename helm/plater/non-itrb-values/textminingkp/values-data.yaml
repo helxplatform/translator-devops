@@ -1,4 +1,10 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/TMKP_Automat/2ae17047aa1b5f3c/graph_2ae17047aa1b5f3c.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/TMKP_Automat/2ae17047aa1b5f3c/TMKP_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/TMKP_Automat/2ae17047aa1b5f3c/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/TMKP_Automat/2ae17047aa1b5f3c/testing_data.json
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/TMKP_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/TMKP_Automat/c6e319504bba0301/testing_data.json

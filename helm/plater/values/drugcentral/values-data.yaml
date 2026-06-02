@@ -1,4 +1,10 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/DrugCentral_Automat/dec0617490b49c7a/graph_dec0617490b49c7a.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/DrugCentral_Automat/dec0617490b49c7a/DrugCentral_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/DrugCentral_Automat/dec0617490b49c7a/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/DrugCentral_Automat/dec0617490b49c7a/testing_data.json
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/DrugCentral_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/DrugCentral_Automat/4d492047aa51f86f/testing_data.json

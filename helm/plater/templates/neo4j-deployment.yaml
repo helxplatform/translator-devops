@@ -1,4 +1,4 @@
-{{ if not .Values.externalNeo4j }}
+{{- if and (eq .Values.graph.backend "neo4j") (not .Values.graph.external) }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -10,22 +10,22 @@ spec:
   selector:
     matchLabels:
       {{- include "plater.selectorLabels" . | nindent 6 }}
-      service-type: database
+      service-type: neo4j-database
   template:
     metadata:
       labels:
         {{- include "plater.selectorLabels" . | nindent 8 }}
-        service-type: database
+        service-type: neo4j-database
     spec:
-      {{- if .Values.dataUrl }}
+      {{- if .Values.app.neo4j.dataUrl }}
       initContainers:
         - name: {{ include "plater.fullname" . }}-neo4j-download-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           command:
-            - '/download_data.sh'
+            - '/download_data_neo4j.sh'
           env:
             - name: NEO4J_DATA_URL
-              value: {{ .Values.dataUrl }}
+              value: {{ .Values.app.neo4j.dataUrl }}
           resources:
             {{- toYaml .Values.app.neo4j.initresources | nindent 12 }}
           volumeMounts:
@@ -33,8 +33,8 @@ spec:
               name: {{ include "plater.fullname" . }}-neo4jkp-pvc
               subPath: neo4j_data
             - name: {{ include "plater.fullname" . }}-scripts
-              mountPath: /download_data.sh
-              subPath: download_data.sh
+              mountPath: /download_data_neo4j.sh
+              subPath: download_data_neo4j.sh
         - name: {{ include "plater.fullname" . }}-neo4j-seed-container
           image: {{ .Values.image.neo4j.repository }}:{{ .Values.image.neo4j.tag }}
           command:
@@ -88,7 +88,7 @@ spec:
           - name: NEO4J_server_jvm_additional
             value: "-XX:+ExitOnOutOfMemoryError -XX:+UseCompressedOops -Dlog4j2.disable.jmx=true -Dlog4j2.formatMsgNoLookups=true"
           - name: NEO4J_db_transaction_timeout
-            value: "{{ .Values.app.Neo4jQueryTimeout }}s"
+            value: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}s"
           ports:
             - name: neo4j-http
               containerPort: 7474
