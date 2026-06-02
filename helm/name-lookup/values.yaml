@@ -61,7 +61,7 @@ solr:
       cpu: 4000m
     limits:
       memory: "32Gi"
-      cpu: 6000m
+      cpu: 7000m
 
   # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
   # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
