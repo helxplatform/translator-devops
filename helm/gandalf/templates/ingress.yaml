@@ -1,3 +1,4 @@
+{{- if .Values.ingress.enabled -}}
 {{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.gandalf.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.gandalf.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
@@ -48,3 +49,4 @@ spec:
             serviceName: {{ include "gandalf.fullname" . }}-service
             servicePort: {{ .Values.app.gandalf.service.port }}
             {{- end }}
+{{- end }}
