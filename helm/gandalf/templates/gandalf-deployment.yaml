@@ -16,12 +16,33 @@ spec:
       labels:
         {{- include "gandalf.selectorLabels" . | nindent 8 }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        # Rolls the worker whenever the loader's source URLs change, so new pods
+        # re-run the init container and open the freshly-loaded data.
+        checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
     spec:
       {{- with .Values.securityContext }}
       securityContext:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
+      initContainers:
+        # Gate on the loader's success-only sentinel so the worker never starts
+        # on a missing or partially-loaded volume.
+        - name: gandalf-wait-for-data
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until [ -f {{ .Values.app.gandalf.sharedData.mountPath }}/.data-ready ]; do
+                echo "waiting for loader to finish (.data-ready)..."
+                sleep 5
+              done
+              echo "Data ready."
+          volumeMounts:
+            - name: {{ include "gandalf.fullname" . }}-data
+              mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
+              readOnly: true
       containers:
         - name: {{ .Chart.Name }}-gandalf
           image: "{{ .Values.image.gandalf.repository }}:{{ .Values.image.gandalf.tag }}"
@@ -39,16 +60,16 @@ spec:
             - name: http
               containerPort: {{ .Values.app.gandalf.service.port }}
               protocol: TCP
-          {{ if .Values.app.gandalf.resources }}
+          {{- if .Values.app.gandalf.resources }}
           resources: {{ toYaml .Values.app.gandalf.resources | nindent 12 }}
-          {{ end }}
+          {{- end }}
           volumeMounts:
-            # -- Shared mmap/LMDB data
+            # Shared mmap/LMDB data (read-only for the worker)
             - name: {{ include "gandalf.fullname" . }}-data
               mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
               readOnly: true
       volumes:
-        # -- Shared graph data volume (mmap + LMDB files)
+        # Shared graph data volume (mmap + LMDB files)
         - name: {{ include "gandalf.fullname" . }}-data
           persistentVolumeClaim:
             claimName: {{ include "gandalf.fullname" . }}-data

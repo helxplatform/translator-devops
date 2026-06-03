@@ -1,4 +1,4 @@
-{{- if and (eq .Values.graph.backend "gandalf") (and (not .Values.graph.external) .Values.app.gandalf.loader.enabled) }}
+{{- if .Values.app.gandalf.loader.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -6,12 +6,12 @@ metadata:
   labels:
     {{- include "gandalf.labels" . | nindent 4 }}
   annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    # Re-run when source URLs change. Putting the hash on the Job makes
+    # `helm upgrade` create a NEW Job (Jobs are immutable) when sources change.
+    checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
 spec:
   backoffLimit: {{ .Values.app.gandalf.loader.backoffLimit | default 1 }}
-  ttlSecondsAfterFinished: {{ .Values.app.gandalf.loader.ttlSecondsAfterFinished | default 300 }}
+  ttlSecondsAfterFinished: {{ .Values.app.gandalf.loader.ttlSecondsAfterFinished | default 600 }}
   template:
     metadata:
       labels:
@@ -25,29 +25,36 @@ spec:
         - name: data-loader
           image: "{{ .Values.app.gandalf.loader.image.repository }}:{{ .Values.app.gandalf.loader.image.tag }}"
           imagePullPolicy: {{ .Values.app.gandalf.loader.image.pullPolicy }}
+          env:
+            - name: SOURCES_HASH
+              value: {{ include "gandalf.sourcesHash" . | quote }}
           command:
             - sh
             - -c
             - |
-              set -e
+              set -euo pipefail
+              trap 'echo "FAILED at line $LINENO (exit code $?)" >&2' ERR
 
-              DEST="/data"
+              # DEST is derived from the SAME value as the volumeMount below,
+              # so the data files and the sentinel can never diverge onto
+              # different filesystems.
+              DEST="{{ .Values.app.gandalf.sharedData.mountPath }}"
               SENTINEL="${DEST}/.data-ready"
               CHECKSUM_FILE="${DEST}/.source-url-hash"
+              CURRENT_HASH="$SOURCES_HASH"
 
-              # Hash the source URLs to detect changes
-              CURRENT_HASH=$(echo '{{ join "," .Values.app.gandalf.loader.sources | sha256sum }}' | cut -c1-12)
-
-              # Skip download if data exists and source hasn't changed
+              # Skip download if data exists and sources are unchanged.
               {{- if .Values.app.gandalf.loader.skipIfExists }}
               if [ -f "$SENTINEL" ] && [ -f "$CHECKSUM_FILE" ]; then
                 EXISTING_HASH=$(cat "$CHECKSUM_FILE")
                 if [ "$CURRENT_HASH" = "$EXISTING_HASH" ]; then
-                  echo "Data already present and sources unchanged — skipping download."
+                  echo "Data already present and sources unchanged - skipping download."
                   exit 0
                 else
-                  echo "Source URLs changed — removing old files and re-downloading."
-                  rm -rf ${DEST}/*
+                  echo "Source URLs changed - removing old files and re-downloading."
+                  # Note: * does not match dotfiles in sh, so remove both. The
+                  # ${DEST:?} guard prevents rm -rf /* if DEST is ever empty.
+                  rm -rf "${DEST:?}"/* "${DEST:?}"/.[!.]* || true
                 fi
               fi
               {{- end }}
@@ -63,13 +70,13 @@ spec:
               tar xzvf "${DEST}/${FILENAME}" -C "$DEST"
               rm -f "${DEST}/${FILENAME}"
               {{- else if hasSuffix ".tar" . }}
-              wget -q -O - "{{ . }}" | tar xf - -C "$DEST"
+              wget -O - "{{ . }}" | tar xf - -C "$DEST"
               {{- else if hasSuffix ".zip" . }}
-              wget -q -O "/tmp/${FILENAME}" "{{ . }}"
+              wget -O "/tmp/${FILENAME}" "{{ . }}"
               unzip -o "/tmp/${FILENAME}" -d "$DEST"
               rm -f "/tmp/${FILENAME}"
               {{- else }}
-              wget -q -O "${DEST}/${FILENAME}" "{{ . }}"
+              wget -O "${DEST}/${FILENAME}" "{{ . }}"
               {{- end }}
               {{- end }}
 
@@ -78,19 +85,21 @@ spec:
               {{ .Values.app.gandalf.loader.postDownloadCommand }}
               {{- end }}
 
-              # Mark download complete
-              echo "$CURRENT_HASH" > "$CHECKSUM_FILE"
+              # Mark complete. Reached ONLY if everything above succeeded
+              # (set -e). The sentinel is the last thing written, so its
+              # presence is a reliable "fully loaded" signal for the worker.
+              printf '%s' "$CURRENT_HASH" > "$CHECKSUM_FILE"
               date -u '+%Y-%m-%dT%H:%M:%SZ' > "$SENTINEL"
-              echo "Data download complete."
+              echo "Data download complete. Sentinel written to $SENTINEL"
           volumeMounts:
-            - name: graph-data
+            - name: gandalf-data
               mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
           {{- with .Values.app.gandalf.loader.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
       volumes:
-        - name: graph-data
+        - name: gandalf-data
           persistentVolumeClaim:
             claimName: {{ include "gandalf.fullname" . }}-data
       {{- with .Values.app.nodeSelector }}

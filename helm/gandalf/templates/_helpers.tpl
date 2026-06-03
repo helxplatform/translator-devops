@@ -51,3 +51,10 @@ app.kubernetes.io/name: {{ include "gandalf.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
+{{/*
+Shared hash of the gandalf loader source URLs. Drives loader Job re-runs and
+gandalf worker rolls when `app.gandalf.loader.sources` changes.
+*/}}
+{{- define "gandalf.sourcesHash" -}}
+{{- join "," .Values.app.gandalf.loader.sources | sha256sum | trunc 12 -}}
+{{- end -}}

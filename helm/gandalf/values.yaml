@@ -13,11 +13,6 @@ busybox:
     repository: busybox
     tag: "1.35"
 
-bash:
-  image:
-    repository: bash
-    tag: "5.2.15"
-
 image:
   gandalf:
     repository: ghcr.io/ranking-agent/gandalf
@@ -145,7 +140,7 @@ datasetDesc:
   dataseturl: ''
   generatorCode: ''
   neo4j_dump: ""
-  provenanceTag: ""
+  provenanceTag: "infores:dogpark-tier0"
   license: "" # link to terms of service
 
 x_trapi:
