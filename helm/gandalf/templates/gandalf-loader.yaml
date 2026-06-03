@@ -55,6 +55,11 @@ spec:
                   # ${DEST:?} guard prevents rm -rf /* if DEST is ever empty.
                   rm -rf "${DEST:?}"/* "${DEST:?}"/.[!.]* || true
                 fi
+              else
+                # Sentinel and/or checksum missing -> volume is in an unknown or
+                # partially-loaded state. Wipe and re-download from scratch.
+                echo "Sentinel or checksum file missing - clearing volume and re-downloading."
+                rm -rf "${DEST:?}"/* "${DEST:?}"/.[!.]* || true
               fi
               {{- end }}
 
