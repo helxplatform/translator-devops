@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gandalf.fullname" . }}-gandalf
+  labels:
+    {{- include "gandalf.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.app.gandalf.autoscaling.enabled }}
+  replicas: {{ .Values.app.gandalf.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "gandalf.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "gandalf.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        # Rolls the worker whenever the loader's source URLs change, so new pods
+        # re-run the init container and open the freshly-loaded data.
+        checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        # Gate on the loader's success-only sentinel so the worker never starts
+        # on a missing or partially-loaded volume.
+        - name: gandalf-wait-for-data
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until [ -f {{ .Values.app.gandalf.sharedData.mountPath }}/.data-ready ]; do
+                echo "waiting for loader to finish (.data-ready)..."
+                sleep 5
+              done
+              echo "Data ready."
+          volumeMounts:
+            - name: {{ include "gandalf.fullname" . }}-data
+              mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
+              readOnly: true
+      containers:
+        - name: {{ .Chart.Name }}-gandalf
+          image: "{{ .Values.image.gandalf.repository }}:{{ .Values.image.gandalf.tag }}"
+          imagePullPolicy: {{ .Values.image.gandalf.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "gandalf.fullname" . }}-configmap
+          command:
+            - 'gunicorn'
+          args:
+            - "gandalf.server:APP"
+            - "-c"
+            - "gunicorn.conf.py"
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.gandalf.service.port }}
+              protocol: TCP
+          {{- if .Values.app.gandalf.resources }}
+          resources: {{ toYaml .Values.app.gandalf.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            # Shared mmap/LMDB data (read-only for the worker)
+            - name: {{ include "gandalf.fullname" . }}-data
+              mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
+              readOnly: true
+      volumes:
+        # Shared graph data volume (mmap + LMDB files)
+        - name: {{ include "gandalf.fullname" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ include "gandalf.fullname" . }}-data
+            readOnly: true
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
