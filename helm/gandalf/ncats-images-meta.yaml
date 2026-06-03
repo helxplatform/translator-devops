@@ -1,3 +1,7 @@
+gandalf:
+  image: "ghcr.io/ranking-agent/gandalf"
+  version: "0.3.3"
+  
 busybox:
   image: "busybox"
   version: "1.35"
