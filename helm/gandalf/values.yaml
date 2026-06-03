@@ -24,7 +24,7 @@ fullnameOverride: ""
 
 app:
   otel:
-    enabled: "False"
+    enabled: false
     jaegerHost: "http://jaeger-otel-collector.translator-exp"
     jaegerPort: "4317"
   profiler_on: "False"
@@ -125,6 +125,8 @@ ingress:
       nginx.ingress.kubernetes.io/send-timeout: "86400"
       nginx.ingress.kubernetes.io/service-upstream: "true"
       nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
+  tls:
+    enabled: false
 
 skipAttributes:
 graphMetadataUrl: ""
