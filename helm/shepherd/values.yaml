@@ -531,6 +531,7 @@ embeddingsLoader:
   sharedData:
     mountPath: /data/embeddings
   persistentVolume:
+    storageClassName: nfs-client
     accessModes:
       - ReadWriteMany
     size: 10Gi
