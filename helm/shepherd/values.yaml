@@ -354,11 +354,13 @@ omnicorpLoader:
   # Resources for the init container (downloads can be memory-light)
   resources:
     requests:
-      cpu: "250m"
-      memory: "256Mi"
+      cpu: "1000m"
+      memory: "10Gi"
+      ephemeral-storage: "10Gi"
     limits:
-      cpu: "1"
-      memory: "1Gi"
+      cpu: "2"
+      memory: "15Gi"
+      ephemeral-storage: "10Gi"
 
 score_paths:
   image:
@@ -482,7 +484,7 @@ shepherd_monitor:
     type: ClusterIP
     port: 5440
   image:
-    repository: ghcr.io/biopack-team/shepherd/shepherd_server
+    repository: ghcr.io/biopack-team/shepherd/monitor
     imagePullPolicy: Always
   slack_webhook_url: fillthisin
   resources:
