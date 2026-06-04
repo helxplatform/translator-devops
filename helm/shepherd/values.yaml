@@ -517,3 +517,23 @@ shepherd_server:
     limits:
       memory: 8Gi
       cpu: 3000m
+
+embeddingsLoader:
+  enabled: false
+  sources: []
+  image:
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 600
+  skipIfExists: true
+  sharedData:
+    mountPath: /data/embeddings
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
