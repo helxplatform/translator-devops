@@ -519,7 +519,7 @@ shepherd_server:
       cpu: 3000m
 
 embeddingsLoader:
-  enabled: false
+  enabled: true
   sources: []
   image:
     repository: busybox
@@ -530,6 +530,10 @@ embeddingsLoader:
   skipIfExists: true
   sharedData:
     mountPath: /data/embeddings
+  persistentVolume:
+    accessModes:
+      - ReadWriteMany
+    size: 10Gi
   resources:
     requests:
       memory: 512Mi
