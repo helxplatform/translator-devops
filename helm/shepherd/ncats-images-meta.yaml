@@ -40,9 +40,6 @@ finish_query:
 merge_message:
   image: "ghcr.io/biopack-team/shepherd/merge_message"
   version: "v0.7.7"
-monitor:
-  image: "ghcr.io/biopack-team/shepherd/monitor"
-  version: "v0.7.7"
 score_paths:
   image: "ghcr.io/biopack-team/shepherd/score_paths"
   version: "v0.7.7"

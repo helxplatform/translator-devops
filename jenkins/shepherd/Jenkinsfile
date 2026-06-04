@@ -70,7 +70,6 @@ pipeline {
                         'sort_results_score',
                         'finish_query',
                         'merge_message',
-                        'monitor',
                         'aragorn',
                         'aragorn_lookup',
                         'aragorn_pathfinder',

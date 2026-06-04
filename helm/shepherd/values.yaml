@@ -482,7 +482,7 @@ shepherd_monitor:
     type: ClusterIP
     port: 5440
   image:
-    repository: ghcr.io/biopack-team/shepherd/monitor
+    repository: ghcr.io/biopack-team/shepherd/shepherd_server
     imagePullPolicy: Always
   slack_webhook_url: fillthisin
   resources:
