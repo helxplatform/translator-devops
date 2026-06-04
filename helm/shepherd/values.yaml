@@ -482,7 +482,7 @@ shepherd_monitor:
     type: ClusterIP
     port: 5440
   image:
-    repository: ghcr.io/biopack-team/shepherd/monitor
+    repository: ghcr.io/biopack-team/shepherd/shepherd_server
     imagePullPolicy: Always
   slack_webhook_url: fillthisin
   resources:
@@ -517,3 +517,28 @@ shepherd_server:
     limits:
       memory: 8Gi
       cpu: 3000m
+
+embeddingsLoader:
+  enabled: true
+  sources: []
+  image:
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 600
+  skipIfExists: true
+  sharedData:
+    mountPath: /data/embeddings
+  persistentVolume:
+    storageClassName: nfs-client
+    accessModes:
+      - ReadWriteMany
+    size: 10Gi
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
