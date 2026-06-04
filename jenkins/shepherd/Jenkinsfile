@@ -66,17 +66,21 @@ pipeline {
                         'shepherd_server',
                         'filter_kgraph_orphans',
                         'filter_results_top_n',
+                        'filter_analyses_top_n',
                         'sort_results_score',
                         'finish_query',
                         'merge_message',
+                        'monitor',
                         'aragorn',
                         'aragorn_lookup',
                         'aragorn_pathfinder',
                         'aragorn_omnicorp',
                         'aragorn_score',
                         'arax',
+                        'arax_rank',
                         'bte',
                         'bte_lookup',
+                        'score_paths',
                         'sipr'
                     ]
                     
