@@ -88,10 +88,10 @@ spec:
 
               {{- if or (hasSuffix ".tar.gz" .) (hasSuffix ".tgz" .) }}
               wget -O "${DEST}/${FILENAME}" "{{ . }}"
-              tar xzvf "${DEST}/${FILENAME}" -C "$DEST" {{ if $.Values.app.gandalf.loader.stripComponents }}--strip-components={{ $.Values.app.gandalf.loader.stripComponents }}{{ end }}
+              tar xzvf "${DEST}/${FILENAME}" -C "$DEST"
               rm -f "${DEST}/${FILENAME}"
               {{- else if hasSuffix ".tar" . }}
-              wget -O - "{{ . }}" | tar xf - -C "$DEST" {{ if $.Values.app.gandalf.loader.stripComponents }}--strip-components={{ $.Values.app.gandalf.loader.stripComponents }}{{ end }}
+              wget -O - "{{ . }}" | tar xf - -C "$DEST"
               {{- else if hasSuffix ".zip" . }}
               wget -O "/tmp/${FILENAME}" "{{ . }}"
               unzip -o "/tmp/${FILENAME}" -d "$DEST"
