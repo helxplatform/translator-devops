@@ -26,6 +26,6 @@ data:
   GANDALF_JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
   {{ end }}
 
-  GANDALF_GRAPH_PATH: {{ .Values.app.gandalf.sharedData.mountPath }}
+  GANDALF_GRAPH_PATH: "{{ .Values.app.gandalf.sharedData.mountPath }}/gandalf_mmap"
   GANDALF_WORKERS: "{{ .Values.app.gandalf.num_workers }}"
   GANDALF_LARGE_RESULT_THRESHOLD: "1000000"
