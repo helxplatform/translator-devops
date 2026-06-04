@@ -37,6 +37,24 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: {{ include "shepherd.fullname" . }}-monitor
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: monitor
+spec:
+  type: {{ .Values.shepherd_monitor.service.type }}
+  ports:
+    - port: {{ .Values.shepherd_monitor.service.port }}
+      targetPort: {{ .Values.shepherd_monitor.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "shepherd.selectorLabels" . | nindent 4 }}
+    service-type: monitor
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: {{ include "shepherd.fullname" . }}-db
   labels:
     {{- include "shepherd.labels" . | nindent 4 }}

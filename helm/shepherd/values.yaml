@@ -6,6 +6,11 @@ deploymentStrategy: Recreate
 nameOverride: ""
 fullnameOverride: ""
 
+securityContext:
+  runAsUser: 1000
+  runAsGroup: 3000
+  fsGroup: 2000
+
 ingress:
   host: ingress_HOST
   class: ""
@@ -15,6 +20,7 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
     nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: 'true'
@@ -41,6 +47,7 @@ shepherd:
   lookup_timeout: fillthisin
   kg_retrieval_url: fillthisin
   sync_kg_retrieval_url: fillthisin
+  kg_rehydrate_url: fillthisin
   default_data_tier: 0
   omnicorp_url: fillthisin
   arax_url: fillthisin
@@ -104,10 +111,10 @@ aragorn_omnicorp:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 3Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
 
 aragorn_pathfinder:
@@ -140,10 +147,10 @@ aragorn_score:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 3Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
 
 arax:
@@ -290,35 +297,34 @@ finish_query:
       memory: 2Gi
       cpu: 1000m
 
-gandalf:
+merge_message:
   image:
-    repository: ghcr.io/biopack-team/shepherd/gandalf
+    repository: ghcr.io/biopack-team/shepherd/merge_message
     imagePullPolicy: Always
-  sharedData:
-    mountPath: /data/gandalf_mmap
-  persistentVolume:
-    accessModes:
-      - ReadWriteMany
-    size: 40Gi
-  resources:
-    requests:
-      cpu: "1000m"
-      memory: "15Gi"
-    limits:
-      cpu: "1500m"
-      memory: "20Gi"
-  replicaCount: 1
   autoscaling:
     enabled: false
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 80
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 5Gi
+      cpu: 2000m
+    limits:
+      memory: 5Gi
+      cpu: 2000m
 
 # ---------------------------------------------------------------------------
 # Init container — download data from public server(s)
 # ---------------------------------------------------------------------------
-gandalfLoader:
+omnicorpLoader:
+  sharedData:
+    mountPath: /data/omnicorp_lmdb
+  persistentVolume:
+    accessModes:
+      - ReadWriteMany
+    size: 12Gi
   enabled: false
 
   # Image for the init container (needs wget; busybox or alpine work well)
@@ -348,49 +354,13 @@ gandalfLoader:
   # Resources for the init container (downloads can be memory-light)
   resources:
     requests:
-      cpu: "250m"
-      memory: "256Mi"
-    limits:
-      cpu: "1"
-      memory: "1Gi"
-
-gandalf_rehydrate:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/gandalf_rehydrate
-    imagePullPolicy: Always
-  sharedData:
-    mountPath: /data/gandalf_mmap
-  resources:
-    requests:
       cpu: "1000m"
+      memory: "10Gi"
+      ephemeral-storage: "10Gi"
+    limits:
+      cpu: "2"
       memory: "15Gi"
-    limits:
-      cpu: "1500m"
-      memory: "20Gi"
-  autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 70
-    targetMemoryUtilizationPercentage: 80
-
-merge_message:
-  image:
-    repository: ghcr.io/biopack-team/shepherd/merge_message
-    imagePullPolicy: Always
-  autoscaling:
-    enabled: false
-    minReplicas: 1
-    maxReplicas: 5
-    targetCPU: 75
-    targetMemory: 75
-  resources:
-    requests:
-      memory: 5Gi
-      cpu: 2000m
-    limits:
-      memory: 5Gi
-      cpu: 2000m
+      ephemeral-storage: "10Gi"
 
 score_paths:
   image:
@@ -404,11 +374,11 @@ score_paths:
     targetMemory: 75
   resources:
     requests:
-      memory: 4Gi
-      cpu: 1000m
+      memory: 20Gi
+      cpu: 5000m
     limits:
-      memory: 5Gi
-      cpu: 1000m
+      memory: 22Gi
+      cpu: 6000m
 
 sipr:
   image:
@@ -509,6 +479,26 @@ shepherd_broker:
     - --save
     - '60 1'
 
+shepherd_monitor:
+  service:
+    type: ClusterIP
+    port: 5440
+  image:
+    repository: ghcr.io/biopack-team/shepherd/monitor
+    imagePullPolicy: Always
+  slack_webhook_url: fillthisin
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1200m
+  ingress:
+    enabled: false
+    rootPath: /monitor
+  slack_webhook_url: fillthisin
+
 shepherd_server:
   image:
     repository: ghcr.io/biopack-team/shepherd/shepherd_server
@@ -530,7 +520,27 @@ shepherd_server:
       memory: 8Gi
       cpu: 3000m
 
-securityContext:
-  runAsUser: 1000
-  runAsGroup: 3000
-  fsGroup: 2000
+embeddingsLoader:
+  enabled: true
+  sources: []
+  image:
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 600
+  skipIfExists: true
+  sharedData:
+    mountPath: /data/embeddings
+  persistentVolume:
+    storageClassName: nfs-client
+    accessModes:
+      - ReadWriteMany
+    size: 10Gi
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
