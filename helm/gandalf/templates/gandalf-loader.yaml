@@ -5,8 +5,17 @@ metadata:
   labels:
     {{- include "gandalf.labels" . | nindent 4 }}
   annotations:
-    # Re-run when source URLs change. Putting the hash on the Job makes
-    # `helm upgrade` create a NEW Job (Jobs are immutable) when sources change.
+    # TEMPORARY (RWO/EBS): run as a pre-install/pre-upgrade hook so the loader
+    # runs to completion AND DETACHES the volume before the worker is applied.
+    # On RWO/EBS the volume can attach to only one node at a time, so loader and
+    # worker must take turns rather than share -- the hook enforces that. Revisit
+    # when storage moves to EFS (RWX), at which point this can return to a normal
+    # Job. before-hook-creation clears the prior loader Job (Jobs are immutable,
+    # so this avoids upgrade patch failures); hook-succeeded releases the volume
+    # promptly on success so the worker can attach.
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
 spec:
   backoffLimit: {{ .Values.app.gandalf.loader.backoffLimit | default 1 }}
@@ -18,8 +27,11 @@ spec:
         app.kubernetes.io/component: data-loader
     spec:
       restartPolicy: Never
+      # Loader runs as root so it can write to the NFS-backed volume without
+      # any chown/chmod. The worker mounts the data read-only as a non-root
+      # user; root-written files are world-readable, so reads work fine.
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        runAsUser: 0
       containers:
         - name: data-loader
           image: "{{ .Values.app.gandalf.loader.image.repository }}:{{ .Values.app.gandalf.loader.image.tag }}"
@@ -50,15 +62,20 @@ spec:
                   echo "Data already present and sources unchanged - skipping download."
                   exit 0
                 else
-                  echo "Source URLs changed - removing old files and re-downloading."
-                  # Note: * does not match dotfiles in sh, so remove both. The
-                  # ${DEST:?} guard prevents rm -rf /* if DEST is ever empty.
+                  echo "Source URLs changed - re-downloading."
+                  # Tier 1 invariant: remove the readiness signal FIRST, so any
+                  # worker waiting on (hash match + .data-ready) blocks for the
+                  # whole refresh and can never read data mid-delete. Then drop
+                  # the stale hash, then wipe the data. Note: * does not match
+                  # dotfiles in sh; the ${DEST:?} guard prevents rm -rf /*.
+                  rm -f "$SENTINEL" "$CHECKSUM_FILE"
                   rm -rf "${DEST:?}"/* "${DEST:?}"/.[!.]* || true
                 fi
               else
                 # Sentinel and/or checksum missing -> volume is in an unknown or
-                # partially-loaded state. Wipe and re-download from scratch.
+                # partially-loaded state. Clear readiness first, then wipe.
                 echo "Sentinel or checksum file missing - clearing volume and re-downloading."
+                rm -f "$SENTINEL" "$CHECKSUM_FILE"
                 rm -rf "${DEST:?}"/* "${DEST:?}"/.[!.]* || true
               fi
               {{- end }}
@@ -71,10 +88,10 @@ spec:
 
               {{- if or (hasSuffix ".tar.gz" .) (hasSuffix ".tgz" .) }}
               wget -O "${DEST}/${FILENAME}" "{{ . }}"
-              tar xzvf "${DEST}/${FILENAME}" -C "$DEST"
+              tar xzvf "${DEST}/${FILENAME}" -C "$DEST" {{ if $.Values.app.gandalf.loader.stripComponents }}--strip-components={{ $.Values.app.gandalf.loader.stripComponents }}{{ end }}
               rm -f "${DEST}/${FILENAME}"
               {{- else if hasSuffix ".tar" . }}
-              wget -O - "{{ . }}" | tar xf - -C "$DEST"
+              wget -O - "{{ . }}" | tar xf - -C "$DEST" {{ if $.Values.app.gandalf.loader.stripComponents }}--strip-components={{ $.Values.app.gandalf.loader.stripComponents }}{{ end }}
               {{- else if hasSuffix ".zip" . }}
               wget -O "/tmp/${FILENAME}" "{{ . }}"
               unzip -o "/tmp/${FILENAME}" -d "$DEST"
@@ -90,10 +107,17 @@ spec:
               {{- end }}
 
               # Mark complete. Reached ONLY if everything above succeeded
-              # (set -e). The sentinel is the last thing written, so its
-              # presence is a reliable "fully loaded" signal for the worker.
-              printf '%s' "$CURRENT_HASH" > "$CHECKSUM_FILE"
-              date -u '+%Y-%m-%dT%H:%M:%SZ' > "$SENTINEL"
+              # (set -e). Tier 1 write order: hash FIRST, readiness sentinel
+              # LAST, so the sentinel never exists alongside a not-yet-written
+              # or mismatched hash. The worker gates on (hash == expected AND
+              # sentinel present), so it cannot pass until both are in place.
+              #
+              # The sentinel's CONTENT is irrelevant (the worker only checks that
+              # it exists), so we avoid writing a date here -- a strftime format
+              # contains % characters that Helm templating mangled into
+              # %!(MISSING) markers. Writing the hash sidesteps that entirely.
+              echo "$CURRENT_HASH" > "$CHECKSUM_FILE"
+              echo "$CURRENT_HASH" > "$SENTINEL"
               echo "Data download complete. Sentinel written to $SENTINEL"
           volumeMounts:
             - name: gandalf-data

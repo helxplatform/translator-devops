@@ -26,19 +26,38 @@ spec:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
       initContainers:
-        # Gate on the loader's success-only sentinel so the worker never starts
-        # on a missing or partially-loaded volume.
+        # Ordering is now enforced by the loader being a pre-install/pre-upgrade
+        # HOOK (it completes before this Deployment is applied). This init
+        # container is kept as a cheap safety net: it also guards against a
+        # stale/mismatched load by waiting until the on-disk hash equals the
+        # hash this worker expects AND the readiness sentinel is present.
+        # .data-ready and .source-url-hash persist across loads, so "file exists"
+        # alone cannot distinguish this load from a stale one.
         - name: gandalf-wait-for-data
           image: busybox
+          env:
+            - name: EXPECTED_HASH
+              value: {{ include "gandalf.sourcesHash" . | quote }}
           command:
             - /bin/sh
             - -c
             - |
-              until [ -f {{ .Values.app.gandalf.sharedData.mountPath }}/.data-ready ]; do
-                echo "waiting for loader to finish (.data-ready)..."
+              MOUNT="{{ .Values.app.gandalf.sharedData.mountPath }}"
+              SENTINEL="${MOUNT}/.data-ready"
+              CHECKSUM_FILE="${MOUNT}/.source-url-hash"
+              while true; do
+                if [ -f "$SENTINEL" ] && [ -f "$CHECKSUM_FILE" ]; then
+                  ON_DISK=$(cat "$CHECKSUM_FILE" 2>/dev/null || echo "")
+                  if [ "$ON_DISK" = "$EXPECTED_HASH" ]; then
+                    echo "Data ready for expected hash $EXPECTED_HASH."
+                    break
+                  fi
+                  echo "waiting: on-disk hash '$ON_DISK' != expected '$EXPECTED_HASH'..."
+                else
+                  echo "waiting for loader to finish (.data-ready / .source-url-hash)..."
+                fi
                 sleep 5
               done
-              echo "Data ready."
           volumeMounts:
             - name: {{ include "gandalf.fullname" . }}-data
               mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
