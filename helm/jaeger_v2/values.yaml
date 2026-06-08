@@ -1,0 +1,245 @@
+# Base values for the jaeger umbrella chart.
+#
+# Two subcharts are wrapped (see Chart.yaml):
+#   * jaeger        -> values under the top-level `jaeger:` key
+#   * elasticsearch -> values under the top-level `elasticsearch:` key
+#
+# Environment-specific overrides (ingress hosts, TLS secrets, sizing) belong in
+# an overlay file passed with `-f`, e.g. renci-dev-values.yaml.
+
+############################
+# Shared Elasticsearch credentials
+#
+# Defined once here and referenced via YAML anchors by all three consumers below:
+# the ES subchart's `elastic` user, the Jaeger collector storage backend, and the
+# ES maintenance CronJobs. Change the password here to rotate it everywhere.
+#
+# For a non-dev deployment, override the password. Because `-f`/`--set` overlays do
+# not follow YAML anchors, override the three real paths instead:
+#   elasticsearch.secret.password
+#   jaeger.storage.elasticsearch.password
+#   jaeger.userconfig.extensions.jaeger_storage.backends.some_storage.elasticsearch.auth.basic.password
+############################
+esCredentials:
+  username: &esUser "elastic"
+  password: &esPassword "changeme-please-override"
+
+############################
+# ITRB / NCATS AWS ALB ingress (umbrella-level templates/itrb-ing.yaml)
+#
+# The jaeger subchart's native ingress (jaeger.jaeger.ingress) is nginx + cert-manager
+# oriented and is used by the RENCI overlays. The NCATS/ITRB environments instead front
+# the all-in-one query UI with an AWS ALB that needs an HTTP->HTTPS ssl-redirect action,
+# which the subchart ingress can't express — hence this separate template.
+#
+# Disabled by default; the ncats-*-values.yaml overlays enable and configure it.
+# serviceName/servicePort default to the all-in-one service (jaeger.fullnameOverride
+# on port 16686) but can be overridden here if needed.
+############################
+itrb:
+  ingress:
+    enabled: false
+    host: ""
+    annotations: {}
+    # serviceName: jaeger-otel
+    # servicePort: 16686
+
+############################
+# jaeger subchart (chart 4.8.0 / app 2.18.0)
+############################
+jaeger:
+  storage:
+    type: elasticsearch
+    # Connection used by the ES maintenance CronJobs (esIndexCleaner, esRollover).
+    # The all-in-one collector is configured separately under `userconfig` below.
+    elasticsearch:
+      url: "https://elasticsearch-master:9200"
+      user: *esUser
+      password: *esPassword
+      tls:
+        enabled: true
+        # ES serves the chart's auto-generated self-signed cert; skip verification
+        # (the all-in-one collector has no chart hook to mount the CA, so we keep
+        # both paths consistent). Connection is still encrypted + password-authed.
+        insecure: true
+
+  userconfig:
+    extensions:
+      jaeger_storage:
+        backends:
+          some_storage:
+            elasticsearch:
+              server_urls:
+                - "https://elasticsearch-master:9200"
+              auth:
+                basic:
+                  username: *esUser
+                  password: *esPassword
+              tls:
+                insecure_skip_verify: true    # skip the chart's self-signed cert validation
+              indices:
+                spans:
+                  date_layout: "2006-01-02"
+                  rollover_frequency: "day"
+                  shards: 1      # single ES node — no replicas needed
+                  replicas: 0
+                services:
+                  date_layout: "2006-01-02"
+                  rollover_frequency: "day"
+                  shards: 1
+                  replicas: 0
+                dependencies:
+                  date_layout: "2006-01-02"
+                  rollover_frequency: "day"
+                  shards: 1
+                  replicas: 0
+                sampling:
+                  date_layout: "2006-01-02"
+                  rollover_frequency: "day"
+                  shards: 1
+                  replicas: 0
+
+      jaeger_query:
+        storage:
+          traces: some_storage
+
+      healthcheckv2:
+        use_v2: true
+        http:
+          endpoint: "0.0.0.0:13133"
+
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: "0.0.0.0:4317"
+          http:
+            endpoint: "0.0.0.0:4318"
+
+    processors:
+      batch:
+
+    exporters:
+      jaeger_storage_exporter:
+        trace_storage: some_storage
+
+    service:
+      extensions:
+        - jaeger_storage
+        - jaeger_query
+        - healthcheckv2
+      pipelines:
+        traces:
+          receivers:
+            - otlp
+          processors:
+            - batch
+          exporters:
+            - jaeger_storage_exporter
+      telemetry:
+        resource:
+          service.name: jaeger
+        metrics:
+          level: detailed
+          readers:
+            - pull:
+                exporter:
+                  prometheus:
+                    host: "0.0.0.0"
+                    port: 8888
+        logs:
+          level: info
+
+  # The jaeger v2 all-in-one component lives under the chart's own `jaeger:` key,
+  # so its ingress is jaeger.jaeger.ingress under this umbrella's alias.
+  # Per-environment host + TLS live in the overlay files (renci-*-values-populated.yaml).
+  jaeger:
+    ingress:
+      enabled: false
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      labels:
+        app: jaeger
+        version: "2.18.0"
+      pathType: ImplementationSpecific
+
+  # Index cleaner CronJob — prunes indices older than N days.
+  # 21 = three weeks of trace retention before daily indices are deleted.
+  esIndexCleaner:
+    enabled: true
+    numberOfDays: 21
+    schedule: "55 23 * * *"
+
+  # Comply with org's seccomp policy (same pattern that worked for ES)
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+############################
+# elasticsearch subchart (elastic/elasticsearch chart 8.5.1)
+############################
+elasticsearch:
+  # Single master node — sufficient for dev, avoids needing 3-node quorum
+  replicas: 1
+  minimumMasterNodes: 1
+
+  # Resource limits appropriate for a shared org dev cluster
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+  # JVM heap — should be ~50% of memory limit
+  esJavaOpts: "-Xmx1g -Xms1g"
+
+  # Persistence with your org's StorageClass
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    storageClassName: basic
+    resources:
+      requests:
+        storage: 30Gi
+
+  # X-Pack security is enabled (chart default): TLS + auth on the HTTP layer, with
+  # the chart auto-generating a self-signed CA/cert into the elasticsearch-master-certs
+  # secret (createCert: true). Pin the built-in `elastic` user password so Jaeger can
+  # authenticate; the chart stores it in the elasticsearch-master-credentials secret.
+  secret:
+    enabled: true
+    password: *esPassword
+
+  # Single node can't have replicas for ES indices — set this to avoid yellow health
+  # Jaeger will use index templates that override this, but good to have as default
+  clusterHealthCheckParams: "wait_for_status=yellow&timeout=1s"
+
+  # Disable the privileged sysctl init container — blocked by org policy
+  sysctlInitContainer:
+    enabled: false
+
+  # Comply with psp-seccomp: set RuntimeDefault on both containers
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: RuntimeDefault

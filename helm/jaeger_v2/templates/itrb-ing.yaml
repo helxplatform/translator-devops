@@ -1,0 +1,30 @@
+{{- if .Values.itrb.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "jaeger.fullname" . }}-ingress
+  annotations:
+    {{- .Values.itrb.ingress.annotations | toYaml | nindent 4 }}
+spec:
+  rules:
+    - host: {{ .Values.itrb.ingress.host }}
+      http:
+        paths:
+        - path: /*
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: ssl-redirect
+              port:
+                name: use-annotation
+        - path: /*
+          pathType: ImplementationSpecific
+          backend:
+            # v2 all-in-one component exposes the query UI on the subchart service.
+            # With jaeger.fullnameOverride: "jaeger-otel" the service is "jaeger-otel"
+            # and the UI listens on 16686
+            service:
+              name: {{ .Values.itrb.ingress.serviceName | default .Values.jaeger.fullnameOverride }}
+              port:
+                number: {{ .Values.itrb.ingress.servicePort | default 16686 }}
+{{- end }}

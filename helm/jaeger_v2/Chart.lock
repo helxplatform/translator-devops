@@ -1,0 +1,9 @@
+dependencies:
+- name: jaeger
+  repository: https://jaegertracing.github.io/helm-charts/
+  version: 4.8.0
+- name: elasticsearch
+  repository: https://helm.elastic.co
+  version: 8.5.1
+digest: sha256:1f11ced25b73e9df91034f24ba3b528e92d133b61c62be6a3b301085ae409d80
+generated: "2026-06-04T17:16:01.926435-04:00"
