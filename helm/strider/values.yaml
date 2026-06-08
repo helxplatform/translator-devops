@@ -110,7 +110,7 @@ env:
   jaeger_enabled: "False"
   jaeger_host: jaeger-otel-agent
   service_name: "STRIDER"
-  jaeger_port: 6831
+  jaeger_port: 4317
   kp_trapi_version: "1.5.0"
   kp_timeout: 10
   information_content_threshold: 75
