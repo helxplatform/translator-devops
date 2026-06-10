@@ -67,7 +67,8 @@ spec:
               mountPath: /logs/
             # Shared LMDB data (read-only for the worker)
             - name: embeddings-data
-              mountPath: {{ .Values.embeddingsLoader.sharedData.mountPath }}
+              mountPath: /app/pathfinder_embeddings
+              subPath: pathfinder_embeddings
               readOnly: true
       volumes:
         - name: {{ include "shepherd.fullname" . }}-logs-pvc
