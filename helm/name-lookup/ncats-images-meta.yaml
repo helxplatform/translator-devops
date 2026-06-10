@@ -1,6 +1,6 @@
 nameLookup:
   image: ghcr.io/ncatstranslator/nameresolution
-  version: v1.5.1
+  version: v1.5.2
 
 solr:
   image: solr
