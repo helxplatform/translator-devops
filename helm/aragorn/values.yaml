@@ -75,8 +75,8 @@ sub_processes:
 otel:
   # disable otel by default
   enabled: false
-  jaeger_host: "jaeger-otel-agent"
-  jaeger_port: "6831"
+  jaeger_host: "http://jaeger-otel-collector"
+  jaeger_port: "4317"
   service_name: "ARAGORN"
 
 rbtmq:
