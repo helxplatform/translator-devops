@@ -34,4 +34,5 @@ data:
 
   OMNICORP_CURIES_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/curies.lmdb"
   OMNICORP_SHARED_COUNTS_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/shared_counts.lmdb"
+  PATHFINDER_EMBEDDINGS_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_embeddings"
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}
