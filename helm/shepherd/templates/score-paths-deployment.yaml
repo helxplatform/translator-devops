@@ -64,11 +64,10 @@ spec:
           {{- end }}
           volumeMounts:
             - name: {{ include "shepherd.fullname" . }}-logs-pvc
-              mountPath: /logs/
+              mountPath: /app/logs/
             # Shared LMDB data (read-only for the worker)
             - name: embeddings-data
-              mountPath: /app/pathfinder_embeddings
-              subPath: pathfinder_embeddings
+              mountPath: {{ .Values.embeddingsLoader.sharedData.mountPath }}
               readOnly: true
       volumes:
         - name: {{ include "shepherd.fullname" . }}-logs-pvc
