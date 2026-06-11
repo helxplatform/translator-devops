@@ -43,7 +43,6 @@ otel:
 
 shepherd:
   tag: fillthisin
-  logsPVCSize: 3Gi
   lookup_timeout: fillthisin
   kg_retrieval_url: fillthisin
   sync_kg_retrieval_url: fillthisin
@@ -55,6 +54,13 @@ shepherd:
   nodeSelector: {}
   affinity: {}
   tolerations: []
+
+logs:
+  persistentVolume:
+    storageClassName: nfs-client
+    accessModes:
+      - ReadWriteMany
+    size: 3Gi
 
 probes:
   enabled: false
