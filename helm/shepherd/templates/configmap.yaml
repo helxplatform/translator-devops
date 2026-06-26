@@ -13,6 +13,7 @@ data:
   POSTGRES_HOST: shepherd-db
   POSTGRES_PORT: "{{ .Values.shepherd_db.service.port }}"
   POSTGRES_PASSWORD: {{ .Values.shepherd_db.auth.password }}
+  PG_VOLUME_CAPACITY: {{ .Values.shepherd_db.pg_volume_capacity }}
 
   REDIS_HOST: shepherd-broker
   REDIS_PORT: "{{ .Values.shepherd_broker.service.port }}"

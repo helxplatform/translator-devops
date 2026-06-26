@@ -55,4 +55,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 5Gi
+            storage: {{ .Values.shepherd_db.pg_volume_capacity }}
