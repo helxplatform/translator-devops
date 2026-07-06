@@ -25,6 +25,8 @@ app:
   port: 8000
   # -- Path to the shared directory inside the container
   sharedDir: /stars/var/plater/graphs
+  # -- Password required to call the /refresh endpoint (stored as a k8s Secret)
+  refreshPassword: "Let_me_In"
   # -- Additional environment variables (list of {name, value} objects)
   extraEnv: []
   #   - name: LOG_LEVEL
@@ -100,7 +102,7 @@ ingress:
   # -- Ingress annotations
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
-    # nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
   # -- Ingress hosts
   hosts:
     - host: robokop-graph-registry.apps.renci.org
