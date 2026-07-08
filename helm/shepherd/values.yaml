@@ -466,9 +466,9 @@ shepherd_broker:
       cpu: 2000m
   args:
     - --maxmemory
-    - '20gb'
+    - '10gb'
     - --maxmemory-policy
-    - 'allkeys-lfu'
+    - 'volatile-ttl'
     - --loglevel
     - 'notice'
     - --logfile
