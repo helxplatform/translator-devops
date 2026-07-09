@@ -430,6 +430,7 @@ shepherd_db:
   auth:
     user: fillthisin
     password: fillthisin
+  pg_volume_capacity: 5Gi
   service:
     type: ClusterIP
     port: 5432
@@ -465,9 +466,9 @@ shepherd_broker:
       cpu: 2000m
   args:
     - --maxmemory
-    - '20gb'
+    - '10gb'
     - --maxmemory-policy
-    - 'allkeys-lfu'
+    - 'volatile-ttl'
     - --loglevel
     - 'notice'
     - --logfile
