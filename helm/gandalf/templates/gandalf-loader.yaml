@@ -5,17 +5,9 @@ metadata:
   labels:
     {{- include "gandalf.labels" . | nindent 4 }}
   annotations:
-    # TEMPORARY (RWO/EBS): run as a pre-install/pre-upgrade hook so the loader
-    # runs to completion AND DETACHES the volume before the worker is applied.
-    # On RWO/EBS the volume can attach to only one node at a time, so loader and
-    # worker must take turns rather than share -- the hook enforces that. Revisit
-    # when storage moves to EFS (RWX), at which point this can return to a normal
-    # Job. before-hook-creation clears the prior loader Job (Jobs are immutable,
-    # so this avoids upgrade patch failures); hook-succeeded releases the volume
-    # promptly on success so the worker can attach.
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    # Re-run when source URLs change. The hash is part of the Job name suffix so
+    # that `helm upgrade` creates a NEW Job (Jobs are immutable) instead of
+    # failing to patch the existing one.
     checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
 spec:
   backoffLimit: {{ .Values.app.gandalf.loader.backoffLimit | default 1 }}

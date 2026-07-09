@@ -12,7 +12,10 @@ metadata:
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
-    - ReadWriteOnce
+    {{- toYaml .Values.app.gandalf.persistentVolume.accessModes | nindent 4 }}
+  {{- with .Values.app.gandalf.persistentVolume.storageClassName }}
+  storageClassName: {{ . }}
+  {{- end }}
   resources:
     requests:
-      storage: 40Gi
+      storage: {{ .Values.app.gandalf.persistentVolume.size }}
