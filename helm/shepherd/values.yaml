@@ -117,11 +117,11 @@ aragorn_omnicorp:
     targetMemory: 75
   resources:
     requests:
-      memory: 3Gi
-      cpu: 1000m
+      memory: 5Gi
+      cpu: 2000m
     limits:
-      memory: 4Gi
-      cpu: 1000m
+      memory: 6Gi
+      cpu: 2000m
 
 aragorn_pathfinder:
   image:
