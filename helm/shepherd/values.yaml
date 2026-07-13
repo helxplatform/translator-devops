@@ -297,10 +297,10 @@ finish_query:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 merge_message:
@@ -398,10 +398,10 @@ sipr:
     targetMemory: 75
   resources:
     requests:
-      memory: 1Gi
+      memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 1Gi
+      memory: 2Gi
       cpu: 1000m
 
 sort_results_score:
