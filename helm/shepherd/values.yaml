@@ -153,11 +153,11 @@ aragorn_score:
     targetMemory: 75
   resources:
     requests:
-      memory: 3Gi
-      cpu: 1000m
+      memory: 7Gi
+      cpu: 3000m
     limits:
-      memory: 4Gi
-      cpu: 1000m
+      memory: 10Gi
+      cpu: 4000m
 
 arax:
   image:
@@ -279,10 +279,10 @@ filter_results_top_n:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 finish_query:
