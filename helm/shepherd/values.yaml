@@ -171,10 +171,10 @@ arax:
     targetMemory: 75
   resources:
     requests:
-      memory: 1Gi
+      memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 1Gi
+      memory: 3Gi
       cpu: 1000m
   
 arax_rank:
@@ -243,10 +243,10 @@ filter_analyses_top_n:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 filter_kgraph_orphans:
@@ -261,10 +261,10 @@ filter_kgraph_orphans:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 filter_results_top_n:
@@ -416,10 +416,10 @@ sort_results_score:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 shepherd_db:
