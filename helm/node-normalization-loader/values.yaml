@@ -45,6 +45,7 @@ data:
     - ComplexMolecularMixture.txt
     - Disease.txt
     - Drug.txt
+    - Food.txt
     - Gene.txt.00
     - Gene.txt.01
     - Gene.txt.02
@@ -52,6 +53,7 @@ data:
     - Gene.txt.04
     - Gene.txt.05
     - Gene.txt.06
+    - Gene.txt.07
     - GeneFamily.txt
     - GrossAnatomicalStructure.txt
     - MacromolecularComplex.txt
@@ -81,6 +83,7 @@ data:
     - Publication.txt.01
     - Publication.txt.02
     - Publication.txt.03
+    - Publication.txt.04
     - SmallMolecule.txt.00
     - SmallMolecule.txt.01
     - SmallMolecule.txt.02
