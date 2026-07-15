@@ -10,6 +10,10 @@ mode: restore
 # Log level for loading jobs.
 logLevel: INFO
 
+# Biolink Model version (any ref from https://github.com/biolink/biolink-model is fine, but this should match the
+# version used by the loaded Babel run)
+biolink_version: "v4.4.3"
+
 image:
   repository: "ghcr.io/ncatstranslator/nodenormalization"
   tag: "v2.5.0"

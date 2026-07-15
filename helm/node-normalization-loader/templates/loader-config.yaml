@@ -12,6 +12,7 @@ data:
     "data_files": ["{{$compendia}}"],
     "test_mode": 0,
     "debug_messages": 1,
+    "biolink_version": "{{ .Values.biolink_version }}",
     "conflations" : []
     }
   {{ end }}
@@ -40,6 +41,7 @@ data:
     "data_files": [],
     "test_mode": 0,
     "debug_messages": 1,
+    "biolink_version": "{{ .Values.biolink_version }}",
     "conflations" : [
         {
           "types" : {{ $conflation.types | toJson }},
