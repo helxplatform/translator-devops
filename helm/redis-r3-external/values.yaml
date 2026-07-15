@@ -131,14 +131,17 @@ info-content:
     enabled: true
   master:
     persistence:
-      size: 500Mi
+      # In NodeNorm 2.5, we add the preferred names to this database. It will probably end up being bigger than
+      # id-categories (same number of keys, but longer strings than a Biolink type), so I'll give it 200Gi for now,
+      # and then I will scale it down after the first load tells us how big it actually is.
+      size: 200Gi
     resources:
       limits:
-        cpu: 150m
-        memory: 500Mi
+        cpu: 1500m
+        memory: 200Gi
       requests:
-        cpu: 50m
-        memory: 250Mi
+        cpu: 500m
+        memory: 150Gi
     readinessProbe:
       enabled: false
     startupProbe:
