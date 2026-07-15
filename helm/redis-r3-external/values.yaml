@@ -19,7 +19,13 @@ id-id:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
 
   replica:
@@ -45,7 +51,13 @@ id-categories:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
 
   replica:
@@ -71,7 +83,13 @@ id-eq-id:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
   replica:
     replicaCount: 0
@@ -96,7 +114,13 @@ semantic-count:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
   replica:
     replicaCount: 0
@@ -121,7 +145,13 @@ conflation-db:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
   replica:
     replicaCount: 0
@@ -149,7 +179,13 @@ info-content:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
   replica:
     replicaCount: 0
@@ -174,7 +210,13 @@ chemical-drug-db:
     livenessProbe:
       enabled: false
     extraFlags:
-    - "--save 300 1000000"
+    # No automatic RDB snapshots. Persistence is explicit: mode:load disables
+    # saves at runtime and BGSAVEs manually at the end; mode:restore BGSAVEs and
+    # waits for completion at the end of run_pipe.sh. An automatic `save` policy
+    # can't fire only after a populate finishes without also forking repeatedly
+    # *during* it, which is pure copy-on-write waste on these large DBs. See the
+    # NodeNorm documentation/Loader.md.
+    - '--save ""'
     - "--appendonly no"
   replica:
     replicaCount: 0
