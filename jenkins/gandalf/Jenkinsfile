@@ -142,7 +142,7 @@ pipeline {
                 checkout scm
                 dir('helm/gandalf') {
                     configFileProvider([
-                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh'),
+                        configFile(fileId: 'gandalf-plater.sh', targetLocation: 'prepare.sh'),
                         configFile(fileId: 'values-plater.yaml', targetLocation: 'values-plater.yaml'),
                         configFile(fileId: 'gandalf-deploy.sh', targetLocation: 'deploy.sh')
                     ]){
