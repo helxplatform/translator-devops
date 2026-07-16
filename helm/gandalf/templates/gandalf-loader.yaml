@@ -2,9 +2,9 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "plater.fullname" . }}-gandalf-loader
+  name: {{ include "gandalf.fullname" . }}-loader
   labels:
-    {{- include "plater.labels" . | nindent 4 }}
+    {{- include "gandalf.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "-5"
@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "plater.selectorLabels" . | nindent 8 }}
+        {{- include "gandalf.selectorLabels" . | nindent 8 }}
         app.kubernetes.io/component: data-loader
     spec:
       restartPolicy: Never
@@ -92,16 +92,12 @@ spec:
       volumes:
         - name: graph-data
           persistentVolumeClaim:
-            claimName: {{ include "plater.fullname" . }}-gandalf-data
-      {{- with .Values.neo4j.nodeSelector }}
+            claimName: {{ include "gandalf.fullname" . }}-data
+      {{- with .Values.app.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.neo4j.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.neo4j.tolerations }}
+      {{- with .Values.app.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}

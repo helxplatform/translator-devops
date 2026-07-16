@@ -20,141 +20,20 @@ bash:
 
 image:
   gandalf:
-    repository: ghcr.io/maximusunc/gandalf
-    tag: 0.3.2
+    repository: ghcr.io/ranking-agent/gandalf
+    tag: 0.3.3
     pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
 
-neo4j:
-  # Readiness probes will send a kill signal to the container if
-  # it fails enough times.  It's therefore very important
-  # that initialDelaySeconds give the cluster time to form, because
-  # if readiness probes start immediately after container start,
-  # they may end up not forming quickly enough and getting killed.
-  readinessProbe:
-    initialDelaySeconds: 30
-    failureThreshold: 3
-    timeoutSeconds: 10
-    periodSeconds: 10
-    exec:
-      command:
-        - bash
-        - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
-
-  livenessProbe:
-    initialDelaySeconds: 60
-    periodSeconds: 10
-    failureThreshold: 3
-    timeoutSeconds: 10
-    exec:
-      command:
-        - bash
-        - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
-
-  # Startup probes are used to know when a container application has started.
-  # If such a probe is configured, it disables liveness and readiness checks until it succeeds
-  startupProbe:
-    failureThreshold: 2000
-    periodSeconds: 1
-    timeoutSeconds: 10
-    exec:
-      command:
-        - bash
-        - -c
-        - IFS="/" read -a auth <<< $NEO4J_AUTH ; cypher-shell -u ${auth[0]} -p ${auth[1]} "match (c) return c limit 1"
-  affinity: {}
-  tolerations: []
-  nodeSelector: {}
-
-memgraph:
-  readinessProbe:
-    tcpSocket:
-      port: 7687
-    initialDelaySeconds: 30
-    periodSeconds: 5
-    failureThreshold: 3
-    timeoutSeconds: 10
-
-  livenessProbe:
-    tcpSocket:
-      port: 7687
-    initialDelaySeconds: 60
-    periodSeconds: 30
-    failureThreshold: 720
-    timeoutSeconds: 10
-
-  startupProbe:
-    tcpSocket:
-      port: 7687
-    failureThreshold: 720
-    periodSeconds: 10
-    timeoutSeconds: 10
-
-service:
-  type: ClusterIP
 app:
   otel:
     enabled: "False"
-    jaegerHost: "http://jaeger-otel-collector"
+    jaegerHost: "http://jaeger-otel-collector.translator-exp"
     jaegerPort: "4317"
   profiler_on: "False"
-  gunicorn:
-    worker_timeout: 10800
-    num_workers: 4
-  # this is the timeout used for the http request made to neo4j
-  # and also controls the https://neo4j.com/docs/operations-manual/4.2/reference/configuration-settings/#config_dbms.transaction.timeout
-  GRAPH_QUERY_TIMEOUT: 10800
-  web:
-    resources:
-      requests:
-        memory: 1Gi
-        cpu: 500m
-      limits:
-        memory: 2Gi
-        cpu: 1000m
-
-  port: 8080
-  automatAddress: http://automat
   bl_version: 4.2.1
-  neo4j:
-    dataUrl: ""   # URL to neo4j data dump, if deploying internally
-    protocol: bolt
-    httpPort: 7474
-    boltPort: 7687
-    password: neo4jkp
-    username: neo4j
-    # additional jvm parameters for large query strings
-    jvmStackSize: 1g
-    # These are jvm based values hence suffix with one of the following G, M etc...
-    heapSize: 1g
-    pageCacheSize: 1g
-    # It's used to request the cluster for memory capable of running neo4j per the heap and PageCache values above
-    # Compute this value by summing up heapSize + pageCacheSize + (1G for os) + jvmStackSize
-    # https://neo4j.com/docs/operations-manual/current/performance/memory-configuration/
-    totalMemory:
-    storage:
-      size: 20Mi
-    service:
-      type: ClusterIP
-    initresources:
-      requests:
-        memory: 5Gi
-        cpu: 500m
-      limits:
-        memory: 10Gi
-        cpu: 1000m
-    resources:
-      requests:
-        cpu: 1000m
-        memory: 5Gi
-      limits:
-        ephemeral-storage: 256Mi
-        memory: 6Gi
-        cpu: 1500m
   gandalf:
     num_workers: 2
     service:
@@ -206,7 +85,7 @@ app:
       size: "5Gi"
 
   openapi_config:
-  # Adds more configs to default open api config
+    # Adds more configs to default open api config
     x-trapi:
       version: 1.5.0
       operations:
@@ -233,54 +112,25 @@ app:
         # https://automat-dev.renci.org/<chart install name>
         url: ""
 
-  memgraph:
-    storage:
-      size: 20Mi
-    service:
-      type: ClusterIP
-    boltPort: 7687
-    # dataUrl is the base URL with _nodes.cypher, _edges.cypher, and _indexes.cypher to be appended
-    # to point to three required memgraph cypher files to populate the database, if deploying internally
-    dataUrl: ""
-    # BATCH_SIZE controls how many CSV edge rows are processed per transaction
-    # MAX_PARALLEL controls how many parallel jobs to run simultaneously for edge ingestion
-    # LARGE_THRESHOLD serves as the file size threshold which determines which large csv edge files get split.
-    # SPLIT_LINES determines split file size.
-    # All these four values influence memory usage: reduce these values will reduce total memory usage.
-    BATCH_SIZE: 2000
-    MAX_PARALLEL: 10
-    LARGE_THRESHOLD: 1000000000
-    SPLIT_LINES: 4000000
-    initresources:
-      requests:
-        memory: 1Gi
-        cpu: 500m
-      limits:
-        memory: 1Gi
-        cpu: 3000m
-    resources:
-      requests:
-        memory: 5Gi
-        cpu: 500m
-      limits:
-        ephemeral-storage: 256Mi
-        memory: 6Gi
-        cpu: 1000m
-
   nodeSelector: {}
   tolerations: []
   affinity: {}
 
-externalNeo4j:
-  hostName: ""
-  boltPort: 7687
-  httpPort: 7474
-  username: neo4j
-  password: ""
-
-externalMemgraph:
-  hostName: ""
-  boltPort: 7687
+ingress:
+  enabled: false
+  class: ""
+  pathType: "ImplementationSpecific"
+  path: "/"
+  gandalf:
+    host: "the gandalf host name"
+    annotations:
+      nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
+      nginx.ingress.kubernetes.io/proxy-body-size: "512m"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+      nginx.ingress.kubernetes.io/send-timeout: "86400"
+      nginx.ingress.kubernetes.io/service-upstream: "true"
+      nginx.ingress.kubernetes.io/upstream-keepalive-timeout: "86400"
 
 skipAttributes:
 graphMetadataUrl: ""
@@ -295,7 +145,7 @@ datasetDesc:
   dataseturl: ''
   generatorCode: ''
   neo4j_dump: ""
-  provenanceTag: "infores:automat.platersource"
+  provenanceTag: ""
   license: "" # link to terms of service
 
 x_trapi:

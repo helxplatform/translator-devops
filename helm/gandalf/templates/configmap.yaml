@@ -1,32 +1,31 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "plater.fullname" . }}-configmap
+  name: {{ include "gandalf.fullname" . }}-configmap
 data:
   WEB_HOST: "0.0.0.0"
-  WEB_PORT: "{{ .Values.app.gandalf.service.port }}"
+  GANDALF_WEB_PORT: "{{ .Values.app.gandalf.service.port }}"
   GRAPH_DB: "{{ .Values.graph.backend }}"
   GRAPH_QUERY_TIMEOUT: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}"
 
-  SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-gandalf-service"
-  AUTOMAT_HOST: {{ .Values.app.automatAddress }}
-  PLATER_TITLE: {{ .Release.Name }}
-  INFORES: "{{ .Values.datasetDesc.provenanceTag }}"
+  # turn off automat logic
+  # GANDALF_SERVICE_ADDRESS: "{{ include "gandalf.fullname" . }}-service"
+  # GANDALF_AUTOMAT_HOST: {{ .Values.app.automatAddress }}
+  # GANDALF_PLATER_TITLE: {{ .Release.Name }}
+  GANDALF_INFORES: "{{ .Values.datasetDesc.provenanceTag }}"
   BL_VERSION: "{{ .Values.app.bl_version }}"
-  WORKER_TIMEOUT: "{{ .Values.app.gunicorn.worker_timeout }}"
-  NUM_WORKERS: "{{ .Values.app.gunicorn.num_workers }}"
-  SERVER_MATURITY: "{{ .Values.x_trapi.maturity.value }}"
-  SERVER_LOCATION: "{{ .Values.x_trapi.location.value }}"
-  SERVER_URL: "{{ .Values.app.public_url }}"
+  GANDALF_SERVER_MATURITY: "{{ .Values.x_trapi.maturity.value }}"
+  GANDALF_SERVER_LOCATION: "{{ .Values.x_trapi.location.value }}"
+  GANDALF_SERVER_URL: "{{ .Values.app.public_url }}"
   PROFILER_ON: "{{ .Values.app.profiler_on }}"
   {{ if .Values.app.otel.enabled }}
-  OTEL_ENABLED: "TRUE"
-  OTEL_SERVICE_NAME: "automat-{{ .Release.Name }}"
+  GANDALF_OTEL_ENABLED: "TRUE"
+  GANDALF_OTEL_SERVICE_NAME: "{{ .Release.Name }}"
   OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.app.otel.jaegerHost | quote }}
-  JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
-  JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
+  GANDALF_JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
+  GANDALF_JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
   {{ end }}
 
-  GRAPH_PATH: {{ .Values.app.gandalf.sharedData.mountPath }}
-  LOAD_MMAPS_INTO_MEMORY: "false"
+  GANDALF_GRAPH_PATH: {{ .Values.app.gandalf.sharedData.mountPath }}
   GANDALF_WORKERS: "{{ .Values.app.gandalf.num_workers }}"
+  GANDALF_LARGE_RESULT_THRESHOLD: "1000000"
