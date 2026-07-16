@@ -44,9 +44,10 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.solr.image.repository }}:{{ .Values.solr.image.tag }}"
+          # Standalone mode: no -DzkRun/ZooKeeper. The backup is a self-contained
+          # core that the download init-container extracts into /var/solr/data, so
+          # Solr auto-discovers name_lookup on startup with its schema baked in.
           args:
-          - '-DzkRun'
-          - '-DzkClientTimeout=5000'
           - '-q'
           - '-Dlog4j2.disable.jmx=true'
           - '-Dlog4j2.formatMsgNoLookups=true'

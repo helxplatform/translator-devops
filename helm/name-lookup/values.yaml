@@ -40,7 +40,8 @@ solr:
   port: 8983
   image:
     repository: solr
-    tag: 9.1
+    # Must be >= the Solr version that built the backup (data-loading/Dockerfile).
+    tag: 9.10.0
   resources:
     # We tried increasing this to 200Gi. It looks like Solr used the following
     # amounts of memory (as per Sterling Grafana):
@@ -70,7 +71,11 @@ solr:
   affinity:
   tolerations:
 
-  heap_mem: "-Xms30G -Xmx30G"
+  # Keep the JVM heap well below the pod's memory limit so the rest stays available
+  # for the OS page cache, which is what actually keeps the ~127Gi index fast (Lucene
+  # relies on it). See NameResolution#265 -- raising the memory limit above and tuning
+  # the exact heap is tracked there and should be validated under query load.
+  heap_mem: "-Xms16G -Xmx16G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
 
   # As of Babel 2023jul13, we need 130G to store the
