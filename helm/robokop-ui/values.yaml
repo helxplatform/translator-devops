@@ -4,7 +4,7 @@ imagePullSecrets:
 backend:
   enabled: true
   repository: "ghcr.io/robokopu24/robokop-backend-server"
-  tag: "v1.0.12"
+  tag: "v1.2"
   pullPolicy: IfNotPresent
   resources:
     requests:
@@ -29,7 +29,7 @@ backend:
 
 frontend:
   repository: "ghcr.io/robokopu24/robokop-frontend"
-  tag: "v1.3.3"
+  tag: "v1.5.0"
   pullPolicy: IfNotPresent
   resources:
     requests:
