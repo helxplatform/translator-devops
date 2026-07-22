@@ -8,10 +8,10 @@ data:
   GRAPH_DB: "{{ .Values.graph.backend }}"
   GRAPH_QUERY_TIMEOUT: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}"
 
-  # turn off automat logic
-  # GANDALF_SERVICE_ADDRESS: "{{ include "gandalf.fullname" . }}-service"
-  # GANDALF_AUTOMAT_HOST: {{ .Values.app.automatAddress }}
-  # GANDALF_PLATER_TITLE: {{ .Release.Name }}
+  # Enable automat registration
+  GANDALF_SERVICE_ADDRESS: "{{ include "gandalf.fullname" . }}-service"
+  GANDALF_AUTOMAT_HOST: {{ .Values.app.automatAddress }}
+  GANDALF_PLATER_TITLE: {{ .Release.Name }}
   GANDALF_INFORES: "{{ .Values.datasetDesc.provenanceTag }}"
   BL_VERSION: "{{ .Values.app.bl_version }}"
   GANDALF_SERVER_MATURITY: "{{ .Values.x_trapi.maturity.value }}"

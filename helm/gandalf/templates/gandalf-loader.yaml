@@ -97,6 +97,21 @@ spec:
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
+      {{- if and (eq .Values.graph.backend "gandalf") (not .Values.graph.external) }}
+      # Force loader to run on same node as the PVC (RWO volume constraint)
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  {{- include "gandalf.selectorLabels" . | nindent 18 }}
+              topologyKey: kubernetes.io/hostname
+      {{- end }}
+      {{- end }}
       {{- with .Values.app.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
