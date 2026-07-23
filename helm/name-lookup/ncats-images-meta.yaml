@@ -1,10 +1,10 @@
 nameLookup:
   image: ghcr.io/ncatstranslator/nameresolution
-  version: v1.6.0
+  version: v1.7.0
 
 solr:
   image: solr
-  version: "9.1"
+  version: "9.10"
 
 renciPythonImage:
   image: ghcr.io/translatorsri/renci-python-image
