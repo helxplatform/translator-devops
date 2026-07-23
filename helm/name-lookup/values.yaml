@@ -40,8 +40,9 @@ solr:
   port: 8983
   image:
     repository: solr
-    # Must be >= the Solr version that built the backup (data-loading/Dockerfile).
-    tag: 9.10.0
+    # Solr load happens using Solr 9.10.0 version, but any Solr 9.10.x should be able to
+    # load that database. This allows our frontline database to pick up minor updates.
+    tag: 9.10
   resources:
     # We tried increasing this to 200Gi. It looks like Solr used the following
     # amounts of memory (as per Sterling Grafana):
