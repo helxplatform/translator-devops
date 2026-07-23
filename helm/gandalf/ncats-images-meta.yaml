@@ -1,0 +1,10 @@
+gandalf:
+  image: "ghcr.io/ranking-agent/gandalf"
+  version: "1.0.0"
+  
+busybox:
+  image: "busybox"
+  version: "1.35"
+bash:
+  image: "bash"
+  version: "5.2.15"

@@ -1,0 +1,51 @@
+{{- if .Values.shepherd_monitor.ingress.enabled }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "shepherd.fullname" . }}-monitor-ws-ingress
+  annotations:
+    # No rewrite-target here on purpose. The rewrite path in nginx-ingress
+    # strips the WebSocket Upgrade header, so the upgrade never reaches
+    # uvicorn. By using a separate ingress with an exact-match path and no
+    # rewrite, the upgrade headers pass through cleanly, and the app has a
+    # corresponding route at the prefixed path.
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    {{- with .Values.shepherd_monitor.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+      - {{ .Values.ingress.host | quote }}
+    secretName: {{ .Values.ingress.host }}-tls
+  {{- end }}
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+        - path: {{ .Values.shepherd_monitor.ingress.rootPath }}/ws
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          pathType: Exact
+          {{- end }}
+          backend:
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            service:
+              name: {{ include "shepherd.fullname" . }}-monitor
+              port:
+                number: {{ .Values.shepherd_monitor.service.port }}
+            {{- else }}
+            serviceName: {{ include "shepherd.fullname" . }}-monitor
+            servicePort: {{ .Values.shepherd_monitor.service.port }}
+            {{- end }}
+{{- end }}

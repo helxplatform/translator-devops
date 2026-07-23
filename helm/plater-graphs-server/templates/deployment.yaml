@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plater-graphs-server.fullname" . }}
+  labels:
+    {{- include "plater-graphs-server.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: {{ .Values.strategy }}
+  selector:
+    matchLabels:
+      {{- include "plater-graphs-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "plater-graphs-server.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.containerPort }}
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            tcpSocket:
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/
+              readOnly: true
+            - name: graphs-nfs
+              mountPath: {{ .Values.nfs.mountPath }}
+              subPath: {{ .Values.nfs.subPath }}
+            - name: nginx-cache
+              mountPath: /var/cache/nginx/
+              subPath: client_temp
+            - name: nginx-cache
+              mountPath: /run/
+              subPath: run
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ include "plater-graphs-server.fullname" . }}-nginx-config
+            defaultMode: 0777
+        - name: graphs-nfs
+          nfs:
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path | quote }}
+        - name: nginx-cache
+          emptyDir:
+            medium: Memory

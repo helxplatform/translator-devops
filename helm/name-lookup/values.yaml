@@ -13,14 +13,13 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/ncatstranslator/nameresolution
-    tag: v1.6.0
+    tag: v1.5.2
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2025nov4/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/nameres/snapshot.backup.tar.gz"
 forceRun: false
 data:
-  babelVersion: 2025nov4
-  babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2025nov4.md
-  biolinkModelTag: "v4.2.6-rc5"
+  babelVersion: 2025sep1
+  babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2025sep1.md
 
 downloader:
   image:
