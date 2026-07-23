@@ -12,13 +12,23 @@ data:
     CORE_DIR="${DATA_DIR}/name_lookup"
     BACKUP_ZIP="${DATA_DIR}/snapshot.backup.tar.gz"
     BACKUP_URL="{{ .Values.dataUrl }}"
+    STAMP="${CORE_DIR}/.dataUrl"
 
-    # The backup is a self-contained Solr core (config + schema + index). If it is
-    # already extracted, keep it: this makes the init container idempotent, so a
-    # pod restart does not wipe a good core and leave Solr empty
-    # (translator-devops#609).
-    if [ -f "${CORE_DIR}/core.properties" ]; then
-      echo "Core already present at ${CORE_DIR}; skipping download."
+    # An empty dataUrl means "leave the volume alone" -- keep whatever core is already
+    # there (or none). This is the switch for "do not (re)load", same as before.
+    if [ -z "${BACKUP_URL}" ]; then
+      echo "dataUrl is empty; leaving any existing core untouched."
+      exit 0
+    fi
+
+    # The backup is a self-contained Solr core (config + schema + index). Skip the
+    # download only if the extracted core came from THIS dataUrl: a pod restart with an
+    # unchanged dataUrl keeps the good core (translator-devops#609), but a new release
+    # (changed dataUrl) reloads instead of silently serving the old index on a PVC that
+    # outlived the version bump. A core with no stamp (old logic, or hand-restored)
+    # reloads once so the served data matches the configured dataUrl.
+    if [ -f "${CORE_DIR}/core.properties" ] && [ "$(cat "${STAMP}" 2>/dev/null)" = "${BACKUP_URL}" ]; then
+      echo "Core already present from ${BACKUP_URL}; skipping download."
       exit 0
     fi
 
@@ -32,6 +42,11 @@ data:
     # with its schema and config baked in -- nothing else to set up.
     tar -xf ${BACKUP_ZIP} -C ${DATA_DIR}
     rm ${BACKUP_ZIP}
+
+    # Record which backup this core came from, so the next pod start can tell a restart
+    # (skip) from a version bump (reload). Written after a successful extract so a
+    # failed download never leaves a stamp that would suppress the retry.
+    printf '%s' "${BACKUP_URL}" > "${STAMP}"
 
   restore.sh: |-
     #!/bin/sh
