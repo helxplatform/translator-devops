@@ -12,8 +12,8 @@ image:
   pullPolicy: Always
 
 data:
-  babelVersion: "2026jul15"
-  babelVersionURL: "https://github.com/ncatstranslator/Babel/blob/master/releases/2026jul15.md"
+  babelVersion: "2026jul22"
+  babelVersionURL: "https://github.com/ncatstranslator/Babel/blob/master/releases/2026jul22.md"
   biolinkModelTag: "v4.4.3"
 
 web:

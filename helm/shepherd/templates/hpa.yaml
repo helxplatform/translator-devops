@@ -1,0 +1,260 @@
+{{- if .Values.shepherd_server.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-server-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.shepherd_server.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.shepherd_server.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.shepherd_server.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.shepherd_server.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.shepherd_server.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.shepherd_server.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.filter_kgraph_orphans.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-filter-kgraph-orphans-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.filter_kgraph_orphans.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.filter_kgraph_orphans.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.filter_kgraph_orphans.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.filter_kgraph_orphans.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.filter_kgraph_orphans.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.filter_kgraph_orphans.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.filter_results_top_n.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-filter-results-top-n-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.filter_results_top_n.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.filter_results_top_n.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.filter_results_top_n.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.filter_results_top_n.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.filter_results_top_n.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.filter_results_top_n.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.sort_results_score.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-sort-results-score-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.sort_results_score.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sort_results_score.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.sort_results_score.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.sort_results_score.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.sort_results_score.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.sort_results_score.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.finish_query.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-finish-query-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.finish_query.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.finish_query.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.finish_query.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.finish_query.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.finish_query.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.finish_query.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.merge_message.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-merge-message-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.merge_message.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.merge_message.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.merge_message.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.merge_message.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.merge_message.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.merge_message.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.aragorn.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-aragorn-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.aragorn.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.aragorn.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.aragorn.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.aragorn.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.aragorn.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.aragorn.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.aragorn_lookup.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-aragorn-lookup-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.aragorn_lookup.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.aragorn_lookup.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.aragorn_lookup.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.aragorn_lookup.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.aragorn_lookup.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.aragorn_lookup.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}
+
+{{- if .Values.aragorn_score.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "shepherd.fullname" . }}-aragorn-score-hpa
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "shepherd.fullname" . }}
+  minReplicas: {{ .Values.aragorn_score.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.aragorn_score.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.aragorn_score.autoscaling.targetCPU }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.aragorn_score.autoscaling.targetCPU }}
+    {{- end }}
+    {{- if .Values.aragorn_score.autoscaling.targetMemory }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.aragorn_score.autoscaling.targetMemory }}
+    {{- end }}
+{{- end }}

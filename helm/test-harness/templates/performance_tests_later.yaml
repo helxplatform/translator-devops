@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "test-harness.fullname" . }}-performance-tests-later
+spec:
+  schedule: "{{ .Values.performance_tests.cronInterval }}"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # don't retry
+      template:
+        spec:
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ include "test-harness.fullname" . }}-performance-tests-later
+            image: {{ .Values.test_harness.repository }}:{{ .Values.performance_tests.tag }}
+            imagePullPolicy: {{ .Values.test_harness.pullPolicy }}
+            command:
+              - /bin/sh
+              - -c
+              - |
+                day=$(date +%d)
+                if [ "$day" -ge 15 ] && [ "$day" -le 21 ]; then
+                  test-harness --reporter_url={{ .Values.test_harness.reporter_url }} \
+                  --reporter_access_token={{ .Values.test_harness.access_token }} \
+                  --trapi_version={{ .Values.performance_tests.trapi_version }} \
+                  download \
+                  {{ .Values.performance_tests.test_suite }} \
+                  --tests_url={{ .Values.performance_tests.tests_url }}
+                else
+                  echo "Skipping - not the third Thursday."
+                fi
+            # command: [ "/bin/bash", "-c", "--" ]
+            # args: [ "while true; do sleep 30; done;" ]
+            envFrom:
+            - configMapRef:
+                name: {{ include "test-harness.fullname" . }}-configmap
+            resources:
+              {{ toYaml .Values.resources | nindent 14 }}
+
+          restartPolicy: Never

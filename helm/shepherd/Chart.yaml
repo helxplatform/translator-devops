@@ -1,0 +1,6 @@
+apiVersion: v2
+name: shepherd
+description: Helm chart for Translator Shepherd
+type: application
+version: 0.1.0
+appVersion: "1.0"

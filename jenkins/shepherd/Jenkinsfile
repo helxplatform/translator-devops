@@ -1,0 +1,165 @@
+pipeline {
+    options {
+        timestamps()
+        skipDefaultCheckout()
+        disableConcurrentBuilds()
+    }
+    agent {
+        node { label 'translator && aws && build' }
+    }
+    parameters {
+        string(name: 'BUILD_VERSION', defaultValue: '', description: 'The build version to deploy (optional)')
+        choice(name: 'ACTION', choices: 'install\ndelete', description: 'Install or delete, default install')
+        string(name: 'AWS_REGION', defaultValue: 'us-east-1', description: 'AWS Region to deploy')
+        string(name: 'KUBERNETES_CLUSTER_NAME', defaultValue: 'translator-eks-ci-blue-cluster', description: 'AWS EKS that will host this application')
+    }
+    triggers {
+        pollSCM('H/2 * * * *')
+    }
+    environment {
+        DEPLOY_ENV = "dev"
+        ECR_REGISTRY = "853771734544.dkr.ecr.us-east-1.amazonaws.com"
+    }
+    stages {
+        stage('Clean') {
+            steps {
+                cleanWs()
+                checkout scm
+            }
+        }
+        stage('Build Version') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/shepherd/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps{
+               script {
+                    def imageMeta = readYaml file: 'helm/shepherd/ncats-images-meta.yaml'
+                    env.BUILD_VERSION = imageMeta.shepherd_server.version
+                    currentBuild.displayName = imageMeta.shepherd_server.version
+              }
+           }
+        }
+        stage('build image') {
+            when {
+                allOf {
+                    expression {
+                        return !params.BUILD_VERSION
+                    }
+                    anyOf {
+                        changeset "helm/shepherd/**"
+                        triggeredBy 'UserIdCause'
+                    }
+                }
+            }
+            steps {
+                script {
+                    def imageMeta = readYaml file: 'helm/shepherd/ncats-images-meta.yaml'
+                    def images = [
+                        'shepherd_server',
+                        'shepherd_monitor',
+                        'filter_kgraph_orphans',
+                        'filter_results_top_n',
+                        'filter_analyses_top_n',
+                        'sort_results_score',
+                        'finish_query',
+                        'merge_message',
+                        'aragorn',
+                        'aragorn_lookup',
+                        'aragorn_pathfinder',
+                        'aragorn_omnicorp',
+                        'aragorn_score',
+                        'arax',
+                        'arax_rank',
+                        'bte',
+                        'bte_lookup',
+                        'score_paths',
+                        'sipr'
+                    ]
+                    
+                    dir("helm/shepherd") {
+                        sh '''
+                        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin  853771734544.dkr.ecr.us-east-1.amazonaws.com
+                        '''
+                        
+                        images.each { imageName ->
+                            def sourceImage = imageMeta[imageName].image
+                            def version = imageMeta[imageName].version
+                            // Remove shepherd_ prefix if present, then add translator-shepherd- prefix
+                            def cleanName = imageName.replaceFirst('^shepherd_', '')
+                            def targetImageName = "translator-shepherd-${cleanName.replace('_', '-')}"
+                            
+                            sh """
+                            docker pull ${sourceImage}:${version}
+                            docker tag ${sourceImage}:${version} ${ECR_REGISTRY}/${targetImageName}:${version}
+                            docker push ${ECR_REGISTRY}/${targetImageName}:${version}
+                            """
+                        }
+                        
+                        // Handle postgres
+                        def postgresImage = imageMeta.postgres.image
+                        def postgresVersion = imageMeta.postgres.version
+                        sh """
+                        docker pull ${postgresImage}:${postgresVersion}
+                        docker tag ${postgresImage}:${postgresVersion} ${ECR_REGISTRY}/translator-shepherd-postgres:${postgresVersion}
+                        docker push ${ECR_REGISTRY}/translator-shepherd-postgres:${postgresVersion}
+                        """
+                        
+                        // Handle redis
+                        def redisImage = imageMeta.redis.image
+                        def redisVersion = imageMeta.redis.version
+                        sh """
+                        docker pull ${redisImage}:${redisVersion}
+                        docker tag ${redisImage}:${redisVersion} ${ECR_REGISTRY}/translator-shepherd-redis-stack-server:${redisVersion}
+                        docker push ${ECR_REGISTRY}/translator-shepherd-redis-stack-server:${redisVersion}
+                        """
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            agent {
+                label 'translator && ci && deploy'
+            }
+            when {
+                anyOf {
+                    changeset "helm/shepherd/**"
+                    triggeredBy 'UserIdCause'
+                }
+            }
+            environment {
+                APP = "shepherd"
+            }
+            steps {
+                checkout scm
+                dir("helm/shepherd") {
+                    configFileProvider([
+                        configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
+                        ]){
+                    withEnv([
+                        "BUILD_VERSION=" + (params.BUILD_VERSION ?: env.BUILD_VERSION)
+                    ]) {
+                        sh '''
+                            aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+                            /bin/bash prepare.sh
+                            '''
+                        }
+                    }
+                }
+            }
+            post {
+                always {
+                    echo " Clean up the workspace in deploy node!"
+                    cleanWs()
+                }
+            }
+        }
+    }
+}
