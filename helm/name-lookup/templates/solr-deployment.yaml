@@ -58,6 +58,11 @@ spec:
               value: {{ include "name-lookup.fullname" . }}-solr-svc
             - name: GC_TUNE
               value: {{ .Values.solr.gc | quote }}
+            {{- if .Values.solr.gc_log }}
+            # Overrides Solr's default file-based GC logging (see solr.gc_log in values.yaml).
+            - name: GC_LOG_OPTS
+              value: {{ .Values.solr.gc_log | quote }}
+            {{- end }}
               # "-XX:-UseLargePages -XX:+UseG1GC -XX:MaxGCPauseMillis=500 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=30 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=70"
               # "-XX:-UseLargePages -XX:+UseG1GC -XX:MaxGCPauseMillis=100 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=20 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=20"
               # "-XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"

@@ -45,7 +45,6 @@ solr:
     # Quoted: unquoted YAML 9.10 parses as the float 9.1, which pulled solr:9.1 and
     # failed core init against a 9.10-built index (NameResolution#278).
     tag: "9.10"
-
   # The memory limit is the single biggest serving-performance lever. It has to
   # cover the JVM heap (heap_mem below, 16G) AND leave the rest for the OS page
   # cache, which is charged to the cgroup limit and is what actually keeps queries
@@ -91,6 +90,22 @@ solr:
   # the exact heap is tracked there and should be validated under query load.
   heap_mem: "-Xms16G -Xmx16G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
+
+  # Send GC logs to stdout so the cluster log collector (Grafana) picks them up.
+  #
+  # Solr's default is -Xlog:gc*:file=$SOLR_LOGS_DIR/solr_gc.log:...:filecount=9,filesize=20M,
+  # which writes to /var/solr/logs -- a directory that is NOT on the PVC (only
+  # /var/solr/data is mounted), so the GC log is ephemeral and vanishes on the pod
+  # restart that usually prompts you to go looking for it. Routing to stdout makes it
+  # durable in Grafana and drops ~180Mi of ephemeral log files.
+  #
+  # Note this is `-Xlog:gc`, not `-Xlog:gc*`: the bare form logs one line per collection
+  # (the pause summary), which is what you need to correlate against a latency tail. The
+  # `gc*` form adds every GC subcomponent and is very chatty on a 16G heap. Use `gc*`
+  # temporarily if you are debugging GC itself.
+  #
+  # Set to "" to fall back to Solr's default file-based GC logging.
+  gc_log: "-Xlog:gc:stdout:time,uptime"
 
   # Holds the extracted Solr index. download.sh streams the compressed backup in,
   # untars it, and deletes the tarball, so peak usage is roughly the index (~111Gi for
