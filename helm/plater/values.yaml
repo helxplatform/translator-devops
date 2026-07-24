@@ -5,7 +5,7 @@
 replicaCount: 1
 
 graph:
-  backend: memgraph        # neo4j or memgraph
+  backend: neo4j        # neo4j or memgraph
   external: false
 
 busybox:

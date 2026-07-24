@@ -1,0 +1,10 @@
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/RoboMouseKG/1.0.0/RoboMouseKG_1.0.0.db.dump
+  memgraph:
+    dataUrl:
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/RoboMouseKG/1.0.0/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/RoboMouseKG/1.0.0/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/RoboMouseKG/1.0.0/graph-metadata.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/RoboMouseKG/1.0.0/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/RoboMouseKG/1.0.0/testing_data.json
