@@ -70,13 +70,28 @@ solr:
   #     plenty, and a heap over ~32G also gives up compressed object pointers. See
   #     NameResolution#265.
   #   - cpu and storage do not scale with the memory limit.
+  # ephemeral-storage covers everything the pod writes outside the PVC: Solr's log files
+  # in /var/solr/logs (which is NOT on the PVC -- only /var/solr/data is mounted) plus the
+  # container's stdout, which the kubelet also writes to node disk and bills here.
+  #
+  # The bounded part is about 640Mi: solr.log and solr_slow_requests.log each roll at
+  # 32MB x 10. (Clearing solr.gc_log above adds a further ~180Mi of solr_gc.log.) The
+  # variable part is Jetty's NCSA request log, one file per day kept for 3 days
+  # (solr.log.requestlog.retaindays), so it grows with query volume -- that is what the
+  # headroom below is for. To shrink it, pass -Dsolr.log.requestlog.retaindays=1.
+  #
+  # Note this limit EVICTS the pod when exceeded, so it is deliberately generous: an
+  # undersized value would turn a rare node-disk-pressure eviction into a routine one
+  # under heavy traffic. Raise the limit rather than trimming it if request logs grow.
   resources:
     requests:
       memory: "64Gi"
       cpu: 4000m
+      ephemeral-storage: 2Gi
     limits:
       memory: "64Gi"
       cpu: 6000m
+      ephemeral-storage: 8Gi
 
   # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
   # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
@@ -138,13 +153,19 @@ app:
   nodeSelector:
   affinity:
   tolerations:
+  # The web pod writes no data files, so its ephemeral-storage is almost entirely stdout
+  # that the kubelet spools to node disk: NameRes logs one INFO line per lookup, which is
+  # a lot of lines at production query rates. The kubelet rotates container logs, so this
+  # only needs enough headroom to sit above that rotation comfortably.
   resources:
     requests:
       memory: 1Gi
       cpu: 750m
+      ephemeral-storage: 512Mi
     limits:
       memory: 2Gi
       cpu: 1000m
+      ephemeral-storage: 2Gi
 
 nameOverride: ""
 fullnameOverride: ""
@@ -165,6 +186,17 @@ blocklist:
   # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also
   # set this on Kubernetes by running:
   #   kubectl -n $NAMESPACE create secret generic {{name-lookup.fullname}}-secrets --from-literal=github_personal_access_token=github_pat_...
+  #
+  # Declared here (rather than left unset) so the key always exists: templates reference it
+  # directly, and an undefined `secrets` map made rendering die with an unhelpful
+  # "nil pointer evaluating interface {}.github_personal_access_token" even when the
+  # blocklist was deliberately turned off.
+  #
+  # Rendering fails fast if blocklist.url is set while this is empty -- turning the
+  # blocklist on without a token is almost always a mistake. If the blocklist URL is
+  # genuinely public and needs no auth, set any non-empty placeholder here.
+  secrets:
+    github_personal_access_token: ""
   # The storage necessary to store the blocklist file. This is currently an ephemeral volume, and because we need
   # to use `split` to split this into 500 ID chunks, we actually need TWICE the amount of storage needed to store
   # the blocklist. Luckily, the blocklist is about 7KB right now, so 100Mi should be future proof for a while.
