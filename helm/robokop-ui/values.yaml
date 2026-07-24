@@ -29,7 +29,7 @@ backend:
 
 frontend:
   repository: "ghcr.io/robokopu24/robokop-frontend"
-  tag: "v1.5.1"
+  tag: "v1.5.2"
   pullPolicy: IfNotPresent
   resources:
     requests:
