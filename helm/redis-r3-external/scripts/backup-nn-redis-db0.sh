@@ -5,7 +5,7 @@
 #
 
 # Configuration
-NN_VERSION="${NN_VERSION:-2025nov4}"
+NN_VERSION="${NN_VERSION:-2026jul22}"
 NN_NAMESPACE="${NN_NAMESPACE:-translator-exp}"
 RETRIES=10
 
