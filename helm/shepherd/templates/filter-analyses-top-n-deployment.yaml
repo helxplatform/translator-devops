@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-filter-analyses-top-n
-          image: "{{ .Values.filter_analyses_top_n.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.filter_analyses_top_n.image.repository }}:{{ .Values.filter_analyses_top_n.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.filter_analyses_top_n.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
