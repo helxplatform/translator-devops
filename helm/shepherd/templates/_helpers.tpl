@@ -70,3 +70,12 @@ hash above: drives loader Job re-runs and worker (score-paths) rolls when the
 {{- define "shepherd.embeddingsSourcesHash" -}}
 {{- join "," .Values.embeddingsLoader.sources | sha256sum | trunc 12 -}}
 {{- end -}}
+
+{{/*
+Shared hash of the arax pathfinder loader source URLs. Same purpose as the omnicorp
+hash above: drives loader Job re-runs and worker (score-paths) rolls when the
+`araxPathfinderLoader.sources` value changes.
+*/}}
+{{- define "shepherd.araxPathfinderSourcesHash" -}}
+{{- join "," .Values.araxPathfinderLoader.sources | sha256sum | trunc 12 -}}
+{{- end -}}
