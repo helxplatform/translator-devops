@@ -25,9 +25,7 @@ data:
   SYNC_KG_RETRIEVAL_URL: {{ .Values.shepherd.sync_kg_retrieval_url }}
   KG_REHYDRATE_URL: {{ .Values.shepherd.kg_rehydrate_url }}
   DEFAULT_DATA_TIER: "{{ .Values.shepherd.default_data_tier }}"
-  OMNICORP_URL: {{ .Values.shepherd.omnicorp_url }}
   ARAX_URL: {{ .Values.shepherd.arax_url }}
-  NODE_NORM: {{ .Values.shepherd.node_norm }}
 
   # OTEL_ENABLED: "True"
   JAEGER_HOST: {{ .Values.otel.jaeger_host }}
@@ -36,4 +34,5 @@ data:
   OMNICORP_CURIES_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/curies.lmdb"
   OMNICORP_SHARED_COUNTS_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/shared_counts.lmdb"
   PATHFINDER_EMBEDDINGS_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_embeddings"
+  ARAX_PATHFINDER_DBS_DIR: "{{ .Values.araxPathfinderLoader.sharedData.mountPath }}"
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}
