@@ -153,11 +153,11 @@ aragorn_score:
     targetMemory: 75
   resources:
     requests:
-      memory: 3Gi
-      cpu: 1000m
+      memory: 7Gi
+      cpu: 3000m
     limits:
-      memory: 4Gi
-      cpu: 1000m
+      memory: 10Gi
+      cpu: 4000m
 
 arax:
   image:
@@ -171,11 +171,78 @@ arax:
     targetMemory: 75
   resources:
     requests:
-      memory: 1Gi
+      memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 1Gi
+      memory: 3Gi
       cpu: 1000m
+
+arax_pathfinder:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/arax_pathfinder
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 20Gi
+      cpu: 5000m
+      ephemeral-storage: "5Gi"
+    limits:
+      memory: 22Gi
+      cpu: 6000m
+      ephemeral-storage: "5Gi"
+
+# ---------------------------------------------------------------------------
+# Init container — download data from public server(s)
+# ---------------------------------------------------------------------------
+araxPathfinderLoader:
+  sharedData:
+    mountPath: /data/arax_pathfinder_dbs
+  persistentVolume:
+    accessModes:
+      - ReadWriteMany
+    size: 5Gi
+  enabled: false
+
+  # Image for the init container (needs wget; busybox or alpine work well)
+  image:
+    repository: curlimages/curl
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  # List of URLs to download. Supported formats:
+  #   .tar.gz / .tgz  — extracted automatically
+  #   .tar             — extracted automatically
+  #   .zip             — extracted automatically (requires unzip in image; use alpine)
+  #   anything else    — downloaded as-is into the mount path
+  sources: []
+    # - https://example.com/graph-data/edges.mmap
+    # - https://example.com/graph-data/nodes.lmdb.tar.gz
+    # - https://example.com/graph-data/metadata.json
+
+  # Skip download if data already exists and source URLs haven't changed
+  skipIfExists: true
+
+  # Optional shell command to run after all downloads complete
+  # Runs inside the init container with the data volume mounted
+  postDownloadCommand: ""
+    # e.g.: "chmod -R 755 /data/graph && echo 'permissions set'"
+
+  # Resources for the init container (downloads can be memory-light)
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "10Gi"
+      ephemeral-storage: "10Gi"
+    limits:
+      cpu: "2"
+      memory: "15Gi"
+      ephemeral-storage: "10Gi"
   
 arax_rank:
   image:
@@ -243,10 +310,10 @@ filter_analyses_top_n:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 filter_kgraph_orphans:
@@ -261,10 +328,10 @@ filter_kgraph_orphans:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 filter_results_top_n:
@@ -279,10 +346,10 @@ filter_results_top_n:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 finish_query:
@@ -297,10 +364,10 @@ finish_query:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 merge_message:
@@ -398,10 +465,10 @@ sipr:
     targetMemory: 75
   resources:
     requests:
-      memory: 1Gi
+      memory: 2Gi
       cpu: 1000m
     limits:
-      memory: 1Gi
+      memory: 2Gi
       cpu: 1000m
 
 sort_results_score:
@@ -416,10 +483,10 @@ sort_results_score:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
 
 shepherd_db:

@@ -64,6 +64,7 @@ pipeline {
                     def imageMeta = readYaml file: 'helm/shepherd/ncats-images-meta.yaml'
                     def images = [
                         'shepherd_server',
+                        'shepherd_monitor',
                         'filter_kgraph_orphans',
                         'filter_results_top_n',
                         'filter_analyses_top_n',
@@ -76,6 +77,7 @@ pipeline {
                         'aragorn_omnicorp',
                         'aragorn_score',
                         'arax',
+                        'arax_pathfinder',
                         'arax_rank',
                         'bte',
                         'bte_lookup',
