@@ -8,6 +8,7 @@
 {{- $tag := .Values.restore.tag }}
 {{- $pullPolicy := .Values.restore.pullPolicy }}
 {{- $ephemeralStorage := .Values.restore.ephemeralStorage }}
+{{- $redisConfig := .Values.redis_config }}
 {{- range $dbName, $dbConf := .Values.redis_backend_config }}
 {{- $dbKubeName := $dbName | replace "_" "-"}}
 {{- $dataStorageSize := $dbConf.storageSize }}
@@ -18,6 +19,7 @@
 {{- $sslEnabled := $connectionDetails.ssl_enabled }}
 {{- $isCluster := $connectionDetails.is_cluster }}
 {{- $redisPassword := $connectionDetails.password }}
+{{- $redisVersion := $connectionDetails.redis_version | default $redisConfig.redis_version | default "6.2" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -103,6 +105,7 @@ data:
     gunzip "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
 
     # Restore the file into the specified database.
+    # We no longer need to support cluster mode, so we can just pipe the data directly to the target host.
     # The `-c` option doesn't work in pipe mode, which is why we generate a ton of MOVED errors when we run this. The `grep -v MOVED` should suppress them
     # to avoid filling up the log.
     # Instead, what we will do is to get the list of cluster nodes and then stream ALL the data to ALL the nodes. Very inefficient, but it should get the job done.
@@ -115,14 +118,34 @@ data:
     for node in $sub_nodes; do
       IFS=':' read -ra node_host_port <<< $node
       sub_host_name="${node_host_port[0]}"
-      echo "... Started piping data to ${sub_host_name} as part of {{ $hostName }} ..." 
-      rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
+      echo "... Started piping data to ${sub_host_name} as part of {{ $hostName }} ..."
+      bash /home/nru/rdb-to-resp.sh "{{ $dataDir }}/{{ $dbName }}.rdb" "{{$redisVersion}}" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
+      # rdb -c protocol "{{ $dataDir }}/{{ $dbName }}.rdb" | redis-cli {{ if $isCluster }}-c{{end}} -h ${sub_host_name} -p {{ $port }} --pipe {{ if $sslEnabled -}}--tls{{ end }} 2>&1 | grep -v MOVED
       echo "... Done piping data to ${sub_host_name} as part of {{ $hostName }} ..."
     done
 
     {{ if not $isCluster }}
-    # Start a BGSAVE so the database is backed up to disk and ready to be loaded from if necessary.
-    redis-cli -h {{ $hostName }} -p {{ $port }} {{ if $sslEnabled -}}--tls{{ end }} {{ if $isCluster }}-c{{end}} BGSAVE
+    # Persist the restored data to disk before this Job exits, so that if the pod
+    # restarts it reloads a complete dump.rdb instead of coming up empty. A plain
+    # BGSAVE is fire-and-forget, so we trigger it and then wait for it to actually
+    # finish and verify it succeeded. The dataset is static once the pipe above
+    # completes, so the fork is cheap.
+    REDIS="redis-cli -h {{ $hostName }} -p {{ $port }} {{ if $sslEnabled -}}--tls{{ end }}"
+    $REDIS CONFIG SET save ""
+    PREV_SAVE=$($REDIS LASTSAVE)
+    $REDIS BGSAVE
+    echo "Waiting for BGSAVE to complete on {{ $hostName }}..."
+    for i in $(seq 1 900); do
+      if [ "$($REDIS LASTSAVE)" -gt "$PREV_SAVE" ] 2>/dev/null; then break; fi
+      if [ "$($REDIS INFO persistence | tr -d '\r' | sed -n 's/^rdb_last_bgsave_status://p')" = "err" ]; then
+        echo "ERROR: BGSAVE failed on {{ $hostName }}." >&2; exit 1
+      fi
+      sleep 2
+    done
+    if [ "$($REDIS LASTSAVE)" -le "$PREV_SAVE" ] 2>/dev/null; then
+      echo "ERROR: BGSAVE did not complete within the timeout on {{ $hostName }}." >&2; exit 1
+    fi
+    echo "Restored data persisted to dump.rdb on {{ $hostName }}."
     {{- end }}
 
     # Report success.

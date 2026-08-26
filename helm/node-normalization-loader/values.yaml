@@ -10,16 +10,20 @@ mode: restore
 # Log level for loading jobs.
 logLevel: INFO
 
+# Biolink Model version (any ref from https://github.com/biolink/biolink-model is fine, but this should match the
+# version used by the loaded Babel run)
+biolink_version: "v4.4.3"
+
 image:
   repository: "ghcr.io/ncatstranslator/nodenormalization"
-  tag: "v2.3.26"
+  tag: "v2.5.1"
   pullPolicy: Always
 fullnameOverride: ""
 
 # Settings to use for a restore job.
 restore:
   repository: "ghcr.io/ncatstranslator/nodenormalization-data-loading"
-  tag: "v2.3.26"
+  tag: "v2.5.1"
   pullPolicy: Always
   dataDir: "/data"
   dataSize: 50G
@@ -33,7 +37,7 @@ app:
 data:
   compendia:
     storageSize: 10G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/compendia/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2026jul22/compendia/"
     files:
     - AnatomicalEntity.txt
     - BiologicalProcess.txt
@@ -45,7 +49,7 @@ data:
     - ComplexMolecularMixture.txt
     - Disease.txt
     - Drug.txt
-    - GeneFamily.txt
+    - Food.txt
     - Gene.txt.00
     - Gene.txt.01
     - Gene.txt.02
@@ -53,6 +57,8 @@ data:
     - Gene.txt.04
     - Gene.txt.05
     - Gene.txt.06
+    - Gene.txt.07
+    - GeneFamily.txt
     - GrossAnatomicalStructure.txt
     - MacromolecularComplex.txt
     - MolecularActivity.txt
@@ -77,20 +83,11 @@ data:
     - Protein.txt.13
     - Protein.txt.14
     - Protein.txt.15
-    - Protein.txt.16
-    - Protein.txt.17
-    - Protein.txt.18
-    - Protein.txt.19
-    - Protein.txt.20
-    - Protein.txt.21
-    - Protein.txt.22
-    - Protein.txt.23
-    - Protein.txt.24
-    - Protein.txt.25
     - Publication.txt.00
     - Publication.txt.01
     - Publication.txt.02
     - Publication.txt.03
+    - Publication.txt.04
     - SmallMolecule.txt.00
     - SmallMolecule.txt.01
     - SmallMolecule.txt.02
@@ -106,7 +103,7 @@ data:
     - umls.txt
   conflations:
     storageSize: 1G
-    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/conflation/"
+    sourceBaseUrl: "https://stars.renci.org/var/babel_outputs/2026jul22/conflation/"
     configs:
       - file: "GeneProtein.txt"
         types:
@@ -120,33 +117,36 @@ data:
         redis_db: "chemical_drug_db"
 codeDir: /code
 
+redis_config:
+  redis_version: "6.2"
+
 redis_backend_config:
   "eq_id_to_id_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/id-id.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/id-id.rdb.gz"
     storageSize: 100G
 
   "id_to_eqids_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/id-eq-id.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/id-eq-id.rdb.gz"
     storageSize: 150G
 
   "id_to_type_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/id-categories.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/id-categories.rdb.gz"
     storageSize: 30G
 
   "curie_to_bl_type_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/semantic-count.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/semantic-count.rdb.gz"
     storageSize: 1G
 
   "gene_protein_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/conflation-db.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/conflation-db.rdb.gz"
     storageSize: 10G
 
   "info_content_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/info-content.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/info-content.rdb.gz"
     storageSize: 1G
 
   "chemical_drug_db":
-    restoreURL: "https://stars.renci.org/var/babel_outputs/2025sep1/rdb-backups/chemical-drug-db.rdb.gz"
+    restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/chemical-drug-db.rdb.gz"
     storageSize: 1G
 
 securityContext:
