@@ -207,6 +207,7 @@ araxPathfinderLoader:
     accessModes:
       - ReadWriteMany
     size: 5Gi
+    storageClassName: nfs-client
   enabled: false
 
   # Image for the init container (needs wget; busybox or alpine work well)
@@ -294,6 +295,31 @@ bte_lookup:
     requests:
       memory: 1Gi
       cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+embeddingsLoader:
+  enabled: true
+  sources: []
+  image:
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 600
+  skipIfExists: true
+  sharedData:
+    mountPath: /data/embeddings
+  persistentVolume:
+    storageClassName: nfs-client
+    accessModes:
+      - ReadWriteMany
+    size: 60Gi
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 500m
     limits:
       memory: 1Gi
       cpu: 1000m
@@ -593,28 +619,3 @@ shepherd_server:
     limits:
       memory: 8Gi
       cpu: 3000m
-
-embeddingsLoader:
-  enabled: true
-  sources: []
-  image:
-    repository: busybox
-    tag: latest
-    pullPolicy: IfNotPresent
-  backoffLimit: 1
-  ttlSecondsAfterFinished: 600
-  skipIfExists: true
-  sharedData:
-    mountPath: /data/embeddings
-  persistentVolume:
-    storageClassName: nfs-client
-    accessModes:
-      - ReadWriteMany
-    size: 10Gi
-  resources:
-    requests:
-      memory: 512Mi
-      cpu: 500m
-    limits:
-      memory: 1Gi
-      cpu: 1000m
