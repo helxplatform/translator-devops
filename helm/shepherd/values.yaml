@@ -181,6 +181,7 @@ arax_pathfinder:
   image:
     repository: ghcr.io/biopack-team/shepherd/arax_pathfinder
     imagePullPolicy: Always
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -465,6 +466,7 @@ score_paths:
   image:
     repository: ghcr.io/biopack-team/shepherd/score_paths
     imagePullPolicy: Always
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
