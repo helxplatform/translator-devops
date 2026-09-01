@@ -1,63 +1,63 @@
 aragorn:
   image: "ghcr.io/biopack-team/shepherd/aragorn"
-  version: "v1.1.2"
+  version: "v1.1.3"
 aragorn_lookup:
   image: "ghcr.io/biopack-team/shepherd/aragorn_lookup"
-  version: "v1.1.2"
+  version: "v1.1.3"
 aragorn_pathfinder:
   image: "ghcr.io/biopack-team/shepherd/aragorn_pathfinder"
-  version: "v1.1.2"
+  version: "v1.1.3"
 aragorn_omnicorp:
   image: "ghcr.io/biopack-team/shepherd/aragorn_omnicorp"
-  version: "v1.1.2"
+  version: "v1.1.3"
 aragorn_score:
   image: "ghcr.io/biopack-team/shepherd/aragorn_score"
-  version: "v1.1.2"
+  version: "v1.1.3"
 arax:
   image: "ghcr.io/biopack-team/shepherd/arax"
-  version: "v1.1.2"
+  version: "v1.1.3"
 arax_pathfinder:
   image: "ghcr.io/biopack-team/shepherd/arax_pathfinder"
-  version: "v1.1.2"
+  version: "v1.1.3"
 arax_rank:
   image: "ghcr.io/biopack-team/shepherd/arax_rank"
-  version: "v1.1.2"
+  version: "v1.1.3"
 bte:
   image: "ghcr.io/biopack-team/shepherd/bte"
-  version: "v1.1.2"
+  version: "v1.1.3"
 bte_lookup:
   image: "ghcr.io/biopack-team/shepherd/bte_lookup"
-  version: "v1.1.2"
+  version: "v1.1.3"
 filter_analyses_top_n:
   image: "ghcr.io/biopack-team/shepherd/filter_analyses_top_n"
-  version: "v1.1.2"
+  version: "v1.1.3"
 filter_kgraph_orphans:
   image: "ghcr.io/biopack-team/shepherd/filter_kgraph_orphans"
-  version: "v1.1.2"
+  version: "v1.1.3"
 filter_results_top_n:
   image: "ghcr.io/biopack-team/shepherd/filter_results_top_n"
-  version: "v1.1.2"
+  version: "v1.1.3"
 finish_query:
   image: "ghcr.io/biopack-team/shepherd/finish_query"
-  version: "v1.1.2"
+  version: "v1.1.3"
 merge_message:
   image: "ghcr.io/biopack-team/shepherd/merge_message"
-  version: "v1.1.2"
+  version: "v1.1.3"
 score_paths:
   image: "ghcr.io/biopack-team/shepherd/score_paths"
-  version: "v1.1.2"
+  version: "v1.1.3"
 shepherd_monitor:
   image: "ghcr.io/biopack-team/shepherd/monitor"
-  version: "v1.1.2"
+  version: "v1.1.3"
 shepherd_server:
   image: "ghcr.io/biopack-team/shepherd/shepherd_server"
-  version: "v1.1.2"
+  version: "v1.1.3"
 sipr:
   image: "ghcr.io/biopack-team/shepherd/sipr"
-  version: "v1.1.2"
+  version: "v1.1.3"
 sort_results_score:
   image: "ghcr.io/biopack-team/shepherd/sort_results_score"
-  version: "v1.1.2"
+  version: "v1.1.3"
 postgres:
   image: "postgres"
   version: "17-bookworm"
