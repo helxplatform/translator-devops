@@ -37,8 +37,10 @@ Installation can be configured with the following parameters.
 | `ac.service.type` |  Web server kubernetes service type | `ClusterIP`
 | `ac.service.port` | Web server kubernetes service port  | `80`
 | `ac.containerPort` |  Web server port | `8080`
+| `ac.workers` | uvicorn worker processes. Each worker opens a DuckDB connection per worker thread, each with its own buffer pool, so this drives the pod's memory ceiling. | `4`
 | `ac.resources` | Web container resource requests / limits | see `values.yaml`
-| `ac.env` | Extra environment variables for the web container, e.g. `AC_DUCKDB_QUERY_THREADS`, `AC_DUCKDB_QUERY_MEMORY_LIMIT`, `NODE_NORMALIZER_URL` | `{}`
+| `ac.tmpSizeLimit` | Size of the `/tmp` scratch volume DuckDB spills query temp data to | `10Gi`
+| `ac.env` | Extra environment variables for the web container. The app's defaults already match upstream's recommended runtime settings (`AC_DUCKDB_QUERY_MEMORY_LIMIT=1GB`, `AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE=8GB`, `AC_DUCKDB_QUERY_THREADS=2`), so set these only to deviate. `NODE_NORMALIZER_URL` is also read here. | `{}`
 | `ac.duckdb.url` | DuckDB dump downloaded by the init container. Required. | RENCI hierarchy-pruned dump
 | `ac.duckdb.storage.size` | Size of the data volume. Should be ~2x the dump size to leave room for a replacement download. | `20Gi`
 | `ac.duckdb.storage.class` | Storage class for the data volume; empty uses the cluster default. | `nil`

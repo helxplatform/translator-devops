@@ -11,6 +11,11 @@ ac:
     type: ClusterIP
     port: 80
   containerPort: 8080
+  # uvicorn worker processes. Each one opens its own DuckDB connection per
+  # worker thread, and every connection carries its own buffer pool
+  # (AC_DUCKDB_QUERY_MEMORY_LIMIT, 1GB by default), so raising this raises the
+  # pod's memory ceiling as well.
+  workers: 4
   resources:
     requests:
       memory: 5Gi
@@ -36,11 +41,16 @@ ac:
       limits:
         memory: 1Gi
         cpu: 1000m
-  # Extra environment variables for the web container. The app reads, among
-  # others, AC_DUCKDB_QUERY_THREADS (DuckDB `threads`, default 2),
-  # AC_DUCKDB_QUERY_MEMORY_LIMIT (default 1GB),
-  # AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE (default 8GB, spilled to /tmp) and
-  # NODE_NORMALIZER_URL.
+  # Scratch volume mounted at /tmp, where DuckDB spills query temp data. The
+  # app caps each connection's spill at AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE
+  # (8GB by default) and opens one connection per worker thread, so this is a
+  # backstop against a heavy query eating the node's ephemeral storage.
+  tmpSizeLimit: 10Gi
+  # Extra environment variables for the web container. The AnswerCoalesce
+  # defaults already match the runtime values upstream recommends
+  # (AC_DUCKDB_QUERY_MEMORY_LIMIT=1GB, AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE=8GB,
+  # AC_DUCKDB_QUERY_THREADS=2), so set these only to deliberately deviate.
+  # NODE_NORMALIZER_URL is also read from the environment.
   env: {}
 
 web:

@@ -66,17 +66,20 @@ spec:
             - "--port"
             - "8080"
             - "--workers"
-            - "4"
+            - "{{ .Values.ac.workers }}"
             - "src.server:APP"
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           volumeMounts:
-            # The app opens the DuckDB file read-only and spills query temp data to /tmp.
             - mountPath: /data
               name: {{ include "answer-coalesce.fullname" . }}-duckdb-data
               readOnly: true
+            # DuckDB spills query temp data to /tmp/answer-coalesce-duckdb-<pid>.
+            # Keep it on a sized volume rather than the node's ephemeral storage.
+            - mountPath: /tmp
+              name: {{ include "answer-coalesce.fullname" . }}-tmp
           resources:
             {{- toYaml .Values.ac.resources | nindent 12 }}
       volumes:
@@ -84,6 +87,9 @@ spec:
           configMap:
             name: {{ include "answer-coalesce.fullname" . }}-configmap
             defaultMode: 0777
+        - name: {{ include "answer-coalesce.fullname" . }}-tmp
+          emptyDir:
+            sizeLimit: {{ .Values.ac.tmpSizeLimit }}
       {{- with .Values.app.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
