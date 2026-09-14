@@ -18,71 +18,42 @@ ac:
     limits:
       memory: 10Gi
       cpu: 500m
+  duckdb:
+    # DuckDB dump downloaded onto the data volume by an init container on first
+    # start, and handed to the app as AC_DUCKDB_PATH=/data/answer-coalesce.duckdb.
+    # The download is skipped when the file is already present and its size
+    # matches the server's, so pod restarts don't re-fetch several GB.
+    url: "https://stars.renci.org/var/translator/ac/answer-coalesce-hierarchy-pruned-2026-9-14.duckdb"
+    storage:
+      # Roughly twice the dump size: a replacement dump is downloaded alongside
+      # the current one before it is swapped in.
+      size: 20Gi
+      class:
+    initresources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 1Gi
+        cpu: 1000m
+  # Extra environment variables for the web container. The app reads, among
+  # others, AC_DUCKDB_QUERY_THREADS (DuckDB `threads`, default 2),
+  # AC_DUCKDB_QUERY_MEMORY_LIMIT (default 1GB),
+  # AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE (default 8GB, spilled to /tmp) and
+  # NODE_NORMALIZER_URL.
+  env: {}
+
 web:
   serverHostName: "hostname"
 
 busybox:
      image:
-        repository: busybox
-        tag: 1.36-glibc
-redis:
-  image:
-    repository: redis
-    tag: latest
-  service:
-    type: ClusterIP
-    # if service type is LoadBalancer,
-    # please set the following value `loadBalancerIP`, if it needs to be static.
-    loadBalancerIP:
-    port: 6379
-  containerPort: 6379
-  args:
-   - --save
-   - ''
-   - --stop-writes-on-bgsave-error
-   - 'no'
-  resources:
-    requests:
-      memory: 50Gi
-    limits:
-      memory: 100Gi
+        repository: curlimages/curl
+        tag: 8.20.0
 
-  initresources:
-    requests:
-      memory: 5Gi
-      cpu: 1000m
-    limits:
-      memory: 10Gi
-      cpu: 1000m
-  pvcName: #### Name pv accordingly
-  seedDB: false
-  createPV: false
-  createPVC: false
-  storage:
-    pvName:
-    pvcName:
-    size:
-    class:
-  affinity: {}
-  tolerations: {}
-  nodeSelector: {}
-  storageSize: 50Gi
-
-# Set dataUrl to seed Redis with a pre-built dump on first deploy.
-# Leave empty or comment out to skip seeding (e.g. on subsequent redeploys when data already exists).
-# Example: "https://stars.renci.org/var/answer_coalesce/YYYY-MM-DD/answer-coalesce.rdb"
-dataUrl: ""
-
-
-
-  # adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
+# fsGroup lets the (non-root) init container write the dump to the data volume.
+podSecurityContext:
+  fsGroup: 1000
 
 nameOverride: ""
 fullnameOverride: ""
@@ -93,6 +64,8 @@ ingress:
   class: ""
   pathType: "ImplementationSpecific"
   path: "/"
+  tls:
+    enabled: false
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m
@@ -110,9 +83,3 @@ app:
   affinity: {}
   tolerations: {}
   nodeSelector: {}
-
-
-existingRedis: {}
-  # host: redis-server-address
-  # port: redis-server-port
-  # password: redis-password
