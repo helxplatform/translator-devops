@@ -37,10 +37,11 @@ Installation can be configured with the following parameters.
 | `ac.service.type` |  Web server kubernetes service type | `ClusterIP`
 | `ac.service.port` | Web server kubernetes service port  | `80`
 | `ac.containerPort` |  Web server port | `8080`
-| `ac.workers` | uvicorn worker processes. Each worker opens a DuckDB connection per worker thread, each with its own buffer pool, so this drives the pod's memory ceiling. | `4`
+| `ac.workers` | uvicorn worker processes. DuckDB caches one database instance per process, so each worker has a single shared buffer pool and the `AC_DUCKDB_QUERY_*` settings apply per worker — every memory and spill budget is `workers` x the per-process figure. | `2`
 | `ac.resources` | Web container resource requests / limits | see `values.yaml`
-| `ac.tmpSizeLimit` | Size of the `/tmp` scratch volume DuckDB spills query temp data to | `10Gi`
-| `ac.env` | Extra environment variables for the web container. The app's defaults already match upstream's recommended runtime settings (`AC_DUCKDB_QUERY_MEMORY_LIMIT=1GB`, `AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE=8GB`, `AC_DUCKDB_QUERY_THREADS=2`), so set these only to deviate. `NODE_NORMALIZER_URL` is also read here. | `{}`
+| `ac.limitConcurrency` | Optional uvicorn `--limit-concurrency`. Past this many connections *or* tasks a worker answers 503 and closes the connection — a backstop against OOM, not a queue. Counts idle keep-alive connections, applies per worker, and 503s `/docs` and probes on the same rule. Omitted when unset. | `nil`
+| `ac.tmpSizeLimit` | Size of the `/tmp` scratch volume DuckDB spills to. Must stay above `ac.workers` x `AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE` (8GB), or the pod is evicted for overrunning the volume before DuckDB's cap applies. | `20Gi`
+| `ac.env` | Extra environment variables for the web container. The app's defaults already match upstream's recommended runtime settings (`AC_DUCKDB_QUERY_MEMORY_LIMIT=1GB`, `AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE=8GB`, `AC_DUCKDB_QUERY_THREADS=2`) — all per worker process — so set these only to deviate. `NODE_NORMALIZER_URL` is also read here. | `{}`
 | `ac.duckdb.url` | DuckDB dump downloaded by the init container. Required. | RENCI hierarchy-pruned dump
 | `ac.duckdb.storage.size` | Size of the data volume. Should be ~2x the dump size to leave room for a replacement download. | `20Gi`
 | `ac.duckdb.storage.class` | Storage class for the data volume; empty uses the cluster default. | `nil`

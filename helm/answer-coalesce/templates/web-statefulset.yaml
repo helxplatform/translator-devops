@@ -67,6 +67,10 @@ spec:
             - "8080"
             - "--workers"
             - "{{ .Values.ac.workers }}"
+          {{- with .Values.ac.limitConcurrency }}
+            - "--limit-concurrency"
+            - "{{ . }}"
+          {{- end }}
             - "src.server:APP"
           ports:
             - name: http
