@@ -20,7 +20,7 @@ data:
   REDIS_PASSWORD: {{ .Values.shepherd_broker.auth.password }}
 
   LOOKUP_TIMEOUT: "{{ .Values.shepherd.lookup_timeout }}"
-  CALLBACK_HOST: "https://{{ .Values.ingress.host }}"
+  CALLBACK_HOST: "{{ .Values.shepherd.callback_host }}"
   KG_RETRIEVAL_URL: {{ .Values.shepherd.kg_retrieval_url }}
   SYNC_KG_RETRIEVAL_URL: {{ .Values.shepherd.sync_kg_retrieval_url }}
   KG_REHYDRATE_URL: {{ .Values.shepherd.kg_rehydrate_url }}
