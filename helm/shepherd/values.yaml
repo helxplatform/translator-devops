@@ -264,6 +264,114 @@ arax_rank:
       memory: 10Gi
       cpu: 4000m
 
+ars_fanout:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/ars_fanout
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 1000m
+    limits:
+      memory: 2Gi
+      cpu: 1000m
+
+ars_premerge:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/ars_premerge
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 2000m
+    limits:
+      memory: 5Gi
+      cpu: 2500m
+
+ars_merge:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/ars_merge
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 2000m
+    limits:
+      memory: 5Gi
+      cpu: 2500m
+
+ars_postprocess:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/ars_postprocess
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 4Gi
+      cpu: 2000m
+    limits:
+      memory: 5Gi
+      cpu: 2500m
+
+ars_watchdog:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/ars_watchdog
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+ars_notify:
+  image:
+    repository: ghcr.io/biopack-team/shepherd/ars_notify
+    imagePullPolicy: Always
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPU: 75
+    targetMemory: 75
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
 bte:
   image:
     repository: ghcr.io/biopack-team/shepherd/bte
