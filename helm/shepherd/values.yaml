@@ -54,6 +54,8 @@ shepherd:
   nodeSelector: {}
   affinity: {}
   tolerations: []
+  max_response_size: 250M
+  callback_max_request_size: 250M
 
 logs:
   persistentVolume:
