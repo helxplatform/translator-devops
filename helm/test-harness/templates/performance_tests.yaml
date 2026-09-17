@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "test-harness.fullname" . }}-performance-tests
+spec:
+  schedule: "{{ .Values.performance_tests.cronInterval }}"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # don't retry
+      template:
+        spec:
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ include "test-harness.fullname" . }}-performance-tests
+            image: {{ .Values.test_harness.repository }}:{{ .Values.performance_tests.tag }}
+            imagePullPolicy: {{ .Values.test_harness.pullPolicy }}
+            command: ["test-harness-sweep"]
+            args: ["--suite", "performance_tests", "--download", "--", "--performance_profile", "default"]
+            env:
+              - name: PERFORMANCE_TARGETS
+                value: >-
+                  ars=https://ars.ci.transltr.io,
+                  aragorn=https://shepherd.ci.transltr.io/aragorn,
+                  arax=https://shepherd.ci.transltr.io/arax,
+                  bte=https://shepherd.ci.transltr.io/bte
+            envFrom:
+            - configMapRef:
+                name: {{ include "test-harness.fullname" . }}-configmap
+            resources:
+              {{ toYaml .Values.resources | nindent 14 }}
+
+          restartPolicy: Never
