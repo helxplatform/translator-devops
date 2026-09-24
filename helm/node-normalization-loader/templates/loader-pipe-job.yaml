@@ -19,7 +19,7 @@
 {{- $sslEnabled := $connectionDetails.ssl_enabled }}
 {{- $isCluster := $connectionDetails.is_cluster }}
 {{- $redisPassword := $connectionDetails.password }}
-{{- $redisVersion := $connectionDetails.redis_version | default $redisConfig.redis_version | default "6.2" }}
+{{- $redisVersion := $connectionDetails.redis_version | default $redisConfig.redis_version | default "8.8" }}
 apiVersion: batch/v1
 kind: Job
 metadata:

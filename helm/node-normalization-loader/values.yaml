@@ -118,7 +118,7 @@ data:
 codeDir: /code
 
 redis_config:
-  redis_version: "6.2"
+  redis_version: "8.8"
 
 redis_backend_config:
   "eq_id_to_id_db":
