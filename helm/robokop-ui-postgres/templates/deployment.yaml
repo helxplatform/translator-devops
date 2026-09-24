@@ -1,0 +1,87 @@
+# SPDX-FileCopyrightText: 2022 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2023 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2024 Renaissance Computing Institute. All rights reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: LicenseRef-RENCI
+# SPDX-License-Identifier: MIT
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "robokop-ui-postgres.fullname" . }}
+  labels:
+    {{- include "robokop-ui-postgres.labels" . | nindent 4 }}
+    type: dbms
+spec:
+  serviceName: {{ include "robokop-ui-postgres.fullname" . }}
+  selector:
+    matchLabels:
+      {{- include "robokop-ui-postgres.selectorLabels" . | nindent 6 }}
+      type: dbms
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "robokop-ui-postgres.selectorLabels" . | nindent 8 }}
+        type: dbms
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-postgres
+{{/*          command: ['/bin/sh', '-c', 'while true; do date; sleep 3600; done']*/}}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: POSTGRES_USER
+            value: {{ .Values.adminUser }}
+          - name: POSTGRES_PASSWORD
+            value: {{ .Values.adminPassword }}
+          - name: PGDATA
+            value: {{ .Values.dataMountPath }}{{ .Values.dataMountSubPath }}
+          ports:
+            - name: postgres-port
+              containerPort: 5432
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: {{ .Values.dataMountPath }}
+            name: {{ .Values.storage.name }}
+          {{- if .Values.shmSize }}
+          - mountPath: /dev/shm
+            name: dshm
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.shmSize }}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.shmSize }}
+        {{- end }}
+        - name: {{ .Values.storage.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.storage.claimName }}

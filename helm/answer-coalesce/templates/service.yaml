@@ -15,23 +15,3 @@ spec:
   selector:
     {{- include "answer-coalesce.selectorLabels" . | nindent 4 }}
     app: webServer
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "answer-coalesce.fullname" . }}-redis-service
-  labels:
-    {{- include "answer-coalesce.labels" . | nindent 4 }}
-spec:
-  type: {{ .Values.redis.service.type }}
-  {{- if .Values.redis.service.loadBalancerIP }}
-  loadBalancerIP: {{ .Values.redis.service.loadBalancerIP }}
-  {{- end}}
-  ports:
-    - port: {{ .Values.redis.service.port }}
-      targetPort: {{ .Values.redis.containerPort }}
-      protocol: TCP
-      name: redis-port
-  selector:
-    {{- include "answer-coalesce.selectorLabels" . | nindent 4 }}
-    app: database

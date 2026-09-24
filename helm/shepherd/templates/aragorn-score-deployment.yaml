@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "shepherd.fullname" . }}-aragorn-score
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: worker
+spec:
+  replicas: {{ .Values.aragorn_score.replicaCount }}
+  {{ if .Values.aragorn_score.strategy }}
+  strategy:
+    type: {{ .Values.aragorn_score.strategy }}
+  {{ end }}
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: worker
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: worker
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}-aragorn-score
+          image: "{{ .Values.aragorn_score.image.repository }}:{{ .Values.shepherd.tag }}"
+          imagePullPolicy: "{{ .Values.aragorn_score.image.imagePullPolicy }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "shepherd.fullname" . }}-configmap
+          command:
+            - 'python'
+          args:
+            - "worker.py"
+          {{ if .Values.aragorn_score.resources }}
+          resources: {{ toYaml .Values.aragorn_score.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+          - name: {{ include "shepherd.fullname" . }}-logs-pvc
+            mountPath: /app/logs/
+      volumes:
+      - name: {{ include "shepherd.fullname" . }}-logs-pvc
+        persistentVolumeClaim:
+          claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+      {{- with .Values.shepherd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

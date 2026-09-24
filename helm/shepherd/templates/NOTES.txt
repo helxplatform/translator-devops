@@ -1,0 +1,6 @@
+Installed {{ include "shepherd.fullname" . }}
+
+1. To access Shepherd service:
+> export SHEPHERD_PORT={{ .Values.shepherd_server.service.port }} && kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "shepherd.fullname" . }}-shepherd-service 8081:$SHEPHERD_PORT
+
+Browse to http://localhost:8081/docs

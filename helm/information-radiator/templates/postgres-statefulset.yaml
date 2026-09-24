@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: {{ include "information-radiator.fullname" . }}-postgres
-          image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
+          image: 'public.ecr.aws/zebrunner/postgres:{{ .Values.postgres.tag }}'
           ports:
             - name: http
               containerPort: {{ .Values.postgres.service.port }}

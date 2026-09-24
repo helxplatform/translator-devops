@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "shepherd.fullname" . }}-score-paths
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: worker
+spec:
+  replicas: {{ .Values.score_paths.replicaCount }}
+  {{- if .Values.score_paths.strategy }}
+  strategy:
+    type: {{ .Values.score_paths.strategy }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: worker
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: worker
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        # Rolls the worker whenever the embeddings loader's source URLs change,
+        # so new pods re-run the init container and open the freshly-loaded data.
+        checksum/embeddings-sources: {{ include "shepherd.embeddingsSourcesHash" . }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        # Wait for the loader's success-only sentinel. Gating on .data-ready
+        # (written last, only on full success) instead of a data file means the
+        # worker never starts on a partially-loaded volume.
+        - name: embeddings-wait-for-data
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until [ -f {{ .Values.embeddingsLoader.sharedData.mountPath }}/.data-ready ]; do
+                echo "waiting for loader to finish (.data-ready)..."
+                sleep 5
+              done
+              echo "Data ready."
+          volumeMounts:
+            - name: embeddings-data
+              mountPath: {{ .Values.embeddingsLoader.sharedData.mountPath }}
+      containers:
+        - name: {{ .Chart.Name }}-score-paths
+          image: "{{ .Values.score_paths.image.repository }}:{{ .Values.shepherd.tag }}"
+          imagePullPolicy: "{{ .Values.score_paths.image.imagePullPolicy }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "shepherd.fullname" . }}-configmap
+          command:
+            - 'python'
+          args:
+            - "worker.py"
+          {{- if .Values.score_paths.resources }}
+          resources: {{ toYaml .Values.score_paths.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: {{ include "shepherd.fullname" . }}-logs-pvc
+              mountPath: /app/logs/
+            # Shared LMDB data (read-only for the worker)
+            - name: embeddings-data
+              mountPath: {{ .Values.embeddingsLoader.sharedData.mountPath }}
+              readOnly: true
+      volumes:
+        - name: {{ include "shepherd.fullname" . }}-logs-pvc
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+        - name: embeddings-data
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-embeddings-data
+      {{- with .Values.shepherd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -34,26 +34,21 @@ spec:
             - name: {{ include "plater.fullname" . }}-metadata-pvc
               mountPath: /home/plater/Plater/PLATER/metadata
               subPath: plater-metadata/
+        {{- if and (eq .Values.graph.backend "neo4j") (not .Values.graph.external) }}
         - name: {{ include "plater.fullname" . }}-init-container
           image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
           command:
             - './check_neo.sh'
           env:
-          {{ if not .Values.externalNeo4j }}
             - name: NEO4J_HOST
               value: {{ include "plater.fullname" . }}-neo4j-service
             - name: NEO4J_HTTP_PORT
               value: "{{ .Values.app.neo4j.httpPort }}"
-          {{ else }}
-            - name: NEO4J_HOST
-              value: {{ .Values.externalNeo4j.hostName }}
-            - name: NEO4J_HTTP_PORT
-              value: "{{ .Values.externalNeo4j.port }}"
-          {{ end }}
           volumeMounts:
             - name: {{ include "plater.fullname" . }}-config-files
               mountPath: /check_neo.sh
               subPath: check_neo.sh
+        {{- end }}
       containers:
         - name: {{ include "plater.fullname" . }}-web-container
           image: "{{ .Values.image.plater.repository }}:{{ .Values.image.plater.tag }}"

@@ -29,6 +29,11 @@ data:
   ROBOKOPKG_URL: "{{ .Values.sub_processes.robokop_kg_url }}"
   ROBOKOP_CYPHER_ENDPOINT: "{{ .Values.sub_processes.robokop_cypher_url }}"
   PROCESS_DB_PATH: "{{ .Values.app.sqliteStoragePath }}"
+  REDIS_HOST: "{{ .Values.pathfinder.redis.host }}"
+  REDIS_PORT: "{{ .Values.pathfinder.redis.port }}"
+  REDIS_PASSWORD: "{{ .Values.pathfinder.redis.password }}"
+  PMIDS_DB: "{{ .Values.pathfinder.redis.pmids_db }}"
+  CURIES_DB: "{{ .Values.pathfinder.redis.curies_db }}"
   {{ if .Values.otel.enabled }}
   JAEGER_HOST: {{ .Values.otel.jaeger_host }}
   JAEGER_PORT: "{{ .Values.otel.jaeger_port }}"

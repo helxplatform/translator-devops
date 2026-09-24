@@ -1,0 +1,29 @@
+🚀 {{ include "graph-registry.fullname" . }} has been deployed!
+
+{{- if .Values.ingress.enabled }}
+
+Access the application at:
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+
+{{- else }}
+
+To access the application, run:
+
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "graph-registry.fullname" . }} 8080:{{ .Values.service.port }}
+
+Then open:
+
+  http://localhost:8080        - App info
+  http://localhost:8080/docs   - Swagger UI
+  http://localhost:8080/redoc  - ReDoc
+
+{{- end }}
+
+Shared directory: {{ .Values.app.sharedDir }}
+{{- if .Values.persistence.enabled }}
+Persistence:     enabled ({{ .Values.persistence.size }})
+{{- else }}
+Persistence:     disabled (ephemeral storage)
+{{- end }}

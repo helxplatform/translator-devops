@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "test-harness.fullname" . }}-prod-integration-cronjob
+spec:
+  schedule: "{{ .Values.PROD_integration.cronInterval }}"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # don't retry
+      template:
+        spec:
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ include "test-harness.fullname" . }}-prod-integration-cronjob
+            image: {{ .Values.test_harness.repository }}:{{ .Values.PROD_integration.tag }}
+            imagePullPolicy: {{ .Values.test_harness.pullPolicy }}
+            command:
+              - test-harness
+              - --reporter_url={{ .Values.test_harness.reporter_url }}
+              - --reporter_access_token={{ .Values.test_harness.access_token }}
+              - --trapi_version={{ .Values.PROD_integration.trapi_version }}
+              - download
+              - {{ .Values.PROD_integration.test_suite }}
+              - --tests_url={{ .Values.PROD_integration.tests_url }}
+            # command: [ "/bin/bash", "-c", "--" ]
+            # args: [ "while true; do sleep 30; done;" ]
+            envFrom:
+            - configMapRef:
+                name: {{ include "test-harness.fullname" . }}-configmap
+            resources:
+              {{ toYaml .Values.resources | nindent 14 }}
+
+          restartPolicy: Never

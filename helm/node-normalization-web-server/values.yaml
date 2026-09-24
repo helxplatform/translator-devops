@@ -7,9 +7,14 @@
 # Declare variables to be passed into your templates.
 
 image:
-  repository: ghcr.io/translatorsri/nodenormalization
-  tag: v2.3.18
+  repository: ghcr.io/ncatstranslator/nodenormalization
+  tag: v2.4.1
   pullPolicy: Always
+
+data:
+  babelVersion: "2025sep1"
+  babelVersionURL: "https://github.com/ncatstranslator/Babel/blob/master/releases/2025sep1.md"
+  biolinkModelTag: "v4.2.6-rc5"
 
 web:
   port: 8080
@@ -22,8 +27,9 @@ web:
     jaegerHost:
     jaegerPort:
   securityContext: {}
-  affinity: {}
-  tolerations: {}
+  nodeSelector: { }
+  affinity: { }
+  tolerations: { }
   configPath: "/code/redis_config.yaml"
   # exra Args for uvicorn
   extraArgs:
@@ -93,7 +99,7 @@ ingress:
     nginx.org/proxy-connect-timeout: 300s
     nginx.org/proxy-read-timeout: 300s
     nginx.org/proxy-send-timeout: 300s
-  pathType: "Prefix"
+  pathType: "ImplementationSpecific"
   tls: []
 #   - hosts:
 #       - nodenormalization-dev.apps.renci.org
@@ -148,7 +154,3 @@ x_trapi:
   location:
     value: "location"
 
-app:
-  nodeSelector: {}
-  affinity: {}
-  tolerations: {}

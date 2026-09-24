@@ -1,0 +1,51 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: "stable-alpine3.21-slim"
+  pullPolicy: IfNotPresent
+
+strategy: Recreate
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podSecurityContext:
+  runAsUser: 30000
+  runAsGroup: 30000
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+
+service:
+  type: ClusterIP
+  port: 80
+  containerPort: 8080
+
+ingress:
+  enabled: true
+  className: ""
+  host: robokop.renci.org
+  path: /graphs/([^/]+/[^/]+/.+)
+  pathType: ImplementationSpecific
+  tls:
+    enabled: true
+
+nfs:
+  server: na-projects.edc.renci.org
+  path: /stars
+  subPath: var/plater/graphs
+  mountPath: /graphs
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
