@@ -143,7 +143,7 @@ redis_backend_config:
 
   "info_content_db":
     restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/info-content.rdb.gz"
-    storageSize: 1G
+    storageSize: 100G
 
   "chemical_drug_db":
     restoreURL: "https://stars.renci.org/var/babel_outputs/2026jul22/rdb-backups/chemical-drug-db.rdb.gz"
