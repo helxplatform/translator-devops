@@ -13,13 +13,14 @@ webServer:
   port: 2433
   image:
     repository: ghcr.io/ncatstranslator/nameresolution
-    tag: v1.5.2
+    tag: v1.7.0
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/2025sep1/nameres/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/2026jul22/nameres/snapshot.backup.tar.gz"
 forceRun: false
 data:
-  babelVersion: 2025sep1
-  babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2025sep1.md
+  babelVersion: 2026jul22
+  babelVersionURL: https://github.com/ncatstranslator/Babel/blob/master/releases/2026jul22.md
+  biolinkModelTag: "v4.4.3"
 
 downloader:
   image:
@@ -39,29 +40,58 @@ solr:
   port: 8983
   image:
     repository: solr
-    tag: 9.1
+    # Solr load happens using Solr 9.10.0 version, but any Solr 9.10.x should be able to
+    # load that database. This allows our frontline database to pick up minor updates.
+    # Quoted: unquoted YAML 9.10 parses as the float 9.1, which pulled solr:9.1 and
+    # failed core init against a 9.10-built index (NameResolution#278).
+    tag: "9.10"
+  # The memory limit is the single biggest serving-performance lever. It has to
+  # cover the JVM heap (heap_mem below, 16G) AND leave the rest for the OS page
+  # cache, which is charged to the cgroup limit and is what actually keeps queries
+  # fast: Lucene reads the index through page cache, so the more of the ~111Gi index
+  # (Babel 2026jul22) that fits in (limit - heap), the fewer reads fall through to
+  # the network (`basic`) disk. A past measurement on a large limit showed ~11-13Gi
+  # of JVM RSS against ~111Gi of page cache -- Solr wants close to the whole index
+  # cached.
+  #
+  # 64Gi gives ~48Gi of page cache (~43% of the index) -- a big step up from 32Gi's
+  # ~16Gi (~15%), and enough for reasonable performance. If queries are slow and the
+  # Grafana page-cache panel shows the cache pinned at (limit - heap) -- or /status
+  # reports an index `size` well above (limit - heap), so most of it cannot be
+  # cached -- raise the limit further. 128Gi caches essentially the whole index; the
+  # Dev instance (most used) is the one to raise first.
+  #
+  # When you change the memory limit:
+  #   - Keep requests == limits. Page cache needs guaranteed (not burstable) memory,
+  #     and the node has to actually have it -- check `kubectl describe node`.
+  #   - Do NOT raise heap_mem to match. The extra memory should go to page cache, not
+  #     the heap. NameRes issues no fq and caches whole query results in
+  #     queryResultCache (bounded by maxRamMB in the configset), so 16G of heap is
+  #     plenty, and a heap over ~32G also gives up compressed object pointers. See
+  #     NameResolution#265.
+  #   - cpu and storage do not scale with the memory limit.
+  # ephemeral-storage covers everything the pod writes outside the PVC: Solr's log files
+  # in /var/solr/logs (which is NOT on the PVC -- only /var/solr/data is mounted) plus the
+  # container's stdout, which the kubelet also writes to node disk and bills here.
+  #
+  # The bounded part is about 640Mi: solr.log and solr_slow_requests.log each roll at
+  # 32MB x 10. (Clearing solr.gc_log above adds a further ~180Mi of solr_gc.log.) The
+  # variable part is Jetty's NCSA request log, one file per day kept for 3 days
+  # (solr.log.requestlog.retaindays), so it grows with query volume -- that is what the
+  # headroom below is for. To shrink it, pass -Dsolr.log.requestlog.retaindays=1.
+  #
+  # Note this limit EVICTS the pod when exceeded, so it is deliberately generous: an
+  # undersized value would turn a rare node-disk-pressure eviction into a routine one
+  # under heavy traffic. Raise the limit rather than trimming it if request logs grow.
   resources:
-    # We tried increasing this to 200Gi. It looks like Solr used the following
-    # amounts of memory (as per Sterling Grafana):
-    #   - Memory Usage (WSS): 13Gi
-    #   - Memory Usage (RSS): 11Gi
-    #   - Memory Usage (Cache): 111Gi
-    #
-    # I think the "cache" here refers to the OS-level page cache, which makes
-    # sense, as the Solr indexes occupy around 127Gi.
-    #
-    # Therefore, I suspect that Solr needs about 32-64Gi to load its indexes
-    # and other important content, but will use other memory if it is available
-    # to cache content. We'll set this to 64Gi for now, but we should try
-    # bombarding these instances with queries to check how valuable increasing
-    # the memory to Solr helps with performance.
-    #
     requests:
-      memory: "32Gi"
+      memory: "64Gi"
       cpu: 4000m
+      ephemeral-storage: 2Gi
     limits:
-      memory: "32Gi"
+      memory: "64Gi"
       cpu: 6000m
+      ephemeral-storage: 8Gi
 
   # You can control the nodeSelector/affinity/tolerations settings for Solr with the following settings.
   # Other pods (web, restore, backup) are controlled via app.nodeSelector/affinity/tolerations below.
@@ -69,12 +99,34 @@ solr:
   affinity:
   tolerations:
 
-  heap_mem: "-Xms30G -Xmx30G"
+  # Keep the JVM heap well below the pod's memory limit so the rest stays available
+  # for the OS page cache, which is what actually keeps the ~127Gi index fast (Lucene
+  # relies on it). See NameResolution#265 -- raising the memory limit above and tuning
+  # the exact heap is tracked there and should be validated under query load.
+  heap_mem: "-Xms16G -Xmx16G"
   gc: "-XX:NewSize=4G -XX:MaxNewSize=4G -XX:+UseG1GC -XX:MaxGCPauseMillis=1000 -XX:+UnlockExperimentalVMOptions -XX:G1MaxNewSizePercent=40 -XX:G1NewSizePercent=5 -XX:G1HeapRegionSize=32M -XX:InitiatingHeapOccupancyPercent=90"
 
-  # As of Babel 2023jul13, we need 130G to store the
-  # uncompressed backup + 131G Solr database
-  # So 300Gi should be enough for the time being.
+  # Send GC logs to stdout so the cluster log collector (Grafana) picks them up.
+  #
+  # Solr's default is -Xlog:gc*:file=$SOLR_LOGS_DIR/solr_gc.log:...:filecount=9,filesize=20M,
+  # which writes to /var/solr/logs -- a directory that is NOT on the PVC (only
+  # /var/solr/data is mounted), so the GC log is ephemeral and vanishes on the pod
+  # restart that usually prompts you to go looking for it. Routing to stdout makes it
+  # durable in Grafana and drops ~180Mi of ephemeral log files.
+  #
+  # Note this is `-Xlog:gc`, not `-Xlog:gc*`: the bare form logs one line per collection
+  # (the pause summary), which is what you need to correlate against a latency tail. The
+  # `gc*` form adds every GC subcomponent and is very chatty on a 16G heap. Use `gc*`
+  # temporarily if you are debugging GC itself.
+  #
+  # Set to "" to fall back to Solr's default file-based GC logging.
+  gc_log: "-Xlog:gc:stdout:time,uptime"
+
+  # Holds the extracted Solr index. download.sh streams the compressed backup in,
+  # untars it, and deletes the tarball, so peak usage is roughly the index (~111Gi for
+  # Babel 2026jul22) plus the compressed tarball during the download (tens of Gi) --
+  # there is no longer an uncompressed-backup staging copy (NameResolution#278). 400Gi
+  # leaves generous headroom, and does not need to scale with solr.resources.
   storage: 400Gi
 
   # As far as I know, initresources are only used by the download
@@ -97,16 +149,23 @@ app:
     enabled: false
     jaegerHost:
     jaegerPort:
+  logLevel: INFO
   nodeSelector:
   affinity:
   tolerations:
+  # The web pod writes no data files, so its ephemeral-storage is almost entirely stdout
+  # that the kubelet spools to node disk: NameRes logs one INFO line per lookup, which is
+  # a lot of lines at production query rates. The kubelet rotates container logs, so this
+  # only needs enough headroom to sit above that rotation comfortably.
   resources:
     requests:
       memory: 1Gi
       cpu: 750m
+      ephemeral-storage: 512Mi
     limits:
       memory: 2Gi
       cpu: 1000m
+      ephemeral-storage: 2Gi
 
 nameOverride: ""
 fullnameOverride: ""
@@ -127,6 +186,17 @@ blocklist:
   # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also
   # set this on Kubernetes by running:
   #   kubectl -n $NAMESPACE create secret generic {{name-lookup.fullname}}-secrets --from-literal=github_personal_access_token=github_pat_...
+  #
+  # Declared here (rather than left unset) so the key always exists: templates reference it
+  # directly, and an undefined `secrets` map made rendering die with an unhelpful
+  # "nil pointer evaluating interface {}.github_personal_access_token" even when the
+  # blocklist was deliberately turned off.
+  #
+  # Rendering fails fast if blocklist.url is set while this is empty -- turning the
+  # blocklist on without a token is almost always a mistake. If the blocklist URL is
+  # genuinely public and needs no auth, set any non-empty placeholder here.
+  secrets:
+    github_personal_access_token: ""
   # The storage necessary to store the blocklist file. This is currently an ephemeral volume, and because we need
   # to use `split` to split this into 500 ID chunks, we actually need TWICE the amount of storage needed to store
   # the blocklist. Luckily, the blocklist is about 7KB right now, so 100Mi should be future proof for a while.
