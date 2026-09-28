@@ -138,7 +138,10 @@ data:
     echo "Waiting for BGSAVE to complete on {{ $hostName }}..."
     for i in $(seq 1 900); do
       if [ "$($REDIS LASTSAVE)" -gt "$PREV_SAVE" ] 2>/dev/null; then break; fi
-      if [ "$($REDIS INFO persistence | tr -d '\r' | sed -n 's/^rdb_last_bgsave_status://p')" = "err" ]; then
+      # rdb_last_bgsave_status describes the previous save until ours finishes, so only
+      # trust it once no save is in progress.
+      PERSIST=$($REDIS INFO persistence | tr -d '\r')
+      if echo "$PERSIST" | grep -qx 'rdb_bgsave_in_progress:0' && echo "$PERSIST" | grep -qx 'rdb_last_bgsave_status:err'; then
         echo "ERROR: BGSAVE failed on {{ $hostName }}." >&2; exit 1
       fi
       sleep 2
