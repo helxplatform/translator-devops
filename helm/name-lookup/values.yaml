@@ -193,8 +193,9 @@ blocklist:
   # blocklist was deliberately turned off.
   #
   # Rendering fails fast if blocklist.url is set while this is empty -- turning the
-  # blocklist on without a token is almost always a mistake. If the blocklist URL is
-  # genuinely public and needs no auth, set any non-empty placeholder here.
+  # blocklist on without a token is almost always a mistake. Don't work around this with
+  # a placeholder: the token is sent as an Authorization header, and GitHub rejects an
+  # invalid token even for public content.
   secrets:
     github_personal_access_token: ""
   # The storage necessary to store the blocklist file. This is currently an ephemeral volume, and because we need
