@@ -92,7 +92,8 @@ metadata:
 data:
   run_pipe.sh: |-
     #!/bin/bash
-    set -v -x -e
+    # pipefail: a failed rdb-to-resp.sh or redis-cli --pipe must fail the Job, not be masked by `grep -v MOVED`.
+    set -v -x -e -o pipefail
 
     # Delete everything in the dataDir.
     rm -f "{{ $dataDir }}/{{ $dbName }}.rdb.gz"
