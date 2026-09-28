@@ -7,7 +7,8 @@ metadata:
 data:
   download.sh: |-
     #!/bin/bash
-    set -xa
+    # -e: a failed wget/tar must fail the init container, not fall through to the stamp.
+    set -xae
     DATA_DIR="/var/solr/data"
     CORE_DIR="${DATA_DIR}/name_lookup"
     BACKUP_ZIP="${DATA_DIR}/snapshot.backup.tar.gz"
@@ -44,8 +45,8 @@ data:
     rm ${BACKUP_ZIP}
 
     # Record which backup this core came from, so the next pod start can tell a restart
-    # (skip) from a version bump (reload). Written after a successful extract so a
-    # failed download never leaves a stamp that would suppress the retry.
+    # (skip) from a version bump (reload). Only reached if wget and tar succeeded
+    # (set -e), so a failed download never leaves a stamp that would suppress the retry.
     printf '%s' "${BACKUP_URL}" > "${STAMP}"
 
   restore.sh: |-
