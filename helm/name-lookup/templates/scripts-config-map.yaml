@@ -73,6 +73,20 @@ data:
         -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/config
     sleep 1
 
+    # Tune the queryResultCache. The _default configset ships with a 512-entry
+    # cache that is badly undersized for NameRes query traffic; see
+    # https://github.com/NCATSTranslator/NameResolution/issues/266
+    wget --post-data '{
+              "set-property": {
+                  "query.queryResultCache.size": {{ .Values.solr.queryResultCache.size }},
+                  "query.queryResultCache.initialSize": {{ .Values.solr.queryResultCache.initialSize }},
+                  "query.queryResultCache.maxRamMB": {{ .Values.solr.queryResultCache.maxRamMB }},
+                  "query.queryResultCache.autowarmCount": {{ .Values.solr.queryResultCache.autowarmCount }}
+              }}' \
+        --header='Content-Type:application/json' \
+        -O- ${SOLR_SERVER}/solr/${COLLECTION_NAME}/config
+    sleep 1
+
     # Restore data
     BACKUP_NAME="backup"
     CORE_NAME=${COLLECTION_NAME}_shard1_replica_n1
