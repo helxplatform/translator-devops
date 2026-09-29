@@ -23,10 +23,8 @@ spec:
                   requests:
                     storage: {{ .Values.blocklist.storage }}
         {{ end }}
-      # Because of the way in which the Restore Job works -- by creating fields in
-      # the Solr database, including copy fields -- it can no longer be re-run on
-      # failure. Instead, it should fail so we can look at the error output and
-      # figure out what to do next.
+      # The restore job now only deletes blocklisted CURIEs (the schema and data
+      # come baked into the backup), so it is idempotent and safe to re-run.
       restartPolicy: Never
       containers:
         - name: restore-container
