@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "shepherd.fullname" . }}-monitor
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+    service-type: monitor
+spec:
+  replicas: {{ .Values.shepherd_monitor.replicaCount }}
+  {{ if .Values.shepherd_monitor.strategy }}
+  strategy:
+    type: {{ .Values.shepherd_monitor.strategy }}
+  {{ end }}
+  selector:
+    matchLabels:
+      {{- include "shepherd.selectorLabels" . | nindent 6 }}
+      service-type: monitor
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        service-type: monitor
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .  | sha256sum }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+
+        - name: {{ .Chart.Name }}-monitor
+          image: "{{ .Values.shepherd_monitor.image.repository }}:{{ .Values.shepherd.tag }}"
+          imagePullPolicy: "{{ .Values.shepherd_monitor.image.imagePullPolicy }}"
+          envFrom:
+            - configMapRef:
+                name: {{ include "shepherd.fullname" . }}-configmap
+          env:
+            # Tells the FastAPI app the public URL prefix so it emits
+            # ``<base href>`` pointing at the right place. Must match the
+            # ``rootPath`` used by templates/ingress-monitor.yaml.
+            - name: MONITOR_ROOT_PATH
+              value: {{ default "" .Values.shepherd_monitor.ingress.rootPath | quote }}
+            - name: SLACK_WEBHOOK_URL
+              value: {{ .Values.shepherd_monitor.slack_webhook_url }}
+          command:
+            - "python"
+            - "-m"
+            - "workers.monitor.worker"
+          ports:
+            - name: http
+              containerPort: {{ .Values.shepherd_monitor.service.port }}
+              protocol: TCP
+          {{ if .Values.shepherd_monitor.resources }}
+          resources: {{ toYaml .Values.shepherd_monitor.resources | nindent 12 }}
+          {{ end }}
+          volumeMounts:
+          - name: {{ include "shepherd.fullname" . }}-logs-pvc
+            mountPath: /app/logs/
+      volumes:
+      - name: {{ include "shepherd.fullname" . }}-logs-pvc
+        persistentVolumeClaim:
+          claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+      {{- with .Values.shepherd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

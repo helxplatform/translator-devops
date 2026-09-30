@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: 2022 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2023 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2024 Renaissance Computing Institute. All rights reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: LicenseRef-RENCI
+# SPDX-License-Identifier: MIT
+
+{{ if .Values.storage.create }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.storage.claimName }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+  - {{ .Values.storage.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.size }}
+{{ end }}

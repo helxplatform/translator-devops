@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "test-harness.fullname" . }}-configmap
+data:
+  SLACK_WEBHOOK_URL: {{ .Values.test_harness.slack_webhook_url }}
+  SLACK_TOKEN: {{ .Values.test_harness.slack_token }}
+  SLACK_CHANNEL: {{ .Values.test_harness.slack_channel }}

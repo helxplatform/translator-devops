@@ -1,0 +1,10 @@
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/bl-4.2.6/CEBS_Automat/6a77f858e1b9852c/graph_6a77f858e1b9852c.db.dump
+  memgraph:
+    dataUrl: ""
+graphMetadataUrl: ""
+schemaUrl: ""
+metadataUrl: https://stars.renci.org/var/plater/bl-4.2.6/CEBS_Automat/6a77f858e1b9852c/CEBS_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.6/CEBS_Automat/6a77f858e1b9852c/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.6/CEBS_Automat/6a77f858e1b9852c/testing_data.json

@@ -1,0 +1,190 @@
+# -- Number of pod replicas
+replicaCount: 1
+
+image:
+  # -- Container image repository
+  repository: docker.io/hsrenci/graph_registry
+  # -- Image pull policy
+  pullPolicy: Always
+  # -- Image tag (defaults to Chart appVersion)
+  tag: "0.0.1"
+
+# -- Image pull secrets for private registries
+imagePullSecrets: []
+
+# -- Override the release name
+nameOverride: ""
+# -- Override the full release name
+fullnameOverride: ""
+
+# ---------------------------------------------------------------------------
+# Application configuration
+# ---------------------------------------------------------------------------
+app:
+  # -- Port the FastAPI app listens on
+  port: 8000
+  # -- Path to the shared directory inside the container
+  sharedDir: /mnt/shared
+  # -- Additional environment variables (list of {name, value} objects)
+  extraEnv: []
+  #   - name: LOG_LEVEL
+  #     value: info
+
+# ---------------------------------------------------------------------------
+# Shared directory / persistence
+# ---------------------------------------------------------------------------
+persistence:
+  # -- Enable the PersistentVolumeClaim for the shared directory
+  enabled: false
+  # -- Storage class (must support ReadWriteMany for multi-replica).
+  #    Leave empty to use the cluster default.
+  storageClassName: ""
+  # -- Access modes
+  accessModes:
+    - ReadWriteMany
+  # -- Requested storage size
+  size: 5Gi
+  # -- Annotations for the PVC
+  annotations: {}
+  # -- Use an existing PVC instead of creating one
+  existingClaim: ""
+
+# ---------------------------------------------------------------------------
+# NFS volume mount (e.g. RENCI Sterling /projects storage)
+# ---------------------------------------------------------------------------
+nfs:
+  # -- Enable the NFS volume mount
+  enabled: true
+  # -- NFS server hostname
+  server: server.hostname.com
+  # -- Export path on the NFS server
+  path: /path/to/graphs
+  # -- Mount path inside the container
+  mountPath: /path/to/graphs
+  # -- Mount the NFS volume as read-only
+  readOnly: true
+
+# ---------------------------------------------------------------------------
+# Pod security context (required for NFS access at RENCI)
+# ---------------------------------------------------------------------------
+# -- Pod security context
+podSecurityContext:
+  # -- UID that owns the NFS files (Sterling service account)
+  runAsUser: 30000
+  # -- GID for your /projects storage group
+  runAsGroup: 1000           # <-- CHANGE ME: set to your storage GID
+  # -- Optional: additional group memberships
+  # supplementalGroups:
+  #   - 12345
+
+# -- Container security context
+securityContext: {}
+
+# ---------------------------------------------------------------------------
+# Service
+# ---------------------------------------------------------------------------
+service:
+  # -- Service type: ClusterIP, NodePort, or LoadBalancer
+  type: ClusterIP
+  # -- Service port (external)
+  port: 80
+
+# ---------------------------------------------------------------------------
+# Ingress
+# ---------------------------------------------------------------------------
+ingress:
+  # -- Enable Ingress resource
+  enabled: false
+  # -- Ingress class name
+  className: ""
+  # -- Ingress annotations
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+  # -- Ingress hosts
+  hosts:
+    - host: some-url.org
+      paths:
+        - path: /
+          pathType: Prefix
+  # -- TLS configuration
+  tls:
+    - secretName: some-url.org-tls
+      hosts:
+          - some-url.org
+
+# ---------------------------------------------------------------------------
+# Resources
+# ---------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 2Gi
+
+# ---------------------------------------------------------------------------
+# Probes
+# ---------------------------------------------------------------------------
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 15
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: http
+  initialDelaySeconds: 3
+  periodSeconds: 10
+
+# ---------------------------------------------------------------------------
+# Autoscaling (optional)
+# ---------------------------------------------------------------------------
+autoscaling:
+  # -- Enable HorizontalPodAutoscaler
+  enabled: false
+  # -- Minimum replicas
+  minReplicas: 1
+  # -- Maximum replicas
+  maxReplicas: 10
+  # -- Target CPU utilization percentage
+  targetCPUUtilizationPercentage: 75
+  # -- Target memory utilization percentage (optional)
+  # targetMemoryUtilizationPercentage: 80
+
+# ---------------------------------------------------------------------------
+# Service Account
+# ---------------------------------------------------------------------------
+serviceAccount:
+  # -- Create a service account
+  create: true
+  # -- Annotations for the service account
+  annotations: {}
+  # -- Service account name (auto-generated if empty)
+  name: ""
+
+# -- Pod annotations
+podAnnotations: {}
+
+# -- Pod security context
+podSecurityContext: {}
+  # fsGroup: 1000
+
+# -- Container security context
+securityContext: {}
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# -- Node selector
+nodeSelector: {}
+
+# -- Tolerations
+tolerations: []
+
+# -- Affinity rules
+affinity: {}

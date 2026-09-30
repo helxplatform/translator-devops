@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2022 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2023 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2024 Renaissance Computing Institute. All rights reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: LicenseRef-RENCI
+# SPDX-License-Identifier: MIT
+
+---
+{{ if .Values.restoreDB }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{- include "robokop-ui-postgres.fullname" . }}-job"
+spec:
+  ttlSecondsAfterFinished: 0
+  template:
+    metadata:
+      name: "{{- include "robokop-ui-postgres.fullname" . }}-job"
+    spec:
+      containers:
+      - name: loader-container
+        image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /loaddb.sh
+        env:
+        - name: PGHOST
+          value: {{ include "robokop-ui-postgres.fullname" . }}
+        - name: PGUSER
+          value: {{ .Values.adminUser }}
+        - name: PGPASSWORD
+          value: {{ .Values.adminPassword }}
+        volumeMounts:
+        - mountPath: /data
+          name: {{ .Values.volumes.name }}
+        - mountPath:  loaddb.sh
+          name: "loader-script"
+          subPath: "loaddb.sh"
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: OnFailure
+      volumes:
+      - name: {{ .Values.volumes.name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.volumes.claimName }}
+      - name: loader-script
+        configMap:
+          name: "{{- include "robokop-ui-postgres.fullname" . }}-scripts"
+          defaultMode: 0777
+{{ end }}

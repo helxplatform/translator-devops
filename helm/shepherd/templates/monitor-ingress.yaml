@@ -1,0 +1,52 @@
+{{- if .Values.shepherd_monitor.ingress.enabled }}
+{{- if and .Values.ingress.class (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
+  {{- if not (hasKey .Values.shepherd_monitor.ingress.annotations "kubernetes.io/ingress.class") }}
+  {{- $_ := set .Values.shepherd_monitor.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.class }}
+  {{- end }}
+{{- end }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "shepherd.fullname" . }}-monitor-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    {{- with .Values.shepherd_monitor.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- if and .Values.ingress.class (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.class }}
+  {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+  - hosts:
+      - {{ .Values.ingress.host | quote }}
+    secretName: {{ .Values.ingress.host }}-tls
+  {{- end }}
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+        - path: {{ .Values.shepherd_monitor.ingress.rootPath }}(/|$)(.*)
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          pathType: ImplementationSpecific
+          {{- end }}
+          backend:
+            {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+            service:
+              name: {{ include "shepherd.fullname" . }}-monitor
+              port:
+                number: {{ .Values.shepherd_monitor.service.port }}
+            {{- else }}
+            serviceName: {{ include "shepherd.fullname" . }}-monitor
+            servicePort: {{ .Values.shepherd_monitor.service.port }}
+            {{- end }}
+{{- end }}

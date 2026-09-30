@@ -1,0 +1,6 @@
+apiVersion: v2
+name: plater-graphs-server
+description: Static nginx fileserver serving PLATER graph files from NFS at robokop.renci.org/graphs/.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

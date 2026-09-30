@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: renciorg/bl_lookup
+  repository: ghcr.io/translatorsri/bl_lookup
   tag: latest
 
 service:

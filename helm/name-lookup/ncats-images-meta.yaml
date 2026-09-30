@@ -1,11 +1,11 @@
 nameLookup:
-  image: ghcr.io/translatorsri/nameresolution
-  version: v1.4.5
+  image: ghcr.io/ncatstranslator/nameresolution
+  version: v1.5.2
 
 solr:
   image: solr
   version: "9.1"
 
-busyBox:
-  image: busybox
-  version: "1.35"
+renciPythonImage:
+  image: ghcr.io/translatorsri/renci-python-image
+  version: latest

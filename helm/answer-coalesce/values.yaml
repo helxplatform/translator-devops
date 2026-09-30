@@ -5,81 +5,83 @@
 replicaCount: 1
 ac:
   image:
-    repository: renciorg/ac
+    repository: ghcr.io/ranking-agent/answercoalesce
     tag: latest
   service:
     type: ClusterIP
     port: 80
   containerPort: 8080
+  # uvicorn worker processes. DuckDB's Python client caches one database
+  # instance per process, so all of a worker's thread-local connections share a
+  # single buffer pool, and the AC_DUCKDB_QUERY_* settings apply per worker.
+  # Every budget below is therefore `workers` x the
+  # per-process figure.
+  workers: 2
+  # Optional backstop against the pod OOMing under load: uvicorn answers 503 and
+  # closes the connection once a worker holds this many connections or tasks.
+  # It counts open connections, not just running queries, and applies per worker
+  # (so real capacity is `workers` x this), and it 503s /docs and probes on the
+  # same rule. Leave unset until pod metrics justify a number - too low rejects
+  # normal traffic.
+  limitConcurrency:
+  # Sized for `workers` above, not measured under load - revisit with real usage.
+  # Memory: ~1.5Gi of Python baseline per worker (interpreter, bmt/biolink
+  # toolkit) plus a 1GB DuckDB buffer pool per worker, which spills to /tmp
+  # rather than growing. The rest is headroom for in-flight requests, which is
+  # the part that actually scales with concurrency: nothing in the app bounds
+  # how many queries run at once, and each holds its results and TRAPI message
+  # on the Python heap.
+  # CPU: AC_DUCKDB_QUERY_THREADS (2) is per worker, so 2 workers keep 4 DuckDB
+  # threads busy on top of their event loops.
   resources:
     requests:
       memory: 5Gi
-      cpu: 250m
-    limits:
-      memory: 10Gi
       cpu: 500m
+    limits:
+      memory: 12Gi
+      cpu: 4000m
+  duckdb:
+    # DuckDB dump downloaded onto the data volume by an init container on first
+    # start, and handed to the app as AC_DUCKDB_PATH=/data/answer-coalesce.duckdb.
+    # The download is skipped when the file is already present and its size
+    # matches the server's, so pod restarts don't re-fetch several GB.
+    url: "https://stars.renci.org/var/translator/ac/answer-coalesce-hierarchy-pruned-2026-9-14.duckdb"
+    storage:
+      # Roughly twice the dump size: a replacement dump is downloaded alongside
+      # the current one before it is swapped in.
+      size: 20Gi
+      class:
+    initresources:
+      requests:
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 1Gi
+        cpu: 1000m
+  # Scratch volume mounted at /tmp, where DuckDB spills once a query outgrows
+  # the worker's buffer pool. Keeps spill off the node's ephemeral storage.
+  # AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE (8GB) is per worker process, so this
+  # must stay above `workers` x 8GB - otherwise the pod is evicted for
+  # overrunning the volume before DuckDB's own cap ever applies.
+  tmpSizeLimit: 20Gi
+  # Extra environment variables for the web container. AnswerCoalesce's defaults
+  # match what upstream recommends at runtime (AC_DUCKDB_QUERY_MEMORY_LIMIT=1GB,
+  # AC_DUCKDB_QUERY_MAX_TEMP_DIRECTORY_SIZE=8GB, AC_DUCKDB_QUERY_THREADS=2), and
+  # all three are per worker process, not per connection. NODE_NORMALIZER_URL is
+  # also read from the environment.
+  env: {}
+
 web:
   serverHostName: "hostname"
 
 busybox:
-  image:
-    repository: busybox
-    tag: 1.35
-redis:
-  image:
-    repository: redis
-    tag: latest
-  service:
-    type: ClusterIP
-    # if service type is LoadBalancer,
-    # please set the following value `loadBalancerIP`, if it needs to be static.
-    loadBalancerIP:
-    port: 6379
-  containerPort: 6379
-  args:
-   - --save
-   - ''
-   - --stop-writes-on-bgsave-error
-   - 'no'
-  resources:
-    requests:
-      memory: 50Gi
-    limits:
-      memory: 100Gi
+     image:
+        repository: curlimages/curl
+        tag: 8.20.0
 
-  initresources:
-    requests:
-      memory: 5Gi
-      cpu: 1000m
-    limits:
-      memory: 10Gi
-      cpu: 1000m
-  pvcName: #### Name pv accordingly
-  seedDB: false
-  createPV: false
-  createPVC: false
-  storage:
-    pvName:
-    pvcName:
-    size:
-    class:
-  affinity: {}
-  tolerations: {}
-  nodeSelector: {}
-  storageSize: 50Gi
-
-dataUrl: ""
-
-
-
-  # adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
-
+# fsGroup lets the (non-root) init container write the dump to the data volume.
+podSecurityContext:
+  fsGroup: 1000
 
 nameOverride: ""
 fullnameOverride: ""
@@ -90,6 +92,8 @@ ingress:
   class: ""
   pathType: "ImplementationSpecific"
   path: "/"
+  tls:
+    enabled: false
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: 512m

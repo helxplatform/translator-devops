@@ -1,0 +1,115 @@
+{{- if .Values.araxPathfinderLoader.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "shepherd.fullname" . }}-arax-pathfinder-loader
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+  annotations:
+    # Re-run when source URLs change. Putting the hash on the Job makes
+    # `helm upgrade` create a NEW Job (Jobs are immutable) when sources change.
+    checksum/arax-pathfinder-sources: {{ include "shepherd.araxPathfinderSourcesHash" . }}
+spec:
+  backoffLimit: {{ .Values.araxPathfinderLoader.backoffLimit | default 1 }}
+  ttlSecondsAfterFinished: {{ .Values.araxPathfinderLoader.ttlSecondsAfterFinished | default 600 }}
+  template:
+    metadata:
+      labels:
+        {{- include "shepherd.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: arax-pathfinder-loader
+    spec:
+      restartPolicy: Never
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{ . | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: arax-pathfinder-loader
+          image: "{{ .Values.araxPathfinderLoader.image.repository }}:{{ .Values.araxPathfinderLoader.image.tag }}"
+          imagePullPolicy: {{ .Values.araxPathfinderLoader.image.pullPolicy }}
+          env:
+            - name: SOURCES_HASH
+              value: {{ include "shepherd.araxPathfinderSourcesHash" . | quote }}
+          command:
+            - sh
+            - -c
+            - |
+              set -euo pipefail
+              trap 'echo "FAILED at line $LINENO (exit code $?)" >&2' ERR
+
+              # DEST is derived from the SAME value as the volumeMount below,
+              # so the data files and the sentinel can never diverge onto
+              # different filesystems.
+              DEST="{{ .Values.araxPathfinderLoader.sharedData.mountPath }}"
+              SENTINEL="${DEST}/.data-ready"
+              CHECKSUM_FILE="${DEST}/.source-url-hash"
+              CURRENT_HASH="$SOURCES_HASH"
+
+              # Skip download if data exists and sources are unchanged.
+              {{- if .Values.araxPathfinderLoader.skipIfExists }}
+              if [ -f "$SENTINEL" ] && [ -f "$CHECKSUM_FILE" ]; then
+                EXISTING_HASH=$(cat "$CHECKSUM_FILE")
+                if [ "$CURRENT_HASH" = "$EXISTING_HASH" ]; then
+                  echo "Data already present and sources unchanged - skipping download."
+                  exit 0
+                else
+                  echo "Source URLs changed - removing old files and re-downloading."
+                  # Note: * does not match dotfiles in sh, so remove both. The
+                  # ${DEST:?} guard prevents rm -rf /* if DEST is ever empty.
+                  rm -rf "${DEST:?}"/* "${DEST:?}"/.[!.]* || true
+                fi
+              fi
+              {{- end }}
+
+              echo "Downloading data files..."
+              {{- range .Values.araxPathfinderLoader.sources }}
+
+              echo "Fetching: {{ . }}"
+              FILENAME=$(basename "{{ . }}" | sed 's/?.*//')
+
+              {{- if or (hasSuffix ".tar.gz" .) (hasSuffix ".tgz" .) }}
+              wget -O "${DEST}/${FILENAME}" "{{ . }}"
+              tar xzf "${DEST}/${FILENAME}" -C "$DEST"
+              rm -f "${DEST}/${FILENAME}"
+              {{- else if hasSuffix ".tar" . }}
+              wget -O - "{{ . }}" | tar xf - -C "$DEST"
+              {{- else if hasSuffix ".zip" . }}
+              wget -O "/tmp/${FILENAME}" "{{ . }}"
+              unzip -o "/tmp/${FILENAME}" -d "$DEST"
+              rm -f "/tmp/${FILENAME}"
+              {{- else }}
+              curl -fSL --retry 3 -o "${DEST}/${FILENAME}" "{{ . }}"
+              {{- end }}
+              {{- end }}
+
+              {{- if .Values.araxPathfinderLoader.postDownloadCommand }}
+              echo "Running post-download command..."
+              {{ .Values.araxPathfinderLoader.postDownloadCommand }}
+              {{- end }}
+
+              # Mark complete. Reached ONLY if everything above succeeded
+              # (set -e). The sentinel is the last thing written, so its
+              # presence is a reliable "fully loaded" signal for the worker.
+              printf '%s' "$CURRENT_HASH" > "$CHECKSUM_FILE"
+              date -u '+%Y-%m-%dT%H:%M:%SZ' > "$SENTINEL"
+              echo "Data download complete. Sentinel written to $SENTINEL"
+          {{- with .Values.araxPathfinderLoader.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: arax-pathfinder-data
+              mountPath: {{ .Values.araxPathfinderLoader.sharedData.mountPath }}
+      volumes:
+        - name: arax-pathfinder-data
+          persistentVolumeClaim:
+            claimName: {{ include "shepherd.fullname" . }}-arax-pathfinder-data
+      {{- with .Values.shepherd.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.shepherd.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

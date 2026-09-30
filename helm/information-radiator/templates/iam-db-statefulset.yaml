@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: {{ include "information-radiator.fullname" . }}-iam-db
-          image: 'qaprosoft/postgres:{{ .Values.postgres.tag }}'
+          image: 'public.ecr.aws/zebrunner/postgres:{{ .Values.postgres.tag }}'
           envFrom:
           - configMapRef:
               name: {{ include "information-radiator.fullname" . }}-iam-configmap

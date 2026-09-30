@@ -1,0 +1,118 @@
+# SPDX-FileCopyrightText: 2022 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2023 Renaissance Computing Institute. All rights reserved.
+# SPDX-FileCopyrightText: 2024 Renaissance Computing Institute. All rights reserved.
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: LicenseRef-RENCI
+# SPDX-License-Identifier: MIT
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{- include "robokop-ui-postgres.fullname" . }}-scripts"
+data:
+  loaddb.sh: |-
+    #!/bin/bash
+    apt-get -yq update
+    apt-get -yq install zip
+
+    BASE_DIR=/data
+    DUMPS_DIR=$BASE_DIR/db-backups
+
+    BCKP_FILE_1=$DUMPS_DIR/{{ .Values.sqlFile1 }}
+    BCKP_FILE_2=$DUMPS_DIR/{{ .Values.sqlFile2 }}
+    BCKP_FILE_3=$DUMPS_DIR/{{ .Values.sqlFile3 }}
+
+    until pg_isready ; do
+        echo "postgres not ready";
+        sleep 10
+    done
+
+    # restore the roles without the postgres password. psql us used here because it is in text format
+    psql -U {{ .Values.adminUser }} < $BCKP_FILE_1
+
+    # restore the databases. pg_restore is used here because it is a compressed backup
+    pg_restore -d postgres --clean --create $BCKP_FILE_2
+    pg_restore -d postgres --clean --create $BCKP_FILE_3
+
+    # this is truly a hack. pg_restore returns a count of warnings,
+    # in this case a warning stating that the "public schema already exists".
+    # this ends up creating issues in k8s. note in this case the public schema
+    # existing is due to the base postgres image used for postgis.
+    exit 0
+
+  dumpDatabase.sh: |-
+    #
+    # backs up certain important databases.
+    #
+    # should be run as a cronjob nightly at midnight (local), e.g.
+    # 0 21 * * * postgres /storage/backups.sh
+    BASE_DIR=/data
+    DUMPS_DIR=$BASE_DIR/db-backups
+
+    if [ -e $LOG_PATH/export.log ]; then
+        rm $LOG_PATH/export.log
+    fi
+
+    date >> $LOG_PATH/export.log
+
+    # increment the dump file version numbers
+    for i in `psql -h $APSVIZ_DB_HOST -c "SELECT datname FROM pg_database where datname in ('apsviz', 'adcirc_obs')" | head -n -2 | tail -n +3`; do
+        for j in {8..1}; do
+            DUMP_FILE=$DUMPS_DIR/$i.dump.$j
+            NEW_DUMP_FILE=$DUMPS_DIR/$i.dump.$(( j + 1 ))
+
+            # rename the dump file version
+            if [ -e $DUMP_FILE ]; then
+                echo "mv $DUMP_FILE $NEW_DUMP_FILE" >> $LOG_PATH/export.log
+                mv $DUMP_FILE $NEW_DUMP_FILE
+            fi
+        done
+    done
+
+    # perform the dumps
+    for i in `psql -h $APSVIZ_DB_HOST -c "SELECT datname FROM pg_database where datname in ('apsviz', 'adcirc_obs')" | head -n -2 | tail -n +3`; do
+        # remove the last globals file version if it exists
+        if [ -e $DUMPS_DIR/$i.dump.8 ]; then
+            echo "removing $DUMPS_DIR/$i.dump.8" >> $LOG_PATH/export.log
+            rm $DUMPS_DIR/$i.dump.8
+        fi
+
+        # get the dump
+        echo "dumping...$DUMPS_DIR/$i.dump.1" >> $LOG_PATH/export.log
+        date >> $LOG_PATH/export.log
+        pg_dump -h $APSVIZ_DB_HOST -d $i -Fc -f $DUMPS_DIR/$i.dump.1
+        date >> $LOG_PATH/export.log
+    done
+
+    # increment the globals file version numbers
+    for j in {8..1}; do
+      GLOBALS_FILE=$DUMPS_DIR/dbglobals.sql.$j
+      NEW_GLOBALS_FILE=$DUMPS_DIR/dbglobals.sql.$(( j + 1 ))
+
+      # rename the globals file version
+      if [ -e $GLOBALS_FILE ]; then
+          echo "mv $GLOBALS_FILE $NEW_GLOBALS_FILE" >> $LOG_PATH/export.log
+          mv $GLOBALS_FILE $NEW_GLOBALS_FILE
+      fi
+    done
+
+    # remove the last globals file version if it exists
+    if [ -e $DUMPS_DIR/dbglobals.sql.8 ]; then
+      echo "removing $DUMPS_DIR/dbglobals.sql.8" >> $LOG_PATH/export.log
+      rm $DUMPS_DIR/dbglobals.sql.8
+    fi
+
+    # get the globals file
+    echo "dumping...$DUMPS_DIR/dbglobals.sql.1" >> $LOG_PATH/export.log
+    date >> $LOG_PATH/export.log
+    pg_dumpall -h $APSVIZ_DB_HOST --globals-only | grep -v 'ROLE postgres' > $DUMPS_DIR/dbglobals.sql.1
+    date >> $LOG_PATH/export.log
+
+    echo "Vacuum and analyze the DB..." >> $LOG_PATH/export.log
+    date >> $LOG_PATH/export.log
+    psql -h $DB_HOST -d apsviz -c "VACUUM(ANALYZE);"
+    date >> $LOG_PATH/export.log
+
+    exit 0

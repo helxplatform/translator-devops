@@ -29,8 +29,6 @@ ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "86400"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      keepalive_timeout 86400;
     nginx.ingress.kubernetes.io/connection-proxy-header: keep-alive
     nginx.ingress.kubernetes.io/send-timeout: "86400"
     nginx.ingress.kubernetes.io/service-upstream: 'true'
@@ -77,8 +75,8 @@ sub_processes:
 otel:
   # disable otel by default
   enabled: false
-  jaeger_host: "jaeger-otel-agent"
-  jaeger_port: "6831"
+  jaeger_host: "http://jaeger-otel-collector"
+  jaeger_port: "4317"
   service_name: "ARAGORN"
 
 rbtmq:
@@ -88,8 +86,8 @@ rbtmq:
     requests:
       memory: 300M
   image:
-    repository: renciorg/aragorn-rbtmq
-    tag: 0.0.1
+    repository: containers.renci.org/translator/aragorn-rbtmq
+    tag: 0.0.2
   storage:
     createPV: false
     createPVC: false

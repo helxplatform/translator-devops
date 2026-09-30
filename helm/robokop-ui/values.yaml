@@ -1,0 +1,70 @@
+imagePullSecrets:
+  - name: regcred-comms
+
+backend:
+  enabled: true
+  repository: "ghcr.io/robokopu24/robokop-backend-server"
+  tag: "v1.0.12"
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0
+      memory: 0
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  service:
+    type: ClusterIP
+    port: 4000
+
+  ingress:
+    enabled: true
+    public: true
+    tls:
+      enabled: true
+    className: ""
+    host: robokop-ui-api.apps.renci.org
+    pathType: Prefix
+    path: /
+
+frontend:
+  repository: "ghcr.io/robokopu24/robokop-frontend"
+  tag: "v1.3.3"
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0
+      memory: 0
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  service:
+    type: ClusterIP
+    containerPort: 80
+    port: 3000
+
+  ingress:
+    enabled: true
+    public: true
+    tls:
+      enabled: true
+    className: ""
+    host: robokop.renci.org
+    pathType: Prefix
+    path: /
+
+graphViewer:
+  repository: "nginx"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 0
+      memory: 0
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  service:
+    type: ClusterIP
+    containerPort: 80
+    port: 80

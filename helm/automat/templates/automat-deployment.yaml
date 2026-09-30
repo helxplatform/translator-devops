@@ -25,6 +25,14 @@ spec:
           value: "{{ .Values.x_trapi.maturity.value }}"
         - name: "LOCATION_VALUE"
           value: "{{ .Values.x_trapi.location.value }}"
+        - name: OTEL_ENABLED
+          value: {{ .Values.otel.enabled | quote }}
+        - name: OTEL_SERVICE_NAME
+          value: {{ .Values.otel.serviceName | quote }}
+        - name: OTEL_COLLECTOR_HOST
+          value: {{ .Values.otel.jaegerHost | quote }}
+        - name: OTEL_COLLECTOR_PORT
+          value: {{ .Values.otel.jaegerPort | quote }}
 
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: Always

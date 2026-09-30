@@ -1,0 +1,119 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "answer-coalesce.fullname" . }}-web-server
+  labels:
+    {{- include "answer-coalesce.labels" . | nindent 4 }}
+    app: webServer
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "answer-coalesce.fullname" . }}-web-service
+  selector:
+    matchLabels:
+      {{- include "answer-coalesce.selectorLabels" . | nindent 6 }}
+      app: webServer
+  template:
+    metadata:
+      labels:
+        {{- include "answer-coalesce.selectorLabels" . | nindent 8 }}
+        app: webServer
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: {{ .Chart.Name }}-duckdb-download-container
+          image: "{{ .Values.busybox.image.repository }}:{{ .Values.busybox.image.tag }}"
+          command:
+            - '/scripts/download_duckdb.sh'
+          env:
+            - name: "AC_DUCKDB_URL"
+              value: {{ required "ac.duckdb.url must be set to the DuckDB dump to download" .Values.ac.duckdb.url | quote }}
+            - name: "AC_DUCKDB_PATH"
+              value: "/data/answer-coalesce.duckdb"
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "answer-coalesce.fullname" . }}-duckdb-data
+            - mountPath: /scripts
+              name: {{ include "answer-coalesce.fullname" . }}-scripts
+          resources:
+            {{- toYaml .Values.ac.duckdb.initresources | nindent 12 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.ac.image.repository }}:{{ .Values.ac.image.tag }}"
+          imagePullPolicy: Always
+          env:
+            - name: "SERVER_ROOT"
+              value: "{{ .Values.web.serverHostName }}"
+            - name: "MATURITY_VALUE"
+              value: "{{ .Values.x_trapi.maturity.value }}"
+            - name: "LOCATION_VALUE"
+              value: "{{ .Values.x_trapi.location.value }}"
+            - name: "AC_DUCKDB_PATH"
+              value: "/data/answer-coalesce.duckdb"
+          {{- range $name, $value := .Values.ac.env }}
+            - name: "{{ $name }}"
+              value: "{{ $value }}"
+          {{- end }}
+          command:
+            - "uvicorn"
+          args:
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8080"
+            - "--workers"
+            - "{{ .Values.ac.workers }}"
+          {{- with .Values.ac.limitConcurrency }}
+            - "--limit-concurrency"
+            - "{{ . }}"
+          {{- end }}
+            - "src.server:APP"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /data
+              name: {{ include "answer-coalesce.fullname" . }}-duckdb-data
+              readOnly: true
+            # DuckDB spills query temp data to /tmp/answer-coalesce-duckdb-<pid>.
+            # Keep it on a sized volume rather than the node's ephemeral storage.
+            - mountPath: /tmp
+              name: {{ include "answer-coalesce.fullname" . }}-tmp
+          resources:
+            {{- toYaml .Values.ac.resources | nindent 12 }}
+      volumes:
+        - name: {{ include "answer-coalesce.fullname" . }}-scripts
+          configMap:
+            name: {{ include "answer-coalesce.fullname" . }}-configmap
+            defaultMode: 0777
+        - name: {{ include "answer-coalesce.fullname" . }}-tmp
+          emptyDir:
+            sizeLimit: {{ .Values.ac.tmpSizeLimit }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.app.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "answer-coalesce.fullname" . }}-duckdb-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        {{- with .Values.ac.duckdb.storage.class }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.ac.duckdb.storage.size }}

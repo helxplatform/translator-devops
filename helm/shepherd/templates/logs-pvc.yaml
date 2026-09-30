@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "shepherd.fullname" . }}-logs-pvc
+spec:
+  accessModes:
+    {{- toYaml .Values.logs.persistentVolume.accessModes | nindent 4 }}
+  {{- if .Values.logs.persistentVolume.storageClassName }}
+  storageClassName: {{ .Values.logs.persistentVolume.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.logs.persistentVolume.size }}

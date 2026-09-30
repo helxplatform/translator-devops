@@ -12,3 +12,4 @@ data:
   BIOLINK: {{ .Values.env.biolink }}
   GPT_PASSWORD: {{ .Values.env.GPT_PASSWORD }}
   DEPLOYMENT: {{ .Values.env.DEPLOYMENT }}
+  EXPLORE_DB: {{ .Values.env.explore_db }}
