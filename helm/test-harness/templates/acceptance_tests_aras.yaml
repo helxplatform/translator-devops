@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "test-harness.fullname" . }}-acceptance-tests
+spec:
+  schedule: "{{ .Values.acceptance_tests.cronInterval }}"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # don't retry
+      template:
+        spec:
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{ . | toYaml | nindent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ include "test-harness.fullname" . }}-acceptance-tests
+            image: {{ .Values.test_harness.repository }}:{{ .Values.acceptance_tests.tag }}
+            imagePullPolicy: {{ .Values.test_harness.pullPolicy }}
+            command: ["test-harness-sweep"]
+            args:
+              - "--suite"
+              - {{ required "acceptance_tests.suite is required" .Values.acceptance_tests.suite | quote }}
+              - "--download"
+              - "--"
+              - "--log_level"
+              - "INFO"
+            env:
+              - name: PERFORMANCE_TARGETS
+                value: {{ join "," .Values.acceptance_tests.targets | quote }}
+              - name: PYTHONUNBUFFERED
+                value: "1"
+            envFrom:
+            - configMapRef:
+                name: {{ include "test-harness.fullname" . }}-configmap
+            resources:
+              {{ toYaml .Values.resources | nindent 14 }}
+
+          restartPolicy: Never
