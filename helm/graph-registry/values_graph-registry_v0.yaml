@@ -105,15 +105,15 @@ ingress:
     nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
   # -- Ingress hosts
   hosts:
-    - host: robokop-graph-registry.apps.renci.org
+    - host: robokop-atlas.apps.renci.org
       paths:
         - path: /
           pathType: Prefix
   # -- TLS configuration
   tls:
-    - secretName: robokop-graph-registry.apps.renci.org-tls
+    - secretName: robokop-atlas.apps.renci.org-tls
       hosts:
-          - robokop-graph-registry.apps.renci.org
+          - robokop-atlas.apps.renci.org
 
 # ---------------------------------------------------------------------------
 # Resources
