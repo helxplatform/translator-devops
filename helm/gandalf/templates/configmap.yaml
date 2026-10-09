@@ -7,6 +7,9 @@ data:
   GANDALF_WEB_PORT: "{{ .Values.app.gandalf.service.port }}"
   GRAPH_DB: "{{ .Values.graph.backend }}"
   GRAPH_QUERY_TIMEOUT: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}"
+  GANDALF_QUEUE_URL: "redis://gandalf-queue:6379/0"
+
+  GANDALF_SLACK_WEBHOOK_URL: "{{ .Values.app.gandalf.slack_webhook_url }}"
 
   # turn off automat logic
   # GANDALF_SERVICE_ADDRESS: "{{ include "gandalf.fullname" . }}-service"
