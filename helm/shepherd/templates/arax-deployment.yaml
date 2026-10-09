@@ -34,6 +34,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "shepherd.fullname" . }}-configmap
+          env:
+            - name: TASK_LIMIT
+              value: "100"
           command:
             - 'python'
           args:

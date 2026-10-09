@@ -8,6 +8,8 @@ data:
   SERVER_LOCATION: {{ .Values.x_trapi.location }}
 
   LOG_LEVEL: {{ .Values.shepherd.log_level }}
+  MAX_RESPONSE_SIZE: {{ .Values.shepherd.max_response_size }}
+  CALLBACK_MAX_REQUEST_SIZE: {{ .Values.shepherd.callback_max_request_size }}
 
   POSTGRES_USER: postgres
   POSTGRES_HOST: shepherd-db

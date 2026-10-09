@@ -54,6 +54,8 @@ shepherd:
   nodeSelector: {}
   affinity: {}
   tolerations: []
+  max_response_size: 250M
+  callback_max_request_size: 250M
 
 logs:
   persistentVolume:
@@ -171,16 +173,62 @@ arax:
     targetMemory: 75
   resources:
     requests:
-      memory: 2Gi
+      memory: 5Gi
       cpu: 1000m
     limits:
-      memory: 3Gi
+      memory: 7Gi
       cpu: 1000m
+
+araxLoader:
+  sharedData:
+    mountPath: /data/arax_dbs
+  persistentVolume:
+    accessModes:
+      - ReadWriteMany
+    size: 5Gi
+    storageClassName: nfs-client
+  enabled: false
+
+  # Image for the init container (needs wget; busybox or alpine work well)
+  image:
+    repository: curlimages/curl
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
+  # List of URLs to download. Supported formats:
+  #   .tar.gz / .tgz  — extracted automatically
+  #   .tar             — extracted automatically
+  #   .zip             — extracted automatically (requires unzip in image; use alpine)
+  #   anything else    — downloaded as-is into the mount path
+  sources: []
+    # - https://example.com/graph-data/edges.mmap
+    # - https://example.com/graph-data/nodes.lmdb.tar.gz
+    # - https://example.com/graph-data/metadata.json
+
+  # Skip download if data already exists and source URLs haven't changed
+  skipIfExists: true
+
+  # Optional shell command to run after all downloads complete
+  # Runs inside the init container with the data volume mounted
+  postDownloadCommand: ""
+    # e.g.: "chmod -R 755 /data/graph && echo 'permissions set'"
+
+  # Resources for the init container (downloads can be memory-light)
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "10Gi"
+      ephemeral-storage: "10Gi"
+    limits:
+      cpu: "2"
+      memory: "15Gi"
+      ephemeral-storage: "10Gi"
 
 arax_pathfinder:
   image:
     repository: ghcr.io/biopack-team/shepherd/arax_pathfinder
     imagePullPolicy: Always
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -207,6 +255,7 @@ araxPathfinderLoader:
     accessModes:
       - ReadWriteMany
     size: 5Gi
+    storageClassName: nfs-client
   enabled: false
 
   # Image for the init container (needs wget; busybox or alpine work well)
@@ -294,6 +343,31 @@ bte_lookup:
     requests:
       memory: 1Gi
       cpu: 1000m
+    limits:
+      memory: 1Gi
+      cpu: 1000m
+
+embeddingsLoader:
+  enabled: true
+  sources: []
+  image:
+    repository: busybox
+    tag: latest
+    pullPolicy: IfNotPresent
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 600
+  skipIfExists: true
+  sharedData:
+    mountPath: /data/embeddings
+  persistentVolume:
+    storageClassName: nfs-client
+    accessModes:
+      - ReadWriteMany
+    size: 60Gi
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 500m
     limits:
       memory: 1Gi
       cpu: 1000m
@@ -439,6 +513,7 @@ score_paths:
   image:
     repository: ghcr.io/biopack-team/shepherd/score_paths
     imagePullPolicy: Always
+  replicaCount: 2
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -589,32 +664,7 @@ shepherd_server:
   resources:
     requests:
       memory: 5Gi
-      cpu: 1000m
+      cpu: 3000m
     limits:
       memory: 8Gi
-      cpu: 3000m
-
-embeddingsLoader:
-  enabled: true
-  sources: []
-  image:
-    repository: busybox
-    tag: latest
-    pullPolicy: IfNotPresent
-  backoffLimit: 1
-  ttlSecondsAfterFinished: 600
-  skipIfExists: true
-  sharedData:
-    mountPath: /data/embeddings
-  persistentVolume:
-    storageClassName: nfs-client
-    accessModes:
-      - ReadWriteMany
-    size: 10Gi
-  resources:
-    requests:
-      memory: 512Mi
-      cpu: 500m
-    limits:
-      memory: 1Gi
-      cpu: 1000m
+      cpu: 4000m
