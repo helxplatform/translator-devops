@@ -4,6 +4,7 @@ metadata:
   name: {{ include "gandalf.fullname" . }}-gandalf
   labels:
     {{- include "gandalf.labels" . | nindent 4 }}
+    service-type: server
 spec:
   {{- if not .Values.app.gandalf.autoscaling.enabled }}
   replicas: {{ .Values.app.gandalf.replicaCount }}
@@ -11,10 +12,12 @@ spec:
   selector:
     matchLabels:
       {{- include "gandalf.selectorLabels" . | nindent 6 }}
+      service-type: server
   template:
     metadata:
       labels:
         {{- include "gandalf.selectorLabels" . | nindent 8 }}
+        service-type: server
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         # Rolls the worker whenever the loader's source URLs change, so new pods

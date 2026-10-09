@@ -4,6 +4,7 @@ metadata:
   name: {{ include "gandalf.fullname" . }}-gandalf-worker
   labels:
     {{- include "gandalf.labels" . | nindent 4 }}
+    service-type: worker
 spec:
   {{- if not .Values.app.gandalf_worker.autoscaling.enabled }}
   replicas: {{ .Values.app.gandalf_worker.replicaCount }}
@@ -11,10 +12,12 @@ spec:
   selector:
     matchLabels:
       {{- include "gandalf.selectorLabels" . | nindent 6 }}
+      service-type: worker
   template:
     metadata:
       labels:
         {{- include "gandalf.selectorLabels" . | nindent 8 }}
+        service-type: worker
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         # Rolls the worker whenever the loader's source URLs change, so new pods
@@ -63,7 +66,7 @@ spec:
               mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
               readOnly: true
       containers:
-        - name: {{ .Chart.Name }}-gandalf
+        - name: {{ .Chart.Name }}-gandalf-worker
           image: "{{ .Values.image.gandalf.repository }}:{{ .Values.image.gandalf.tag }}"
           imagePullPolicy: {{ .Values.image.gandalf.pullPolicy }}
           envFrom:

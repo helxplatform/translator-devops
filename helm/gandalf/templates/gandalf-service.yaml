@@ -13,6 +13,7 @@ spec:
       name: http
   selector:
     {{- include "gandalf.selectorLabels" . | nindent 4 }}
+    service-type: server
 ---
 apiVersion: v1
 kind: Service
