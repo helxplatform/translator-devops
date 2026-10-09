@@ -21,7 +21,7 @@ Then open:
 
 {{- end }}
 
-Shared directory: {{ .Values.app.sharedDir }}
+Registry root: {{ .Values.app.registryRoot }}
 {{- if .Values.persistence.enabled }}
 Persistence:     enabled ({{ .Values.persistence.size }})
 {{- else }}
