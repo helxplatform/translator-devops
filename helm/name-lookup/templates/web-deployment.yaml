@@ -40,11 +40,17 @@ spec:
             value: "{{ .Values.app.otel.jaegerHost }}"
           - name: "JAEGER_PORT"
             value: "{{ .Values.app.otel.jaegerPort }}"
+          # Logging level.
+          - name: LOGLEVEL
+            value: "{{ .Values.app.logLevel }}"
           # Babel version information.
           - name: BABEL_VERSION
             value: "{{ .Values.data.babelVersion }}"
           - name: BABEL_VERSION_URL
             value: "{{ .Values.data.babelVersionURL }}"
+          # Biolink Model tag.
+          - name: BIOLINK_MODEL_TAG
+            value: "{{ .Values.data.biolinkModelTag }}"
           ports:
             - name: http
               containerPort: {{ .Values.webServer.port }}
