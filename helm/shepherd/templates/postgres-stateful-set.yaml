@@ -26,7 +26,7 @@ spec:
           args:
             - postgres
             - -c
-            - max_connections=200
+            - max_connections=400
           env:
             - name: POSTGRES_PASSWORD
               value: {{ .Values.shepherd_db.auth.password }}
