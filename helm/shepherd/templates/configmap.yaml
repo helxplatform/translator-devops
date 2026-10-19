@@ -36,6 +36,7 @@ data:
   OMNICORP_CURIES_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/curies.lmdb"
   OMNICORP_SHARED_COUNTS_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/shared_counts.lmdb"
   PATHFINDER_EMBEDDINGS_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_embeddings"
+  PATHFINDER_SEARCH_GRAPH_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_search_graph"
   ARAX_PATHFINDER_DBS_DIR: "{{ .Values.araxPathfinderLoader.sharedData.mountPath }}"
   ARAX_DBS_DIR: "{{ .Values.araxLoader.sharedData.mountPath }}"
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}

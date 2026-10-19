@@ -27,6 +27,7 @@ spec:
       securityContext:
         {{ . | toYaml | nindent 8 }}
       {{- end }}
+      {{- if .Values.araxLoader.enabled }}
       initContainers:
         # Wait for the loader's success-only sentinel. Gating on .data-ready
         # (written last, only on full success) instead of a data file means the
@@ -46,6 +47,7 @@ spec:
           volumeMounts:
             - name: arax-data
               mountPath: {{ .Values.araxLoader.sharedData.mountPath }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}-arax
           image: "{{ .Values.arax.image.repository }}:{{ .Values.shepherd.tag }}"
