@@ -311,6 +311,9 @@ arax_rank:
       memory: 10Gi
       cpu: 4000m
 
+ars:
+  enabled: false
+
 ars_fanout:
   image:
     repository: ghcr.io/biopack-team/shepherd/ars_fanout
