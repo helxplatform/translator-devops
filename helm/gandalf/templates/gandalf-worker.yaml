@@ -95,14 +95,14 @@ spec:
               readOnly: true
           readinessProbe:
             exec:
-              command: ["test", "-f", "/tmp/heartbeat"]
+              command: ["test", "-f", "/tmp/gandalf-worker-heartbeat"]
             periodSeconds: 10
           livenessProbe:
             exec:
               command:
                 - sh
                 - -c
-                - test $(( $(date +%s) - $(stat -c %Y /tmp/heartbeat) )) -lt 120
+                - test $(( $(date +%s) - $(stat -c %Y /tmp/gandalf-worker-heartbeat) )) -lt 120
             initialDelaySeconds: 60
             periodSeconds: 30
             failureThreshold: 3
