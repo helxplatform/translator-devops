@@ -23,6 +23,9 @@ spec:
         # Rolls the worker whenever the loader's source URLs change, so new pods
         # re-run the init container and open the freshly-loaded data.
         checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "6429"
+        prometheus.io/path: /metrics
     spec:
       {{- with .Values.securityContext }}
       securityContext:
@@ -90,6 +93,16 @@ spec:
             - name: {{ include "gandalf.fullname" . }}-data
               mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
               readOnly: true
+          readinessProbe:
+            httpGet: {path: /ready, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 6
       volumes:
         # Shared graph data volume (mmap + LMDB files)
         - name: {{ include "gandalf.fullname" . }}-data
