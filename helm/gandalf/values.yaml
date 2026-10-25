@@ -45,6 +45,8 @@ app:
   bl_version: 4.2.1
   gandalf:
     num_workers: 2
+    max_path_limit: 200000
+    large_result_threshold: 1000000
     service:
       port: 6429
       type: ClusterIP
