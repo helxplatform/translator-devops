@@ -78,11 +78,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "gandalf.fullname" . }}-configmap
-          env:
-            - name: GANDALF_LARGE_RESULT_THRESHOLD
-              value: "1000000"
-            - name: GANDALF_MAX_PATH_LIMIT
-              value: "200000"
           command:
             - 'python'
           args:
