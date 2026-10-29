@@ -20,6 +20,7 @@ data:
   REDIS_HOST: shepherd-broker
   REDIS_PORT: "{{ .Values.shepherd_broker.service.port }}"
   REDIS_PASSWORD: {{ .Values.shepherd_broker.auth.password }}
+  REDIS_MEMORY_LIMIT: {{ .Values.shepherd_broker.resources.limits.memory }}
 
   LOOKUP_TIMEOUT: "{{ .Values.shepherd.lookup_timeout }}"
   CALLBACK_HOST: "{{ .Values.shepherd.callback_host }}"
