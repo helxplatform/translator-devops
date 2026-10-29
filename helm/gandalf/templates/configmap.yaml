@@ -33,7 +33,5 @@ data:
 
   GANDALF_GRAPH_PATH: "{{ .Values.app.gandalf.sharedData.mountPath }}/gandalf_mmap"
   GANDALF_WORKERS: "{{ .Values.app.gandalf.num_workers }}"
-  # GANDALF_LARGE_RESULT_THRESHOLD: {{ .Values.app.gandalf.large_result_threshold | int64 | quote }}
-  # GANDALF_MAX_PATH_LIMIT: {{ .Values.app.gandalf.max_path_limit | int64 | quote }}
-  # GANDALF_LARGE_RESULT_THRESHOLD: "1000000"
-  # GANDALF_MAX_PATH_LIMIT: "200000"
+  GANDALF_LARGE_RESULT_THRESHOLD: {{ .Values.app.gandalf.large_result_threshold | int64 | quote }}
+  GANDALF_MAX_PATH_LIMIT: {{ .Values.app.gandalf.max_path_limit | int64 | quote }}
