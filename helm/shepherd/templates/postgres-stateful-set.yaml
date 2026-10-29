@@ -16,6 +16,7 @@ spec:
         {{- include "shepherd.selectorLabels" . | nindent 8 }}
         service-type: postgres
     spec:
+      terminationGracePeriodSeconds: 60
       containers:
         - name: {{ include "shepherd.fullname" . }}-db
           image: '{{ .Values.shepherd_db.image.repository }}:{{ .Values.shepherd_db.image.tag }}'
@@ -26,7 +27,18 @@ spec:
           args:
             - postgres
             - -c
-            - max_connections=200
+            - max_connections=400
+            - -c
+            - shared_buffers=1GB
+          lifecycle:
+            preStop:
+              exec:
+                command: ["gosu", "postgres", "pg_ctl", "stop", "-m", "fast", "-D", "/var/lib/postgresql/data"]
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-h", "127.0.0.1", "-U", "postgres"]
+            periodSeconds: 5
+            failureThreshold: 3
           env:
             - name: POSTGRES_PASSWORD
               value: {{ .Values.shepherd_db.auth.password }}
@@ -42,12 +54,18 @@ spec:
             - mountPath: "/var/lib/postgresql/data"
               name: {{ include "shepherd.fullname" . }}-db-volume
               subPath: pgdata
+            - mountPath: /dev/shm
+              name: dshm
       restartPolicy: Always
       volumes:
         - name: postgres-config
           configMap:
             name: {{ include "shepherd.fullname" . }}-postgres-configmap
             defaultMode: 0777
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 512Mi
   volumeClaimTemplates:
     - metadata:
         name: {{ include "shepherd.fullname" . }}-db-volume
@@ -55,4 +73,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 2Gi
+            storage: {{ .Values.shepherd_db.pg_volume_capacity }}

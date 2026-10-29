@@ -14,11 +14,498 @@ data:
         echo "  -- Neo4j  is unavailable - sleeping"
         sleep 3
     done
-  download_data.sh: |-
+  download_data_neo4j.sh: |-
     #!/bin/bash
     set -x
     wget -O /data/neo4j.dump ${NEO4J_DATA_URL}
     touch /data/done
+
+  download_data_memgraph.sh: |-
+    #!/bin/sh
+    set -e
+    DATA_DIR="/data/memgraph"
+    
+    # If snapshot already exists, skip ingestion
+    if [ ! -f /data/done ]; then      
+      echo "Downloading Memgraph ingestion files..."
+      curl -L -o /data/memgraph_nodes.csv ${MEMGRAPH_DATA_URL}_nodes.csv
+      curl -L -o /data/memgraph_indexes.cypher ${MEMGRAPH_DATA_URL}_indexes.cypher
+      
+      curl -L -o /data/edges_manifest.txt "${MEMGRAPH_DATA_URL}_edges_manifest.txt"
+      echo "Downloading all edge files in parallel..."
+      while IFS= read -r filename; do
+        ori_filename="$filename"
+        # Remove any prefix before "edges_biolink"
+        filename="${filename#*edges_biolink}"
+        filename="edges_biolink${filename}"
+        curl -L -o "/data/${ori_filename}" "${MEMGRAPH_DATA_URL}_${filename}" &
+      done < /data/edges_manifest.txt
+      wait
+      touch /data/done
+    else
+      echo "Files have been previously downloaded already"
+    fi
+
+  generate_load_cypher.py: |-
+    #!/usr/bin/env python3
+    """
+    Dynamically generates Memgraph LOAD CSV Cypher queries from typed CSV headers.
+
+    Usage:
+      python3 generate_load_cypher.py node <csv_file> <batch_size>
+      python3 generate_load_cypher.py edge <csv_file> <batch_size> <relationship_type>
+    """
+    import sys
+
+    DEFAULT_ARRAY_DELIM = '\\u001f'
+
+    def parse_header(header_line, delimiter='\t'):
+        """Parse typed header columns into property type lists and WITH clause mapping."""
+        float_props = []
+        int_props = []
+        array_props = []
+        bool_props = []
+        string_props = []
+        skip_props = set()
+        with_mappings = []
+    
+        for col in header_line.rstrip('\n').rstrip('\r').split(delimiter):
+            col = col.strip()
+            if ':' in col:
+                name, typ = col.rsplit(':', 1)
+            else:
+                name, typ = col, 'string'
+    
+            if typ in ('START_ID', 'END_ID', 'TYPE'):
+                skip_props.add(name)
+                # Still need these in WITH clause for edge MATCH but not SET
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'ID':
+                string_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'LABEL':
+                array_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'float':
+                float_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'int':
+                int_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ in ('string[]', 'float[]', 'int[]'):
+                array_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            elif typ == 'boolean':
+                bool_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+            else:
+                string_props.append(name)
+                with_mappings.append('row.`' + col + '` AS `' + name + '`')
+    
+        return {
+            'float': float_props,
+            'int': int_props,
+            'array': array_props,
+            'bool': bool_props,
+            'string': string_props,
+            'skip': skip_props,
+            'with_clause': ',\n    '.join(with_mappings),
+        }
+
+    def build_set_statements(props, array_delim, entity):
+        statements = []
+
+        for prop in props['string']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` <> "" '
+                'THEN row.`' + prop + '` ELSE null END'
+            )
+
+        for prop in props['float']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` <> "" '
+                'THEN toFloat(row.`' + prop + '`) ELSE null END'
+            )
+
+        for prop in props['int']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` <> "" '
+                'THEN toInteger(row.`' + prop + '`) ELSE null END'
+            )
+
+        for prop in props['array']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN trim(row.`' + prop + '`) <> "" '
+                'THEN split(row.`' + prop + '`, "' + array_delim + '") ELSE null END'
+            )
+
+        for prop in props['bool']:
+            statements.append(
+                'SET ' + entity + '.`' + prop + '` = '
+                'CASE WHEN row.`' + prop + '` = "true" THEN true '
+                'WHEN row.`' + prop + '` = "false" THEN false '
+                'ELSE null END'
+            )
+
+        return '\n  '.join(statements)
+
+    def generate_node_cypher(csv_file, batch_size, array_delim=DEFAULT_ARRAY_DELIM):
+        with open(csv_file, 'r') as f:
+            header_line = f.readline()
+
+        props = parse_header(header_line)
+        set_statements = build_set_statements(props, array_delim, entity='n')
+        set_statements = set_statements.replace('row.`', '`')
+        cypher = (
+            'CALL {\n'
+            '  LOAD CSV FROM "' + csv_file + '"\n'
+            '  WITH HEADER DELIMITER "\\t" AS row\n'
+            '  WITH\n    ' + props['with_clause'] + '\n'
+            '  CREATE (n)\n'
+            '  ' + set_statements + '\n'
+            '  RETURN 1 AS _\n'
+            '} IN TRANSACTIONS OF ' + str(batch_size) + ' ROWS;'
+        )
+        return cypher
+
+    def generate_edge_cypher(csv_file, batch_size, array_delim=DEFAULT_ARRAY_DELIM, rel_type=''):
+        with open(csv_file, 'r') as f:
+            header_line = f.readline()
+
+        props = parse_header(header_line)
+
+        for prop_list in props.values():
+            if isinstance(prop_list, list):
+                for skip in ('subject', 'object', 'predicate'):
+                    if skip in prop_list:
+                        prop_list.remove(skip)
+
+        set_statements = build_set_statements(props, array_delim, entity='r')
+        set_statements = set_statements.replace('row.`', '`')
+    
+        cypher = (
+            'LOAD CSV FROM "' + csv_file + '"\n'
+            'WITH HEADER DELIMITER "\\t" AS row\n'
+            'CALL {\n'
+            '  WITH row\n'
+            '  WITH\n    ' + props['with_clause'] + '\n'
+            '  MATCH (a:`biolink:NamedThing` {id: `subject`}),\n'
+            '        (b:`biolink:NamedThing` {id: `object`})\n'
+            '  CREATE (a)-[r:`' + rel_type + '`]->(b)\n'
+            '  ' + set_statements + '\n'
+            '  RETURN 1 AS _\n'
+            '} IN TRANSACTIONS OF ' + str(batch_size) + ' ROWS;'
+        )
+        return cypher
+
+    def main():
+        if len(sys.argv) < 3:
+            print(__doc__)
+            sys.exit(1)
+
+        mode = sys.argv[1]
+        csv_file = sys.argv[2]
+        batch_size = sys.argv[3] if len(sys.argv) > 3 else '200000'
+        array_delim = DEFAULT_ARRAY_DELIM
+
+        if mode == 'node':
+            print(generate_node_cypher(csv_file, batch_size, array_delim))
+        elif mode == 'edge':
+            if len(sys.argv) < 5:
+                print("Error: edge mode requires relationship_type argument")
+                sys.exit(1)
+            rel_type = sys.argv[4]
+            print(generate_edge_cypher(csv_file, batch_size, array_delim, rel_type))
+        else:
+            print(f"Error: unknown mode '{mode}', use 'node' or 'edge'")
+            sys.exit(1)
+
+    if __name__ == '__main__':
+        main()
+  run_memgraph.sh: |-
+    #!/bin/bash
+    set -euo pipefail
+    DATA_DIR="/data/memgraph"
+    BATCH_SIZE=${BATCH_SIZE}
+    QUERY_TIMEOUT=${GRAPH_QUERY_TIMEOUT}
+    
+    echo "Cleaning stream metadata directory..."
+    rm -rf $DATA_DIR/streams/*
+    
+    # If final snapshot exists (post-edge-loading), skip ingestion and go straight to serving mode  
+    if [ -f "$DATA_DIR/.ingestion_complete" ]; then
+      echo "Existing snapshot detected. Starting Memgraph in serving mode..."
+      exec /usr/lib/memgraph/memgraph \
+        --bolt-port=7687 \
+        --bolt-address=0.0.0.0 \
+        --storage-mode=IN_MEMORY_ANALYTICAL \
+        --storage-wal-enabled=false \
+        --log-level=ERROR \
+        --storage-snapshot-interval-sec=0 \
+        --query-execution-timeout-sec=$QUERY_TIMEOUT \
+        --data-directory="$DATA_DIR"
+    fi
+
+    # If nodes are loaded but label assignment not done, skip to label assignment
+    if [ -f "$DATA_DIR/.nodes_loaded" ]; then
+      echo "Nodes already loaded. Skipping to label assignment..."
+    else
+      echo "Starting Memgraph in BULK INGEST mode..."
+      /usr/lib/memgraph/memgraph \
+        --bolt-port=7687 \
+        --bolt-address=0.0.0.0 \
+        --storage-mode=IN_MEMORY_ANALYTICAL \
+        --storage-snapshot-interval-sec=0 \
+        --query-execution-timeout-sec=0 \
+        --storage-wal-enabled=false \
+        --log-level=WARNING \
+        --memory-limit=0 \
+        --query-modules-directory=/usr/lib/memgraph/query_modules \
+        --data-directory="$DATA_DIR" \
+        >> /var/log/memgraph/memgraph_ingest.log 2>&1 &  
+    
+      MEMGRAPH_PID=$!
+      echo "Memgraph PID: $MEMGRAPH_PID"  
+      echo "Waiting for Memgraph to accept connections..."
+      until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+        sleep 2
+      done
+      echo "Bolt is ready."
+      echo "Loading Memgraph nodes in transactions of $BATCH_SIZE..."
+  
+      python3 /generate_load_cypher.py node \
+          /data/memgraph_nodes.csv \
+          "$BATCH_SIZE" \
+          | /usr/bin/mgconsole --host localhost --port 7687
+      
+      echo "Loading nodes finished."
+      
+      echo "Stopping Memgraph to restart for label assignment..."
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      echo "Memgraph stopped."
+      # Mark nodes as loaded
+      touch "$DATA_DIR/.nodes_loaded"
+    fi
+    
+    if [ -f "$DATA_DIR/.labels_assigned" ]; then
+      echo "Labels already assigned. Skipping to node indexing and edge loading..."
+    else
+      # jump directly to starting memgraph for label assignment      
+      echo "Generating label assignment cypher file..."
+      echo 'CALL assign_labels.from_category() YIELD processed RETURN processed;' \
+        > /tmp/assign_labels.cypher
+      
+      echo "Restarting Memgraph in background to assign labels..."
+      /usr/lib/memgraph/memgraph \
+        --bolt-port=7687 \
+        --bolt-address=0.0.0.0 \
+        --storage-mode=IN_MEMORY_ANALYTICAL \
+        --storage-snapshot-interval-sec=0 \
+        --query-execution-timeout-sec=0 \
+        --storage-wal-enabled=false \
+        --log-level=WARNING \
+        --memory-limit=0 \
+        --query-modules-directory=/usr/lib/memgraph/query_modules \
+        --data-directory="$DATA_DIR" \
+        --init-data-file=/tmp/assign_labels.cypher \
+        >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
+      MEMGRAPH_PID=$!
+      echo "Waiting for Memgraph to accept connections..."
+      until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+          sleep 2
+      done
+      echo "Bolt is ready, label assignment via init-data-file should be complete."
+      
+      echo "Stopping Memgraph after label assignment..."
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      echo "Label assignment complete. Memgraph stopped."
+      touch "$DATA_DIR/.labels_assigned"
+    fi   
+    echo "Restarting Memgraph in background for node indexing and edge loading..."
+    /usr/lib/memgraph/memgraph \
+      --bolt-port=7687 \
+      --bolt-address=0.0.0.0 \
+      --storage-mode=IN_MEMORY_ANALYTICAL \
+      --storage-snapshot-interval-sec=0 \
+      --query-execution-timeout-sec=0 \
+      --storage-wal-enabled=false \
+      --log-level=WARNING \
+      --memory-limit=0 \
+      --query-modules-directory=/usr/lib/memgraph/query_modules \
+      --storage-snapshot-on-exit=false \
+      --data-directory="$DATA_DIR" \
+      >> /var/log/memgraph/memgraph_ingest.log 2>&1 &
+    MEMGRAPH_PID=$!
+    
+    echo "Waiting for Memgraph to accept connections..."
+    until echo "RETURN 1;" | /usr/bin/mgconsole --host localhost --port 7687 >/dev/null 2>&1; do
+        sleep 2
+    done
+    
+    if [ -f "$DATA_DIR/.indexes_created" ]; then
+      echo "Indexes already created. Skipping to edge loading..."
+    else
+      echo "All nodes are loaded. Creating indexes (with retry)..."
+      until /usr/bin/mgconsole --host localhost --port 7687 < /data/memgraph_indexes.cypher; do
+        echo "Index creation failed, retrying in 5s..."
+        sleep 5
+      done
+      echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
+      touch "$DATA_DIR/.indexes_created"
+    fi
+    
+    load_edge_file() {
+      filename="$1"
+      batch_size="${2:-$BATCH_SIZE}"
+      base=$(basename "$filename" .csv)
+      marker="/tmp/edge_${base}"
+      relpart=$(echo "$base" | sed 's/_part_[a-z]*$//' | sed 's/.*\(biolink_.*\)/\1/')
+      reltype=$(echo "$relpart" | sed 's/_/:/')
+      echo "Starting $filename as relationship type $reltype"
+  
+      if python3 /generate_load_cypher.py edge \
+          "/data/$filename" \
+          "$batch_size" \
+          "$reltype" \
+          | /usr/bin/mgconsole --host localhost --port 7687
+      then
+          echo "Finished ${filename}"
+          touch "${marker}.done"
+      else
+          echo "FAILED $filename"
+          touch "${marker}.failed"
+      fi
+    }
+
+    LARGE_THRESHOLD=$(printf '%.0f' "${LARGE_THRESHOLD:-1000000000}")
+    SPLIT_LINES=$(printf '%.0f' "${SPLIT_LINES:-4000000}")
+  
+    if [ -f "$DATA_DIR/.edges_split" ]; then
+      echo "Large edge files already split, loading expanded manifest..."
+      cp /data/edges_manifest_expanded.txt /tmp/edges_manifest_expanded.txt
+    else
+      echo "Checking for large edge files to split..."
+      rm -f /tmp/edges_manifest_expanded.txt
+      while IFS= read -r filename; do
+          filesize=$(stat -c%s "/data/$filename" 2>/dev/null || echo 0)
+          if [ "$filesize" -gt "$LARGE_THRESHOLD" ]; then
+              echo "Splitting large file: $filename"
+              base="${filename%.csv}"
+              header=$(head -1 "/data/$filename")
+              # Split into parts preserving header
+              rm -f /data/${base}_part_*.csv
+              tail -n +2 "/data/$filename" | split -l "$SPLIT_LINES" \
+                --additional-suffix=".csv" \
+                --filter="{ echo \"$header\"; cat; } > \$FILE" \
+                - "/data/${base}_part_"
+              for part in /data/${base}_part_*.csv; do
+                  echo "$(basename $part)" >> /tmp/edges_manifest_expanded.txt
+                  echo "  Created part: $(basename $part) ($(stat -c%s $part) bytes)"
+              done
+          else
+              echo "$filename" >> /tmp/edges_manifest_expanded.txt
+          fi
+      done < /data/edges_manifest.txt
+      echo "Expanded manifest has $(wc -l < /tmp/edges_manifest_expanded.txt) files"
+      # Persist to data dir so it survives pod restarts
+      cp /tmp/edges_manifest_expanded.txt /data/edges_manifest_expanded.txt
+      touch "$DATA_DIR/.edges_split"
+    fi
+  
+    echo "Loading all edge files in parallel..."
+    rm -f /tmp/edge_*.done /tmp/edge_*.failed
+    
+    MAX_PARALLEL=${MAX_PARALLEL:-10}
+    total_count=0
+    while IFS= read -r filename; do
+        while [ "$(jobs -rp | wc -l)" -ge "$MAX_PARALLEL" ]; do
+          sleep 2
+        done
+        load_edge_file "$filename" &
+        total_count=$((total_count + 1))
+    done < /tmp/edges_manifest_expanded.txt
+    
+    echo "Waiting for $total_count edge files to complete in parallel..."
+    
+    while true; do
+      done_count=$(find /tmp -maxdepth 1 -name 'edge_*.done' | wc -l)
+      fail_count=$(find /tmp -maxdepth 1 -name 'edge_*.failed' | wc -l)
+      total=$((done_count + fail_count))    
+      echo "Completed: $done_count, Failed: $fail_count, Total: $total / $total_count"    
+      if [ "$total" -eq "$total_count" ]; then break; fi
+      sleep 5
+    done
+  
+    if [ "$fail_count" -ne 0 ]; then
+      echo "One or more edge loads failed. Aborting."
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      exit 1
+    fi
+  
+    echo "All edge loads completed successfully."
+    echo "Waiting for Memgraph to finish ingestion transactions..."
+    while true; do
+      active=$(echo "SHOW TRANSACTIONS;" | \
+        /usr/bin/mgconsole --host localhost --port 7687 | \
+        grep -c "transaction_id")
+      if [ "$active" -le 1 ]; then break; fi  
+      echo "Still $active active transactions..."
+      sleep 5
+    done
+    echo "Checking for active transactions..."
+    echo "SHOW TRANSACTIONS;" | /usr/bin/mgconsole --host localhost --port 7687
+    
+    echo "Checking storage info before snapshot..."
+    echo "SHOW STORAGE INFO;" | /usr/bin/mgconsole --host localhost --port 7687
+    
+    echo "Creating persistent snapshot (this may take a while for large graph)..."
+    echo "CREATE SNAPSHOT;" | /usr/bin/mgconsole --host localhost --port 7687
+    
+    SNAP_STATUS=$?
+    
+    if [ "$SNAP_STATUS" -ne 0 ]; then
+      echo "Snapshot failed!"
+      kill -TERM "$MEMGRAPH_PID"
+      wait "$MEMGRAPH_PID"
+      exit 1
+    fi
+    
+    # Verify snapshot is not empty before deleting old ones
+    SNAP_FILE=$(ls -t "$DATA_DIR/snapshots/" | head -1)
+    SNAP_SIZE=$(stat -c%s "$DATA_DIR/snapshots/$SNAP_FILE")
+    if [ "$SNAP_SIZE" -lt 2000000 ]; then
+        echo "ERROR: New snapshot appears empty (${SNAP_SIZE} bytes), aborting!"
+        kill -TERM "$MEMGRAPH_PID"
+        wait "$MEMGRAPH_PID"
+        exit 1
+    fi
+    echo "Snapshot verified: $SNAP_FILE (${SNAP_SIZE} bytes)"
+    echo "Cleaning up intermediate snapshots (keeping newest)..."
+    # Keep only the most recent snapshot
+    ls -t "$DATA_DIR/snapshots/" | tail -n +2 | xargs -I{} rm -f "$DATA_DIR/snapshots/{}"
+
+    echo "Switching to serving mode..."
+
+    kill -TERM "$MEMGRAPH_PID"
+    wait "$MEMGRAPH_PID"
+    touch "$DATA_DIR/.ingestion_complete"
+    exec /usr/lib/memgraph/memgraph \
+      --bolt-port=7687 \
+      --bolt-address=0.0.0.0 \
+      --storage-mode=IN_MEMORY_ANALYTICAL \
+      --storage-wal-enabled=false \
+      --storage-snapshot-interval-sec=0 \
+      --log-level=ERROR \
+      --query-execution-timeout-sec=$QUERY_TIMEOUT \
+      --data-directory="$DATA_DIR"
+
   health_check.sh: |-
     #!/usr/bin/env bash
     response=$(wget --server-response "${PUBLIC_URL}/openapi.json" 2>&1 | awk '/^  HTTP/{print $2}')
@@ -37,6 +524,11 @@ data:
     RC=0
     
     function download() {
+      if [ -z "$2" ]; then
+        echo "SKIPPING $1 (no URL provided), writing empty JSON file"
+        echo '{}' > "$LOCAL_DESTINATION/$1"
+        return 0
+      fi
       CMD="wget -O $LOCAL_DESTINATION/$1 $2"
       echo "RUNNING: $CMD"
       $CMD
@@ -47,7 +539,9 @@ data:
     
       download metadata.json ${PLATER_METADATA_URL} && \
         download meta_knowledge_graph.json ${PLATER_METAKG_URL} && \
-        download sri_testing_data.json ${PLATER_TEST_DATA_URL}
+        download sri_testing_data.json ${PLATER_TEST_DATA_URL} && \
+        download graph_metadata.json ${PLATER_GRAPH_METADATA_URL} && \
+        download schema.json ${PLATER_SCHEMA_URL}
       RC=$?
       if [[ $RC == 0 ]]; then
         break;
@@ -66,9 +560,9 @@ data:
     fi
   seed_db.sh: |-
     #!/bin/bash
-    set -x
+    set -ex
     FILE=/data/neo4j.dump
-    DATADIR=/data/databases
+    NEO4J_DATA=/data
     until [ -f "$FILE" ]; do
         echo "$FILE doesn't exist. Please copy to database dump file to $FILE"
         echo "sleeping..."
@@ -77,15 +571,15 @@ data:
     echo "$FILE found"
     echo "clearing previous database file if any..."
     # Make dir if they don't exist
-    mkdir -p /data/databases
-    mkdir -p /data/transactions
-    mkdir -p /data/dbms
+    mkdir -p ${NEO4J_DATA}/databases
+    mkdir -p ${NEO4J_DATA}/transactions
+    mkdir -p ${NEO4J_DATA}/dbms
     # clear out data from dir if they were present
-    rm -rf /data/dbms/*
-    rm -rf /data/databases/*
-    rm -rf /data/transactions/*
+    rm -rf ${NEO4J_DATA}/dbms/*
+    rm -rf ${NEO4J_DATA}/databases/*
+    rm -rf ${NEO4J_DATA}/transactions/*
     # load dump file
-    neo4j-admin database load --from-path=/data/ neo4j
+    neo4j-admin database load --from-path=/data/ neo4j --overwrite-destination=true --verbose
   dataset-desc.json: |
     {{ .Values.datasetDesc | toJson }}
   openapi-config.yaml: |-

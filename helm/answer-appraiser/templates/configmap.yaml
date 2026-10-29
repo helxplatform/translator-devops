@@ -14,3 +14,6 @@ data:
   JAEGER_HOST: {{ .Values.env.jaeger_host }}
   JAEGER_PORT: "{{ .Values.env.jaeger_port }}"
   JAEGER_ENABLED: "{{ .Values.env.jaeger_enabled }}"
+
+  OTEL_EXPORTER_OTLP_INSECURE: {{ .Values.env.otel.insecure | default "false" | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.env.otel.insecure | default "false" | quote }}

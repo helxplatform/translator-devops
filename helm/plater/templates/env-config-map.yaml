@@ -5,24 +5,45 @@ metadata:
 data:
   WEB_HOST: "0.0.0.0"
   WEB_PORT: "{{ .Values.app.port }}"
-  {{ if not .Values.externalNeo4j }}
+  GRAPH_DB: "{{ .Values.graph.backend }}"
+  GRAPH_QUERY_TIMEOUT: "{{ .Values.app.GRAPH_QUERY_TIMEOUT }}"
+  {{- if eq .Values.graph.backend "neo4j" }}
+  {{- if .Values.graph.external }}
+  NEO4J_HOST: {{ .Values.externalNeo4j.hostName }}
+  NEO4J_HTTP_PORT: "{{ .Values.externalNeo4j.httpPort }}"
+  NEO4J_BOLT_PORT: "{{ .Values.externalNeo4j.boltPort }}"
+  NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
+  NEO4J_USERNAME: "{{ .Values.externalNeo4j.username }}"
+   {{- else }}
   NEO4J_HOST: {{ include "plater.fullname" . }}-neo4j-service
   NEO4J_HTTP_PORT: "{{ .Values.app.neo4j.httpPort }}"
   NEO4J_BOLT_PORT: "{{ .Values.app.neo4j.boltPort }}"
   NEO4J_PASSWORD: "{{ .Values.app.neo4j.password }}"
   NEO4J_USERNAME: "{{ .Values.app.neo4j.username }}"
-  {{ else }}
-  NEO4J_HOST: {{ .Values.externalNeo4j.hostName }}
-  NEO4J_HTTP_PORT: "{{ .Values.externalNeo4j.port }}"
-  NEO4J_PASSWORD: "{{ .Values.externalNeo4j.password }}"
-  NEO4J_USERNAME: "{{ .Values.externalNeo4j.username }}"
-  {{ end }}
-  NEO4J_QUERY_TIMEOUT: "{{ .Values.app.Neo4jQueryTimeout }}"
+  {{- end }}
+  {{- end }}
+
+  {{- if eq .Values.graph.backend "memgraph" }}
+  {{- if .Values.graph.external }}
+  MEMGRAPH_HOST: {{ .Values.externalMemgraph.hostName | quote }}
+  MEMGRAPH_BOLT_PORT: "{{ .Values.externalMemgraph.boltPort }}"
+  {{- else }}
+  MEMGRAPH_HOST: {{ include "plater.fullname" . }}-memgraph-service
+  MEMGRAPH_BOLT_PORT: "{{ .Values.app.memgraph.boltPort }}"
+  BATCH_SIZE: "{{ .Values.app.memgraph.BATCH_SIZE }}"
+  MAX_PARALLEL: "{{ .Values.app.memgraph.MAX_PARALLEL }}"
+  LARGE_THRESHOLD: "{{ .Values.app.memgraph.LARGE_THRESHOLD }}"
+  SPLIT_LINES: "{{ .Values.app.memgraph.SPLIT_LINES }}"
+  {{- end }}
+  {{- end }}
+
   PLATER_SERVICE_ADDRESS: "{{ include "plater.fullname" . }}-plater-service"
   AUTOMAT_HOST: {{ .Values.app.automatAddress }}
   PLATER_TITLE: {{ .Release.Name }}
   PLATER_VERSION: {{ .Values.image.plater.tag }}
   PLATER_METADATA_URL: "{{ .Values.metadataUrl }}"
+  PLATER_GRAPH_METADATA_URL: "{{ .Values.graphMetadataUrl }}"
+  PLATER_SCHEMA_URL: "{{ .Values.schemaUrl }}"
   PLATER_METAKG_URL: "{{ .Values.metaKGUrl }}"
   PLATER_TEST_DATA_URL: "{{ .Values.testingDataUrl }}"
   PROVENANCE_TAG: "{{ .Values.datasetDesc.provenanceTag }}"

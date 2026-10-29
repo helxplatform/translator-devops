@@ -1,4 +1,10 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/GTEx_Automat/a6448b9092bb81a1/graph_a6448b9092bb81a1.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/GTEx_Automat/a6448b9092bb81a1/GTEx_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/GTEx_Automat/a6448b9092bb81a1/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/GTEx_Automat/a6448b9092bb81a1/testing_data.json
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/GTEx_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/GTEx_Automat/2ad22865c5fb3c6a/testing_data.json

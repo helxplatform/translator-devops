@@ -1,4 +1,10 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/icees-kg/8-20-2024/neo4j.dump
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/icees-kg/8-20-2024/neo4j.dump
+  memgraph:
+    dataUrl: ""
+graphMetadataUrl: ""
+schemaUrl: ""
 metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/icees-kg/8-20-2024/icees-kg.meta.json
 metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/icees-kg/8-20-2024/meta_knowledge_graph.json
 testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/icees-kg/8-20-2024/testing_data.json

@@ -1,4 +1,10 @@
-dataUrl: https://stars.renci.org/var/plater/bl-4.2.1/Hetio_Automat/85a5f53e63150e1e/graph_85a5f53e63150e1e.db.dump
-metadataUrl: https://stars.renci.org/var/plater/bl-4.2.1/Hetio_Automat/85a5f53e63150e1e/Hetio_Automat.meta.json
-metaKGUrl: https://stars.renci.org/var/plater/bl-4.2.1/Hetio_Automat/85a5f53e63150e1e/meta_knowledge_graph.json
-testingDataUrl: https://stars.renci.org/var/plater/bl-4.2.1/Hetio_Automat/85a5f53e63150e1e/testing_data.json
+app:
+  neo4j:
+    dataUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/neo4j.dump
+  memgraph:
+    dataUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/memgraph.cypher
+graphMetadataUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/graph-metadata.json
+schemaUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/schema.json
+metadataUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/Hetio_Automat.meta.json
+metaKGUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/meta_knowledge_graph.json
+testingDataUrl: https://stars.renci.org/var/plater/graphs/Hetio_Automat/3f3cddfca8a4691c/testing_data.json

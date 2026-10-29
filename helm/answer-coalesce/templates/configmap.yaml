@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "answer-coalesce.fullname" . }}-configmap
+  labels:
+    {{- include "answer-coalesce.labels" . | nindent 4 }}
+data:
+  download_duckdb.sh: |-
+    #!/bin/sh
+    # Downloads the AnswerCoalesce DuckDB dump onto the data volume.
+    # Skips the download when the file is already there and matches the size
+    # advertised by the server, so pod restarts don't re-fetch several GB.
+    set -eu
+
+    DB_DIR=$(dirname "$AC_DUCKDB_PATH")
+    PART_FILE="${AC_DUCKDB_PATH}.part"
+    URL_FILE="${AC_DUCKDB_PATH}.url"
+
+    mkdir -p "$DB_DIR"
+
+    remote_size=$(curl -sIL --retry 3 --retry-delay 5 "$AC_DUCKDB_URL" \
+      | tr -d '\r' \
+      | awk 'tolower($1) == "content-length:" { size = $2 } END { print size }')
+    echo "source: $AC_DUCKDB_URL (${remote_size:-unknown} bytes)"
+
+    if [ -f "$AC_DUCKDB_PATH" ]; then
+      local_size=$(wc -c < "$AC_DUCKDB_PATH" | tr -d ' ')
+      echo "existing database: $AC_DUCKDB_PATH ($local_size bytes)"
+      if [ -z "$remote_size" ]; then
+        echo "could not determine remote size, keeping the existing database"
+        exit 0
+      fi
+      if [ "$local_size" = "$remote_size" ]; then
+        echo "database is up to date, skipping download"
+        exit 0
+      fi
+      echo "size mismatch, downloading again"
+    fi
+
+    # Only resume a partial download that came from this same URL.
+    if [ -f "$PART_FILE" ] && [ "$(cat "$URL_FILE" 2>/dev/null)" != "$AC_DUCKDB_URL" ]; then
+      echo "discarding partial download from a different URL"
+      rm -f "$PART_FILE"
+    fi
+    echo "$AC_DUCKDB_URL" > "$URL_FILE"
+
+    curl -fL --retry 5 --retry-delay 10 --retry-connrefused -C - -o "$PART_FILE" "$AC_DUCKDB_URL"
+    mv "$PART_FILE" "$AC_DUCKDB_PATH"
+    chmod 0644 "$AC_DUCKDB_PATH"
+    echo "downloaded $(wc -c < "$AC_DUCKDB_PATH" | tr -d ' ') bytes to $AC_DUCKDB_PATH"

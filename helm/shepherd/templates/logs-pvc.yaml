@@ -3,9 +3,11 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ include "shepherd.fullname" . }}-logs-pvc
 spec:
-  storageClassName: nfs-client
   accessModes:
-  - ReadWriteMany
+    {{- toYaml .Values.logs.persistentVolume.accessModes | nindent 4 }}
+  {{- if .Values.logs.persistentVolume.storageClassName }}
+  storageClassName: {{ .Values.logs.persistentVolume.storageClassName }}
+  {{- end }}
   resources:
     requests:
-      storage: {{ .Values.shepherd.logsPVCSize }}
+      storage: {{ .Values.logs.persistentVolume.size }}

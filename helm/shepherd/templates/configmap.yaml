@@ -8,29 +8,36 @@ data:
   SERVER_LOCATION: {{ .Values.x_trapi.location }}
 
   LOG_LEVEL: {{ .Values.shepherd.log_level }}
+  MAX_RESPONSE_SIZE: {{ .Values.shepherd.max_response_size }}
+  CALLBACK_MAX_REQUEST_SIZE: {{ .Values.shepherd.callback_max_request_size }}
 
   POSTGRES_USER: postgres
   POSTGRES_HOST: shepherd-db
   POSTGRES_PORT: "{{ .Values.shepherd_db.service.port }}"
   POSTGRES_PASSWORD: {{ .Values.shepherd_db.auth.password }}
+  PG_VOLUME_CAPACITY: {{ .Values.shepherd_db.pg_volume_capacity }}
 
   REDIS_HOST: shepherd-broker
   REDIS_PORT: "{{ .Values.shepherd_broker.service.port }}"
   REDIS_PASSWORD: {{ .Values.shepherd_broker.auth.password }}
+  REDIS_MEMORY_LIMIT: {{ .Values.shepherd_broker.resources.limits.memory }}
 
   LOOKUP_TIMEOUT: "{{ .Values.shepherd.lookup_timeout }}"
-  CALLBACK_HOST: "https://{{ .Values.ingress.host }}"
+  CALLBACK_HOST: "{{ .Values.shepherd.callback_host }}"
   KG_RETRIEVAL_URL: {{ .Values.shepherd.kg_retrieval_url }}
   SYNC_KG_RETRIEVAL_URL: {{ .Values.shepherd.sync_kg_retrieval_url }}
+  KG_REHYDRATE_URL: {{ .Values.shepherd.kg_rehydrate_url }}
   DEFAULT_DATA_TIER: "{{ .Values.shepherd.default_data_tier }}"
-  OMNICORP_URL: {{ .Values.shepherd.omnicorp_url }}
   ARAX_URL: {{ .Values.shepherd.arax_url }}
-  NODE_NORM: {{ .Values.shepherd.node_norm }}
 
   # OTEL_ENABLED: "True"
   JAEGER_HOST: {{ .Values.otel.jaeger_host }}
   JAEGER_PORT: "{{ .Values.otel.jaeger_port }}"
 
-  GANDALF_GRAPH_PATH: {{ .Values.gandalf.sharedData.mountPath }}
-
+  OMNICORP_CURIES_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/curies.lmdb"
+  OMNICORP_SHARED_COUNTS_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/shared_counts.lmdb"
+  PATHFINDER_EMBEDDINGS_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_embeddings"
+  PATHFINDER_SEARCH_GRAPH_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_search_graph"
+  ARAX_PATHFINDER_DBS_DIR: "{{ .Values.araxPathfinderLoader.sharedData.mountPath }}"
+  ARAX_DBS_DIR: "{{ .Values.araxLoader.sharedData.mountPath }}"
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}
