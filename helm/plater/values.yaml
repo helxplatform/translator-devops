@@ -106,10 +106,11 @@ service:
   type: ClusterIP
 app:
   otel:
-    enabled: "False"
-    jaegerHost: "http://jaeger-otel-collector"
+    enabled: "True"
+    jaegerHost: "http://jaeger"
     jaegerPort: "4317"
-  profiler_on: "False"
+    insecure: "true"              # explicit override only needed if scheme-based detection fails
+  profiler_on: "True"
   gunicorn:
     worker_timeout: 10800
     num_workers: 4
@@ -261,3 +262,4 @@ x_trapi:
     value: "maturity"
   location:
     value: "location"
+
