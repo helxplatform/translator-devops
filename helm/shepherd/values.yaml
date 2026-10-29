@@ -691,11 +691,13 @@ shepherd_db:
     enabled: false
   resources:
     requests:
-      memory: 1Gi
-      cpu: 1000m
-    limits:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 2000m
+      ephemeral-storage: 64Mi
+    limits:
+      memory: 4Gi
+      cpu: 2000m
+      ephemeral-storage: 256Mi
 
 shepherd_broker:
   image:
@@ -710,22 +712,39 @@ shepherd_broker:
     port: 6379
   autoscaling:
     enabled: false
+  pvcSize: 40Gi
   resources:
     requests:
-      memory: 20Gi
-      cpu: 1500m
+      memory: 25Gi
+      cpu: 2000m
     limits:
       memory: 25Gi
       cpu: 2000m
   args:
+    - --dir
+    - '/data'                        # the fix: snapshot + AOF on the PVC, not ephemeral storage
     - --maxmemory
     - '10gb'
     - --maxmemory-policy
     - 'volatile-ttl'
+    - --maxmemory-clients
+    - '20%'
     - --loglevel
     - 'notice'
     - --logfile
     - '/data/shepherd_broker.log'
+    - --appendonly
+    - 'yes'
+    - --appendfsync
+    - 'everysec'
+    - --aof-use-rdb-preamble
+    - 'yes'
+    - --auto-aof-rewrite-percentage
+    - '100'
+    - --auto-aof-rewrite-min-size
+    - '1gb'
+    - --save
+    - '3600 1'                       # was '60 1'; snapshot is now just a backup
     - --stop-writes-on-bgsave-error
     - 'no'
     - --dbfilename
@@ -736,8 +755,6 @@ shepherd_broker:
     - 'yes'
     - --timeout
     - '60'
-    - --save
-    - '60 1'
 
 shepherd_monitor:
   service:
