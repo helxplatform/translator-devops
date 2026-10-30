@@ -51,6 +51,22 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Resolve a component's deployed image tag from ncats-images-meta.yaml (keyed by
+component name, e.g. "arax"), falling back to the chart-wide .Values.shepherd.tag
+if the component has no entry there. Avoids duplicating per-component versions
+into the values files.
+Usage: {{ include "shepherd.imageTag" (dict "root" $ "component" "arax") }}
+*/}}
+{{- define "shepherd.imageTag" -}}
+{{- $meta := .root.Files.Get "ncats-images-meta.yaml" | fromYaml -}}
+{{- if and $meta (hasKey $meta .component) -}}
+{{- (index $meta .component).version -}}
+{{- else -}}
+{{- .root.Values.shepherd.tag -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Shared hash of the omnicorp loader source URLs.
 Rendered identically into the loader Job (as SOURCES_HASH env) and the worker
 Deployment (as a pod-template annotation), so a change to `sources`:

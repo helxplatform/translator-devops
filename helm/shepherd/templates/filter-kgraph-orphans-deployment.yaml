@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: '{{ .Chart.Name }}-filter-kgraph-orphans'
-          image: "{{ .Values.filter_kgraph_orphans.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.filter_kgraph_orphans.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "filter_kgraph_orphans") }}"
           imagePullPolicy: "{{ .Values.filter_kgraph_orphans.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

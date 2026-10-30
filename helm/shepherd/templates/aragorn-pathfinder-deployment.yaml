@@ -47,7 +47,7 @@ spec:
               mountPath: {{ .Values.embeddingsLoader.sharedData.mountPath }}
       containers:
         - name: {{ .Chart.Name }}-aragorn-pathfinder
-          image: "{{ .Values.aragorn_pathfinder.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.aragorn_pathfinder.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "aragorn_pathfinder") }}"
           imagePullPolicy: "{{ .Values.aragorn_pathfinder.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

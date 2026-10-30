@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-merge-message
-          image: "{{ .Values.merge_message.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.merge_message.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "merge_message") }}"
           imagePullPolicy: "{{ .Values.merge_message.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

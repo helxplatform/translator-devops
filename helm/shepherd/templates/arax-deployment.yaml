@@ -50,7 +50,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-arax
-          image: "{{ .Values.arax.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.arax.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "arax") }}"
           imagePullPolicy: "{{ .Values.arax.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
@@ -58,10 +58,12 @@ spec:
           env:
             - name: TASK_LIMIT
               value: "100"
+            {{- if .Values.araxLoader.enabled }}
             - name: ARAX_PATHFINDER_DBS_DIR
               value: "{{ .Values.araxLoader.sharedData.mountPath }}"
             - name: ARAX_DBS_DIR
               value: "/data/arax_dbs/arax_dbs"
+            {{- end }}
           command:
             - 'python'
           args:
@@ -72,17 +74,21 @@ spec:
           volumeMounts:
             - name: {{ include "shepherd.fullname" . }}-logs-pvc
               mountPath: /app/logs/
+            {{- if .Values.araxLoader.enabled }}
             # Shared sqlite data (read-only for the worker)
             - name: arax-data
               mountPath: {{ .Values.araxLoader.sharedData.mountPath }}
               readOnly: true
+            {{- end }}
       volumes:
         - name: {{ include "shepherd.fullname" . }}-logs-pvc
           persistentVolumeClaim:
             claimName: {{ include "shepherd.fullname" . }}-logs-pvc
+        {{- if .Values.araxLoader.enabled }}
         - name: arax-data
           persistentVolumeClaim:
             claimName: {{ include "shepherd.fullname" . }}-arax-data
+        {{- end }}
       {{- with .Values.shepherd.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
