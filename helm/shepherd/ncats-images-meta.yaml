@@ -15,7 +15,7 @@ aragorn_score:
   version: "v1.3.3"
 arax:
   image: "ghcr.io/biopack-team/shepherd/arax"
-  version: "v1.3.3"
+  version: "v1.2.2"
 arax_pathfinder:
   image: "ghcr.io/biopack-team/shepherd/arax_pathfinder"
   version: "v1.3.3"
