@@ -30,7 +30,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ars-premerge
-          image: "{{ .Values.ars_premerge.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.ars_premerge.image.repository }}:{{ .Values.ars_premerge.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.ars_premerge.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
