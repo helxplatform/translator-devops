@@ -1,66 +1,66 @@
 aragorn:
   image: "ghcr.io/biopack-team/shepherd/aragorn"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 aragorn_lookup:
   image: "ghcr.io/biopack-team/shepherd/aragorn_lookup"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 aragorn_pathfinder:
   image: "ghcr.io/biopack-team/shepherd/aragorn_pathfinder"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 aragorn_omnicorp:
   image: "ghcr.io/biopack-team/shepherd/aragorn_omnicorp"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 aragorn_score:
   image: "ghcr.io/biopack-team/shepherd/aragorn_score"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 arax:
   image: "ghcr.io/biopack-team/shepherd/arax"
-  tag: "v1.2.2"
+  version: "v1.2.2"
 arax_pathfinder:
   image: "ghcr.io/biopack-team/shepherd/arax_pathfinder"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 arax_rank:
   image: "ghcr.io/biopack-team/shepherd/arax_rank"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 bte:
   image: "ghcr.io/biopack-team/shepherd/bte"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 bte_lookup:
   image: "ghcr.io/biopack-team/shepherd/bte_lookup"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 filter_analyses_top_n:
   image: "ghcr.io/biopack-team/shepherd/filter_analyses_top_n"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 filter_kgraph_orphans:
   image: "ghcr.io/biopack-team/shepherd/filter_kgraph_orphans"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 filter_results_top_n:
   image: "ghcr.io/biopack-team/shepherd/filter_results_top_n"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 finish_query:
   image: "ghcr.io/biopack-team/shepherd/finish_query"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 merge_message:
   image: "ghcr.io/biopack-team/shepherd/merge_message"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 score_paths:
   image: "ghcr.io/biopack-team/shepherd/score_paths"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 shepherd_monitor:
   image: "ghcr.io/biopack-team/shepherd/monitor"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 shepherd_server:
   image: "ghcr.io/biopack-team/shepherd/shepherd_server"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 sipr:
   image: "ghcr.io/biopack-team/shepherd/sipr"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 sort_results_score:
   image: "ghcr.io/biopack-team/shepherd/sort_results_score"
-  tag: "v1.3.3"
+  version: "v1.3.3"
 postgres:
   image: "postgres"
-  tag: "17-bookworm"
+  version: "17-bookworm"
 redis:
   image: "redis/redis-stack-server"
-  tag: "7.2.0-v11"
+  version: "7.2.0-v11"
