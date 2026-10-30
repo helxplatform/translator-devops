@@ -30,7 +30,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ars-merge
-          image: "{{ .Values.ars_merge.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.ars_merge.image.repository }}:{{ .Values.ars_merge.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.ars_merge.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

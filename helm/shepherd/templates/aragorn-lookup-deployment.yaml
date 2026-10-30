@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-aragorn-lookup
-          image: "{{ .Values.aragorn_lookup.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.aragorn_lookup.image.repository }}:{{ .Values.aragorn_lookup.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.aragorn_lookup.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
