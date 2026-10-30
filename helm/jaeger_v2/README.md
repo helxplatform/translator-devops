@@ -148,6 +148,8 @@ Jaeger v2 receives traces via the OpenTelemetry Protocol (OTLP) and you can inst
 
 For apps in a different namespace, use the full service DNS name such as `http://jaeger.<jaeger-namespace>.svc.cluster.local:4317` or just `http://jaeger.<jaeger-namespace>`. However, cross-namespace traffic may be subject to NetworkPolicy restrictions in the k8s cluster. If a NetworkPolicy exists on the jaeger namespace restricting ingress access from other namespaces, you'd need to add a rule allowing traffic from the app's namespace on port 4317 or 4318. 
 
+Apps configured for the v1 deployment send OTLP to `http://jaeger-otel-collector[.<namespace>]:4317`. To avoid changing every app at once, `jaeger-values.yaml` creates a transitional `jaeger-otel-collector` Service (via `extraObjects`) that exposes only the OTLP ports (4317/4318) of the v2 all-in-one pod. When we migrate them all to point to `http://jaeger` we can remove the alias.
+
 ## Future Scalability Considerations
 
 The current deployment is a single-node all-in-one setup suitable for small to medium workloads. The following changes should be considered as trace volume grows:

@@ -131,3 +131,31 @@ securityContext:
   runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
+
+# Transitional alias: apps configured for Jaeger v1 send OTLP to jaeger-otel-collector.
+# This Service points that name at the v2 all-in-one pod so they keep working during cutover.
+# Remove once all apps point at the "jaeger" service.
+extraObjects:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: jaeger-otel-collector
+      labels:
+        app.kubernetes.io/name: jaeger
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        app.kubernetes.io/component: otlp-alias
+    spec:
+      type: ClusterIP
+      selector:
+        app.kubernetes.io/name: jaeger
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        app.kubernetes.io/component: all-in-one
+      ports:
+        - name: otlp-grpc
+          port: 4317
+          targetPort: 4317
+          appProtocol: grpc
+        - name: otlp-http
+          port: 4318
+          targetPort: 4318
+          appProtocol: http
