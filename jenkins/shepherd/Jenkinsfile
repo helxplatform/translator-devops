@@ -42,8 +42,8 @@ pipeline {
             steps{
                script {
                     def imageMeta = readYaml file: 'helm/shepherd/ncats-images-meta.yaml'
-                    env.BUILD_VERSION = imageMeta.shepherd_server.tag
-                    currentBuild.displayName = imageMeta.shepherd_server.tag
+                    env.BUILD_VERSION = imageMeta.shepherd_server.version
+                    currentBuild.displayName = imageMeta.shepherd_server.version
               }
            }
         }
@@ -92,7 +92,7 @@ pipeline {
                         
                         images.each { imageName ->
                             def sourceImage = imageMeta[imageName].image
-                            def version = imageMeta[imageName].tag
+                            def version = imageMeta[imageName].version
                             // Remove shepherd_ prefix if present, then add translator-shepherd- prefix
                             def cleanName = imageName.replaceFirst('^shepherd_', '')
                             def targetImageName = "translator-shepherd-${cleanName.replace('_', '-')}"
