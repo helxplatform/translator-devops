@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-filter-results-top-n
-          image: "{{ .Values.filter_results_top_n.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.filter_results_top_n.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "filter_results_top_n") }}"
           imagePullPolicy: "{{ .Values.filter_results_top_n.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

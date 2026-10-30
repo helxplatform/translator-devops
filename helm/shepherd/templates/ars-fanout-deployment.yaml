@@ -30,7 +30,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ars-fanout
-          image: "{{ .Values.ars_fanout.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.ars_fanout.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "ars_fanout") }}"
           imagePullPolicy: "{{ .Values.ars_fanout.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

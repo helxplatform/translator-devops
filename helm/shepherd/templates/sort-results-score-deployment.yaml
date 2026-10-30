@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-sort-results-score
-          image: "{{ .Values.sort_results_score.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.sort_results_score.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "sort_results_score") }}"
           imagePullPolicy: "{{ .Values.sort_results_score.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-sipr
-          image: "{{ .Values.sipr.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.sipr.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "sipr") }}"
           imagePullPolicy: "{{ .Values.sipr.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

@@ -30,7 +30,7 @@ spec:
       containers:
 
         - name: {{ .Chart.Name }}-server
-          image: "{{ .Values.shepherd_server.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.shepherd_server.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "shepherd_server") }}"
           imagePullPolicy: "{{ .Values.shepherd_server.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

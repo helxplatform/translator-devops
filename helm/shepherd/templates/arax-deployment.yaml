@@ -50,7 +50,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-arax
-          image: "{{ .Values.arax.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.arax.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "arax") }}"
           imagePullPolicy: "{{ .Values.arax.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

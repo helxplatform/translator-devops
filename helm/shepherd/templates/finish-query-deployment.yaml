@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-finish-query
-          image: "{{ .Values.finish_query.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.finish_query.image.repository }}:{{ include "shepherd.imageTag" (dict "root" $ "component" "finish_query") }}"
           imagePullPolicy: "{{ .Values.finish_query.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
