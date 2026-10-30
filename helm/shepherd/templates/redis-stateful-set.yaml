@@ -37,15 +37,15 @@ spec:
               name: {{ include "shepherd.fullname" . }}-broker-data-volume
           resources:
             {{ toYaml .Values.shepherd_broker.resources | nindent 12 }}
-      {{- with .Values.shepherd_broker.nodeSelector }}
+      {{- with .Values.shepherd.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.shepherd_broker.affinity }}
+      {{- with .Values.shepherd.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.shepherd_broker.tolerations }}
+      {{- with .Values.shepherd.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
