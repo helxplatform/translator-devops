@@ -366,8 +366,8 @@ embeddingsLoader:
     size: 60Gi
   resources:
     requests:
-      memory: 512Mi
-      cpu: 500m
+      memory: 1Gi
+      cpu: 1000m
     limits:
       memory: 1Gi
       cpu: 1000m
