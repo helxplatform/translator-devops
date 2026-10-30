@@ -137,7 +137,7 @@ aragorn_pathfinder:
     targetMemory: 75
   resources:
     requests:
-      memory: 3Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
       memory: 5Gi
