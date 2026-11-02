@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-aragorn
-          image: "{{ .Values.aragorn.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.aragorn.image.repository }}:{{ .Values.aragorn.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.aragorn.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

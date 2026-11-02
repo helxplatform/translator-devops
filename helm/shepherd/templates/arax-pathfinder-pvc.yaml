@@ -1,0 +1,19 @@
+{{- if .Values.araxPathfinderLoader.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "shepherd.fullname" . }}-arax-pathfinder-data
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    {{- toYaml .Values.araxPathfinderLoader.persistentVolume.accessModes | nindent 4 }}
+  {{- if .Values.araxPathfinderLoader.persistentVolume.storageClassName }}
+  storageClassName: {{ .Values.araxPathfinderLoader.persistentVolume.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.araxPathfinderLoader.persistentVolume.size }}
+{{- end }}
