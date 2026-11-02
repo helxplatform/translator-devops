@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-bte-lookup
-          image: "{{ .Values.bte_lookup.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.bte_lookup.image.repository }}:{{ .Values.bte_lookup.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.bte_lookup.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
