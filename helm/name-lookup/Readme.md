@@ -73,8 +73,8 @@ from a GitHub repository. Once Solr database restoration is
 complete, the restore script will use the blocklist to remove CURIEs
 that may be problematic for any number of reasons.
 
-If the blocklist is in a private GitHub repository, you will also need
-to create a [GitHub Personal Access Token] and include that in one of
+You will also need to create a [GitHub Personal Access Token] (the chart
+refuses to render with `blocklist.url` set and no token) and include that in one of
 the encrypted values-populated files in this directory -- look at 
 `values-populated.yaml` for an example of what this looks like. The Personal
 Access Token should be stored in `blocklist.secrets.github_personal_access_token`.
