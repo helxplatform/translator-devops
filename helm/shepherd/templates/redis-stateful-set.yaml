@@ -32,6 +32,12 @@ spec:
             {{- range .Values.shepherd_broker.args }}
             - {{ . | quote }}
             {{- end }}
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
           volumeMounts:
             - mountPath: {{ .Values.shepherd_broker.dbPath }}
               name: {{ include "shepherd.fullname" . }}-broker-data-volume
