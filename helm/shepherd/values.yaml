@@ -724,7 +724,7 @@ shepherd_broker:
     - --dir
     - '/data'                        # the fix: snapshot + AOF on the PVC, not ephemeral storage
     - --maxmemory
-    - '10gb'
+    - '8gb'
     - --maxmemory-policy
     - 'volatile-ttl'
     - --maxmemory-clients
@@ -732,7 +732,7 @@ shepherd_broker:
     - --loglevel
     - 'notice'
     - --logfile
-    - '/data/shepherd_broker.log'
+    - ''
     - --appendonly
     - 'yes'
     - --appendfsync
@@ -744,7 +744,7 @@ shepherd_broker:
     - --auto-aof-rewrite-min-size
     - '1gb'
     - --save
-    - '3600 1'                       # was '60 1'; snapshot is now just a backup
+    - ''                       # was '60 1'; snapshot is now just a backup
     - --stop-writes-on-bgsave-error
     - 'no'
     - --dbfilename
