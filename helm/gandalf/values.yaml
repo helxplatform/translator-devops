@@ -25,6 +25,7 @@ gandalf_queue:
       cpu: "2000m"
       memory: "5Gi"
   pvcSize: 5Gi
+  maxmemory: 3gb   # about 75% of resources.limits.memory
   dbPath: /data
 
 image:

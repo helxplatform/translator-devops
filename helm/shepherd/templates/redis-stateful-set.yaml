@@ -52,15 +52,15 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 6
-      {{- with .Values.shepherd_broker.nodeSelector }}
+      {{- with .Values.shepherd.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.shepherd_broker.affinity }}
+      {{- with .Values.shepherd.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.shepherd_broker.tolerations }}
+      {{- with .Values.shepherd.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
