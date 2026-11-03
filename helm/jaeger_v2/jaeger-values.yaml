@@ -2,14 +2,12 @@
 
 storage:
   type: elasticsearch
-
-# Used by maintenance CronJobs (esIndexCleaner, esRollover)
-elasticsearch:
-  url: "https://elasticsearch-master:9200"
-  usePassword: true
-  username: "elastic"
-  existingSecret: jaeger-es-credentials
-  existingSecretKey: ES_PASSWORD
+  # Only used by the ES maintenance CronJobs (esIndexCleaner, esRollover).
+  # Jaeger itself reads its ES settings from userconfig below.
+  # The password comes from the jaeger-es-credentials secret via esIndexCleaner.extraEnv.
+  elasticsearch:
+    url: "https://jaeger-es-master:9200"
+    user: "elastic"
 
 userconfig:
   extensions:
@@ -18,9 +16,13 @@ userconfig:
         some_storage:
           elasticsearch:
             server_urls:
-              - "https://elasticsearch-master:9200"
+              - "https://jaeger-es-master:9200"
             tls:
               insecure_skip_verify: true    # skip self-signed cert validation
+            auth:
+              basic:
+                username: "elastic"
+                password: "${env:ES_PASSWORD}"   # from jaeger.extraEnv (jaeger-es-credentials secret)
             indices:
               index_prefix: "jaeger"
               spans:
@@ -43,7 +45,7 @@ userconfig:
                 rollover_frequency: "day"
                 shards: 1
                 replicas: 0
-    
+
     jaeger_query:
       storage:
         traces: some_storage
@@ -60,7 +62,7 @@ userconfig:
           endpoint: "0.0.0.0:4317"
         http:
           endpoint: "0.0.0.0:4318"
-  
+
   processors:
     batch:
 
@@ -96,6 +98,12 @@ userconfig:
         level: info
 
 jaeger:
+  extraEnv:
+    - name: ES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: jaeger-es-credentials
+          key: password
   ingress:
     enabled: true
     ingressClassName: nginx
@@ -103,7 +111,7 @@ jaeger:
       cert-manager.io/cluster-issuer: letsencrypt
     labels:
       app: jaeger
-      version: "2.17.0" 
+      version: "2.22.0"
     hosts:
       - translator-otel-dev.apps.renci.org
     tls:
@@ -115,8 +123,18 @@ jaeger:
 # Index cleaner CronJob — prunes indices older than N days
 esIndexCleaner:
   enabled: true
-  numberOfDays: 7
+  numberOfDays: 14
   schedule: "55 23 * * *"
+  extraEnv:
+    - name: ES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: jaeger-es-credentials
+          key: password
+  cmdlineParams:
+    es.tls.enabled:
+    es.tls.skip-host-verify:    # self-signed ES cert, same as insecure_skip_verify in userconfig
+    index-prefix: "jaeger"      # must match userconfig index_prefix
 
 # Comply with org's seccomp policy (same pattern that worked for ES)
 podSecurityContext:

@@ -4,8 +4,9 @@ This folder contains Helm values files to deploy [Jaeger v2](https://www.jaegert
 
 ## Overview
 
-- **Jaeger chart version**: `4.7.0`
-- **Jaeger app version**: `2.17.0`
+- **Jaeger chart version**: `4.16.1`
+- **Jaeger app version**: `2.22.0`
+- **Elasticsearch chart version**: `8.5.1` (latest published `elastic/elasticsearch` chart)
 - **Storage backend**: Elasticsearch (persistent single-node for now, but can be enhanced with more shards/nodes for scalability as needed)
 - **Architecture**: All-in-one (Collector + Query + UI in a single pod)
 - **Trace ingestion**: OTLP gRPC (port 4317) and OTLP HTTP (port 4318)
@@ -35,89 +36,61 @@ helm repo add elastic https://helm.elastic.co
 helm repo update
 ```
 
-### Step 2 — Deploy Elasticsearch
+### Step 2 — Create the Elasticsearch credentials secret
 
-```bash
-helm install elasticsearch elastic/elasticsearch \
-  -n <your-namespace> \
-  -f elasticsearch-values.yaml
-```
-
-Wait for Elasticsearch to be ready before proceeding:
-
-```bash
-kubectl -n <your-namespace> rollout status statefulset/elasticsearch-master --timeout=5m
-```
-
-### Step 3 — Retrieve the Elasticsearch password and create the Jaeger secret
-
-The Elasticsearch chart auto-generates a password on install and stores it in a Kubernetes secret. Retrieve the password:
-
-```bash
-kubectl get secret -n <your-namespace> elasticsearch-master-credentials \
-  -o jsonpath='{.data.password}' | base64 -d
-```
-
-Save this password — you will need it in Steps 4 and 5.
-
-Verify Elasticsearch is healthy using the retrieved password: 
-
-```bash kubectl exec -n  elasticsearch-master-0 -- \  curl -sk "https://localhost:9200/_cat/health?v" \  -u elastic:<retrieved_password>```
-
-Create the Kubernetes secret that Jaeger will use to authenticate with Elasticsearch:
+Elasticsearch, Jaeger, and the index cleaner CronJob all read the `elastic` user's password from a single secret, `jaeger-es-credentials`. Create it once with a random password; nobody needs to see or type it:
 
 ```bash
 kubectl create secret generic jaeger-es-credentials \
   -n <your-namespace> \
-  --from-literal=ES_PASSWORD=<retrieved_password>
+  --from-literal=password="$(openssl rand -base64 24)"
 ```
 
-### Step 4 — Create `jaeger-secret-values.yaml`
+The secret is created by hand rather than by the Elasticsearch chart because the chart regenerates its password on every `helm upgrade`, which would break Jaeger's access. Don't delete this secret.
 
- Create a local file `jaeger-secret-values.yaml` as shown below with the Elasticsearch password. **Do not check this file into github.** 
+### Step 3 — Deploy Elasticsearch
 
-```
-# jaeger-secret-values.yaml — local only, never commit
-userconfig:
-  extensions:
-    jaeger_storage:
-      backends:
-        some_storage:
-          elasticsearch:
-            auth:
-              basic:
-                username: "elastic"
-                password: "retrieved_password"
+```bash
+helm install jaeger-es elastic/elasticsearch \
+  --version 8.5.1 \
+  -n <your-namespace> \
+  -f elasticsearch-values.yaml
 ```
 
-Add it to `.gitignore` to make sure it is not checked into github.
+Wait for Elasticsearch to be ready, then check its health. The password is read from the pod's environment, so it never leaves the cluster:
 
-### Step 5 — Update `jaeger-values.yaml`
+```bash
+kubectl -n <your-namespace> rollout status statefulset/jaeger-es-master --timeout=5m
+
+kubectl exec -n <your-namespace> jaeger-es-master-0 -- \
+  sh -c 'curl -sk -u "elastic:$ELASTIC_PASSWORD" "https://localhost:9200/_cat/health?v"'
+```
+
+### Step 4 — Update `jaeger-values.yaml`
 
 Before deploying Jaeger, update `jaeger-values.yaml` as needed. Specifically:
 
 - Update `hosts` and `tls` `hosts` and `secretName` for the Jaeger UI ingress to fit your deployment. Note that the TLS secret name typically matches the hostname, e.g. `jaeger.apps.your-org.com-tls` for `hosts` of `jaeger.apps.your-org.com`.
-- As currently configured, a CronJob (`jaeger-es-index-cleaner`) runs nightly at 23:55 and deletes Elasticsearch indices older than 7 days. Adjust `esIndexCleaner.numberOfDays` in `jaeger-values.yaml` to change retention as needed.
+- As currently configured, a CronJob (`jaeger-es-index-cleaner`) runs nightly at 23:55 and deletes Elasticsearch indices older than 14 days. Adjust `esIndexCleaner.numberOfDays` in `jaeger-values.yaml` to change retention as needed.
 
-### Step 6 — Deploy Jaeger
+### Step 5 — Deploy Jaeger
 
 ```bash
 helm install jaeger jaegertracing/jaeger \
-  --version 4.7.0 \
+  --version 4.16.1 \
   -n <your-namespace> \
-  -f jaeger-values.yaml \
-  -f jaeger-secret-values.yaml
+  -f jaeger-values.yaml
 ```
 
-### Step 7 — Verify the deployment and access the Jaeger UI
+### Step 6 — Verify the deployment and access the Jaeger UI
 
 ```bash
 # All pods should be Running
-kubectl get pods -n <your-namespace> | grep -E "elasticsearch|jaeger"
+kubectl get pods -n <your-namespace> | grep jaeger
 
 # ES indices appear after first traces are ingested
-kubectl exec -n <your-namespace> elasticsearch-master-0 -- \
-  curl -sk "https://localhost:9200/_cat/indices?v" -u elastic:<retrieved_password> | grep jaeger
+kubectl exec -n <your-namespace> jaeger-es-master-0 -- \
+  sh -c 'curl -sk -u "elastic:$ELASTIC_PASSWORD" "https://localhost:9200/_cat/indices?v"' | grep jaeger
 ```
 
 Access the Jaeger UI by going to `https://<your-hostname-set-up-in-ingress>` on your browser.
@@ -128,16 +101,16 @@ To upgrade Jaeger after changing values:
 
 ```bash
 helm upgrade jaeger jaegertracing/jaeger \
-  --version 4.7.0 \
+  --version 4.16.1 \
   -n <your-namespace> \
-  -f jaeger-values.yaml \
-  -f jaeger-secret-values.yaml
+  -f jaeger-values.yaml
 ```
 
 To upgrade Elasticsearch:
 
 ```bash
-helm upgrade elasticsearch elastic/elasticsearch \
+helm upgrade jaeger-es elastic/elasticsearch \
+  --version 8.5.1 \
   -n <your-namespace> \
   -f elasticsearch-values.yaml
 ```
@@ -179,7 +152,7 @@ Jaeger supports a secondary long-term archive storage backend for traces you wan
        traces: some_storage
        traces_archive: archive_store
    ```
-3. Users can then click "Archive Trace" in the Jaeger UI on any individual trace to preserve it permanently beyond the 7-day cleanup window.
+3. Users can then click "Archive Trace" in the Jaeger UI on any individual trace to preserve it permanently beyond the 14-day cleanup window.
 
 ### Authentication for Jaeger UI
 
