@@ -1,10 +1,10 @@
 app:
   neo4j:
-    dataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.2/RobokopKG_1.0.2.db.dump
+    dataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.3/RobokopKG_1.0.3.db.dump
   memgraph:
     dataUrl:
-graphMetadataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.2/graph-metadata.json
-schemaUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.2/schema.json
-metadataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.2/qc-results.json
-metaKGUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.2/meta_knowledge_graph.json
-testingDataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.2/testing_data.json
+graphMetadataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.3/graph-metadata.json
+schemaUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.3/schema.json
+metadataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.3/qc-results.json
+metaKGUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.3/meta_knowledge_graph.json
+testingDataUrl: https://robokop.renci.org/graphs/RobokopKG/1.0.3/testing_data.json
