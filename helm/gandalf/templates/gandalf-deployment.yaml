@@ -4,6 +4,7 @@ metadata:
   name: {{ include "gandalf.fullname" . }}-gandalf
   labels:
     {{- include "gandalf.labels" . | nindent 4 }}
+    service-type: server
 spec:
   {{- if not .Values.app.gandalf.autoscaling.enabled }}
   replicas: {{ .Values.app.gandalf.replicaCount }}
@@ -11,15 +12,20 @@ spec:
   selector:
     matchLabels:
       {{- include "gandalf.selectorLabels" . | nindent 6 }}
+      service-type: server
   template:
     metadata:
       labels:
         {{- include "gandalf.selectorLabels" . | nindent 8 }}
+        service-type: server
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         # Rolls the worker whenever the loader's source URLs change, so new pods
         # re-run the init container and open the freshly-loaded data.
         checksum/gandalf-sources: {{ include "gandalf.sourcesHash" . }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "6429"
+        prometheus.io/path: /metrics
     spec:
       {{- with .Values.securityContext }}
       securityContext:
@@ -87,6 +93,16 @@ spec:
             - name: {{ include "gandalf.fullname" . }}-data
               mountPath: {{ .Values.app.gandalf.sharedData.mountPath }}
               readOnly: true
+          readinessProbe:
+            httpGet: {path: /ready, port: http}
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: {path: /health, port: http}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 10
+            failureThreshold: 6
       volumes:
         # Shared graph data volume (mmap + LMDB files)
         - name: {{ include "gandalf.fullname" . }}-data

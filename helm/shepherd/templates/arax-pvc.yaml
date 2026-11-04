@@ -1,0 +1,19 @@
+{{- if .Values.araxLoader.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "shepherd.fullname" . }}-arax-data
+  labels:
+    {{- include "shepherd.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    {{- toYaml .Values.araxLoader.persistentVolume.accessModes | nindent 4 }}
+  {{- if .Values.araxLoader.persistentVolume.storageClassName }}
+  storageClassName: {{ .Values.araxLoader.persistentVolume.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.araxLoader.persistentVolume.size }}
+{{- end }}
