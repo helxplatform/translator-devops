@@ -117,9 +117,12 @@ prefixed `<release>-name-lookup-`.
    can wipe and reload the index without you deciding to. The Solr pod restarts once
    because its template changed.
 
-   Keep `--set dataUrl=''` on every subsequent upgrade. Forgetting it is not fatal: the
-   init container records which URL it extracted, so a matching `dataUrl` skips the
-   download, but the Solr pod will restart.
+   Keep `--set dataUrl=''` on every subsequent upgrade. If you forget it, the init
+   container comes back and compares the configured `dataUrl` with the URL it recorded
+   when it extracted the index. If they match, it skips the download and the Solr pod only
+   restarts. If they differ, for example because `values.yaml` or the environment file has
+   since moved on to a newer Babel release, it **deletes the index and downloads the new
+   one**, and NameRes is down for the whole reload.
 
 ## Upgrading
 
