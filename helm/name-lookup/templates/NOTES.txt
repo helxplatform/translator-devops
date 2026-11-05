@@ -1,3 +1,21 @@
-If there are data changes please set .Values.dataUrl.
-Once Restore job finishes please issue helm upgrade with --set dataUrl to empty string to disable init containers.
-This will ensure that the init container doesn't cleanup the data dir if / when the solr pod restarts.
+NameRes {{ .Chart.AppVersion }} installed as release {{ .Release.Name }} in {{ .Release.Namespace }}.
+{{- if .Values.dataUrl }}
+
+The Solr pod is downloading and extracting
+  {{ .Values.dataUrl }}
+This is a ~110Gi index, so it takes a while. Follow it with:
+  kubectl -n {{ .Release.Namespace }} logs -f {{ include "name-lookup.fullname" . }}-solr-dep-0 -c {{ .Chart.Name }}-download-backup
+  kubectl -n {{ .Release.Namespace }} logs -f job/{{ include "name-lookup.fullname" . }}-restore-job
+
+Then check /status (numDocs, babel_version, nameres_version):
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "name-lookup.fullname" . }}-web-svc 2433:2433
+  curl -s localhost:2433/status
+
+Once it looks right, lock the data in place so a later upgrade cannot reload it
+(same -f files as this install):
+  helm upgrade -n {{ .Release.Namespace }} -f ... --set dataUrl='' {{ .Release.Name }} .
+{{- else }}
+
+dataUrl is empty: the existing Solr index is left untouched. To load a new
+release, set dataUrl and data.* and upgrade (see Readme.md).
+{{- end }}

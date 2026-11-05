@@ -1,6 +1,6 @@
 apiVersion: v2
 name: name-lookup
-description: A Helm chart for Kubernetes
+description: NameRes (Name Resolution) web API plus an Apache Solr index of Babel synonyms, loaded from a prebuilt Solr backup
 
 # A chart can be either an 'application' or a 'library' chart.
 #
