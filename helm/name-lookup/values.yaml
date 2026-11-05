@@ -189,6 +189,11 @@ ingress:
 blocklist:
   # The URL from where to download the blocklist. This should be a simple text file, where each line contains a CURIE.
   # (If this field is blank, all blocklist functionality will be turned off.)
+  #
+  # Every environment, RENCI and ITRB alike, gets this URL and the token below from
+  # values-populated.yaml, so that they all read the same blocklist and share one token
+  # rotation. Don't override the URL in an environment values file: pointing one instance at
+  # a branch of the Blocklists repository meant it silently deleted a different set of CURIEs.
   url:
   # If a GitHub Personal Access Token is necessary to download the above file, it should be set
   # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also

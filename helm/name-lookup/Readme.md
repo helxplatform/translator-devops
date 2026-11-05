@@ -34,11 +34,11 @@ Values files are layered with repeated `-f` flags; later files override earlier 
 | File | Use |
 | --- | --- |
 | `values.yaml` | Defaults. Heavily commented: read it before changing memory, heap, GC or storage. |
-| `values-populated.yaml` | Shared secrets: the blocklist URL and the GitHub token that reads it. Encrypted. Always include it for a RENCI install. |
+| `values-populated.yaml` | The blocklist URL and the GitHub token that reads it. Encrypted. Every environment, RENCI and ITRB, layers this file: it is the only place the blocklist is configured, so all instances read the same list and share one token rotation. |
 | `renci-dev-values-populated.yaml` | RENCI Dev (name-resolution-sri.renci.org). Encrypted. |
 | `renci-exp-values-populated.yaml` | RENCI Exp (name-resolution-exp.apps.renci.org). Encrypted. |
 | `robokop-values-populated.yaml` | ROBOKOP instance: layer it on top of the RENCI Exp file (see the comment at the top of the file). |
-| `ncats-dev-values.yaml`, `ncats-test-values.yaml`, `ncats-prod-values.yaml` | ITRB environments. Encrypted. The ITRB pipeline substitutes `DOCKER_IMAGE_VERSION` from `ncats-images-meta.yaml` (see `../../ITRB-Pattern.md`). `ncats-dev` turns the blocklist on, so that deployment must also supply the token, or the chart refuses to render. |
+| `ncats-dev-values.yaml`, `ncats-test-values.yaml`, `ncats-prod-values.yaml` | ITRB environments. Encrypted. The ITRB pipeline substitutes `DOCKER_IMAGE_VERSION` from `ncats-images-meta.yaml` (see `../../ITRB-Pattern.md`). |
 | `ncats-images-meta.yaml` | Image names and versions for ITRB. Bump it with every release. |
 
 ## Values you will actually set
@@ -150,8 +150,9 @@ The blocklist is a text file with one CURIE per line, read from `blocklist.url`.
 Translator blocklist lives in the private repository NCATSTranslator/Blocklists, so the
 chart always needs a GitHub personal access token with read access to it in
 `blocklist.secrets.github_personal_access_token`, and refuses to render when
-`blocklist.url` is set without one. Put the token in an encrypted values file
-(`values-populated.yaml` has it for RENCI) or create the secret by hand:
+`blocklist.url` is set without one. Both the URL and the token live in the encrypted
+`values-populated.yaml`, which every environment layers; don't override the URL per
+environment. For an instance outside this repository, create the secret by hand:
 
 ```shell
 kubectl -n translator-exp create secret generic name-lookup-secrets --from-literal=github_personal_access_token=github_pat_...
