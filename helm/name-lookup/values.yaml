@@ -175,7 +175,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 ingress:
-  # No ingress by default: the environment values files turn it on and set host/class/tls.
+  # No ingress by default. The RENCI values files turn it on and set host/class/tls (the
+  # robokop/yobokop files inherit that from renci-exp). The ITRB files set host/class but
+  # leave it off, so the chart creates no Ingress there.
   enabled: false
   tls:
     enabled: false

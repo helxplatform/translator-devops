@@ -37,7 +37,8 @@ Values files are layered with repeated `-f` flags; later files override earlier 
 | `values-populated.yaml` | The blocklist URL and the GitHub token that reads it. Encrypted. Every environment, RENCI and ITRB, layers this file: it is the only place the blocklist is configured, so all instances read the same list and share one token rotation. |
 | `renci-dev-values-populated.yaml` | RENCI Dev (name-resolution-sri.renci.org). Encrypted. |
 | `renci-exp-values-populated.yaml` | RENCI Exp (name-resolution-exp.apps.renci.org). Encrypted. |
-| `robokop-values-populated.yaml` | ROBOKOP instance: layer it on top of the RENCI Exp file (see the comment at the top of the file). |
+| `robokop-values-populated.yaml` | ROBOKOP instance (release `name-lookup` in `robokop-u24`): layer it on top of the RENCI Exp file (see the comment at the top of the file). **Not encrypted**: never put a secret here. |
+| `yobokop-values-populated.yaml` | yobokop instance (release `yobokop-name-lookup` in `robokop-u24`), layered the same way. **Not encrypted**. |
 | `ncats-dev-values.yaml`, `ncats-test-values.yaml`, `ncats-prod-values.yaml` | ITRB environments. Encrypted. The ITRB pipeline substitutes `DOCKER_IMAGE_VERSION` from `ncats-images-meta.yaml` (see `../../ITRB-Pattern.md`). |
 | `ncats-images-meta.yaml` | Image names and versions for ITRB. Bump it with every release. |
 
@@ -62,8 +63,9 @@ Everything else has a sensible default and a comment in `values.yaml`.
 
 Example for RENCI Exp; substitute your namespace and values files. Release name
 `name-lookup` gives the resource names used below (`name-lookup-solr-dep-0`,
-`name-lookup-restore-job`, `name-lookup-web-svc`). With another release name they are
-prefixed `<release>-name-lookup-`.
+`name-lookup-restore-job`, `name-lookup-web-svc`). A release name that contains
+`name-lookup` is used as the prefix as is (`yobokop-name-lookup` gives
+`yobokop-name-lookup-solr-dep-0`). Any other release name gets `<release>-name-lookup-`.
 
 1. Install with `dataUrl` set. The environment values files already set it to the
    current release; to load something else, override it:
@@ -102,8 +104,9 @@ prefixed `<release>-name-lookup-`.
    curl -s 'localhost:2433/lookup?string=oxycodone&limit=3'
    ```
 
-   `helm test -n translator-exp name-lookup` does the same `/status` check from
-   inside the cluster.
+   `helm test -n translator-exp name-lookup` only checks that `/status` answers from
+   inside the cluster. It doesn't look at `numDocs` or the versions, so it isn't a
+   replacement for the `curl` check above.
 
 5. **Lock the data in place.** Run the same command as `helm upgrade` with `dataUrl`
    cleared:
