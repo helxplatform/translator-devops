@@ -155,11 +155,11 @@ chart always needs a GitHub personal access token with read access to it in
 `blocklist.secrets.github_personal_access_token`, and refuses to render when
 `blocklist.url` is set without one. Both the URL and the token live in the encrypted
 `values-populated.yaml`, which every environment layers; don't override the URL per
-environment. For an instance outside this repository, create the secret by hand:
-
-```shell
-kubectl -n translator-exp create secret generic name-lookup-secrets --from-literal=github_personal_access_token=github_pat_...
-```
+environment. For an instance outside this repository, put both in a values file of your
+own that is kept out of git (or encrypted). The chart creates the `<fullname>-secrets`
+Secret from the token and gives it to the restore Job. Don't create that Secret by hand:
+the chart only reads the token from values, and a hand-made Secret with that name makes
+`helm install` fail.
 
 Leave `blocklist.url` empty to turn the blocklist off.
 

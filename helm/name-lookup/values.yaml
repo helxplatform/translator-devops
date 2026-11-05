@@ -196,9 +196,9 @@ blocklist:
   # a branch of the Blocklists repository meant it silently deleted a different set of CURIEs.
   url:
   # If a GitHub Personal Access Token is necessary to download the above file, it should be set
-  # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also
-  # set this on Kubernetes by running:
-  #   kubectl -n $NAMESPACE create secret generic {{name-lookup.fullname}}-secrets --from-literal=github_personal_access_token=github_pat_...
+  # in `blocklist.secrets.github_personal_access_token` in an encrypted file. The chart creates
+  # the <fullname>-secrets Secret from it; a Secret created by hand is never read, and one with
+  # that name makes `helm install` fail.
   #
   # Declared here (rather than left unset) so the key always exists: templates reference it
   # directly, and an undefined `secrets` map made rendering die with an unhelpful
