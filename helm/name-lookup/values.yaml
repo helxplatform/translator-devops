@@ -14,6 +14,10 @@ webServer:
   image:
     repository: ghcr.io/ncatstranslator/nameresolution
     tag: v1.7.0
+  # Public URL of this instance (e.g. https://name-resolution-sri.renci.org), exported to the
+  # web server as SERVER_ROOT so that the OpenAPI docs point at the right server. Each
+  # environment values file sets this to match its ingress.host.
+  serverHostName: ""
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2026jul22/nameres/snapshot.backup.tar.gz"
 forceRun: false
@@ -171,6 +175,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 ingress:
+  # No ingress by default: the environment values files turn it on and set host/class/tls.
+  enabled: false
+  tls:
+    enabled: false
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
