@@ -18,4 +18,10 @@ Once it looks right, lock the data in place so a later upgrade cannot reload it
 
 dataUrl is empty: the existing Solr index is left untouched. To load a new
 release, set dataUrl and data.* and upgrade (see Readme.md).
+{{- if .Values.forceRun }}
+
+forceRun is set, so the restore Job is deleting blocklisted CURIEs from the
+existing index. Follow it with:
+  kubectl -n {{ .Release.Namespace }} logs -f job/{{ include "name-lookup.fullname" . }}-restore-job
+{{- end }}
 {{- end }}
