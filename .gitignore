@@ -2,3 +2,4 @@
 .idea
 /helm/Values/
 monitoring/reports/
+helm/jaeger_v2/jaeger-secret-values.yaml
