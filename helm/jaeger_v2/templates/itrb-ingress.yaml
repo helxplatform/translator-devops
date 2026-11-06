@@ -1,0 +1,34 @@
+{{- /*
+ALB ingress for the NCATS ITRB clusters, routing to the Jaeger UI. The upstream chart's
+ingress can't express the ALB ssl-redirect action path, so it is defined here instead.
+*/ -}}
+{{- if .Values.itrb.ingress.enabled }}
+{{- /* Same name the jaeger subchart gives its Service (its "jaeger.fullname" helper). */ -}}
+{{- $name := .Values.jaeger.nameOverride | default "jaeger" }}
+{{- $jaegerName := .Values.jaeger.fullnameOverride | default (ternary .Release.Name (printf "%s-%s" .Release.Name $name) (contains $name .Release.Name)) | trunc 63 | trimSuffix "-" }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $jaegerName }}-itrb
+  annotations:
+    {{- toYaml .Values.itrb.ingress.annotations | nindent 4 }}
+spec:
+  rules:
+    - host: {{ required "itrb.ingress.host is required when itrb.ingress.enabled is true" .Values.itrb.ingress.host }}
+      http:
+        paths:
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: ssl-redirect
+                port:
+                  name: use-annotation
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $jaegerName }}
+                port:
+                  name: http-query
+{{- end }}

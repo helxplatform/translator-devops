@@ -1,0 +1,9 @@
+dependencies:
+- name: jaeger
+  repository: https://jaegertracing.github.io/helm-charts
+  version: 4.16.1
+- name: opensearch
+  repository: https://opensearch-project.github.io/helm-charts
+  version: 3.9.0
+digest: sha256:6145366f2dd7d4c3dd5228df432f92d5dc4cb13572bd1c19af498737c7e75bf0
+generated: "2026-11-06T15:42:14.087118-05:00"

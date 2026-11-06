@@ -1,0 +1,36 @@
+# Deploys the jaeger_v2 chart in this directory to one of the environments below.
+#
+#   helmfile -e <environment> diff     # preview changes
+#   helmfile -e <environment> apply    # deploy
+#
+# Each environment uses values.yaml plus values-<environment>.yaml.
+# Upstream chart versions are pinned in Chart.yaml / Chart.lock, not here.
+# Running without -e fails on purpose, so nothing is deployed to an unintended place.
+
+environments:
+  dev:                    # RENCI (Sterling)
+    values:
+      - namespace: "translator-dev"
+  ci:                     # NCATS ITRB CI
+    values:
+      - namespace: ""     # TODO: ITRB CI namespace
+  test:                   # NCATS ITRB test
+    values:
+      - namespace: ""     # TODO: ITRB test namespace
+  prod:                   # NCATS ITRB prod
+    values:
+      - namespace: ""     # TODO: ITRB prod namespace
+
+---
+helmDefaults:
+  wait: true
+  timeout: 600
+
+releases:
+  - name: jaeger
+    namespace: {{ .Values | get "namespace" "" | required (printf "namespace is not set for environment %q in helmfile.yaml.gotmpl" .Environment.Name) }}
+    chart: .
+    # Deploy the dependency charts committed in charts/ as-is; don't re-fetch them.
+    skipDeps: true
+    values:
+      - values-{{ .Environment.Name }}.yaml
