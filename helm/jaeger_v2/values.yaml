@@ -153,6 +153,46 @@ jaeger:
     # Enabled per environment (see values-dev.yaml). NCATS uses the itrb ingress below instead.
     ingress:
       enabled: false
+    # UI login: an nginx sidecar requiring a username and password (the jaeger-ui-auth secret,
+    # see README). With the sidecar enabled, the Service's UI port routes to it instead of to
+    # Jaeger. Config: templates/ui-auth-proxy-configmap.yaml.
+    oAuthSidecar:
+      enabled: true
+      image: nginxinc/nginx-unprivileged:1.30.6-alpine
+      containerPort: 8080
+      extraConfigmapMounts:
+        - name: ui-auth-proxy-config
+          configMap: jaeger-ui-auth-proxy
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      extraSecretMounts:
+        # Mounted as a directory (no subPath) so password changes apply without a restart.
+        - name: ui-auth-htpasswd
+          secretName: jaeger-ui-auth
+          mountPath: /etc/nginx/auth
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 200m
+          memory: 64Mi
 
   # Index cleaner CronJob — prunes indices older than N days
   esIndexCleaner:

@@ -15,6 +15,7 @@ Helm chart for [Jaeger v2](https://www.jaegertracing.io/) (all-in-one) with a si
 | `values-<environment>.yaml` | Per-environment settings (ingress, storage class) |
 | `templates/itrb-ingress.yaml` | ALB ingress for the NCATS environments |
 | `templates/opensearch-networkpolicy.yaml` | Lets only the Jaeger pod and the index cleaner reach OpenSearch |
+| `templates/ui-auth-proxy-configmap.yaml` | nginx config for the sidecar that puts the UI behind a login |
 | `helmfile.yaml.gotmpl` | Maps each environment to its namespace and values file |
 
 ## Prerequisites
@@ -25,7 +26,9 @@ Helm chart for [Jaeger v2](https://www.jaegertracing.io/) (all-in-one) with a si
 
 ## Deploy
 
-### 1. Create the credentials secret (once per environment)
+### 1. Create the secrets (once per environment)
+
+OpenSearch credentials:
 
 ```bash
 kubectl create secret generic jaeger-opensearch-credentials -n <namespace> \
@@ -33,6 +36,16 @@ kubectl create secret generic jaeger-opensearch-credentials -n <namespace> \
 ```
 
 This is the password for OpenSearch's `admin` user, used by OpenSearch, Jaeger and the index cleaner. The `-Aa1` suffix meets OpenSearch's password strength rules. OpenSearch only reads it on first start, so don't change or delete the secret afterwards.
+
+Jaeger UI login (choose the username and password):
+
+```bash
+htpasswd -nbB <username> '<password>' > htpasswd
+kubectl create secret generic jaeger-ui-auth -n <namespace> --from-file=htpasswd
+rm htpasswd
+```
+
+To change the login later, recreate the secret the same way; it takes effect within a minute or two, without a restart.
 
 ### 2. Deploy
 
@@ -64,7 +77,7 @@ kubectl logs job/cleaner-test -n <namespace>
 kubectl delete job cleaner-test -n <namespace>
 ```
 
-Then open the Jaeger UI at the environment's ingress host.
+Then open the Jaeger UI at the environment's ingress host and log in with the `jaeger-ui-auth` credentials.
 
 ## Making changes
 
@@ -79,10 +92,18 @@ Then open the Jaeger UI at the environment's ingress host.
 - **Other namespaces**: `http://jaeger.<namespace>:4317`. Any NetworkPolicy on the Jaeger namespace must allow it.
 - **Apps still set up for v1** can keep sending to `jaeger-otel-collector:4317`. This is a transitional alias Service (`jaeger.extraObjects` in `values.yaml`); remove it once every app uses `jaeger`.
 
+App requirements:
+
+- **OTLP only.** The Service also lists legacy ports (6831/6832 UDP, 14250, 14268, 9411), but nothing listens on them. Jaeger Thrift/agent clients, `opentelemetry-exporter-jaeger` and Zipkin exporters won't work.
+- **Plaintext.** The receivers don't use TLS. For gRPC exporters, set `OTEL_EXPORTER_OTLP_INSECURE=true` (or `insecure=True`). An `http://` endpoint implies plaintext only if that variable is unset; setting it to `false` forces TLS and every export fails.
+- **Forking servers** (gunicorn `--preload`, uWSGI, Celery prefork): set up the tracer provider in each worker after the fork (e.g. gunicorn `post_fork`). The span processor thread and gRPC channel don't survive a fork.
+- **Keep spans small.** gRPC requests over 4 MiB are rejected. Don't put full request or response bodies in attributes.
+- **Failed exports are only logged**, as SDK warnings. Confirm the app's `OTEL_SERVICE_NAME` shows up in the UI.
+
 ## Scaling later
 
 - **More OpenSearch nodes**: set `opensearch.singleNode: false` and `opensearch.replicas` to 3+. Raise the index `replicas` (and `shards` as needed) in `jaeger.userconfig`, and allow port 9300 between OpenSearch pods in the NetworkPolicy.
 - **Size-based index rollover** instead of daily indices: switch each index's `rotation` from `periodic` to `manual_rollover` (with `jaeger.esRollover.enabled: true`) or `auto_rollover` (an OpenSearch ISM policy). Also add `rollover: true` to the cleaner's `cmdlineParams`. Don't use the deprecated `use_aliases` / `use_ilm`; Jaeger 2.22 rejects them.
 - **Higher trace volume**: split Jaeger into separate collector and query deployments, and tune `processors.batch` in `jaeger.userconfig`.
 - **Archive storage**: add a second OpenSearch backend with its own `index_prefix`, and set it as `jaeger_query.storage.traces_archive`. The UI's "Archive Trace" then keeps traces past retention.
-- **UI authentication**: the Jaeger UI has none. Add basic auth or [OAuth2 Proxy](https://oauth2-proxy.github.io/oauth2-proxy/) at the ingress.
+- **SSO for the UI**: replace the nginx sidecar (`jaeger.jaeger.oAuthSidecar`) with [OAuth2 Proxy](https://oauth2-proxy.github.io/oauth2-proxy/), which that setting is designed for.
