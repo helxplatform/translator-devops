@@ -119,11 +119,11 @@ aragorn_omnicorp:
     targetMemory: 75
   resources:
     requests:
-      memory: 5Gi
-      cpu: 2000m
+      memory: 8Gi
+      cpu: 4000m
     limits:
-      memory: 6Gi
-      cpu: 2000m
+      memory: 10Gi
+      cpu: 5000m
 
 aragorn_pathfinder:
   image:
@@ -137,7 +137,7 @@ aragorn_pathfinder:
     targetMemory: 75
   resources:
     requests:
-      memory: 3Gi
+      memory: 4Gi
       cpu: 1000m
     limits:
       memory: 5Gi
@@ -477,8 +477,8 @@ embeddingsLoader:
     size: 60Gi
   resources:
     requests:
-      memory: 512Mi
-      cpu: 500m
+      memory: 1Gi
+      cpu: 1000m
     limits:
       memory: 1Gi
       cpu: 1000m
@@ -712,49 +712,49 @@ shepherd_broker:
     port: 6379
   autoscaling:
     enabled: false
-  pvcSize: 40Gi
+  pvcSize: 40Gi                  # >= ~3.5x maxmemory: AOF base + journal + new base during a rewrite
   resources:
     requests:
       memory: 25Gi
       cpu: 2000m
     limits:
-      memory: 25Gi
+      memory: 25Gi               # >= ~2.2x maxmemory + ~2.3Gi: data, fragmentation, rewrite fork copy
       cpu: 2000m
   args:
     - --dir
-    - '/data'                        # the fix: snapshot + AOF on the PVC, not ephemeral storage
+    - '/data'                    # AOF must live on the PVC
+    # Memory
     - --maxmemory
-    - '10gb'
+    - '8gb'
     - --maxmemory-policy
-    - 'volatile-ttl'
+    - 'volatile-ttl'             # evict TTL'd blobs only; streams/heartbeats are never evicted
     - --maxmemory-clients
     - '20%'
-    - --loglevel
-    - 'notice'
-    - --logfile
-    - '/data/shepherd_broker.log'
+    - --activedefrag
+    - 'yes'
+    # Persistence: append-only file only
     - --appendonly
     - 'yes'
     - --appendfsync
-    - 'everysec'
+    - 'everysec'                 # crash loses ~1s
+    - --no-appendfsync-on-rewrite
+    - 'yes'                      # don't let a rewrite stall writes past client timeouts
     - --aof-use-rdb-preamble
-    - 'yes'
+    - 'yes'                      # base file in snapshot format: fast to load
     - --auto-aof-rewrite-percentage
     - '100'
     - --auto-aof-rewrite-min-size
     - '1gb'
     - --save
-    - '3600 1'                       # was '60 1'; snapshot is now just a backup
-    - --stop-writes-on-bgsave-error
-    - 'no'
-    - --dbfilename
-    - 'shepherd_broker.rdb'
+    - ''                         # no separate snapshot file
+    # Clients
     - --proto-max-bulk-len
     - '1000mb'
-    - --activedefrag
-    - 'yes'
     - --timeout
     - '60'
+    # Logging: stdout (the default), so leave --logfile out entirely
+    - --loglevel
+    - 'notice'
 
 shepherd_monitor:
   service:

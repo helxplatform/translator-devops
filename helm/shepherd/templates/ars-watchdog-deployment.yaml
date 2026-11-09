@@ -30,7 +30,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ars-watchdog
-          image: "{{ .Values.ars_watchdog.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.ars_watchdog.image.repository }}:{{ .Values.ars_watchdog.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.ars_watchdog.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

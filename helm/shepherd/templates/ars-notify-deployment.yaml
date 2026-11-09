@@ -30,7 +30,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-ars-notify
-          image: "{{ .Values.ars_notify.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.ars_notify.image.repository }}:{{ .Values.ars_notify.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.ars_notify.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
