@@ -10,7 +10,7 @@
 environments:
   dev:                    # RENCI (Sterling)
     values:
-      - namespace: "translator-dev"
+      - namespace: "translator-exp"
   ci:                     # NCATS ITRB CI
     values:
       - namespace: ""     # TODO: ITRB CI namespace
@@ -25,6 +25,8 @@ environments:
 helmDefaults:
   wait: true
   timeout: 600
+  # Namespaces already exist, and deployers usually can't create them.
+  createNamespace: false
 
 releases:
   - name: jaeger

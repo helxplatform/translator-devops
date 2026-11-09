@@ -8,12 +8,16 @@ jaeger:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt
       hosts:
-        - translator-otel-dev.apps.renci.org
+        - translator-otel.apps.renci.org
       tls:
         - hosts:
-            - translator-otel-dev.apps.renci.org
-          secretName: translator-otel-dev.apps.renci.org-tls
+            - translator-otel.apps.renci.org
+          secretName: translator-otel.apps.renci.org-tls
       pathType: ImplementationSpecific
+    # UI login sidecar. Set to false to serve the UI without a login (the jaeger-ui-auth secret
+    # is then not needed).
+    oAuthSidecar:
+      enabled: true
 
 opensearch:
   persistence:
