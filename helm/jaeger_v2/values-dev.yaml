@@ -17,7 +17,7 @@ jaeger:
     # UI login sidecar. Set to false to serve the UI without a login (the jaeger-ui-auth secret
     # is then not needed).
     oAuthSidecar:
-      enabled: true
+      enabled: false
 
 opensearch:
   persistence:
