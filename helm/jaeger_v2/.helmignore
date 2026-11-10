@@ -1,0 +1,10 @@
+# Deployment config, not part of the chart
+helmfile.yaml.gotmpl
+values-*.yaml
+
+# OS / editor files
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
