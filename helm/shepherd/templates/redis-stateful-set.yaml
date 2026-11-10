@@ -37,15 +37,30 @@ spec:
               name: {{ include "shepherd.fullname" . }}-broker-data-volume
           resources:
             {{ toYaml .Values.shepherd_broker.resources | nindent 12 }}
-      {{- with .Values.shepherd_broker.nodeSelector }}
+          env:
+            - name: REDIS_PASSWORD
+              value: {{ .Values.shepherd_broker.auth.password | quote }}
+          startupProbe:              # holds off liveness until the AOF has loaded (real PONG)
+            exec:
+              command: ["sh", "-c", "redis-cli -a \"$REDIS_PASSWORD\" --no-auth-warning ping | grep -qx PONG"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 180    # allows up to 30 min to load
+          livenessProbe:             # fails only if Redis stops answering entirely
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+      {{- with .Values.shepherd.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.shepherd_broker.affinity }}
+      {{- with .Values.shepherd.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.shepherd_broker.tolerations }}
+      {{- with .Values.shepherd.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -56,4 +71,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 10Gi
+            storage: {{ .Values.shepherd_broker.pvcSize }}
