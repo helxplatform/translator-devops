@@ -54,10 +54,12 @@ data:
   LOCATION_VALUE: "{{ .Values.x_trapi.location.value }}"
   PUBLIC_URL: "{{ .Values.app.public_url }}"
   PROFILER_ON: "{{ .Values.app.profiler_on }}"
-  {{ if .Values.app.otel.enabled }}
+  {{ if eq (toString .Values.app.otel.enabled | lower) "true" }}
   OTEL_ENABLED: "TRUE"
   OTEL_SERVICE_NAME: "automat-{{ .Release.Name }}"
-  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.app.otel.jaegerHost | quote }}
+  OTEL_EXPORTER_OTLP_INSECURE: {{ .Values.app.otel.insecure | default "true" | quote }}
+  OTEL_EXPORTER_OTLP_TRACES_INSECURE: {{ .Values.app.otel.insecure | default "true" | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: "{{ .Values.app.otel.jaegerHost }}:{{ .Values.app.otel.jaegerPort }}"
   JAEGER_HOST: {{ .Values.app.otel.jaegerHost | quote }}
   JAEGER_PORT: {{ .Values.app.otel.jaegerPort | quote }}
   {{ end }}

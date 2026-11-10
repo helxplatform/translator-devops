@@ -1,0 +1,22 @@
+# robokop: RENCI (Sterling) deployment for RoboKop. Layered on top of values.yaml.
+
+jaeger:
+  jaeger:
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt
+      hosts:
+        - robokop-otel.apps.renci.org
+      tls:
+        - hosts:
+            - robokop-otel.apps.renci.org
+          secretName: robokop-otel.apps.renci.org-tls
+      pathType: ImplementationSpecific
+    oAuthSidecar:
+      enabled: false
+
+opensearch:
+  persistence:
+    storageClass: basic

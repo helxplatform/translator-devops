@@ -38,8 +38,8 @@ x_trapi:
 otel:
   # disable otel by default
   enabled: false
-  jaeger_host: "jaeger-otel-agent"
-  jaeger_port: "6831"
+  jaeger_host: "jaeger"
+  jaeger_port: "4317"
 
 shepherd:
   tag: fillthisin

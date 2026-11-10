@@ -1,0 +1,34 @@
+{{- /*
+Only the Jaeger pod and the index cleaner may reach OpenSearch's HTTP port.
+(The OpenSearch chart's own networkPolicy.create selects pods by a label they never carry, so it
+isn't used.) If opensearch.singleNode is turned off, also allow OpenSearch pods to reach each
+other on 9300.
+*/ -}}
+{{- if .Values.opensearchNetworkPolicy.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: jaeger-opensearch-allow-jaeger-only
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: jaeger
+              app.kubernetes.io/instance: {{ .Release.Name }}
+            matchExpressions:
+              # Add the component of any other Jaeger job that needs OpenSearch (e.g. esRollover,
+              # esLookback) here; get it from `helm template`.
+              - key: app.kubernetes.io/component
+                operator: In
+                values: ["all-in-one", "es-index-cleaner"]
+      ports:
+        - port: 9200
+          protocol: TCP
+{{- end }}

@@ -1,0 +1,343 @@
+# Shared values for every deployment. Deployment-specific settings (ingress, storage class)
+# live in values-<environment>.yaml and are layered on top of this file.
+
+# ==============================================================================
+# Jaeger (jaegertracing/jaeger subchart)
+# ==============================================================================
+jaeger:
+  storage:
+    # Only used by the index cleaner CronJob. The chart's maintenance jobs only know
+    # "elasticsearch", and the cleaner works against OpenSearch's compatible API.
+    # Jaeger itself reads its storage settings from userconfig below.
+    # The password comes from the jaeger-opensearch-credentials secret via esIndexCleaner.extraEnv.
+    type: elasticsearch
+    elasticsearch:
+      url: "https://jaeger-opensearch-master:9200"
+      user: "admin"
+
+  userconfig:
+    extensions:
+      jaeger_storage:
+        backends:
+          some_storage:
+            opensearch:
+              server_urls:
+                - "https://jaeger-opensearch-master:9200"
+              tls:
+                insecure_skip_verify: true    # OpenSearch uses self-signed certificates
+              auth:
+                basic:
+                  username: "admin"
+                  password: "${env:OPENSEARCH_PASSWORD}"   # from jaeger.jaeger.extraEnv (jaeger-opensearch-credentials secret)
+              indices:
+                spans:
+                  rotation:
+                    periodic:
+                      date_layout: "2006-01-02"
+                      rollover_frequency: "day"
+                  shards: 1      # single OpenSearch node — no replicas needed
+                  replicas: 0
+                services:
+                  rotation:
+                    periodic:
+                      date_layout: "2006-01-02"
+                      rollover_frequency: "day"
+                  shards: 1
+                  replicas: 0
+                dependencies:
+                  rotation:
+                    periodic:
+                      date_layout: "2006-01-02"
+                      rollover_frequency: "day"
+                  shards: 1
+                  replicas: 0
+                sampling:
+                  rotation:
+                    periodic:
+                      date_layout: "2006-01-02"
+                      rollover_frequency: "day"
+                  shards: 1
+                  replicas: 0
+
+      jaeger_query:
+        storage:
+          traces: some_storage
+
+      healthcheckv2:
+        use_v2: true
+        http:
+          endpoint: "0.0.0.0:13133"
+
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: "0.0.0.0:4317"
+          http:
+            endpoint: "0.0.0.0:4318"
+
+    processors:
+      # Refuses new spans when memory nears the container limit (jaeger.jaeger.resources.limits.memory)
+      # instead of letting the pod get OOM-killed.
+      memory_limiter:
+        check_interval: 2s
+        limit_percentage: 85
+        spike_limit_percentage: 20
+      batch: {}
+
+    exporters:
+      jaeger_storage_exporter:
+        trace_storage: some_storage
+
+    service:
+      extensions:
+        - jaeger_storage
+        - jaeger_query
+        - healthcheckv2
+      pipelines:
+        traces:
+          receivers:
+            - otlp
+          processors:
+            # memory_limiter must be the first processor
+            - memory_limiter
+            - batch
+          exporters:
+            - jaeger_storage_exporter
+      telemetry:
+        resource:
+          service.name: jaeger
+        metrics:
+          level: detailed
+          readers:
+            - pull:
+                exporter:
+                  prometheus:
+                    host: "0.0.0.0"
+                    port: 8888
+        logs:
+          level: info
+
+  # The all-in-one Deployment. (The upstream chart nests its settings under its own `jaeger` key.)
+  jaeger:
+    extraEnv:
+      - name: OPENSEARCH_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: jaeger-opensearch-credentials
+            key: password
+      # Go GC target, kept at ~80% of the memory limit so the GC works harder before the
+      # memory_limiter or the OOM killer kicks in. Update together with resources.limits.memory.
+      - name: GOMEMLIMIT
+        value: "3280MiB"
+    resources:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+      limits:
+        cpu: 2000m
+        memory: 4Gi
+    # Comply with org's seccomp policy (same pattern as OpenSearch). These merge with the chart's
+    # defaults (runAsUser/runAsGroup/fsGroup 10001).
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    # Enabled per environment (see values-dev.yaml). NCATS uses the itrb ingress below instead.
+    ingress:
+      enabled: false
+    # UI login: an nginx sidecar requiring a username and password (the jaeger-ui-auth secret,
+    # see README). With the sidecar enabled, the Service's UI port routes to it instead of to
+    # Jaeger. Config: templates/ui-auth-proxy-configmap.yaml.
+    oAuthSidecar:
+      enabled: true
+      image: nginxinc/nginx-unprivileged:1.30.6-alpine
+      containerPort: 8080
+      extraConfigmapMounts:
+        - name: ui-auth-proxy-config
+          configMap: jaeger-ui-auth-proxy
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      extraSecretMounts:
+        # Mounted as a directory (no subPath) so password changes apply without a restart.
+        - name: ui-auth-htpasswd
+          secretName: jaeger-ui-auth
+          mountPath: /etc/nginx/auth
+      securityContext:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      readinessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+      livenessProbe:
+        httpGet:
+          path: /healthz
+          port: 8080
+      resources:
+        requests:
+          cpu: 10m
+          memory: 16Mi
+        limits:
+          cpu: 200m
+          memory: 64Mi
+
+  # Index cleaner CronJob — prunes indices older than N days
+  esIndexCleaner:
+    enabled: true
+    numberOfDays: 10
+    schedule: "55 23 * * *"
+    extraEnv:
+      - name: ES_PASSWORD   # the cleaner tool reads this name, even against OpenSearch
+        valueFrom:
+          secretKeyRef:
+            name: jaeger-opensearch-credentials
+            key: password
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+    cmdlineParams:
+      es.tls.enabled: true
+      es.tls.skip-host-verify: true   # self-signed cert, same as insecure_skip_verify in userconfig
+    podSecurityContext:
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+  # Transitional alias: apps configured for Jaeger v1 send OTLP to jaeger-otel-collector.
+  # This Service points that name at the v2 all-in-one pod so they keep working during cutover.
+  # Remove once all apps point at the "jaeger" service.
+  extraObjects:
+    - apiVersion: v1
+      kind: Service
+      metadata:
+        name: jaeger-otel-collector
+        labels:
+          app.kubernetes.io/name: jaeger
+          app.kubernetes.io/instance: "{{ .Release.Name }}"
+          app.kubernetes.io/component: otlp-alias
+      spec:
+        type: ClusterIP
+        selector:
+          app.kubernetes.io/name: jaeger
+          app.kubernetes.io/instance: "{{ .Release.Name }}"
+          app.kubernetes.io/component: all-in-one
+        ports:
+          - name: otlp-grpc
+            port: 4317
+            targetPort: 4317
+            appProtocol: grpc
+          - name: otlp-http
+            port: 4318
+            targetPort: 4318
+            appProtocol: http
+
+# ==============================================================================
+# OpenSearch (opensearch-project/opensearch subchart)
+# ==============================================================================
+opensearch:
+  # Resource names are <clusterName>-<nodeGroup> (here jaeger-opensearch-master), independent of
+  # the Helm release name. A Jaeger-specific name avoids collisions with other OpenSearch
+  # deployments in the same namespace. Jaeger connects to https://jaeger-opensearch-master:9200.
+  clusterName: "jaeger-opensearch"
+  nodeGroup: "master"
+  # The Service name. The chart defaults this to "opensearch-cluster-master" regardless of
+  # clusterName, so it's set explicitly to match the StatefulSet.
+  masterService: "jaeger-opensearch-master"
+
+  # One node, no cluster formation. This also means OpenSearch's production startup checks
+  # (e.g. vm.max_map_count) only log warnings instead of stopping startup.
+  singleNode: true
+
+  # Sized relatively generously for 100% trace sampling with traces of thousands of spans.
+  # If OpenSearch can't keep up with writes, spans back up in the Jaeger pod and its
+  # memory_limiter starts dropping them.
+  resources:
+    requests:
+      cpu: 500m
+      memory: 4Gi
+    limits:
+      cpu: 2000m
+      memory: 4Gi
+
+  # JVM heap — should be ~50% of memory limit (the rest is for Lucene's filesystem cache)
+  opensearchJavaOpts: "-Xmx2g -Xms2g"
+
+  # Replaces the chart's default opensearch.yml, whose cluster.name didn't match clusterName.
+  config:
+    opensearch.yml: |
+      cluster.name: jaeger-opensearch
+      network.host: 0.0.0.0
+
+  # storageClass is set per environment; omitted means the cluster's default StorageClass.
+  persistence:
+    enabled: true
+    size: 30Gi
+    accessModes: ["ReadWriteOnce"]
+    # The chown init container runs as root, which org policy blocks.
+    # podSecurityContext.fsGroup (1000) gives OpenSearch ownership of the volume instead.
+    enableInitChown: false
+
+  # OpenSearch sets the admin user's password from this on first start.
+  # It comes from a pre-created secret (see README) so it stays stable across upgrades;
+  # Jaeger and the index cleaner read the same secret.
+  extraEnvs:
+    - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: jaeger-opensearch-credentials
+          key: password
+
+  # The privileged sysctl init container stays disabled (the chart default) — blocked by org policy.
+  sysctlInit:
+    enabled: false
+
+  # Comply with psp-seccomp: set RuntimeDefault on the pod and containers. These merge with the
+  # chart's defaults (runAsUser/fsGroup 1000, runAsNonRoot, drop ALL capabilities).
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    allowPrivilegeEscalation: false
+    seccompProfile:
+      type: RuntimeDefault
+
+# ==============================================================================
+# Restricts OpenSearch's HTTP port to the Jaeger pod and the index cleaner.
+# See templates/opensearch-networkpolicy.yaml.
+# ==============================================================================
+opensearchNetworkPolicy:
+  enabled: true
+
+# ==============================================================================
+# ITRB (NCATS) ALB ingress — see templates/itrb-ingress.yaml
+# ==============================================================================
+itrb:
+  ingress:
+    enabled: false
+    host: ""
+    annotations: {}

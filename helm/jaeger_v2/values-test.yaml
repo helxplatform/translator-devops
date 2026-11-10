@@ -1,0 +1,30 @@
+# test: NCATS ITRB test deployment. Layered on top of values.yaml.
+
+itrb:
+  ingress:
+    enabled: true
+    host: translator-otel.test.transltr.io
+    annotations:
+      kubernetes.io/ingress.class: alb
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/tags: Name=transltr-eks-test-blue-jaeger,environment=test,program=translator,project=translator,org=ncats,app-group=sri,access-team=ncats-devops
+      alb.ingress.kubernetes.io/security-groups: translator-test-alb-http-sg
+      alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-2-Ext-2018-06
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+      alb.ingress.kubernetes.io/target-type: 'ip'
+      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+      alb.ingress.kubernetes.io/success-codes: '200'
+      alb.ingress.kubernetes.io/healthcheck-path: '/healthz'
+
+# OpenSearch wants the node's vm.max_map_count to be at least 262144, and the chart's privileged
+# sysctl init container that would set it is disabled. Because singleNode is on, a lower value only
+# logs a startup warning ("max virtual memory areas vm.max_map_count [65530] is too low"), but
+# OpenSearch can later fail with "Map failed" errors as indices grow. If either shows up, have ITRB
+# raise it on the nodes or uncomment this to stop OpenSearch memory-mapping index files (slightly
+# slower searches). This replaces opensearch.yml from values.yaml, so it repeats those lines.
+# opensearch:
+#   config:
+#     opensearch.yml: |
+#       cluster.name: jaeger-opensearch
+#       network.host: 0.0.0.0
+#       node.store.allow_mmap: false
