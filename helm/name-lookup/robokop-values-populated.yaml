@@ -4,10 +4,16 @@
 # After installing, upgrade with dataUrl set to ""
 # helm upgrade name-lookup . -n robokop-u24 -f ./values-populated.yaml -f ./renci-exp-values-populated.yaml -f ./robokop-values-populated.yaml --set dataUrl=""
 
+app:
+  otel:
+    enabled: true
+    jaegerHost: http://jaeger
+    jaegerPort: 4317
+
 webServer:
   serverHostName: https://robokop-name-resolver.apps.renci.org
 
-dataUrl: "https://stars.renci.org/var/babel_outputs/robokop-filtered/solr-backups/2025sep1-by-f10f782cda309e98/snapshot.backup.tar.gz"
+dataUrl: "https://stars.renci.org/var/babel_outputs/robokop-filtered/solr-backups/2026jul22-by-1.0.3/snapshot.backup.tar.gz"
 
 ingress:
   host: robokop-name-resolver.apps.renci.org
@@ -18,6 +24,7 @@ solr:
       memory: "8Gi"
     limits:
       memory: "8Gi"
+      ephemeral-storage: 2Gi
       # NOTE that currently the namespace this is deployed in has no cpu limits, so this is commented out
       # but if we need to impose CPU limits again, or deploy elsewhere, set the cpu limit to something large enough
       # cpu: 1000m
