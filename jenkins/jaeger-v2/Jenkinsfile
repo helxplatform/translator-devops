@@ -44,7 +44,18 @@ pipeline {
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
                         sh '''
+                            
                             aws --region ${AWS_REGION} eks update-kubeconfig --name ${KUBERNETES_CLUSTER_NAME}
+
+                            if ! kubectl -n sri get secret jaeger-opensearch-credentials >/dev/null 2>&1; then
+                                opensearch_password_file=$(mktemp)
+                                trap 'rm -f "$opensearch_password_file"' EXIT
+                                openssl rand -base64 24 | tr -d '\n' > "$opensearch_password_file"
+                                printf '%s' '-Aa1' >> "$opensearch_password_file"
+                                kubectl -n sri create secret generic jaeger-opensearch-credentials \
+                                    --from-file=password="$opensearch_password_file" \
+                                    --dry-run=client -o yaml | kubectl apply -f -
+                            fi
                             /bin/bash prepare.sh
                             mv values-ci.yaml values-ncats.yaml
                             /bin/bash deploy.sh
