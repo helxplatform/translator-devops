@@ -39,7 +39,7 @@ pipeline {
             }
             steps {
                 checkout scm
-                dir("helm/jaeger/") {
+                dir("helm/jaeger_v2/") {
                     configFileProvider([
                         configFile(fileId: 'prepare.sh', targetLocation: 'prepare.sh')
                     ]){
