@@ -35,7 +35,7 @@ pipeline {
                 }
             }
             environment {
-              APP = "jaeger_v2"
+              APP = "jaeger"
             }
             steps {
                 checkout scm
