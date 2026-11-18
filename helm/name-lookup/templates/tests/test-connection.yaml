@@ -11,7 +11,7 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "name-lookup.fullname" . }}-web-svc:{{ .Values.webServer.service.port }}/apidocs']
+      args: ['{{ include "name-lookup.fullname" . }}-web-svc:{{ .Values.webServer.service.port }}/status']
   {{- with .Values.app.nodeSelector }}
   nodeSelector:
     {{- toYaml . | nindent 8 }}

@@ -14,6 +14,10 @@ webServer:
   image:
     repository: ghcr.io/ncatstranslator/nameresolution
     tag: v1.7.0
+  # Public URL of this instance (e.g. https://name-resolution-sri.renci.org), exported to the
+  # web server as SERVER_ROOT so that the OpenAPI docs point at the right server. Each
+  # environment values file sets this to match its ingress.host.
+  serverHostName: ""
 
 dataUrl: "https://stars.renci.org/var/babel_outputs/2026jul22/nameres/snapshot.backup.tar.gz"
 forceRun: false
@@ -171,6 +175,12 @@ nameOverride: ""
 fullnameOverride: ""
 
 ingress:
+  # No ingress by default. The RENCI values files turn it on and set host/class/tls (the
+  # robokop/yobokop files inherit that from renci-exp). The ITRB files set host/class but
+  # leave it off, so the chart creates no Ingress there.
+  enabled: false
+  tls:
+    enabled: false
   annotations:
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
@@ -181,11 +191,16 @@ ingress:
 blocklist:
   # The URL from where to download the blocklist. This should be a simple text file, where each line contains a CURIE.
   # (If this field is blank, all blocklist functionality will be turned off.)
+  #
+  # Every environment, RENCI and ITRB alike, gets this URL and the token below from
+  # values-populated.yaml, so that they all read the same blocklist and share one token
+  # rotation. Don't override the URL in an environment values file: pointing one instance at
+  # a branch of the Blocklists repository meant it silently deleted a different set of CURIEs.
   url:
   # If a GitHub Personal Access Token is necessary to download the above file, it should be set
-  # in `blocklist.secrets.github_personal_access_token` in an encrypted file. You can also
-  # set this on Kubernetes by running:
-  #   kubectl -n $NAMESPACE create secret generic {{name-lookup.fullname}}-secrets --from-literal=github_personal_access_token=github_pat_...
+  # in `blocklist.secrets.github_personal_access_token` in an encrypted file. The chart creates
+  # the <fullname>-secrets Secret from it; a Secret created by hand is never read, and one with
+  # that name makes `helm install` fail.
   #
   # Declared here (rather than left unset) so the key always exists: templates reference it
   # directly, and an undefined `secrets` map made rendering die with an unhelpful
