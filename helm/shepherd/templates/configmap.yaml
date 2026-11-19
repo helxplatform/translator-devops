@@ -20,9 +20,10 @@ data:
   REDIS_HOST: shepherd-broker
   REDIS_PORT: "{{ .Values.shepherd_broker.service.port }}"
   REDIS_PASSWORD: {{ .Values.shepherd_broker.auth.password }}
+  REDIS_MEMORY_LIMIT: {{ .Values.shepherd_broker.resources.limits.memory }}
 
   LOOKUP_TIMEOUT: "{{ .Values.shepherd.lookup_timeout }}"
-  CALLBACK_HOST: "https://{{ .Values.ingress.host }}"
+  CALLBACK_HOST: "{{ .Values.shepherd.callback_host }}"
   KG_RETRIEVAL_URL: {{ .Values.shepherd.kg_retrieval_url }}
   SYNC_KG_RETRIEVAL_URL: {{ .Values.shepherd.sync_kg_retrieval_url }}
   KG_REHYDRATE_URL: {{ .Values.shepherd.kg_rehydrate_url }}
@@ -36,5 +37,7 @@ data:
   OMNICORP_CURIES_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/curies.lmdb"
   OMNICORP_SHARED_COUNTS_LMDB_PATH: "{{ .Values.omnicorpLoader.sharedData.mountPath }}/omnicorp_lmdb/shared_counts.lmdb"
   PATHFINDER_EMBEDDINGS_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_embeddings"
+  PATHFINDER_SEARCH_GRAPH_DIR: "{{ .Values.embeddingsLoader.sharedData.mountPath }}/pathfinder_search_graph"
   ARAX_PATHFINDER_DBS_DIR: "{{ .Values.araxPathfinderLoader.sharedData.mountPath }}"
+  ARAX_DBS_DIR: "{{ .Values.araxLoader.sharedData.mountPath }}"
   # REDIS_TTL: {{ .Values.shepherd.redis_ttl }}

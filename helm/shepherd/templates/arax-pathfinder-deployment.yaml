@@ -50,7 +50,7 @@ spec:
               mountPath: {{ .Values.araxPathfinderLoader.sharedData.mountPath }}
       containers:
         - name: {{ .Chart.Name }}-arax-pathfinder
-          image: "{{ .Values.arax_pathfinder.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.arax_pathfinder.image.repository }}:{{ .Values.arax_pathfinder.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.arax_pathfinder.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

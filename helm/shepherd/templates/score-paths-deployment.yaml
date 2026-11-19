@@ -50,7 +50,7 @@ spec:
               mountPath: {{ .Values.embeddingsLoader.sharedData.mountPath }}
       containers:
         - name: {{ .Chart.Name }}-score-paths
-          image: "{{ .Values.score_paths.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.score_paths.image.repository }}:{{ .Values.score_paths.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.score_paths.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

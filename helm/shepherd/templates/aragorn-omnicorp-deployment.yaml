@@ -50,7 +50,7 @@ spec:
               mountPath: {{ .Values.omnicorpLoader.sharedData.mountPath }}
       containers:
         - name: {{ .Chart.Name }}-aragorn-omnicorp
-          image: "{{ .Values.aragorn_omnicorp.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.aragorn_omnicorp.image.repository }}:{{ .Values.aragorn_omnicorp.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.aragorn_omnicorp.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:

@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}-arax-rank
-          image: "{{ .Values.arax_rank.image.repository }}:{{ .Values.shepherd.tag }}"
+          image: "{{ .Values.arax_rank.image.repository }}:{{ .Values.arax_rank.image.tag | default .Values.shepherd.tag }}"
           imagePullPolicy: "{{ .Values.arax_rank.image.imagePullPolicy }}"
           envFrom:
             - configMapRef:
